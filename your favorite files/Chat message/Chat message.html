@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Chat Message</title>
+    <style>
+  /* Reset & base styles */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background-color: var(--body-bg, #000);
+    color: var(--text-color, #fff);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--header-bg, #222);
+    color: var(--header-color, #fff);
+  }
+
+  /* User switch */
+  .user-switch {
+    display: flex;
+    gap: 10px;
+  }
+  .user-switch button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+  .user-switch button.active {
+    outline: 2px solid #fff;
+    box-shadow: 0 0 5px #555 inset;
+  }
+
+  /* Theme selector */
+  .theme-select {
+    margin-left: 10px;
+  }
+
+  /* View toggle buttons */
+  .view-buttons {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+  }
+  .view-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #555;
+    color: #fff;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+  .view-btn:hover {
+    background: #333;
+  }
+
+  /* Exit button */
+  #exitBtn {
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  #exitBtn:hover {
+    background-color: #c0392b;
+  }
+
+  /* Main chat container */
+  main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+  }
+  .chat-container {
+    width: 100%;
+    max-width: 800px;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    background: var(--chat-bg, #fff);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  /* Chat header inside container */
+  .chat-header {
+    padding: 10px 20px;
+    background-color: var(--header-bg, #222);
+    color: var(--header-color, #fff);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #currentUserLabel {
+    font-weight: bold;
+  }
+
+  /* Messages area */
+  .chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Message styles */
+  .message {
+    max-width: 70%;
+    margin: 5px 0;
+    padding: 10px 15px;
+    border-radius: 20px;
+    word-wrap: break-word;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+  /* User messages (left) */
+  .message.user {
+    align-self: flex-start;
+    background-color: var(--user-msg-bg, #007bff);
+    color: var(--user-msg-color, #fff);
+    margin-left: 10px;
+  }
+  /* User 2 messages (right) */
+  .message.bot {
+    align-self: flex-end;
+    background-color: var(--bot-msg-bg, #e5e5ea);
+    color: var(--bot-msg-color, #000);
+    margin-right: 10px;
+  }
+
+  /* Optional timestamp (centered) */
+  .timestamp {
+    align-self: center;
+    margin: 10px 0;
+    font-size: 12px;
+    color: var(--timestamp-color, #ccc);
+  }
+
+  /* Input area */
+  .input-area {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background: var(--input-bg, #fafafa);
+  }
+  #messageInput {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid var(--input-border, #ccc);
+    border-radius: 20px;
+    outline: none;
+    font-size: 14px;
+  }
+  #sendBtn {
+    margin-left: 10px;
+    padding: 10px 20px;
+    background-color: var(--button-bg, #007bff);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+  #sendBtn:hover {
+    background-color: var(--button-hover, #0069d9);
+  }
+
+  /* Emoji button */
+  #emojiBtn {
+    margin-left: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+
+  /* Responsive */
+  @media(max-width: 600px) {
+    .chat-container {
+      height: 100%;
+      border-radius: 0;
+    }
+  }
+</style>
+  </head>
+  <body class="default-theme">
+    <header>
+      <div style="display:flex; flex-wrap:wrap; gap:10px;
+        align-items:center;">
+        <div class="user-switch"> <button id="user1Btn" class="active">User
+            1</button> <button id="user2Btn">User 2</button> </div>
+        <div class="view-buttons"> <button class="view-btn"
+            data-view="pc">PC View</button> <button class="view-btn"
+            data-view="mobile">Mobile View</button> </div>
+        <a moz-do-not-send="true" href="../../your%20favorite.html"><button
+            id="exitBtn">Exit</button></a> </div>
+    </header>
+    <main>
+      <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+          <div> <span id="currentUserLabel">Current User: User 1</span>
+          </div>
+          <div> <button id="emojiBtn" title="Insert Emoji">😊</button>
+            <select id="themeSelect" class="theme-select" title="Select
+              Theme">
+              <option value="default" selected="selected">Default</option>
+              <option value="black">Black</option>
+              <option value="blue">Blue</option>
+              <option value="red">Red</option>
+              <option value="yellow">Yellow</option>
+              <option value="sea">Sea</option>
+              <option value="flower">Flower</option>
+              <option value="orange">Orange</option>
+              <option value="gold">Gold</option>
+              <option value="diamond">Diamond</option>
+              <option value="gray">Gray</option>
+              <!-- Additional colors -->
+              <option value="lemon">Lemon</option>
+              <option value="lime">Lime</option>
+              <option value="purple">Purple</option>
+              <option value="brown">Brown</option>
+              <option value="teal">Teal</option>
+              <option value="green">Green</option>
+              <option value="pink">Pink</option>
+              <option value="cyan">Cyan</option>
+              <option value="violet">Violet</option>
+              <option value="rose">Rose</option>
+            </select>
+          </div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="message system">
+            <div class="message-content">Welcome! Use the controls to
+              chat.</div>
+          </div>
+        </div>
+        <div class="input-area"> <input id="messageInput"
+            placeholder="Type your message..." type="text"> <button
+            id="sendBtn">Send</button> <button id="emojiInsertBtn"
+            title="Insert Emoji">😊</button> </div>
+      </div>
+    </main>
+    <script>
+const themeMap = {
+  default: {
+    '--body-bg': '#000',
+    '--text-color': '#fff',
+    '--header-bg': '#222',
+    '--header-color': '#fff',
+    '--chat-bg': '#fff',
+    '--user-msg-bg': '#007bff',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#e5e5ea',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#fafafa',
+    '--input-border': '#ccc',
+    '--button-bg': '#007bff',
+    '--button-hover': '#0069d9',
+    '--timestamp-color': '#ccc'
+  },
+  black: {
+    '--body-bg': '#000',
+    '--text-color': '#fff',
+    '--header-bg': '#222',
+    '--header-color': '#fff',
+    '--chat-bg': '#111',
+    '--user-msg-bg': '#333',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#555',
+    '--bot-msg-color': '#fff',
+    '--input-bg': '#222',
+    '--input-border': '#555',
+    '--button-bg': '#333',
+    '--button-hover': '#555',
+    '--timestamp-color': '#999'
+  },
+  blue: {
+    '--body-bg': '#001f3f',
+    '--text-color': '#fff',
+    '--header-bg': '#003366',
+    '--header-color': '#fff',
+    '--chat-bg': '#003366',
+    '--user-msg-bg': '#007bff',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#3399ff',
+    '--bot-msg-color': '#fff',
+    '--input-bg': '#0059b3',
+    '--input-border': '#003366',
+    '--button-bg': '#007bff',
+    '--button-hover': '#0056b3',
+    '--timestamp-color': '#ccc'
+  },
+  red: {
+    '--body-bg': '#8b0000',
+    '--text-color': '#fff',
+    '--header-bg': '#b22222',
+    '--header-color': '#fff',
+    '--chat-bg': '#800000',
+    '--user-msg-bg': '#b22222',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#ff6347',
+    '--bot-msg-color': '#fff',
+    '--input-bg': '#a52a2a',
+    '--input-border': '#b22222',
+    '--button-bg': '#b22222',
+    '--button-hover': '#800000',
+    '--timestamp-color': '#ccc'
+  },
+  yellow: {
+    '--body-bg': '#fff8dc',
+    '--text-color': '#000',
+    '--header-bg': '#f39c12',
+    '--header-color': '#fff',
+    '--chat-bg': '#fff8dc',
+    '--user-msg-bg': '#f1c40f',
+    '--user-msg-color': '#000',
+    '--bot-msg-bg': '#f9e79f',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#fff2cc',
+    '--input-border': '#f39c12',
+    '--button-bg': '#f39c12',
+    '--button-hover': '#d35400',
+    '--timestamp-color': '#555'
+  },
+  sea: {
+    '--body-bg': '#e0ffff',
+    '--text-color': '#000',
+    '--header-bg': '#16a085',
+    '--header-color': '#fff',
+    '--chat-bg': '#e0ffff',
+    '--user-msg-bg': '#3498db',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#a7ffeb',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#b2fafa',
+    '--input-border': '#16a085',
+    '--button-bg': '#16a085',
+    '--button-hover': '#0f6b66',
+    '--timestamp-color': '#333'
+  },
+  flower: {
+    '--body-bg': '#ffe4e1',
+    '--text-color': '#000',
+    '--header-bg': '#c71585',
+    '--header-color': '#fff',
+    '--chat-bg': '#ffe4e1',
+    '--user-msg-bg': '#ff69b4',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#f8bbd0',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#ffd1dc',
+    '--input-border': '#c71585',
+    '--button-bg': '#c71585',
+    '--button-hover': '#8b0d50',
+    '--timestamp-color': '#555'
+  },
+  orange: {
+    '--body-bg': '#ffe5b4',
+    '--text-color': '#000',
+    '--header-bg': '#ff8c00',
+    '--header-color': '#fff',
+    '--chat-bg': '#ffe5b4',
+    '--user-msg-bg': '#ff7f50',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#ffd8b1',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#ffe0b2',
+    '--input-border': '#ff8c00',
+    '--button-bg': '#ff8c00',
+    '--button-hover': '#cc6600',
+    '--timestamp-color': '#555'
+  },
+  gold: {
+    '--body-bg': '#fff8dc',
+    '--text-color': '#000',
+    '--header-bg': '#ffd700',
+    '--header-color': '#000',
+    '--chat-bg': '#fff8dc',
+    '--user-msg-bg': '#ffd700',
+    '--user-msg-color': '#000',
+    '--bot-msg-bg': '#fffacd',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#fff8dc',
+    '--input-border': '#ffd700',
+    '--button-bg': '#ffd700',
+    '--button-hover': '#b8860b',
+    '--timestamp-color': '#555'
+  },
+  diamond: {
+    '--body-bg': '#f0f8ff',
+    '--text-color': '#000',
+    '--header-bg': '#b9f2ff',
+    '--header-color': '#000',
+    '--chat-bg': '#f0f8ff',
+    '--user-msg-bg': '#00bfff',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#b0e0e6',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#e0ffff',
+    '--input-border': '#00bfff',
+    '--button-bg': '#00bfff',
+    '--button-hover': '#0080bf',
+    '--timestamp-color': '#555'
+  },
+  gray: {
+    '--body-bg': '#2f4f4f',
+    '--text-color': '#fff',
+    '--header-bg': '#3f4f4f',
+    '--header-color': '#fff',
+    '--chat-bg': '#4f6f6f',
+    '--user-msg-bg': '#708090',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#778899',
+    '--bot-msg-color': '#fff',
+    '--input-bg': '#3f4f4f',
+    '--input-border': '#708090',
+    '--button-bg': '#708090',
+    '--button-hover': '#556b2f',
+    '--timestamp-color': '#bbb'
+  },
+  lemon: {
+    '--body-bg': '#fffacd',
+    '--text-color': '#000',
+    '--header-bg': '#ffe135',
+    '--header-color': '#000',
+    '--chat-bg': '#fffacd',
+    '--user-msg-bg': '#ffff54',
+    '--user-msg-color': '#000',
+    '--bot-msg-bg': '#fff700',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#fffdd0',
+    '--input-border': '#ffe135',
+    '--button-bg': '#ffe135',
+    '--button-hover': '#d4a017',
+    '--timestamp-color': '#555'
+  },
+  lime: {
+    '--body-bg': '#ccff00',
+    '--text-color': '#000',
+    '--header-bg': '#bfff00',
+    '--header-color': '#000',
+    '--chat-bg': '#ccff00',
+    '--user-msg-bg': '#bfff00',
+    '--user-msg-color': '#000',
+    '--bot-msg-bg': '#99cc00',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#ccff66',
+    '--input-border': '#bfff00',
+    '--button-bg': '#bfff00',
+    '--button-hover': '#99cc00',
+    '--timestamp-color': '#555'
+  },
+  purple: {
+    '--body-bg': '#800080',
+    '--text-color': '#fff',
+    '--header-bg': '#4B0082',
+    '--header-color': '#fff',
+    '--chat-bg': '#8A2BE2',
+    '--user-msg-bg': '#9370DB',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#D8BFD8',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#A020F0',
+    '--input-border': '#4B0082',
+    '--button-bg': '#4B0082',
+    '--button-hover': '#2E006E',
+    '--timestamp-color': '#ccc'
+  },
+  brown: {
+    '--body-bg': '#A0522D',
+    '--text-color': '#fff',
+    '--header-bg': '#8B4513',
+    '--header-color': '#fff',
+    '--chat-bg': '#D2691E',
+    '--user-msg-bg': '#A0522D',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#CD853F',
+    '--bot-msg-color': '#fff',
+    '--input-bg': '#8B4513',
+    '--input-border': '#A0522D',
+    '--button-bg': '#8B4513',
+    '--button-hover': '#5C3317',
+    '--timestamp-color': '#ccc'
+  },
+  teal: {
+    '--body-bg': '#008080',
+    '--text-color': '#fff',
+    '--header-bg': '#006666',
+    '--header-color': '#fff',
+    '--chat-bg': '#20B2AA',
+    '--user-msg-bg': '#008080',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#66CDAA',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#40E0D0',
+    '--input-border': '#006666',
+    '--button-bg': '#006666',
+    '--button-hover': '#004d4d',
+    '--timestamp-color': '#ccc'
+  },
+  green: {
+    '--body-bg': '#006400',
+    '--text-color': '#fff',
+    '--header-bg': '#004d00',
+    '--header-color': '#fff',
+    '--chat-bg': '#228B22',
+    '--user-msg-bg': '#006400',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#90EE90',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#32CD32',
+    '--input-border': '#006400',
+    '--button-bg': '#006400',
+    '--button-hover': '#004d00',
+    '--timestamp-color': '#ccc'
+  },
+  pink: {
+    '--body-bg': '#FFC0CB',
+    '--text-color': '#000',
+    '--header-bg': '#FF69B4',
+    '--header-color': '#000',
+    '--chat-bg': '#FFB6C1',
+    '--user-msg-bg': '#FF69B4',
+    '--user-msg-color': '#000',
+    '--bot-msg-bg': '#F8BBD0',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#FFE4E1',
+    '--input-border': '#FF69B4',
+    '--button-bg': '#FF69B4',
+    '--button-hover': '#CC5C8A',
+    '--timestamp-color': '#555'
+  },
+  cyan: {
+    '--body-bg': '#00FFFF',
+    '--text-color': '#000',
+    '--header-bg': '#00CED1',
+    '--header-color': '#000',
+    '--chat-bg': '#E0FFFF',
+    '--user-msg-bg': '#00CED1',
+    '--user-msg-color': '#000',
+    '--bot-msg-bg': '#AFEEEE',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#E0FFFF',
+    '--input-border': '#00CED1',
+    '--button-bg': '#00CED1',
+    '--button-hover': '#008B8B',
+    '--timestamp-color': '#555'
+  },
+  violet: {
+    '--body-bg': '#EE82EE',
+    '--text-color': '#000',
+    '--header-bg': '#8A2BE2',
+    '--header-color': '#fff',
+    '--chat-bg': '#DA70D6',
+    '--user-msg-bg': '#BA55D3',
+    '--user-msg-color': '#fff',
+    '--bot-msg-bg': '#D8BFD8',
+    '--bot-msg-color': '#000',
+    '--input-bg': '#E6E6FA',
+    '--input-border': '#8A2BE2',
+    '--button-bg': '#8A2BE2',
+    '--button-hover': '#6A0DAD',
+    '--timestamp-color': '#555'
+  },
+    rose: { /* Your new Rose theme */ 
+    '--body-bg': '#ffe4e1',          /* soft pink background */
+    '--text-color': '#000',           /* black text for contrast */
+    '--header-bg': '#ff69b4',          /* hot pink header */
+    '--header-color': '#fff',          /* white header text */
+    '--chat-bg': '#ffe4e1',             /* same as body for consistency */
+    '--user-msg-bg': '#ff1493',        /* deep pink for user messages */
+    '--user-msg-color': '#fff',        /* white text */
+    '--bot-msg-bg': '#f4c2c2',          /* light pink for bot messages */
+    '--bot-msg-color': '#000',          /* black text for bot */
+    '--input-bg': '#ffe4e1',            /* input same as background */
+    '--input-border': '#ff69b4',        /* matching header color */
+    '--button-bg': '#ff69b4',           /* pink buttons */
+    '--button-hover': '#ff1493',        /* darker pink on hover */
+    '--timestamp-color': '#999'         /* gray timestamp */
+  }
+};
+
+// Function to apply theme variables
+function applyTheme(themeName) {
+  const theme = themeMap[themeName];
+  if (!theme) return;
+  for (const varName in theme) {
+    document.documentElement.style.setProperty(varName, theme[varName]);
+  }
+}
+
+// Set default theme on load
+const themeSelect = document.getElementById('themeSelect');
+applyTheme(themeSelect.value);
+
+// Change theme handler
+themeSelect.onchange = () => {
+  applyTheme(themeSelect.value);
+};
+
+// User switch
+const user1Btn = document.getElementById('user1Btn');
+const user2Btn = document.getElementById('user2Btn');
+const currentUserLabel = document.getElementById('currentUserLabel');
+let currentUser = 'User 1';
+
+function updateUser() {
+  currentUserLabel.textContent = 'Current User: ' + currentUser;
+  if (currentUser === 'User 1') {
+    user1Btn.classList.add('active');
+    user2Btn.classList.remove('active');
+  } else {
+    user2Btn.classList.add('active');
+    user1Btn.classList.remove('active');
+  }
+}
+user1Btn.onclick = () => { currentUser = 'User 1'; updateUser(); };
+user2Btn.onclick = () => { currentUser = 'User 2'; updateUser(); };
+updateUser();
+
+// Send message
+function addMessage(text, sender) {
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'message ' + sender;
+  msgDiv.innerHTML = `<div class="message-content">${text}</div>`;
+  document.getElementById('chatMessages').appendChild(msgDiv);
+  document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+}
+
+// Send message event
+document.getElementById('sendBtn').onclick = () => {
+  const input = document.getElementById('messageInput');
+  const text = input.value.trim();
+  if (!text) return;
+  addMessage(`${currentUser} said: ${text}`, 'user');
+  input.value = '';
+};
+document.getElementById('messageInput').onkeydown = (e) => {
+  if (e.key === 'Enter') {
+    document.getElementById('sendBtn').onclick();
+  }
+};
+
+// Emoji insert
+document.getElementById('emojiInsertBtn').onclick = () => {
+  const emoji = prompt('Enter emoji or shortcode:', '😊');
+  if (emoji) {
+    document.getElementById('messageInput').value += emoji;
+    document.getElementById('messageInput').focus();
+  }
+};
+
+// View toggle
+document.querySelectorAll('.view-btn').forEach(btn => {
+  btn.onclick = () => {
+    const view = btn.dataset.view;
+    const container = document.getElementById('chatContainer');
+    if (view === 'pc') {
+      container.style.width = '100%';
+      container.style.height = '90%';
+      container.style.borderRadius = '8px';
+    } else {
+      container.style.width = '100%';
+      container.style.height = '50%';
+      container.style.borderRadius = '8px';
+    }
+  };
+});
+
+// Exit chat
+document.getElementById('exitBtn').onclick = () => {
+
+};
+</script>
+  </body>
+</html>

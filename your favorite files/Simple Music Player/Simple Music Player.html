@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="player-container">
+      <div class="song-info">
+        <h2 id="song-title">Tonp</h2>
+      </div>
+      <audio id="audio-player" controls="controls"></audio>
+      <div class="controls"> <button id="prev-btn">Previous</button> <button
+          id="play-pause-btn">Play</button> <button id="next-btn">Next</button>
+        <a moz-do-not-send="true" href="../../your%20favorite.html"><button
+            id="exit-btn">Exit</button></a> </div>
+      <div class="download-section"> <button id="download-btn">Download
+          MP3</button> </div>
+      <div class="volume-control"> <label for="volume-slider">Volume:</label>
+        <input id="volume-slider" min="0" max="100" value="50"
+          type="range"> </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

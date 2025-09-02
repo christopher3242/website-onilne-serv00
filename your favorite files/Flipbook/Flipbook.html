@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Flipbook with Fixed Exit Button</title>
+    <style>
+  /* Style for the flipbook container */
+  #flipbook-container {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    position: relative;
+  }
+
+  /* Style for the fixed exit button */
+  #exitButton {
+    position: fixed; /* Fixed position on the viewport */
+    top: 20px;
+    right: 20px;
+    background-color: rgba(255, 0, 0, 0.8);
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 1000; /* Ensure it stays on top */
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+</style>
+  </head>
+  <body>
+    <!-- Fixed Exit Button -->
+    <a href="../../your%20favorite.html"><button id="exitButton">Exit</button></a>
+    <!-- Flipbook Embed -->
+    <div id="flipbook-container"> <iframe
+        src="https://heyzine.com/flip-book/4c54f5168a.html"
+        style="border:none;" width="100%" height="600"></iframe>
+    </div>
+  </body>
+</html>

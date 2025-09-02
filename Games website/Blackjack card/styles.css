@@ -1,0 +1,65 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #7a7a7a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.game-area {
+    text-align: center;
+    background-color: #e0e0e0;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.rectangle {
+    width: 300px;
+    height: auto; /* Allows height to adapt based on content */
+    background-color: #161f4e;
+    border-radius: 5px;
+    color: white;
+    padding: 10px;
+    margin: 20px auto;
+}
+
+.button-container {
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#start-game {
+    background-color: #4caf50;
+    color: white;
+}
+
+#hit {
+    background-color: #2196F3;
+    color: white;
+}
+
+#stand {
+    background-color: #FF9800;
+    color: white;
+}
+
+#exit-game {
+    background-color: #f44336;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.8;
+}

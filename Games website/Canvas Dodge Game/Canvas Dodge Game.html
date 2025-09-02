@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Canvas Dodge Game with Speed 1-30</title>
+    <style>
+  body {
+    text-align: center;
+    background: #222;
+    color: white;
+    font-family: Arial, sans-serif;
+  }
+  canvas {
+    background: #222;
+    display: block;
+    margin: 10px auto;
+  }
+  #controls {
+    margin: 10px;
+  }
+  button {
+    padding: 8px 16px;
+    margin: 5px;
+    font-size: 16px;
+  }
+  input[type=range] {
+    width: 150px;
+  }
+</style>
+  </head>
+  <body>
+    <h2>Canvas Dodge Game</h2>
+    <div id="controls"> <button id="restartBtn">Restart</button> <a
+        href="../games.html"><button id="exitBtn">Exit</button></a> <br>
+      <br>
+      <label for="speedRange">Speed (1-30): </label> <input
+        id="speedRange" min="1" max="30" value="10" type="range"> <span
+        id="speedValue">10</span> <br>
+      <br>
+      <div>Top Score: <span id="topScore">0</span></div>
+    </div>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const player = {
+  x: canvas.width/2 - 20,
+  y: canvas.height - 40,
+  width: 40,
+  height: 40,
+  speed: 5,
+  dx: 0
+};
+
+let blocks = [];
+const blockSize = 20;
+let score = 0;
+let topScore = 0;
+let gameOver = false;
+let fallSpeed = parseInt(document.getElementById('speedRange').value);
+let animationId = null;
+
+const speedDisplay = document.getElementById('speedValue');
+const topScoreSpan = document.getElementById('topScore');
+
+document.getElementById('speedRange').addEventListener('input', () => {
+  fallSpeed = parseInt(document.getElementById('speedRange').value);
+  speedDisplay.textContent = fallSpeed;
+});
+
+// Load top score from localStorage if available
+if(localStorage.getItem('topScore')) {
+  topScore = parseInt(localStorage.getItem('topScore'));
+  topScoreSpan.textContent = topScore;
+}
+
+function updateTopScore() {
+  if(score > topScore) {
+    topScore = score;
+    localStorage.setItem('topScore', topScore);
+    topScoreSpan.textContent = topScore;
+  }
+}
+
+// Handle keyboard input
+function handleKeys(e) {
+  if(e.key === 'ArrowLeft') {
+    player.dx = -player.speed;
+  } else if(e.key === 'ArrowRight') {
+    player.dx = player.speed;
+  }
+}
+
+function handleKeyUp(e) {
+  if(e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    player.dx = 0;
+  }
+}
+
+document.addEventListener('keydown', handleKeys);
+document.addEventListener('keyup', handleKeyUp);
+
+// Button controls
+const restartBtn = document.getElementById('restartBtn');
+const exitBtn = document.getElementById('exitBtn');
+
+restartBtn.onclick = () => {
+  resetGame();
+};
+
+
+// Reset game function
+function resetGame() {
+  score = 0;
+  gameOver = false;
+  blocks = [];
+  player.x = canvas.width/2 - player.width/2;
+  player.y = canvas.height - player.height - 10;
+  if (animationId) cancelAnimationFrame(animationId);
+  gameLoop();
+}
+
+// Draw functions
+function drawPlayer() {
+  ctx.fillStyle = 'lime';
+  ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+function drawBlocks() {
+  ctx.fillStyle = 'red';
+  blocks.forEach(block => {
+    ctx.fillRect(block.x, block.y, block.width, block.height);
+  });
+}
+
+function movePlayer() {
+  player.x += player.dx;
+  if(player.x < 0) player.x = 0;
+  if(player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+}
+
+function updateBlocks() {
+  for(let i = blocks.length -1; i >=0; i--) {
+    blocks[i].y += fallSpeed;
+    if(blocks[i].y > canvas.height) {
+      blocks.splice(i, 1);
+      score++;
+    } else {
+      // Check collision
+      if(
+        blocks[i].x < player.x + player.width &&
+        blocks[i].x + blocks[i].width > player.x &&
+        blocks[i].y < player.y + player.height &&
+        blocks[i].y + blocks[i].height > player.y
+      ) {
+        gameOver = true;
+      }
+    }
+  }
+}
+
+function drawScore() {
+  ctx.fillStyle = 'white';
+  ctx.font = '20px Arial';
+  ctx.fillText('Score: ' + score, 10, 25);
+  ctx.fillText('Top Score: ' + topScore, 10, 50);
+}
+
+let frameCount = 0;
+const spawnInterval = 50; // spawn every 50 frames
+
+function gameLoop() {
+  if(gameOver) {
+    ctx.fillStyle = 'white';
+    ctx.font = '40px Arial';
+    ctx.fillText('Game Over', canvas.width/2 - 100, canvas.height/2);
+    ctx.font = '20px Arial';
+    ctx.fillText('Final Score: ' + score, canvas.width/2 - 60, canvas.height/2 + 30);
+    updateTopScore();
+    return;
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  movePlayer();
+  drawPlayer();
+
+  if(frameCount % spawnInterval === 0) {
+    createBlock();
+  }
+
+  updateBlocks();
+  drawBlocks();
+  drawScore();
+
+  frameCount++;
+  animationId = requestAnimationFrame(gameLoop);
+}
+
+// Helper to create new blocks
+function createBlock() {
+  const x = Math.random() * (canvas.width - blockSize);
+  blocks.push({ x: x, y: -blockSize, width: blockSize, height: blockSize });
+}
+
+// Initialize game
+resetGame();
+</script>
+  </body>
+</html>

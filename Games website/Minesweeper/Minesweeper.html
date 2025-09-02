@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Minesweeper </title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    margin-bottom: 10px;
+  }
+  #controls {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  #game {
+    display: grid;
+    grid-template-columns: repeat(10, 30px);
+    grid-template-rows: repeat(10, 30px);
+    gap: 2px;
+  }
+  .cell {
+    width: 30px;
+    height: 30px;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    font-size: 14px;
+    border: 1px solid #999;
+  }
+  .cell.revealed {
+    background-color: #e0e0e0;
+    cursor: default;
+  }
+  .cell.mine {
+    background-color: #f44336;
+  }
+  #status {
+    margin-top: 15px;
+    font-size: 18px;
+  }
+  #flagsRemaining {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  #timer {
+    margin-left: 20px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+</style>
+  </head>
+  <body>
+    <h1>Minesweeper</h1>
+    <div id="controls"> <label> <input id="flagMode" checked="checked"
+          type="checkbox"> Flag Mode </label> <button id="showAnswer">Show
+        Answer</button> <button id="reset">Reset</button> <a
+        moz-do-not-send="true" href="../games.html"><button id="exit">Exit</button></a>
+      <div id="timer">Time: 0s</div>
+    </div>
+    <div> Flags Remaining: <span id="flagsRemaining"></span>
+    </div>
+    <div id="game"></div>
+    <div id="status"></div>
+    <script>
+const ROWS = 10;
+const COLS = 15;
+const MINES_COUNT = 8;
+
+const gameContainer = document.getElementById('game');
+const statusDiv = document.getElementById('status');
+const resetButton = document.getElementById('reset');
+const showAnswerButton = document.getElementById('showAnswer');
+const exitButton = document.getElementById('exit');
+const flagModeCheckbox = document.getElementById('flagMode');
+const flagsRemainingSpan = document.getElementById('flagsRemaining');
+const timerDiv = document.getElementById('timer');
+
+let board = [];
+let gameOver = false;
+let cellsRevealed = 0;
+let flagMode = true; // true: flag, false: question mark
+let flagsRemaining = MINES_COUNT;
+let timerInterval = null;
+let secondsElapsed = 0;
+
+// Update flags remaining display
+function updateFlagsRemaining() {
+  flagsRemainingSpan.textContent = flagsRemaining;
+}
+
+// Initialize game
+function initGame() {
+  // Reset variables
+  board = [];
+  gameOver = false;
+  cellsRevealed = 0;
+  flagsRemaining = MINES_COUNT;
+  secondsElapsed = 0;
+  clearInterval(timerInterval);
+  timerDiv.textContent = 'Time: 0s';
+  statusDiv.textContent = '';
+
+  updateFlagsRemaining();
+
+  // Clear previous board
+  gameContainer.innerHTML = '';
+
+  // Set flag mode
+  flagMode = flagModeCheckbox.checked;
+
+  // Create board data
+  for (let r = 0; r < ROWS; r++) {
+    const row = [];
+    for (let c = 0; c < COLS; c++) {
+      row.push({ 
+        mine: false, 
+        neighborMines: 0, 
+        revealed: false, 
+        flagged: false,
+        question: false,
+        element: null 
+      });
+    }
+    board.push(row);
+  }
+
+  // Place mines randomly
+  let minesPlaced = 0;
+  while (minesPlaced < MINES_COUNT) {
+    const r = Math.floor(Math.random() * ROWS);
+    const c = Math.floor(Math.random() * COLS);
+    if (!board[r][c].mine) {
+      board[r][c].mine = true;
+      minesPlaced++;
+    }
+  }
+
+  // Calculate neighbor mines
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (!board[r][c].mine) {
+        board[r][c].neighborMines = countNeighborMines(r, c);
+      }
+    }
+  }
+
+  // Create grid in DOM
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cellDiv = document.createElement('div');
+      cellDiv.className = 'cell';
+      cellDiv.dataset.row = r;
+      cellDiv.dataset.col = c;
+      cellDiv.addEventListener('click', handleCellClick);
+      cellDiv.addEventListener('contextmenu', handleCellRightClick);
+      gameContainer.appendChild(cellDiv);
+      board[r][c].element = cellDiv;
+    }
+  }
+
+  // Start timer
+  timerInterval = setInterval(() => {
+    secondsElapsed++;
+    timerDiv.textContent = `Time: ${secondsElapsed}s`;
+  }, 1000);
+}
+
+// Count neighboring mines
+function countNeighborMines(r, c) {
+  let count = 0;
+  for (let dr = -1; dr <= 1; dr++) {
+    for (let dc = -1; dc <= 1; dc++) {
+      if (dr === 0 && dc === 0) continue;
+      const nr = r + dr;
+      const nc = c + dc;
+      if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
+        if (board[nr][nc].mine) count++;
+      }
+    }
+  }
+  return count;
+}
+
+// Handle left click
+function handleCellClick(e) {
+  if (gameOver) return;
+  const r = parseInt(this.dataset.row);
+  const c = parseInt(this.dataset.col);
+  revealCell(r, c);
+  checkWin();
+}
+
+// Handle right click (flag/question toggle)
+function handleCellRightClick(e) {
+  e.preventDefault();
+  if (gameOver) return;
+  const r = parseInt(this.dataset.row);
+  const c = parseInt(this.dataset.col);
+  toggleFlagQuestion(r, c);
+}
+
+// Toggle flag or question mark
+function toggleFlagQuestion(r, c) {
+  const cell = board[r][c];
+  if (cell.revealed) return;
+
+  if (flagMode) {
+    // Flag mode
+    if (cell.flagged) {
+      // Remove flag
+      cell.flagged = false;
+      flagsRemaining++;
+      cell.element.textContent = '';
+    } else {
+      // Add flag if remaining
+      if (flagsRemaining > 0) {
+        cell.flagged = true;
+        flagsRemaining--;
+        cell.element.textContent = '🚩';
+      }
+    }
+  } else {
+    // Question mark mode
+    if (cell.question) {
+      // Remove question
+      cell.question = false;
+      cell.element.textContent = '';
+    } else {
+      // Add question mark
+      cell.question = true;
+      cell.flagged = false; // clear flag if any
+      cell.element.textContent = '?';
+    }
+  }
+  updateFlagsRemaining();
+}
+
+// Reveal cell
+function revealCell(r, c) {
+  const cell = board[r][c];
+  if (cell.revealed || cell.flagged || cell.question) return;
+
+  cell.revealed = true;
+  cell.element.classList.add('revealed');
+
+  if (cell.mine) {
+    cell.element.classList.add('mine');
+    cell.element.textContent = '💣';
+    gameOver = true;
+    clearInterval(timerInterval);
+    revealAllMines();
+    statusDiv.textContent = 'Game Over! You clicked a mine.';
+  } else {
+    cellsRevealed++;
+    if (cell.neighborMines > 0) {
+      cell.element.textContent = cell.neighborMines;
+    } else {
+      revealNeighbors(r, c);
+    }
+  }
+}
+
+// Reveal neighboring cells recursively
+function revealNeighbors(r, c) {
+  for (let dr = -1; dr <= 1; dr++) {
+    for (let dc = -1; dc <= 1; dc++) {
+      const nr = r + dr;
+      const nc = c + dc;
+      if (
+        nr >= 0 && nr < ROWS &&
+        nc >= 0 && nc < COLS &&
+        !(dr === 0 && dc === 0)
+      ) {
+        if (!board[nr][nc].revealed && !board[nr][nc].mine) {
+          revealCell(nr, nc);
+        }
+      }
+    }
+  }
+}
+
+// Show all mines
+function revealAllMines() {
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = board[r][c];
+      if (cell.mine && !cell.revealed) {
+        cell.element.classList.add('revealed', 'mine');
+        cell.element.textContent = '💣';
+      }
+    }
+  }
+}
+
+// Check for win
+function checkWin() {
+  if (cellsRevealed === ROWS * COLS - MINES_COUNT && !gameOver) {
+    gameOver = true;
+    clearInterval(timerInterval);
+    statusDiv.textContent = 'Congratulations! You won!';
+    revealAllMines();
+  }
+}
+
+// Show answer temporarily
+showAnswerButton.addEventListener('click', () => {
+  revealAllMines();
+  setTimeout(() => {
+    // Hide mines again
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const cell = board[r][c];
+        if (cell.mine && !cell.revealed) {
+          cell.element.classList.remove('revealed', 'mine');
+          cell.element.textContent = '';
+        }
+      }
+    }
+  }, 2000);
+});
+
+// Reset button
+resetButton.addEventListener('click', initGame);
+
+// Exit button
+exitButton.addEventListener('click', () => {
+});
+
+// Toggle mode between flag and question
+flagModeCheckbox.addEventListener('change', () => {
+  flagMode = flagModeCheckbox.checked;
+});
+
+// Start game on load
+initGame();
+</script>
+  </body>
+</html>

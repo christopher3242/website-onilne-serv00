@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Print and Exit Buttons</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+  }
+  #printButton, #exitButton {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+  }
+</style>
+  </head>
+  <body>
+    <h1>Printing Testing</h1>
+    <!-- Static label for time -->
+    <p>Time: <span id="time"></span></p>
+    <h2>Hello, my name xxxsexy you can do it and Testing will make you [
+      :) ] </h2>
+    <button id="printButton">Print</button>
+    <a moz-do-not-send="true" href="../../your%20favorite.html"><button
+        id="exitButton">Exit</button></a>
+    <script>
+  function updateTime() {
+    const now = new Date();
+    document.getElementById('time').textContent = 'Current time: ' + now.toLocaleString();
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+
+  document.getElementById('printButton').addEventListener('click', function() {
+    // Hide buttons before printing
+    document.getElementById('printButton').style.display = 'none';
+    document.getElementById('exitButton').style.display = 'none';
+
+    // Trigger print dialog
+    window.print();
+
+    // Show buttons again after print
+    setTimeout(function() {
+      document.getElementById('printButton').style.display = 'inline-block';
+      document.getElementById('exitButton').style.display = 'inline-block';
+    }, 1000);
+  });
+
+  document.getElementById('exitButton').addEventListener('click', function() {
+    window.close();
+  });
+</script>
+  </body>
+</html>
