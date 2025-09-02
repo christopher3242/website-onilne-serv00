@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Hangman Game</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Hangman Game</h1>
+      <label for="wordSelect">Choose a word:</label>
+      <select id="wordSelect">
+        <option value="" selected="selected">--Select a word--</option>
+        <option value="javascript">Javascript</option>
+        <option value="hangman">Hangman</option>
+        <option value="coding">Coding</option>
+        <option value="developer">Developer</option>
+        <option value="programming">Programming</option>
+        <option value="html">HTML</option>
+        <option value="css">CSS</option>
+        <option value="skull">Skull</option>
+      </select>
+      <button id="startButton">Start Game</button> <button
+        id="restartButton" style="display:none;">Restart</button>
+      <div id="word" class="word-display"></div>
+      <div id="message"></div>
+      <div class="input-button-wrapper" style="display:none;">
+        <!-- Hide this by default --> <input id="letterInput"
+          maxlength="1" placeholder="Guess a letter" type="text"> <button
+          id="guessButton">Guess</button> </div>
+      <button id="answerButton" style="display:none;">Show Answer</button>
+      <a moz-do-not-send="true" href="../games.html"><button
+          id="exitButton">Exit</button></a>
+      <div id="hangman" class="hangman-display"></div>
+      <div id="triesLeft"></div>
+      <div id="answerDisplay" style="display:none;"></div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

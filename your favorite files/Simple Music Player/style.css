@@ -1,0 +1,69 @@
+/* (Same as previous CSS, unchanged) */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.player-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.song-info h2 {
+    margin: 0 0 15px 0;
+}
+
+.controls {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-around;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.download-section {
+    margin-top: 15px;
+}
+
+#download-btn {
+    padding: 10px 20px;
+    background-color: #28a745;
+}
+
+#download-btn:hover {
+    background-color: #19692c;
+}
+
+.volume-control {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#volume-slider {
+    margin-left: 10px;
+}

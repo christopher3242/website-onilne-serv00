@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Counting Game - 100 Goals</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+  }
+
+  #countDisplay {
+    font-size: 72px;
+    margin: 20px 0;
+  }
+
+  #message {
+    font-size: 24px;
+    margin: 15px 0;
+  }
+
+  button {
+    font-size: 20px;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+  }
+
+  #goodJob {
+    color: green;
+  }
+</style>
+  </head>
+  <body>
+    <h1>Counting Game - Reach 100 Goals!</h1>
+    <div id="countDisplay">0</div>
+    <div id="message"></div>
+    <button id="countBtn">Count</button>
+    <button id="restartBtn">Restart</button>
+    <a href="../games.html"><button id="exitBtn">Exit</button></a>
+    <script>
+  let count = 0;
+  const target = 100;
+  const countDisplay = document.getElementById('countDisplay');
+  const messageDiv = document.getElementById('message');
+
+  const countBtn = document.getElementById('countBtn');
+  const restartBtn = document.getElementById('restartBtn');
+  const exitBtn = document.getElementById('exitBtn');
+
+  function updateDisplay() {
+    countDisplay.textContent = count;
+    if (count === target) {
+      messageDiv.innerHTML = '<span id="goodJob">Good job! You reached 100!</span>';
+      countBtn.disabled = true;
+    }
+  }
+
+  countBtn.addEventListener('click', () => {
+    if (count < target) {
+      count++;
+      updateDisplay();
+    }
+  });
+
+  restartBtn.addEventListener('click', () => {
+    count = 0;
+    messageDiv.innerHTML = '';
+    countBtn.disabled = false;
+    updateDisplay();
+  });
+
+  // Initialize display
+  updateDisplay();
+</script>
+  </body>
+</html>

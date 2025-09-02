@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Reversi (Othello)</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #2e7d32;
+    color: white;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    margin-bottom: 10px;
+  }
+  #gameContainer {
+    display: inline-block;
+  }
+  #gameBoard {
+    display: grid;
+    grid-template-columns: repeat(8, 50px);
+    grid-template-rows: repeat(8, 50px);
+    gap: 2px;
+    margin: 20px auto;
+  }
+  .cell {
+    width: 50px;
+    height: 50px;
+    background-color: green;
+    border: 2px solid #006400;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+  }
+  .disc {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+  }
+  .black {
+    background-color: black;
+  }
+  .white {
+    background-color: white;
+  }
+  #score {
+    margin-top: 10px;
+    font-size: 1.2em;
+  }
+  #status {
+    margin-top: 10px;
+    font-size: 1.2em;
+  }
+  button {
+    margin: 10px 5px;
+    padding: 8px 16px;
+    font-size: 1em;
+  }
+</style>
+  </head>
+  <body>
+    <h1>Reversi (Othello) - Black &amp; White with Score</h1>
+    <div id="gameContainer">
+      <div id="gameBoard"></div>
+      <div id="score">Black: 2 | White: 2</div>
+      <div id="status">Current Player: <span id="currentPlayer">Black</span></div>
+      <button onclick="restartGame()">Restart</button> <a
+        moz-do-not-send="true" href="../games.html"><button
+          onclick="exitGame()">Exit</button></a>
+    </div>
+    <script>
+  const BOARD_SIZE = 8;
+  const board = [];
+  let currentPlayer = 'black'; // 'black' or 'white'
+  const gameBoardDiv = document.getElementById('gameBoard');
+  const scoreDiv = document.getElementById('score');
+  const currentPlayerSpan = document.getElementById('currentPlayer');
+
+  const directions = [
+    { dx: -1, dy: -1 },
+    { dx: -1, dy: 0 },
+    { dx: -1, dy: 1 },
+    { dx: 0, dy: -1 },
+    { dx: 0, dy: 1 },
+    { dx: 1, dy: -1 },
+    { dx: 1, dy: 0 },
+    { dx: 1, dy: 1 },
+  ];
+
+  function initBoard() {
+    for (let i = 0; i < BOARD_SIZE; i++) {
+      board[i] = [];
+      for (let j = 0; j < BOARD_SIZE; j++) {
+        board[i][j] = null;
+      }
+    }
+    // Place initial four discs
+    board[3][3] = 'white';
+    board[3][4] = 'black';
+    board[4][3] = 'black';
+    board[4][4] = 'white';
+  }
+
+  function createBoard() {
+    gameBoardDiv.innerHTML = '';
+    for (let row = 0; row < BOARD_SIZE; row++) {
+      for (let col = 0; col < BOARD_SIZE; col++) {
+        const cellDiv = document.createElement('div');
+        cellDiv.className = 'cell';
+        cellDiv.dataset.row = row;
+        cellDiv.dataset.col = col;
+        cellDiv.addEventListener('click', handleCellClick);
+        gameBoardDiv.appendChild(cellDiv);
+        updateCellDisplay(row, col);
+      }
+    }
+    updateScore();
+  }
+
+  function updateCellDisplay(row, col) {
+    const cellDiv = document.querySelector(`.cell[data-row='${row}'][data-col='${col}']`);
+    cellDiv.innerHTML = '';
+    if (board[row][col]) {
+      const discDiv = document.createElement('div');
+      discDiv.className = 'disc ' + board[row][col];
+      cellDiv.appendChild(discDiv);
+    }
+  }
+
+  function handleCellClick(e) {
+    const row = parseInt(e.currentTarget.dataset.row);
+    const col = parseInt(e.currentTarget.dataset.col);
+    if (board[row][col] !== null) return; // Occupied
+    const flips = getFlips(row, col, currentPlayer);
+    if (flips.length === 0) {
+      alert('Invalid move! Must flip at least one disc.');
+      return;
+    }
+    // Place disc
+    board[row][col] = currentPlayer;
+    updateCellDisplay(row, col);
+    // Flip discs
+    flips.forEach(([r, c]) => {
+      board[r][c] = currentPlayer;
+      updateCellDisplay(r, c);
+    });
+    updateScore();
+    switchPlayer();
+  }
+
+  function getFlips(row, col, player) {
+    const opponent = (player === 'black') ? 'white' : 'black';
+    const flips = [];
+
+    directions.forEach(({ dx, dy }) => {
+      let r = row + dx;
+      let c = col + dy;
+      const tempFlips = [];
+      while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+        if (board[r][c] === opponent) {
+          tempFlips.push([r, c]);
+        } else if (board[r][c] === player) {
+          if (tempFlips.length > 0) {
+            flips.push(...tempFlips);
+          }
+          break;
+        } else {
+          break;
+        }
+        r += dx;
+        c += dy;
+      }
+    });
+    return flips;
+  }
+
+  function hasValidMove(player) {
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      for (let c = 0; c < BOARD_SIZE; c++) {
+        if (board[r][c] === null && getFlips(r, c, player).length > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function switchPlayer() {
+    currentPlayer = (currentPlayer === 'black') ? 'white' : 'black';
+    document.getElementById('currentPlayer').textContent = capitalize(currentPlayer);
+    if (!hasValidMove(currentPlayer)) {
+      if (!hasValidMove(currentPlayer === 'black' ? 'white' : 'black')) {
+        endGame();
+        return;
+      } else {
+        alert(`${capitalize(currentPlayer)} has no valid moves. Turn passes back.`);
+        currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+        document.getElementById('currentPlayer').textContent = capitalize(currentPlayer);
+      }
+    }
+  }
+
+  function updateScore() {
+    let blackCount = 0;
+    let whiteCount = 0;
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      for (let c = 0; c < BOARD_SIZE; c++) {
+        if (board[r][c] === 'black') blackCount++;
+        if (board[r][c] === 'white') whiteCount++;
+      }
+    }
+    scoreDiv.textContent = `Black: ${blackCount} | White: ${whiteCount}`;
+  }
+
+  function endGame() {
+    let blackCount = 0;
+    let whiteCount = 0;
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      for (let c = 0; c < BOARD_SIZE; c++) {
+        if (board[r][c] === 'black') blackCount++;
+        if (board[r][c] === 'white') whiteCount++;
+      }
+    }
+    let message;
+    if (blackCount > whiteCount) {
+      message = `Black wins! (${blackCount} vs ${whiteCount})`;
+    } else if (whiteCount > blackCount) {
+      message = `White wins! (${whiteCount} vs ${blackCount})`;
+    } else {
+      message = "It's a tie!";
+    }
+    alert(`Game Over!\n${message}`);
+  }
+
+  function restartGame() {
+    initBoard();
+    createBoard();
+    currentPlayer = 'black';
+    document.getElementById('currentPlayer').textContent = 'Black';
+  }
+
+
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  // Initialize game on load
+  initBoard();
+  createBoard();
+</script>
+  </body>
+</html>

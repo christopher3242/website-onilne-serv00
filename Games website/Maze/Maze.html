@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>20x20 Maze Game</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  #controls {
+    margin: 10px;
+  }
+  button {
+    padding: 8px 12px;
+    margin: 0 10px;
+    font-size: 16px;
+  }
+  #maze {
+    display: grid;
+    grid-template-rows: repeat(20, 25px);
+    grid-template-columns: repeat(20, 25px);
+    gap: 2px;
+    justify-content: center;
+    margin: 20px auto;
+  }
+  .cell {
+    width: 25px;
+    height: 25px;
+    background-color: #eee;
+  }
+  .wall {
+    background-color: #333;
+  }
+  #player {
+    background-color: red;
+  }
+  #goal {
+    background-color: green;
+  }
+  #message {
+    font-size: 20px;
+    margin-top: 15px;
+    color: blue;
+  }
+</style>
+  </head>
+  <body>
+    <h2>20x20 Maze Game</h2>
+    <div id="controls"> <button id="newMazeBtn">Generate New Maze</button>
+      <a moz-do-not-send="true" href="../games.html"><button
+          id="exitBtn">Exit</button></a>
+    </div>
+    <div id="maze"></div>
+    <div id="message"></div>
+    <script>
+const size = 20;
+let mazeData = [];
+let playerPos = {x: 1, y: 1};
+let goalPos = {x: 18, y: 18};
+let mazeContainer = document.getElementById('maze');
+const messageDiv = document.getElementById('message');
+
+function generateMaze() {
+  // Initialize maze with walls
+  mazeData = Array.from({length: size}, () => Array(size).fill(1));
+  
+  // Create paths using recursive backtracking or simple random carving
+  // For simplicity, we'll use a simple random approach with some constraints
+  for (let y=1; y<size-1; y++) {
+    for (let x=1; x<size-1; x++) {
+      mazeData[y][x] = Math.random() < 0.3 ? 1 : 0; // 30% walls
+    }
+  }
+  // Ensure start and goal are open
+  mazeData[playerPos.y][playerPos.x] = 0;
+  mazeData[goalPos.y][goalPos.x] = 0;
+
+  // Optional: carve a simple path or use a maze generation algorithm
+  // For a better maze, implement recursive backtracking or Prim's algorithm here
+
+  renderMaze();
+  messageDiv.textContent = '';
+}
+
+function renderMaze() {
+  mazeContainer.innerHTML = '';
+  for (let y=0; y<size; y++) {
+    for (let x=0; x<size; x++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      if (mazeData[y][x] === 1) {
+        cell.classList.add('wall');
+      }
+      if (x === playerPos.x && y === playerPos.y) {
+        cell.id = 'player';
+      } else if (x === goalPos.x && y === goalPos.y) {
+        cell.id = 'goal';
+      }
+      mazeContainer.appendChild(cell);
+    }
+  }
+}
+
+function movePlayer(dx, dy) {
+  const newX = playerPos.x + dx;
+  const newY = playerPos.y + dy;
+  if (
+    newX >= 0 && newX < size &&
+    newY >= 0 && newY < size &&
+    mazeData[newY][newX] === 0
+  ) {
+    playerPos.x = newX;
+    playerPos.y = newY;
+    renderMaze();
+    checkWin();
+  }
+}
+
+function checkWin() {
+  if (playerPos.x === goalPos.x && playerPos.y === goalPos.y) {
+    messageDiv.textContent = '🎉 You Win! 🎉';
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (messageDiv.textContent.includes('Win')) return; // Stop movement after win
+  switch(e.key) {
+    case 'ArrowUp':
+      movePlayer(0, -1);
+      break;
+    case 'ArrowDown':
+      movePlayer(0, 1);
+      break;
+    case 'ArrowLeft':
+      movePlayer(-1, 0);
+      break;
+    case 'ArrowRight':
+      movePlayer(1, 0);
+      break;
+  }
+});
+
+document.getElementById('newMazeBtn').addEventListener('click', generateMaze);
+document.getElementById('exitBtn').addEventListener('click', () => {
+});
+
+// Generate initial maze on page load
+generateMaze();
+</script>
+  </body>
+</html>

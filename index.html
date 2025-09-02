@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome xxxsexy</title>
+    <!-- Include Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Fullscreen Overlay */
+        .overlay {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full height of the viewport */
+            background: linear-gradient(216deg,rgb(66, 25, 25) 0%, rgb(133, 25, 106) 100%);
+            position: fixed; /* Cover entire viewport */
+            top: 0; /* Start at the very top */
+            left: 0; /* Start at the very left */
+            width: 100%; /* Full width */
+            z-index: 999; /* On top of everything else */
+            color: white; /* Text color */
+            text-align: center; /* Center the text */
+        }
+
+        .loading-message {
+            padding: 20px;
+            background-color: rgba(150, 51, 163, 0.966); /* Semi-transparent background */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 0 20px rgba(206, 0, 62, 0.91); /* Shadow for depth */
+            /* Removed animation property, as Animate.css handles it */
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px); /* Start 50px lower */
+                opacity: 0; /* Fully transparent */
+            }
+            to {
+                transform: translateY(0); /* End at original position */
+                opacity: 1; /* Fully opaque */
+            }
+        }
+
+        .button {
+            margin-top: 20px;
+            padding: 20px 20px;
+            background-color: #ff3b76; /* Neon-like pink color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .button:hover {
+            background-color: #ff69b4; /* Lighter pink on hover */
+            transform: scale(1.05); /* Slight scale on hover */
+        }
+    </style>
+  </head>
+  <body>
+    <div class="overlay">
+      <div class="loading-message animate__animated animate__bounceInLeft">
+        <h1>Welcome xxxsexy</h1>
+        <p>Do you want a link? Of course! Choose what you want. We're
+          open today, available 24/7.</p>
+        <a moz-do-not-send="true" href="your%20favorite.html">
+          <button class="button" onclick="handleClick()">Click me</button>
+        </a>
+      </div>
+    </div>
+  </body>
+</html>
