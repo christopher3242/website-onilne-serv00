@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Jigsaw Puzzle with Toggle Exit</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .puzzle-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            transition: opacity 0.3s ease, max-height 0.3s ease;
+            overflow: hidden;
+        }
+
+        /* Hidden state styles */
+        .hidden {
+            opacity: 0;
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+  </head>
+  <body>
+    <h1>Jigsaw Puzzle</h1>
+    <div class="controls">
+      <div class="puzzle-container" id="puzzleContainer"> <iframe
+src="https://www.jigsawplanet.com/?rc=play&amp;pid=2d38ffd3cb41&amp;view=iframe"
+          style="width:100%; height:600px;" allowfullscreen=""
+          frameborder="0"> </iframe> <a href="../games.html"><button
+            id="toggleButton">Exit Puzzle</button></a> </div>
+    </div>
+  </body>
+</html>
