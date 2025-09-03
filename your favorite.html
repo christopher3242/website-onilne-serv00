@@ -1,130 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Favorite</title>
-  <style>
-    body {
-      background-color: rgb(65, 177, 177);
-      margin: 0;
-      height: 100vh;
-      font-family: Arial, sans-serif;
-    }
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Your Favorite</title>
+<style>
+  body {
+    background-color: rgb(65, 177, 177);
+    margin: 0;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+  }
 
-    h2 {
-      font-size: 1.5em;
-      text-decoration: underline;
-      font-weight: bold;
-      text-align: center;
-      margin-top: 20px;
-    }
+  /* Container to hold all content and positioned elements */
+  .container {
+    position: relative;
+    min-height: 100vh;
+  }
 
-    /* Style table, th, td for smooth lines */
-    table {
-      margin: 20px auto;
-      border-collapse: collapse; /* Ensures borders are shared for smooth lines */
-      width: 80%;
-      border: 1px solid black; /* Optional: border around entire table */
-    }
+  /* Style for the header */
+  h2 {
+    font-size: 1.5em;
+    text-decoration: underline;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+  }
 
-    th, td {
-      border: 2px solid black; /* Border for cells for smooth lines */
-      background-color: rgba(113, 183, 211, 0.863);
-      color: white;
-      text-align: center;
-      padding: 20px;
-      transition: box-shadow 0.3s;
-    }
+  /* Style table and cells */
+  table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 80%;
+    border: 1px solid black;
+  }
 
-    td:hover {
-      box-shadow: 0 0 30px white;
-    }
+  th, td {
+    border: 2px solid black;
+    background-color: rgba(113, 183, 211, 0.863);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    transition: box-shadow 0.3s;
+  }
 
-    a {
-      color: blue; /* Link color */
-      text-decoration: none;
-    }
+  td:hover {
+    box-shadow: 0 0 30px white;
+  }
 
-    a:hover {
-      text-decoration: underline;
-    }
+  a {
+    color: blue;
+    text-decoration: none;
+  }
 
-    /* Positioning for the "News" link at top right */
-    .news-link {
-      position: absolute;
-      right: 20px;
-      top: 20px;
-      font-size: 1em;
-    }
-  </style>
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* Fixed position for News link at top right */
+  .news-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1em;
+  }
+</style>
 </head>
 <body>
-  <div style="position: relative; text-align: center;">
-    <h2><u><b>Which is your favorite server?</b></u></h2>
-
-    <!-- Table with links -->
-    <table role="presentation">
-      <tbody>
-        <tr>
-          <td><a href="your%20favorite%20files/.yocco/.yooco.html" moz-do-not-send="true">.yooco</a></td>
-          <td><a href="your%20favorite%20files/Birthday/Birthday.html" moz-do-not-send="true">Birthday</a></td>
-          <td><a href="your%20favorite%20files/Ping/ping.html" moz-do-not-send="true">Ping</a></td>
-          <td><a href="your%20favorite%20files/Video%20ID/Video%20ID.html" moz-do-not-send="true">Video ID</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Discord%20Severs/Discord%20Severs.html" moz-do-not-send="true">Discord Servers</a></td>
-        </tr>
-        <tr>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Analog%20Clock/Analog%20Clock.html" moz-do-not-send="true">Analog Clock</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Analog%20clock%20and%20Digital%20clock/Analog%20&amp;%20Digital%20Clock.html" moz-do-not-send="true">Analog & Digital Clock</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Print/Print.html" moz-do-not-send="true">Print</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/Games%20website/games.html" moz-do-not-send="true">Games</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/world%20clock/world%20clock.html" moz-do-not-send="true">World Clock</a></td>
-        </tr>
-        <tr>
-          <td><a href="your%20favorite%20files/Info%20Page/Info%20Page.html" moz-do-not-send="true">Info</a></td>
-          <td><a href="your%20favorite%20files/free%20web%20hosting/free%20web%20hosting.html" moz-do-not-send="true">Free Web Hosting</a></td>
-          <td><a href="your%20favorite%20files/Qr%20Card/Qr%20card.html" moz-do-not-send="true">QR Card</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Stopwatch/Stopwatch.html" moz-do-not-send="true">Stopwatch</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Wix%20Hacked%20Boxing/Wix%20Hacked%20Boxing.html" moz-do-not-send="true">Wix Hacked Boxing</a></td>
-        </tr>
-        <tr>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/timer/timer.html" moz-do-not-send="true">Timer</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/blogger/blogger.html" moz-do-not-send="true">Blogger</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Supermarket/Supermarket.html" moz-do-not-send="true">Supermarket</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Simple%20Music%20Player/Simple%20Music%20Player.html" moz-do-not-send="true">Music Player</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Chat%20message/Chat%20message.html" moz-do-not-send="true">Chat Message</a></td>
-        </tr>
-        <tr>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Family%20photo/Family%20Photo.html" moz-do-not-send="true">Family Photo</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/digital%20clock/digital%20clock.html" moz-do-not-send="true">Digital Clock</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Calculator/calculator.html" moz-do-not-send="true">Calculator</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Download%20Link/download%20link.html" moz-do-not-send="true">Download Link</a></td>
-          <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/photo%20sildeshow%20and%20music/photo%20sildeshow%20and%20music.html" moz-do-not-send="true">Photo Slideshow & Music</a></td>
-        </tr>
-        <tr>
-          <td><a href="your%20favorite%20files/Video/Video.html" moz-do-not-send="true">Video</a></td>
-          <td><a href="your%20favorite%20files/My%20Video%20Player/My%20Video%20Player.html" moz-do-not-send="true">My Video Player</a></td>
-          <td><a href="your%20favorite%20files/Flipbook/Flipbook.html" moz-do-not-send="true">Flipbook</a></td>
-          <td>Coming soon</td>
-          <td>Coming soon</td>
-        </tr>
-        <!-- Additional "Coming soon" rows as needed -->
-        <tr>
-          <td>Coming soon</td>
-          <td>Coming soon</td>
-          <td>Coming soon</td>
-          <td>Coming soon</td>
-          <td>Coming soon</td>
-        </tr>
-      </tbody>
-    </table>
-
+  <div class="container">
     <!-- News link at top right -->
     <div class="news-link">
       <a href="News.html" moz-do-not-send="true">News:</a>
     </div>
+
+    <!-- Main content centered -->
+    <div style="text-align: center;">
+      <h2><u><b>Which is your favorite server?</b></u></h2>
+
+      <!-- Table with links -->
+      <table role="presentation">
+        <tbody>
+          <tr>
+            <td><a href="your%20favorite%20files/.yocco/.yooco.html" moz-do-not-send="true">.yooco</a></td>
+            <td><a href="your%20favorite%20files/Birthday/Birthday.html" moz-do-not-send="true">Birthday</a></td>
+            <td><a href="your%20favorite%20files/Ping/ping.html" moz-do-not-send="true">Ping</a></td>
+            <td><a href="your%20favorite%20files/Video%20ID/Video%20ID.html" moz-do-not-send="true">Video ID</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Discord%20Severs/Discord%20Severs.html" moz-do-not-send="true">Discord Servers</a></td>
+          </tr>
+          <tr>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Analog%20Clock/Analog%20Clock.html" moz-do-not-send="true">Analog Clock</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Analog%20clock%20and%20Digital%20clock/Analog%20&amp;%20Digital%20Clock.html" moz-do-not-send="true">Analog & Digital Clock</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Print/Print.html" moz-do-not-send="true">Print</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/Games%20website/games.html" moz-do-not-send="true">Games</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/world%20clock/world%20clock.html" moz-do-not-send="true">World Clock</a></td>
+          </tr>
+          <tr>
+            <td><a href="your%20favorite%20files/Info%20Page/Info%20Page.html" moz-do-not-send="true">Info</a></td>
+            <td><a href="your%20favorite%20files/free%20web%20hosting/free%20web%20hosting.html" moz-do-not-send="true">Free Web Hosting</a></td>
+            <td><a href="your%20favorite%20files/Qr%20Card/Qr%20card.html" moz-do-not-send="true">QR Card</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Stopwatch/Stopwatch.html" moz-do-not-send="true">Stopwatch</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Wix%20Hacked%20Boxing/Wix%20Hacked%20Boxing.html" moz-do-not-send="true">Wix Hacked Boxing</a></td>
+          </tr>
+          <tr>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/timer/timer.html" moz-do-not-send="true">Timer</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/blogger/blogger.html" moz-do-not-send="true">Blogger</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Supermarket/Supermarket.html" moz-do-not-send="true">Supermarket</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Simple%20Music%20Player/Simple%20Music%20Player.html" moz-do-not-send="true">Music Player</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Chat%20message/Chat%20message.html" moz-do-not-send="true">Chat Message</a></td>
+          </tr>
+          <tr>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Family%20photo/Family%20Photo.html" moz-do-not-send="true">Family Photo</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/digital%20clock/digital%20clock.html" moz-do-not-send="true">Digital Clock</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Calculator/calculator.html" moz-do-not-send="true">Calculator</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/Download%20Link/download%20link.html" moz-do-not-send="true">Download Link</a></td>
+            <td><a href="file:///C:/Users/Christopher/Desktop/website-onilne-serv00/your%20favorite%20files/photo%20sildeshow%20and%20music/photo%20sildeshow%20and%20music.html" moz-do-not-send="true">Photo Slideshow & Music</a></td>
+          </tr>
+          <tr>
+            <td><a href="your%20favorite%20files/Video/Video.html" moz-do-not-send="true">Video</a></td>
+            <td><a href="your%20favorite%20files/My%20Video%20Player/My%20Video%20Player.html" moz-do-not-send="true">My Video Player</a></td>
+            <td><a href="your%20favorite%20files/Flipbook/Flipbook.html" moz-do-not-send="true">Flipbook</a></td>
+            <td>Coming soon</td>
+            <td>Coming soon</td>
+          </tr>
+          <!-- Additional "Coming soon" rows as needed -->
+          <tr>
+            <td>Coming soon</td>
+            <td>Coming soon</td>
+            <td>Coming soon</td>
+            <td>Coming soon</td>
+            <td>Coming soon</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </body>
 </html>
-
