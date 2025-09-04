@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Photo Slideshow with Music</title>
-    <style>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Photo Slideshow with Music</title>
+<style>
   body {
     font-family: Arial, sans-serif;
     text-align: center;
@@ -15,12 +12,10 @@
     margin: 0;
     padding: 20px;
   }
-
   h1 {
     margin-bottom: 20px;
   }
-
-  #slideshow {
+  #carousel {
     width: 80%;
     max-width: 600px;
     margin: 0 auto 20px auto;
@@ -30,25 +25,21 @@
     background: #fff;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
-
   /* Flex container for sliding images */
   .slides {
     display: flex;
-    transition: transform 0.5s ease-in-out;
+    transition: transform 0.8s ease-in-out;
   }
-
   /* Each image styling */
   .slides img {
     width: 100%;
     flex-shrink: 0;
     border-radius: 10px;
   }
-
   /* Controls styling */
   #controls {
     margin-top: 10px;
   }
-
   .button {
     padding: 10px 20px;
     margin: 5px;
@@ -59,58 +50,56 @@
     cursor: pointer;
     font-size: 1em;
   }
-
   .button:hover {
     background-color: #0056b3;
   }
 </style>
-  </head>
-  <body>
-    <h1>Photo Slideshow with Music</h1>
-    <!-- Slideshow container -->
-    <div id="slideshow">
-      <div class="slides" id="slides-container">
-        <!-- Images will be dynamically inserted here --> </div>
-    </div>
-    <!-- Controls: Back, Download MP3, Exit -->
-    <div id="controls"> <button class="button" id="prev">Back</button>
-      <button class="button" id="next">Next</button>
-      <!-- Download MP3 button --> <a
-href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Tonp.mp3"
-        download=""> <button class="button">Download MP3</button></a><!-- Exit button -->
-      <a href="../../your%20favorite.html" moz-do-not-send="true"> <button
-          class="button">Exit</button> </a>
-    </div>
-    <!-- Audio player -->
-    <audio id="audio" controls="controls" autoplay="autoplay" loop=""> <source
-src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Tonp.mp3"
-        type="audio/mpeg"> Your browser does not support the audio
-      element.
-    </audio>
-    <script>
-  // List of images
-  const images = [
-    'image1.png', 'image2.png', 'image3.png',
-    'image4.png', 'image5.png', 'image6.png',
-    'image7.png', 'image8.png', 'image9.png',
-    'image10.png', 'image11.png', 'image12.png',
-    'image13.png', 'image14.png', 'image15.png',
-    'image16.jpg', 'image17.png', 'image18.png',
-    'image19.png', 'image20.png', 'image21.png',
-    'image22.png', 'image23.png', 'image24.png',
-    'image25.png'
-  ];
+</head>
+<body>
+<h1>Photo Slideshow with Music</h1>
+<!-- Carousel container -->
+<div id="carousel">
+  <div class="slides" id="slides-container">
+    <!-- Images will be inserted here dynamically -->
+  </div>
+</div>
+
+<!-- Controls: Back, Download MP3, Exit -->
+<div id="controls">
+  <button class="button" id="prev">Back</button>
+  <button class="button" id="next">Next</button>
+  <!-- Download MP3 button -->
+  <a href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Porn2.mp3" download>
+    <button class="button">Download MP3</button>
+  </a>
+  <!-- Exit button -->
+  <a href="../../your%20favorite.html" moz-do-not-send="true">
+    <button class="button">Exit</button>
+  </a>
+</div>
+
+<!-- Audio player -->
+<audio id="audio" controls autoplay loop>
+  <source src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Porn2.mp3" type="audio/mpeg" />
+  Your browser does not support the audio element.
+</audio>
+
+<script>
+  // Generate list of 1000 images dynamically
+  const images = [];
+  for (let i = 1; i <= 1000; i++) {
+    images.push(`image${i}.png`);
+  }
 
   let currentIndex = 0;
-
   const slidesContainer = document.getElementById('slides-container');
 
-  // Populate images into the slideshow
+  // Populate images into the carousel
   function populateImages() {
     images.forEach(src => {
       const img = document.createElement('img');
       img.src = src;
-      img.alt = 'Slideshow Image';
+      img.alt = 'Carousel Image';
       slidesContainer.appendChild(img);
     });
   }
@@ -121,11 +110,11 @@ src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%2
     slidesContainer.style.transform = `translateX(${offset}%)`;
   }
 
-  // Initialize
+  // Initialize carousel
   populateImages();
   updateSlide();
 
-  // Button event handlers
+  // Event handlers for buttons
   document.getElementById('next').onclick = function() {
     currentIndex = (currentIndex + 1) % images.length;
     updateSlide();
@@ -136,5 +125,5 @@ src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%2
     updateSlide();
   };
 </script>
-  </body>
+</body>
 </html>
