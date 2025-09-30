@@ -1,20 +1,135 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
+
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
     <title>ISO</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    color: #333;
+    /* Blue gradient background */
+    background: linear-gradient(135deg, #87CEFA, #00BFFF);
+  }
+
+  /* Container styling */
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  }
+
+  /* Header styling */
+  h1 {
+    text-align: center;
+    color: #fff; /* Light color for contrast */
+    margin-bottom: 20px;
+  }
+
+  /* Table styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  td {
+    padding: 10px;
+    vertical-align: top;
+    border: 1px solid #ddd;
+  }
+
+  /* Spinning image styling */
+  .spin {
+    display: inline-block;
+    width: 171px;
+    height: 171px;
+    margin: auto;
+    animation: spin 4s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Exit button styling */
+  .exit-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #dc3545; /* Bootstrap red */
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  .exit-btn:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 768px){
+    .container {
+      padding: 10px 20px;
+    }
+    .spin {
+      width: 150px;
+      height: 150px;
+    }
+  }
+
+  /* Footer styling */
+  .footer {
+    margin-top: 30px;
+    text-align: right;
+    font-style: italic;
+    font-size: 1em;
+    color: #fff; /* Light color for contrast on blue background */
+  }
+</style>
   </head>
   <body>
-    <div align="center">ISO<br>
-      <br>
-      Coming soon <br>
-      <br>
-      ( Dvd , cd and More etc) !!!<br>
-    </div>
-    <br>
-    <br>
-    <br>
-    <div align="center"><a href="../../your%20favorite.html">exit</a><br>
+    <!-- Exit Button -->
+    <button class="exit-btn" onclick="window.close()">Exit</button>
+    <div class="container">
+      <h1><font color="#000000">ISO</font></h1>
+      <table cellspacing="2" cellpadding="2" border="1">
+        <tbody>
+          <tr>
+            <td valign="top" align="center">
+              <div class="spin"> <img src="DVDS1.png" alt="DVD"
+                  width="171" height="171"> </div>
+            </td>
+            <td valign="top"> <strong>Name :-&nbsp; ???</strong><br>
+              <br>
+              Download Link:-<br>
+              <br>
+              ?????? </td>
+          </tr>
+          <tr>
+            <td valign="top"><br>
+            </td>
+            <td valign="top"> <strong>Name :-&nbsp; ???</strong><br>
+              <br>
+              Download Link:-<br>
+              <br>
+              ?????? </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="footer"> <u><b><font color="#000000">( Dvd, cd and
+              More etc) !!! </font></b></u></div>
     </div>
   </body>
 </html>
