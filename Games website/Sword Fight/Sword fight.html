@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Sword Fight Game with Colored Health Bars</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 10px;
+  }
+
+  /* Settings */
+  .settings {
+    margin-bottom: 20px;
+  }
+
+  /* Health Bars with Text */
+  .health-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+  }
+  .health-label {
+    width: 60px;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  .health-bar {
+    width: 200px;
+    height: 25px;
+    background-color: #555;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+  }
+  .health-fill {
+    height: 100%;
+    width: 100%;
+    transition: width 0.3s, background-color 0.3s;
+  }
+  /* Player section style */
+  .players {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .player {
+    margin: 0 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  /* Buttons for Reset and Exit */
+  #resetBtn, #exitBtn {
+    margin-top: 20px;
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  #resetBtn {
+    background-color: #33c;
+    color: #fff;
+  }
+  #resetBtn:hover {
+    background-color: #0088cc;
+  }
+  #exitBtn {
+    background-color: #c33;
+    color: #fff;
+  }
+  #exitBtn:hover {
+    background-color: #a00;
+  }
+  /* Status message */
+  #status {
+    margin: 20px 0;
+    font-size: 18px;
+  }
+</style>
+  </head>
+  <body>
+    <h1>Sword Fight Game</h1>
+    <div class="settings"> <label for="mode">Game Mode:</label>
+      <select id="mode">
+        <option value="single" selected="selected">Single Player</option>
+        <option value="2player">2 Player</option>
+      </select>
+      &nbsp;&nbsp; <strong>CPU Difficulty:</strong> <span
+        id="fixed-difficulty">Normal</span>
+    </div>
+    <div class="players" id="players-container">
+      <!-- Player 1 -->
+      <div class="player" id="player1">
+        <h2>Player 1</h2>
+        <div class="health-container">
+          <div class="health-label">Health:</div>
+          <div class="health-bar">
+            <div class="health-fill" id="player1-health"></div>
+          </div>
+          <div id="player1-health-text" style="margin-top:5px;">100</div>
+        </div>
+        <button id="player1-attack">Attack</button> </div>
+      <!-- Player 2 / CPU -->
+      <div class="player" id="player2">
+        <h2 id="player2-label">Player 2</h2>
+        <div class="health-container">
+          <div class="health-label">Health:</div>
+          <div class="health-bar">
+            <div class="health-fill" id="player2-health"></div>
+          </div>
+          <div id="player2-health-text" style="margin-top:5px;">100</div>
+        </div>
+        <button id="player2-attack">Attack</button> </div>
+    </div>
+    <div id="status"></div>
+    <!-- Buttons for Reset and Exit -->
+    <button id="resetBtn">Reset / Restart</button>
+    <a href="../games.html"><button id="exitBtn">Exit</button></a>
+    <script>
+  const maxHealth = 100;
+  let p1Health = maxHealth;
+  let p2Health = maxHealth;
+
+  const p1HealthBar = document.getElementById('player1-health');
+  const p2HealthBar = document.getElementById('player2-health');
+
+  const p1HealthText = document.getElementById('player1-health-text');
+  const p2HealthText = document.getElementById('player2-health-text');
+
+  const attackButton1 = document.getElementById('player1-attack');
+  const attackButton2 = document.getElementById('player2-attack');
+
+  const modeSelect = document.getElementById('mode');
+  const fixedDifficultySpan = document.getElementById('fixed-difficulty');
+  const statusDiv = document.getElementById('status');
+
+  const player2Label = document.getElementById('player2-label');
+
+  const resetButton = document.getElementById('resetBtn');
+  const exitButton = document.getElementById('exitBtn');
+
+  let gameMode = modeSelect.value; // 'single' or '2player'
+  let cpuDifficulty = 'normal'; // fixed for display
+
+  // Function to get color based on health percentage
+  function getHealthColor(healthPercent) {
+    if (healthPercent > 60) return 'green';
+    else if (healthPercent > 30) return 'yellow';
+    else return 'red';
+  }
+
+  // Function to update health bar color
+  function updateHealthBarColor() {
+    const p1Percent = p1Health;
+    const p2Percent = p2Health;
+    p1HealthBar.style.backgroundColor = getHealthColor(p1Percent);
+    p2HealthBar.style.backgroundColor = getHealthColor(p2Percent);
+  }
+
+  // Update health bars and text
+  function updateHealth() {
+    p1HealthBar.style.width = p1Health + '%';
+    p2HealthBar.style.width = p2Health + '%';
+    p1HealthText.innerText = p1Health;
+    p2HealthText.innerText = p2Health;
+    updateHealthBarColor();
+  }
+
+  // Check for game over
+  function checkGameOver() {
+    if (p1Health <= 0 && p2Health <= 0) {
+      statusDiv.innerHTML = 'It\'s a Draw!';
+      disableButtons();
+    } else if (p1Health <= 0) {
+      statusDiv.innerHTML = 'Player 2 Wins!';
+      disableButtons();
+    } else if (p2Health <= 0) {
+      statusDiv.innerHTML = 'Player 1 Wins!';
+      disableButtons();
+    }
+  }
+
+  function disableButtons() {
+    attackButton1.disabled = true;
+    attackButton2.disabled = true;
+  }
+
+  function enableButtons() {
+    attackButton1.disabled = false;
+    attackButton2.disabled = false;
+  }
+
+  // Attack function
+  function attack(attacker) {
+    if (p1Health <= 0 || p2Health <= 0) return;
+    const damage = Math.floor(Math.random() * 10) + 5; // 5-14 damage
+    if (attacker === 'player1') {
+      p2Health = Math.max(p2Health - damage, 0);
+    } else {
+      p1Health = Math.max(p1Health - damage, 0);
+    }
+    updateHealth();
+    checkGameOver();
+  }
+
+  // Event listeners for attack buttons
+  attackButton1.addEventListener('click', () => {
+    attack('player1');
+    if (gameMode === 'single') {
+      cpuTurn();
+    }
+  });
+
+  attackButton2.addEventListener('click', () => {
+    attack('player2');
+  });
+
+  // Mode change handler
+  modeSelect.addEventListener('change', () => {
+    gameMode = modeSelect.value;
+    if (gameMode === 'single') {
+      document.getElementById('player2-label').innerText = 'CPU';
+      attackButton2.disabled = true;
+    } else {
+      document.getElementById('player2-label').innerText = 'Player 2';
+      attackButton2.disabled = false;
+    }
+  });
+
+  // Reset / Restart game
+  resetButton.addEventListener('click', () => {
+    p1Health = maxHealth;
+    p2Health = maxHealth;
+    updateHealth();
+    statusDiv.innerHTML = '';
+    enableButtons();
+    if (gameMode === 'single') {
+      document.getElementById('player2-label').innerText = 'CPU';
+    } else {
+      document.getElementById('player2-label').innerText = 'Player 2';
+    }
+  });
+
+
+  // CPU turn with fixed difficulty
+  function cpuTurn() {
+    if (p1Health <= 0 || p2Health <= 0) return;
+    setTimeout(() => {
+      const fixedDifficulty = 'normal'; // Change to 'easy' or 'hard' as needed
+      let damage;
+      if (fixedDifficulty === 'easy') {
+        damage = Math.floor(Math.random() * 5) + 1; // 1-5
+      } else if (fixedDifficulty === 'normal') {
+        damage = Math.floor(Math.random() * 10) + 5; // 5-14
+      } else { // hard
+        damage = Math.floor(Math.random() * 15) + 10; // 10-24
+      }
+      p1Health = Math.max(p1Health - damage, 0);
+      updateHealth();
+      checkGameOver();
+    }, 1000);
+  }
+
+  // Initialize
+  updateHealth();
+</script>
+  </body>
+</html>
