@@ -3,7 +3,9 @@ body {
     flex-direction: column;
     align-items: center;
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: rgb(209, 242, 255);
+    margin: 0;
+    padding: 20px;
 }
 
 h1 {
@@ -20,7 +22,7 @@ h1 {
 .card {
     width: 100px;
     height: 100px;
-    background-color: #4b961f;
+    background-color: rgb(76, 226, 71);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -28,12 +30,14 @@ h1 {
     cursor: pointer;
     position: relative;
     transition: opacity 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .card img {
     width: 100%;
     height: 100%;
     display: none;
+    border-radius: 5px;
 }
 
 .card.flipped img {
@@ -41,11 +45,25 @@ h1 {
 }
 
 .card.matched {
-    background-color: #3267fa;
+    background-color: #2e6cf3;
     pointer-events: none;
+    opacity: 0.6;
 }
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(5, 100px);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
 #score-display {
     font-size: 24px;
     margin-bottom: 20px;
     font-weight: bold;
+}
+#win-message {
+    font-size: 24px;
+    color: green;
+    margin-top: 20px;
 }
