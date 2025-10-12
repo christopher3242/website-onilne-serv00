@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Centered Notes App</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #a8a8a8;
+  }
+  .container {
+    background-color: #fff;
+    padding: 20px;
+    margin-top: 50px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 600px;
+  }
+  h2 {
+    text-align: center;
+    margin-top: 0;
+  }
+  #notes {
+    width: 100%;
+    height: 200px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    resize: none;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
+  .controls {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  select, button {
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+</style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Notes</h2>
+      <!-- Textarea for notes --> <textarea id="notes" placeholder="Write your notes here..."></textarea>
+      <!-- Background color list -->
+      <div style="margin-top:10px;"> <label for="bgColor">Background
+          Color:</label>
+        <select id="bgColor">
+          <option value="" selected="selected">Select color</option>
+          <option value="#ffffff">White</option>
+          <option value="#f8d7da">Light Red</option>
+          <option value="#f8d7da">Light Red</option>
+          <option value="#d4edda">Light Green</option>
+          <option value="#d1ecf1">Light Blue</option>
+          <option value="#fff3cd">Light Yellow</option>
+          <option value="#ffe4e1">Misty Rose</option>
+          <option value="#e0ffff">Light Cyan</option>
+          <option value="#f0e68c">Khaki</option>
+          <option value="#dda0dd">Plum</option>
+          <option value="#ffe4b5">Moccasin</option>
+          <option value="#d2b48c">Tan</option>
+          <option value="#add8e6">Light Blue</option>
+          <option value="#90ee90">Light Green</option>
+          <option value="#ffb6c1">Light Pink</option>
+          <option value="#fa8072">Salmon</option>
+          <option value="#f5f5dc">Beige</option>
+          <option value="#e6e6fa">Lavender</option>
+          <option value="#ffe4e1">Pink</option>
+          <option value="#bcf5bc">Mint Green</option>
+          <option value="#ffd700">Gold</option>
+        </select>
+      </div>
+      <!-- Buttons: Clear, Save, Exit -->
+      <div class="controls"> <button onclick="clearNotes()">Clear</button>
+        <button onclick="saveNotes()">Save</button> <a
+          href="../../your%20favorite.html"><button
+            onclick="exitEditor()">Exit</button></a> </div>
+    </div>
+    <script>
+  // Change background color
+  document.getElementById('bgColor').addEventListener('change', function() {
+    document.getElementById('notes').style.backgroundColor = this.value;
+  });
+
+  // Clear notes
+  function clearNotes() {
+    document.getElementById('notes').value = '';
+  }
+
+  // Save notes to local storage
+  function saveNotes() {
+    const notesContent = document.getElementById('notes').value;
+    localStorage.setItem('notes', notesContent);
+    alert('Notes saved!');
+  }
+
+  // Load saved notes on page load
+  window.onload = function() {
+    const savedNotes = localStorage.getItem('notes');
+    if (savedNotes) {
+      document.getElementById('notes').value = savedNotes;
+    }
+  }
+</script>
+  </body>
+</html>
