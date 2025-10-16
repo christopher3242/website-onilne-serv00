@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>HTML Notepad</title>
+    <style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center;    /* Vertical centering */
+    background-color: #f0f0f0; /* Optional background color */
+    font-family: Arial, sans-serif;
+  }
+  .container {
+    width: 80%;
+    max-width: 800px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+  }
+  h1 {
+    text-align: center;
+  }
+  #notepad {
+    width: 100%;
+    height: 300px;
+    padding: 10px;
+    box-sizing: border-box;
+    resize: none;
+  }
+  .buttons {
+    margin-top: 10px;
+    text-align: center;
+  }
+  button, select {
+    margin: 5px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+</style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>HTML Notepad</h1>
+      <!-- Background color selector with 20 ideas -->
+      <label for="bgColor">Choose Background Color:</label>
+      <select id="bgColor">
+        <option value="#ffffff" selected="selected">White</option>
+        <option value="#f8f9fa">Light Gray</option>
+        <option value="#ffe4e1">Misty Rose</option>
+        <option value="#e0ffff">Light Cyan</option>
+        <option value="#f0e68c">Khaki</option>
+        <option value="#d3ffd3">Light Green</option>
+        <option value="#ffe4b5">Moccasin</option>
+        <option value="#d8bfd8">Thistle</option>
+        <option value="#fafad2">Light Yellow</option>
+        <option value="#f5f5dc">Beige</option>
+        <option value="#ffe4e1">Pink</option>
+        <option value="#e6e6fa">Lavender</option>
+        <option value="#fff0f5">Lavender Blush</option>
+        <option value="#f0ffff">Azure</option>
+        <option value="#faf0e6">Linen</option>
+        <option value="#ffe4b5">Peach</option>
+        <option value="#dcdcdc">Gainsboro</option>
+        <option value="#ffe4c4">Bisque</option>
+        <option value="#f0fff0">Honeydew</option>
+        <option value="#ffe4e1">Pink</option>
+      </select>
+      <!-- Textarea for notepad -->
+      <textarea id="notepad" placeholder="Start typing..."></textarea>
+      <!-- Buttons -->
+      <div class="buttons"> <button onclick="saveText()">Save</button>
+        <button onclick="loadText()">Load</button> <button
+          onclick="clearText()">Clear</button> <a
+          href="../../your%20favorite.html"><button onclick="exit()">Exit</button></a>
+      </div>
+      <!-- Hidden file input for loading files -->
+      <input id="fileInput" style="display:none" accept=".txt"
+        type="file">
+    </div>
+    <script>
+  const notepad = document.getElementById('notepad');
+  const bgColorSelect = document.getElementById('bgColor');
+  const fileInput = document.getElementById('fileInput');
+
+  // Change background color
+  bgColorSelect.addEventListener('change', () => {
+    notepad.style.backgroundColor = bgColorSelect.value;
+  });
+
+  // Save content as .txt file
+  function saveText() {
+    const text = notepad.value;
+    const blob = new Blob([text], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'notepad.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Load content from a .txt file
+  function loadText() {
+    fileInput.click();
+  }
+
+  // When a file is chosen
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        notepad.value = e.target.result;
+      }
+      reader.readAsText(file);
+    }
+  });
+
+  // Clear text area
+  function clearText() {
+    notepad.value = '';
+  }
+
+</script>
+  </body>
+</html>

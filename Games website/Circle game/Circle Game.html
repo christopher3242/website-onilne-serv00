@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <title>Circle Size Game</title>
+    <style>
+  body {
+      font-family: Arial, sans-serif;
+      background-color: #755252;
+      margin: 0;
+      padding: 0;
+  }
+  canvas {
+      background-color: #3c3e4e;
+      border: 2px solid black;
+      display: block;
+      margin: 20px auto;
+  }
+  #score {
+      text-align: center;
+      font-size: 1.5em;
+      color: white;
+  }
+  /* Optional: add a title */
+  h1 {
+      text-align: center;
+      color: white;
+      margin-top: 20px;
+  }
+</style>
+  </head>
+  <body>
+    <h1>Circle games</h1>
+    <div id="score">Score: 0</div>
+    <div align="center"> <canvas id="gameCanvas" width="600"
+        height="400"></canvas> </div>
+    <div align="center">
+      <script src="game.js"></script> <a href="../games.html">exit</a>
+    </div>
+  </body>
+</html>

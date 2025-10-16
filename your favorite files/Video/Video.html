@@ -77,20 +77,20 @@
 <div class="video-container">
   <h1>Custom Video Player</h1>
   <div class="video-number" id="videoNumber">Video 1</div>
-  <video id="videoPlayer" class="video-js my-custom-player vjs-matrix" controls preload="auto" width="600" height="300">
+<video id="videoPlayer" class="video-js my-custom-player vjs-matrix" controls preload="auto" width="600" height="300">
     <source src="video1.mp4" type="video/mp4" />
-    <track kind="subtitles" label="English (USA)" srclang="en" src="subtitles_en.vtt" default="" />
+    <track kind="subtitles" label="English (USA)" srclang="en" src="subtitles_en.vtt" />
+	<track kind="subtitles" label="English (UK)" srclang="en-GB" src="subtitles_uk.vtt" />
+	<track kind="subtitles" label="Italiano" srclang="it" src="subtitles_it.vtt" />
+	<track kind="subtitles" label="Maltese" srclang="mt" src="subtitles_mt.vtt" />
     <track kind="subtitles" label="French" srclang="fr" src="subtitles_fr.vtt" />
-    <track kind="subtitles" label="Italiano" srclang="it" src="subtitles_it.vtt" />
     <track kind="subtitles" label="Deutsch" srclang="de" src="subtitles_de.vtt" />
     <track kind="subtitles" label="Ukrainian" srclang="uk" src="subtitles_ua.vtt" />
-    <track kind="subtitles" label="poland" srclang="pl" src="subtitles_pl.vtt" />
-    <track kind="subtitles" label="English (UK)" srclang="en-GB" src="subtitles_uk.vtt" />
+    <track kind="subtitles" label="Poland" srclang="pl" src="subtitles_pl.vtt" />
     <track kind="subtitles" label="Español" srclang="es" src="subtitles_es.vtt" />
     <track kind="subtitles" label="Português" srclang="pt" src="subtitles_pt.vtt" />
     <track kind="subtitles" label="Türkçe" srclang="tr" src="subtitles_tr.vtt" />
     <track kind="subtitles" label="Japanese" srclang="jp" src="subtitles_jp.vtt" />
-    <track kind="subtitles" label="Maltese" srclang="mt" src="subtitles_mt.vtt" />
     <track kind="subtitles" label="Singapore" srclang="sg" src="subtitles_sg.vtt" />
     <track kind="subtitles" label="China" srclang="cn" src="subtitles_cn.vtt" />
     <track kind="subtitles" label="India" srclang="in" src="subtitles_in.vtt" />
@@ -98,7 +98,26 @@
     <track kind="subtitles" label="Argentina" srclang="ar" src="subtitles_ar.vtt" />
     <track kind="subtitles" label="Finnish" srclang="fi" src="subtitles_fi.vtt" />
     <track kind="subtitles" label="Swedish" srclang="sv" src="subtitles_sv.vtt" />
-  </video>
+    <track kind="subtitles" label="Hungary" srclang="hu" src="subtitles_hu.vtt" />
+    <track kind="subtitles" label="Czechia" srclang="cs" src="subtitles_cs.vtt" />
+    <track kind="subtitles" label="Bulgaria" srclang="bg" src="subtitles_bg.vtt" />
+    <track kind="subtitles" label="Slovakia" srclang="sk" src="subtitles_sk.vtt" />
+    <track kind="subtitles" label="Romania" srclang="ro" src="subtitles_ro.vtt" />
+    <track kind="subtitles" label="Austria" srclang="at" src="subtitles_at.vtt" />
+    <track kind="subtitles" label="Slovenia" srclang="si" src="subtitles_si.vtt" />
+    <track kind="subtitles" label="Croatia" srclang="hr" src="subtitles_hr.vtt" />
+    <track kind="subtitles" label="Serbia" srclang="rs" src="subtitles_rs.vtt" />
+    <track kind="subtitles" label="Greece" srclang="el" src="subtitles_el.vtt" />
+    <track kind="subtitles" label="Belgium" srclang="be" src="subtitles_be.vtt" />
+    <track kind="subtitles" label="Lithuania" srclang="lt" src="subtitles_lt.vtt" />
+    <track kind="subtitles" label="Spain" srclang="es" src="subtitles_es.vtt" />
+    <track kind="subtitles" label="Denmark" srclang="da" src="subtitles_da.vtt" />
+    <track kind="subtitles" label="Estonia" srclang="et" src="subtitles_et.vtt" />
+    <track kind="subtitles" label="Ireland" srclang="ga" src="subtitles_ga.vtt" />
+    <track kind="subtitles" label="Norway" srclang="no" src="subtitles_no.vtt" />
+    <track kind="subtitles" label="France" srclang="fr" src="subtitles_fr.vtt" />
+    <track kind="subtitles" label="Turkey" srclang="tr" src="subtitles_tr.vtt" />	
+</video>
   <div class="button-container">
     <button id="prev" class="hidden" onclick="prevVideo()">Back</button>
     <button id="random" onclick="randomVideo()">Random</button>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar with Schedule &amp; Edit</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #054b8d; /* Blue background */
+        color: #fff; /* Optional: text color for contrast */
+      }
+      h1 {
+        text-align: center;
+      }
+      #currentTime {
+        text-align: center;
+        font-size: 1.2em;
+        margin-bottom: 10px;
+      }
+      #topControls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      #controls {
+        display: flex;
+        align-items: center;
+      }
+      select, button {
+        margin: 0 5px;
+        padding: 5px;
+      }
+      #schedule {
+        margin-top: 20px;
+      }
+      #schedule h2 {
+        margin-bottom: 5px;
+      }
+      #scheduleList {
+        list-style: none;
+        padding: 0;
+      }
+      #scheduleList li {
+        display: flex;
+        align-items: center;
+        padding: 5px;
+        border-bottom: 1px solid #ccc;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+      }
+      .circle {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+      }
+      .task-info {
+        flex: 1;
+      }
+      button {
+        margin-left: 5px;
+        font-size: 0.9em;
+        cursor: pointer;
+      }
+      #addTaskForm {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        max-width: 400px;
+      }
+      #addTaskForm input, #addTaskForm textarea {
+        margin-bottom: 8px;
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+      #calendar {
+        max-width: 700px;
+        margin: 20px auto;
+        background-color: rgba(255,255,255,0.2);
+        padding: 10px;
+        border-radius: 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 0;
+      }
+      td {
+        border: 1px solid #ddd;
+        height: 100px;
+        vertical-align: top;
+        padding: 5px;
+        background-color: #fff;
+        color: #000;
+      }
+      #exitBtn {
+        background-color: #f44336;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        border-radius: 4px;
+      }
+      /* Highlight today's date */
+      .today {
+        font-weight: bold;
+        background-color: #ffffcc;
+      }
+      /* Style for edit overlay */
+      #editOverlay {
+        position: fixed;
+        top: 0; left: 0; right:0; bottom:0;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items:center;
+        justify-content: center;
+        z-index: 999;
+      }
+      #editFormContainer {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      }
+      #editForm input, #editForm textarea {
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 8px;
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+      #editForm button {
+        margin-top: 10px;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      #saveBtn {
+        background-color: #4CAF50;
+        color: white;
+        margin-right: 10px;
+      }
+      #cancelEdit {
+        background-color: #f44336;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Calendar with Schedule &amp; Edit</h1>
+    <a href="../../your%20favorite.html"><button id="exitBtn">Exit</button></a>
+    <div id="currentTime"></div>
+    <div id="controls" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+      <select id="monthSelect"></select>
+      <select id="yearSelect"></select>
+      <button id="generateBtn">Generate Calendar</button>
+      <button id="todayBtn">Today</button>
+    </div>
+    <div id="calendar"></div>
+    <div id="schedule">
+      <h2>Tasks, Events &amp; Appointments</h2>
+      <ul id="scheduleList"></ul>
+      <h3>Add New</h3>
+      <form id="addTaskForm">
+        <input id="taskTitle" placeholder="Title" required type="text" />
+        <textarea id="taskDetails" placeholder="Details" rows="3"></textarea>
+        <input id="taskDate" required type="date" />
+        <input id="taskTime" required type="time" />
+        <button type="submit">Add</button>
+      </form>
+    </div>
+    <!-- Overlay for editing -->
+    <div id="editOverlay">
+      <div id="editFormContainer">
+        <h3>Edit Entry</h3>
+        <form id="editForm">
+          <input id="editTitle" placeholder="Title" required type="text" />
+          <textarea id="editDetails" rows="3" required></textarea>
+          <input id="editDate" required type="date" />
+          <input id="editTime" required type="time" />
+          <button id="saveBtn" type="submit">Save</button>
+          <button type="button" id="cancelEdit">Cancel</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      const monthSelect = document.getElementById('monthSelect');
+      const yearSelect = document.getElementById('yearSelect');
+      const generateBtn = document.getElementById('generateBtn');
+      const currentTimeDiv = document.getElementById('currentTime');
+      const scheduleList = document.getElementById('scheduleList');
+      const addTaskForm = document.getElementById('addTaskForm');
+      const taskTitleInput = document.getElementById('taskTitle');
+      const taskDetailsInput = document.getElementById('taskDetails');
+      const taskDateInput = document.getElementById('taskDate');
+      const taskTimeInput = document.getElementById('taskTime');
+      const calendarDiv = document.getElementById('calendar');
+      const exitBtn = document.getElementById('exitBtn');
+      const todayBtn = document.getElementById('todayBtn');
+
+      const overlay = document.getElementById('editOverlay');
+      const editForm = document.getElementById('editForm');
+      const editTitle = document.getElementById('editTitle');
+      const editDetails = document.getElementById('editDetails');
+      const editDate = document.getElementById('editDate');
+      const editTime = document.getElementById('editTime');
+
+      const cancelEditBtn = document.getElementById('cancelEdit');
+
+      const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+
+      let scheduleItems = [];
+      let currentEditIndex = null;
+
+      // Populate month and year selects
+      function populateMonthSelect() {
+        months.forEach((month, index) => {
+          const option = document.createElement('option');
+          option.value = index;
+          option.text = month;
+          monthSelect.appendChild(option);
+        });
+      }
+      function populateYearSelect() {
+        const currentYear = new Date().getFullYear();
+        for(let y = currentYear -10; y <= currentYear +10; y++) {
+          const option = document.createElement('option');
+          option.value = y;
+          option.text = y;
+          if(y === currentYear) option.selected = true;
+          yearSelect.appendChild(option);
+        }
+      }
+
+      // Generate calendar HTML
+      function generateCalendar() {
+        const selectedMonth = parseInt(monthSelect.value);
+        const selectedYear = parseInt(yearSelect.value);
+        const today = new Date();
+
+        const firstDay = new Date(selectedYear, selectedMonth, 1).getDay();
+        const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+
+        let html = '<table>';
+        html += '<tr>';
+        ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+          html += `<th>${day}</th>`;
+        });
+        html += '</tr>';
+
+        let date = 1;
+        for (let i=0; i<6; i++) {
+          html += '<tr>';
+          for (let j=0; j<7; j++) {
+            if(i===0 && j<firstDay){
+              html += '<td></td>';
+            } else if(date > daysInMonth){
+              html += '<td></td>';
+            } else {
+              const isToday = (selectedYear===today.getFullYear() && selectedMonth===today.getMonth() && date===today.getDate());
+              const classes = isToday ? 'today' : '';
+              const dateStr = `${selectedYear}-${String(selectedMonth+1).padStart(2,'0')}-${String(date).padStart(2,'0')}`;
+              const itemsForDate = scheduleItems.filter(item => item.date === dateStr);
+              const hasItems = itemsForDate.length > 0;
+              const indicator = hasItems ? '<small style="color:red;">●</small>' : '';
+              const titles = itemsForDate.map(item => item.title).join(', ');
+              html += `<td class="${classes}"><div>${date}</div><div title="${titles}">${indicator}</div></td>`;
+              date++;
+            }
+          }
+          html += '</tr>';
+          if (date > daysInMonth) break;
+        }
+        html += '</table>';
+
+        calendarDiv.innerHTML = html;
+      }
+
+      // Show current time
+      function updateTime() {
+        const now = new Date();
+        currentTimeDiv.textContent = 'Current Time: ' + now.toLocaleString();
+      }
+
+      // "Today" button
+      document.getElementById('todayBtn').addEventListener('click', () => {
+        const today = new Date();
+        monthSelect.value = today.getMonth();
+        yearSelect.value = today.getFullYear();
+        generateCalendar();
+      });
+
+      // Populate selects
+      populateMonthSelect();
+      populateYearSelect();
+      generateCalendar();
+      updateTime();
+      setInterval(updateTime, 1000);
+      document.getElementById('generateBtn').addEventListener('click', generateCalendar);
+
+      // Add task
+      addTaskForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const title = taskTitleInput.value.trim();
+        const details = taskDetailsInput.value.trim();
+        const date = taskDateInput.value;
+        const time = taskTimeInput.value;
+        if(title && date && time){
+          scheduleItems.push({title, details, date, time});
+          addTaskForm.reset();
+          generateCalendar();
+          displaySchedule();
+        }
+      });
+
+      // Display schedule list with edit and delete
+      function displaySchedule() {
+        scheduleList.innerHTML = '';
+        scheduleItems.sort((a,b)=>{
+          if(a.date===b.date) return a.time.localeCompare(b.time);
+          return a.date.localeCompare(b.date);
+        });
+        scheduleItems.forEach((item, index) => {
+          const hue = (item.title.charCodeAt(0) * 137) % 360;
+          const color = `hsl(${hue},70%,50%)`;
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <span class="circle" style="background-color:${color};"></span>
+            <div class="task-info">
+              <strong>${item.title}</strong> (${item.date} ${item.time})<br/>
+              ${item.details}
+            </div>
+            <button data-index="${index}" class="editBtn">Edit</button>
+            <button data-index="${index}" class="deleteBtn">Delete</button>
+          `;
+          scheduleList.appendChild(li);
+        });
+      }
+
+      // Edit & delete handlers
+      scheduleList.addEventListener('click', e => {
+        if(e.target.classList.contains('editBtn')){
+          const idx = parseInt(e.target.dataset.index);
+          openEditForm(idx);
+        } else if(e.target.classList.contains('deleteBtn')){
+          const idx = parseInt(e.target.dataset.index);
+          scheduleItems.splice(idx,1);
+          displaySchedule();
+          generateCalendar();
+        }
+      });
+
+      // Open edit form
+      function openEditForm(index) {
+        const item = scheduleItems[index];
+        document.getElementById('editTitle').value = item.title;
+        document.getElementById('editDetails').value = item.details;
+        document.getElementById('editDate').value = item.date;
+        document.getElementById('editTime').value = item.time;
+        currentEditIndex = index;
+        document.getElementById('editOverlay').style.display = 'flex';
+      }
+
+      // Cancel edit
+      document.getElementById('cancelEdit').addEventListener('click', () => {
+        document.getElementById('editOverlay').style.display = 'none';
+      });
+
+      // Save edit
+      document.getElementById('editForm').addEventListener('submit', e => {
+        e.preventDefault();
+        if(currentEditIndex !== null) {
+          scheduleItems[currentEditIndex] = {
+            title: document.getElementById('editTitle').value.trim(),
+            details: document.getElementById('editDetails').value.trim(),
+            date: document.getElementById('editDate').value,
+            time: document.getElementById('editTime').value
+          };
+          document.getElementById('editOverlay').style.display = 'none';
+          displaySchedule();
+          generateCalendar();
+        }
+      });
+
+      // Initialize display
+      displaySchedule();
+    </script>
+  </body>
+</html>
