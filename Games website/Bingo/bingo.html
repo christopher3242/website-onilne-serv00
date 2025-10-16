@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Bingo Game</title>
-    <style>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bingo Game</title>
+<style>
   body {
     font-family: Arial, sans-serif;
     background: #f0f8ff;
@@ -75,16 +72,18 @@
     font-size: 1.2em;
   }
 </style>
-  </head>
-  <body>
-    <h1>Bingo Game</h1>
-    <div class="bingo-board" id="bingoBoard"></div>
-    <div class="buttons"> <button id="diceBtn">🎲 Roll Dice</button> <button
-        id="bingoBtn">✅ Bingo Win</button> <a href="../games.html"><button
-          id="exitBtn">🚪 Exit</button></a>
-    </div>
-    <div id="dice-result"></div>
-    <script>
+</head>
+<body>
+<h1>Bingo Game</h1>
+<div class="bingo-board" id="bingoBoard"></div>
+<div class="buttons">
+  <button id="diceBtn">🎲 Roll Dice</button>
+  <button id="bingoBtn">✅ Bingo Win</button>
+  <button id="restartBtn">🔄 Restart</button>
+  <a href="../games.html"><button id="exitBtn">🚪 Exit</button></a>
+</div>
+<div id="dice-result"></div>
+<script>
   const totalNumbers = 99;
   const boardSize = 25;
   const numbers = Array.from({length: totalNumbers}, (_, i) => i + 1);
@@ -93,16 +92,15 @@
   const bingoBoard = document.getElementById('bingoBoard');
   const diceBtn = document.getElementById('diceBtn');
   const bingoBtn = document.getElementById('bingoBtn');
-  const exitBtn = document.getElementById('exitBtn');
+  const restartBtn = document.getElementById('restartBtn');
   const diceResultDiv = document.getElementById('dice-result');
 
-  // Generate Bingo Board
   function generateBoard() {
-    // Shuffle first 99 numbers and pick 25
+    // Shuffle numbers and pick 25
     const shuffled = [...numbers].sort(() => 0.5 - Math.random());
     selectedNumbers = shuffled.slice(0, boardSize);
     bingoBoard.innerHTML = '';
-    selectedNumbers.forEach((num, index) => {
+    selectedNumbers.forEach((num) => {
       const cell = document.createElement('div');
       cell.className = 'cell';
       cell.textContent = num;
@@ -113,6 +111,7 @@
     });
   }
 
+  // Initialize board
   generateBoard();
 
   // Roll dice
@@ -121,7 +120,7 @@
     diceResultDiv.textContent = `Dice rolled: ${roll}`;
   });
 
-  // Check for Bingo
+  // Check Bingo
   bingoBtn.addEventListener('click', () => {
     const cells = document.querySelectorAll('.cell');
     const markedCells = Array.from(cells).filter(c => c.classList.contains('marked'));
@@ -132,6 +131,12 @@
     }
   });
 
+  // Restart game
+  restartBtn.addEventListener('click', () => {
+    generateBoard();
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('marked'));
+    diceResultDiv.textContent = '';
+  });
 </script>
-  </body>
+</body>
 </html>
