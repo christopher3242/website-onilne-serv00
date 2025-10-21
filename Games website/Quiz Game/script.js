@@ -54,6 +54,26 @@ const questions = [
             { text: 'Sex', correct: false }
         ]
         
+    },
+    {
+        question: 'What are diddy ?',
+        answers: [
+            { text: 'oil', correct: true },
+            { text: 'Hit and run', correct: false },
+            { text: 'bro', correct: false },
+            { text: 'No care', correct: false }
+        ]
+        
+    },
+    {
+        question: 'What are room night ?',
+        answers: [
+            { text: 'Lol', correct: false },
+            { text: 'L + bozo', correct: false },
+            { text: 'sex and sleep', correct: true },
+            { text: 'shut up', correct: false }
+        ]
+        
     }
 ];
 

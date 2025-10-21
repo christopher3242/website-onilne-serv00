@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,
       initial-scale=1.0">
-    <title>Minesweeper </title>
+    <title>Minesweeper</title>
     <style>
   body {
     font-family: Arial, sans-serif;
@@ -23,18 +23,22 @@
   #controls {
     margin-bottom: 10px;
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     align-items: center;
+    justify-content: center;
   }
   #game {
     display: grid;
-    grid-template-columns: repeat(10, 30px);
-    grid-template-rows: repeat(10, 30px);
-    gap: 2px;
+    grid-template-columns: repeat(15, 40px);
+    grid-template-rows: repeat(10, 40px);
+    gap: 4px;
+    width: max-content;
+    justify-content: center;
   }
   .cell {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     background-color: #ccc;
     display: flex;
     align-items: center;
@@ -42,8 +46,13 @@
     font-weight: bold;
     cursor: pointer;
     user-select: none;
-    font-size: 14px;
-    border: 1px solid #999;
+    font-size: 16px;
+    border: 2px solid #999;
+    border-radius: 4px;
+    transition: background-color 0.2s, transform 0.1s;
+  }
+  .cell:hover {
+    background-color: #bbb;
   }
   .cell.revealed {
     background-color: #e0e0e0;
@@ -54,16 +63,28 @@
   }
   #status {
     margin-top: 15px;
-    font-size: 18px;
+    font-size: 20px;
+    font-weight: bold;
   }
   #flagsRemaining {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
   }
   #timer {
     margin-left: 20px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
+  }
+  /* Responsive adjustments */
+  @media(max-width: 700px){
+    #game {
+      grid-template-columns: repeat(15, 30px);
+    }
+    .cell {
+      width: 30px;
+      height: 30px;
+      font-size: 14px;
+    }
   }
 </style>
   </head>
@@ -72,10 +93,12 @@
     <div id="controls"> <label> <input id="flagMode" checked="checked"
           type="checkbox"> Flag Mode </label> <button id="showAnswer">Show
         Answer</button> <button id="reset">Reset</button> <a
-        moz-do-not-send="true" href="../games.html"><button id="exit">Exit</button></a>
-      <div id="timer">Time: 0s</div>
-    </div>
-    <div> Flags Remaining: <span id="flagsRemaining"></span>
+        href="../Games.html"><button id="exit" aria-label="Exit">Exit</button></a>
+      <div style="margin-left:20px;"> Flags Remaining: <span
+          id="flagsRemaining"></span>
+        <div style="display:inline-block; margin-left:20px;">Time: <span
+            id="timeDisplay">0s</span></div>
+      </div>
     </div>
     <div id="game"></div>
     <div id="status"></div>
@@ -91,19 +114,22 @@ const showAnswerButton = document.getElementById('showAnswer');
 const exitButton = document.getElementById('exit');
 const flagModeCheckbox = document.getElementById('flagMode');
 const flagsRemainingSpan = document.getElementById('flagsRemaining');
-const timerDiv = document.getElementById('timer');
+const timerSpan = document.getElementById('timeDisplay');
 
 let board = [];
 let gameOver = false;
 let cellsRevealed = 0;
-let flagMode = true; // true: flag, false: question mark
+let flagMode = true;
 let flagsRemaining = MINES_COUNT;
 let timerInterval = null;
 let secondsElapsed = 0;
 
-// Update flags remaining display
+// Update display
 function updateFlagsRemaining() {
   flagsRemainingSpan.textContent = flagsRemaining;
+}
+function updateTimer() {
+  timerSpan.textContent = `${secondsElapsed}s`;
 }
 
 // Initialize game
@@ -115,7 +141,7 @@ function initGame() {
   flagsRemaining = MINES_COUNT;
   secondsElapsed = 0;
   clearInterval(timerInterval);
-  timerDiv.textContent = 'Time: 0s';
+  updateTimer();
   statusDiv.textContent = '';
 
   updateFlagsRemaining();
@@ -162,15 +188,25 @@ function initGame() {
     }
   }
 
-  // Create grid in DOM
+  // Create DOM cells
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       const cellDiv = document.createElement('div');
       cellDiv.className = 'cell';
       cellDiv.dataset.row = r;
       cellDiv.dataset.col = c;
+      cellDiv.setAttribute('aria-label', `Cell ${r + 1}, ${c + 1}`);
       cellDiv.addEventListener('click', handleCellClick);
       cellDiv.addEventListener('contextmenu', handleCellRightClick);
+      // Support touch events
+      cellDiv.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handleCellClick.call(cellDiv, e);
+      });
+      cellDiv.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        handleCellRightClick.call(cellDiv, e);
+      });
       gameContainer.appendChild(cellDiv);
       board[r][c].element = cellDiv;
     }
@@ -179,7 +215,7 @@ function initGame() {
   // Start timer
   timerInterval = setInterval(() => {
     secondsElapsed++;
-    timerDiv.textContent = `Time: ${secondsElapsed}s`;
+    updateTimer();
   }, 1000);
 }
 
@@ -199,7 +235,7 @@ function countNeighborMines(r, c) {
   return count;
 }
 
-// Handle left click
+// Handle cell click
 function handleCellClick(e) {
   if (gameOver) return;
   const r = parseInt(this.dataset.row);
@@ -208,7 +244,7 @@ function handleCellClick(e) {
   checkWin();
 }
 
-// Handle right click (flag/question toggle)
+// Handle right click / long press
 function handleCellRightClick(e) {
   e.preventDefault();
   if (gameOver) return;
@@ -221,32 +257,23 @@ function handleCellRightClick(e) {
 function toggleFlagQuestion(r, c) {
   const cell = board[r][c];
   if (cell.revealed) return;
-
   if (flagMode) {
-    // Flag mode
     if (cell.flagged) {
-      // Remove flag
       cell.flagged = false;
       flagsRemaining++;
       cell.element.textContent = '';
-    } else {
-      // Add flag if remaining
-      if (flagsRemaining > 0) {
-        cell.flagged = true;
-        flagsRemaining--;
-        cell.element.textContent = '🚩';
-      }
+    } else if (flagsRemaining > 0) {
+      cell.flagged = true;
+      flagsRemaining--;
+      cell.element.textContent = '🚩';
     }
   } else {
-    // Question mark mode
     if (cell.question) {
-      // Remove question
       cell.question = false;
       cell.element.textContent = '';
     } else {
-      // Add question mark
       cell.question = true;
-      cell.flagged = false; // clear flag if any
+      cell.flagged = false;
       cell.element.textContent = '?';
     }
   }
@@ -278,7 +305,7 @@ function revealCell(r, c) {
   }
 }
 
-// Reveal neighboring cells recursively
+// Reveal neighbors recursively
 function revealNeighbors(r, c) {
   for (let dr = -1; dr <= 1; dr++) {
     for (let dc = -1; dc <= 1; dc++) {
@@ -321,10 +348,9 @@ function checkWin() {
 }
 
 // Show answer temporarily
-showAnswerButton.addEventListener('click', () => {
+showAnswerButton.onclick = () => {
   revealAllMines();
   setTimeout(() => {
-    // Hide mines again
     for (let r = 0; r < ROWS; r++) {
       for (let c = 0; c < COLS; c++) {
         const cell = board[r][c];
@@ -335,21 +361,18 @@ showAnswerButton.addEventListener('click', () => {
       }
     }
   }, 2000);
-});
+};
 
-// Reset button
-resetButton.addEventListener('click', initGame);
+// Reset game
+resetButton.onclick = initGame;
 
-// Exit button
-exitButton.addEventListener('click', () => {
-});
 
-// Toggle mode between flag and question
-flagModeCheckbox.addEventListener('change', () => {
+// Mode toggle
+flagModeCheckbox.onchange = () => {
   flagMode = flagModeCheckbox.checked;
-});
+};
 
-// Start game on load
+// Start game
 initGame();
 </script>
   </body>

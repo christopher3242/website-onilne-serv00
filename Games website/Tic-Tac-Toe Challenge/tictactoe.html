@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Tic Tac Toe</h1>
+
+      <!-- Mode selection -->
+      <h2>Select Mode:</h2>
+      <label>
+        <input type="radio" name="mode" value="2player" checked /> 2 Player
+      </label>
+      <label>
+        <input type="radio" name="mode" value="cpu" /> Play vs CPU
+      </label>
+
+      <div id="board" class="board">
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+      </div>
+      <button id="restartButton" class="restart-button">Restart</button>
+      <a href="../Games.html"><button id="exitButton" class="exit-button">Exit</button></a>
+      <div class="message" id="message"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

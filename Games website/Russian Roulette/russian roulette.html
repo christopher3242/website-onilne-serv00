@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Russian Roulette Game</title>
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <div class="container">
-      <h1>Russian Roulette</h1>
-      <p>Spin the cylinder, then choose a chamber (1-6):</p>
-      <button id="spinButton">Spin Cylinder</button> <input
-        id="selectedChamber" min="1" max="6" placeholder="Choose 1-6"
-        type="number"> <button id="triggerButton">Pull the Trigger!</button>
-      <button id="resetButton">Reset</button> <a moz-do-not-send="true"
-        href="../games.html"><button id="exitButton">Exit</button></a>
-      <div id="result" class="result"></div>
-    </div>
-    <script src="script.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Russian Roulette Game</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Russian Roulette</h1>
+    <p>Spin the cylinder, then choose a chamber (1-6):</p>
+    <button id="spinButton">Spin Cylinder</button>
+    <input id="selectedChamber" min="1" max="6" placeholder="Choose 1-6" type="number" />
+    <button id="triggerButton">Pull the Trigger!</button>
+    <button id="resetButton">Reset</button>
+    <a href="../games.html" style="text-decoration:none;"><button id="exitButton">Exit</button></a>
+    <div id="result" class="result"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
 </html>

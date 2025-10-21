@@ -1,69 +1,75 @@
 body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-family: Arial, sans-serif;
-    background-color: rgb(209, 242, 255);
-    margin: 0;
-    padding: 20px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  background-color: #f0f0f0;
 }
 
 h1 {
-    margin-bottom: 20px;
-}
-
-.game-board {
-    display: grid;
-    grid-template-columns: repeat(4, 100px);
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.card {
-    width: 100px;
-    height: 100px;
-    background-color: rgb(76, 226, 71);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5px;
-    cursor: pointer;
-    position: relative;
-    transition: opacity 0.3s;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.card img {
-    width: 100%;
-    height: 100%;
-    display: none;
-    border-radius: 5px;
-}
-
-.card.flipped img {
-    display: block;
-}
-
-.card.matched {
-    background-color: #2e6cf3;
-    pointer-events: none;
-    opacity: 0.6;
-}
-
-.game-board {
-    display: grid;
-    grid-template-columns: repeat(5, 100px);
-    gap: 10px;
-    margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 #score-display {
-    font-size: 24px;
-    margin-bottom: 20px;
-    font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 20px;
 }
-#win-message {
-    font-size: 24px;
-    color: green;
-    margin-top: 20px;
+
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(5, 100px);
+  grid-gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.card {
+  width: 100px;
+  height: 150px;
+  background-color: #0c645d;
+  cursor: pointer;
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 2px 2px 6px rgba(53, 208, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.card img {
+  width: 80%;
+  height: auto;
+  display: none;
+  border-radius: 4px;
+}
+
+.card.flipped img {
+  display: block;
+}
+
+.card.matched {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
 }

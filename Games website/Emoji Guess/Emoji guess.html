@@ -62,7 +62,6 @@
   #exit-btn {
     background-color: #f44336; /* Red for exit */
     color: white;
-    display: inline-block;
   }
   #exit-btn a {
     color: white;
@@ -103,7 +102,18 @@ const emojiData = [
   { emoji: '🏀', answer: 'Basketball' },
   { emoji: '✈️', answer: 'Airplane' },
   { emoji: '🎂', answer: 'Cake' },
-  { emoji: '🎸', answer: 'Guitar' }
+  { emoji: '🎸', answer: 'Guitar' },
+  { emoji: '🚀', answer: 'Rocket' },
+  { emoji: '🎩', answer: 'Hat' },
+  { emoji: '🍕', answer: 'Pizza' },
+  { emoji: '🏖️', answer: 'Beach' },
+  { emoji: '🐱', answer: 'Cat' },
+  { emoji: '🎮', answer: 'Video Game' },
+  { emoji: '🌟', answer: 'Star' },
+  { emoji: '🍉', answer: 'Watermelon' },
+  { emoji: '🚲', answer: 'Bicycle' },
+  { emoji: '🎻', answer: 'Violin' },
+  { emoji: '🦄', answer: 'Unicorn' }
 ];
 
 let currentQuestion = {};
@@ -157,11 +167,12 @@ function loadQuestion() {
 function selectAnswer(selected) {
   if (selected === currentQuestion.answer) {
     resultDiv.textContent = 'Correct! 🎉';
+    score++; // Increase score by 1 for correct answer
+    scoreDiv.textContent = `Score: ${score}`;
   } else {
     wrongGuesses++;
     resultDiv.textContent = `Wrong! The correct answer is "${currentQuestion.answer}".`;
   }
-  scoreDiv.textContent = `Score: ${score}`;
   // Disable all choices
   Array.from(choicesContainer.children).forEach(btn => {
     btn.disabled = true;

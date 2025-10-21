@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,
       initial-scale=1.0">
-    <title>Counting Game - 100 Goals</title>
+    <title>Counting Game - 150 Goals</title>
     <style>
   body {
     font-family: Arial, sans-serif;
@@ -37,7 +37,7 @@
 </style>
   </head>
   <body>
-    <h1>Counting Game - Reach 100 Goals!</h1>
+    <h1>Counting Game - Reach 150 Goals!</h1>
     <div id="countDisplay">0</div>
     <div id="message"></div>
     <button id="countBtn">Count</button>
@@ -45,7 +45,7 @@
     <a href="../games.html"><button id="exitBtn">Exit</button></a>
     <script>
   let count = 0;
-  const target = 100;
+  const target = 150;
   const countDisplay = document.getElementById('countDisplay');
   const messageDiv = document.getElementById('message');
 
@@ -56,7 +56,7 @@
   function updateDisplay() {
     countDisplay.textContent = count;
     if (count === target) {
-      messageDiv.innerHTML = '<span id="goodJob">Good job! You reached 100!</span>';
+      messageDiv.innerHTML = '<span id="goodJob">Good job! You reached 150!</span>';
       countBtn.disabled = true;
     }
   }

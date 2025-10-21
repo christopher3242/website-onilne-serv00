@@ -1,66 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Color Guessing Game (Delayed Choices)</title>
     <style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #f0f0f0;
-    margin: 0;
-    padding: 20px;
-  }
-  h1 {
-    margin-bottom: 10px;
-  }
-  #colorCircle {
-    width: 150px;
-    height: 150px;
-    margin: 20px auto;
-    border-radius: 50%;
-    border: 2px solid #333;
-  }
-  #colorName {
-    font-size: 1.5em;
-    margin-top: 10px;
-  }
-  .buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-  }
-  button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: background-color 0.2s;
-  }
-  button:hover {
-    background-color: #ddd;
-  }
-  #message {
-    margin-top: 20px;
-    font-size: 1.2em;
-  }
-  #exitBtn, #resetBtn, #answerBtn {
-    margin-top: 20px;
-    padding: 8px 16px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-</style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+      }
+      h1 {
+        margin-bottom: 10px;
+      }
+      #colorCircle {
+        width: 150px;
+        height: 150px;
+        margin: 20px auto;
+        border-radius: 50%;
+        border: 2px solid #333;
+      }
+      #colorName {
+        font-size: 1.5em;
+        margin-top: 10px;
+      }
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.2s;
+      }
+      button:hover {
+        background-color: #ddd;
+      }
+      #message {
+        margin-top: 20px;
+        font-size: 1.2em;
+      }
+      #exitBtn,
+      #resetBtn,
+      #answerBtn {
+        margin-top: 20px;
+        padding: 8px 16px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+    </style>
   </head>
   <body>
     <h1>Guess the Color Name!</h1>
@@ -73,173 +73,161 @@
     <!-- Renamed for initial state -->
     <button id="answerBtn" style="display: none;">Answer</button>
     <!-- Initially hidden -->
-    <a moz-do-not-send="true" href="../games.html"><button id="exitBtn">Exit</button></a>
+    <a moz-do-not-send="true" href="../games.html"
+      ><button id="exitBtn">Exit</button></a
+    >
     <script>
-  const colorCircle = document.getElementById('colorCircle');
-  const colorNameDiv = document.getElementById('colorName');
-  const choicesDiv = document.getElementById('choices');
-  const messageDiv = document.getElementById('message');
-  const resetBtn = document.getElementById('resetBtn');
-  const exitBtn = document.getElementById('exitBtn');
-  const answerBtn = document.getElementById('answerBtn');
+      const colorCircle = document.getElementById('colorCircle');
+      const colorNameDiv = document.getElementById('colorName');
+      const choicesDiv = document.getElementById('choices');
+      const messageDiv = document.getElementById('message');
+      const resetBtn = document.getElementById('resetBtn');
+      const exitBtn = document.getElementById('exitBtn');
+      const answerBtn = document.getElementById('answerBtn');
 
-  const colorList = [
-    { name: 'Red', hex: '#FF0000' },
-    { name: 'Green', hex: '#008000' },
-    { name: 'Blue', hex: '#0000FF' },
-    { name: 'Yellow', hex: '#FFFF00' },
-    { name: 'Orange', hex: '#FFA500' },
-    { name: 'Purple', hex: '#800080' },
-    { name: 'Pink', hex: '#FFC0CB' },
-    { name: 'Brown', hex: '#A52A2A' },
-    { name: 'Black', hex: '#000000' },
-    { name: 'White', hex: '#FFFFFF' },
-    { name: 'Gray', hex: '#808080' },
-    { name: 'Cyan', hex: '#00FFFF' },
-    { name: 'Magenta', hex: '#FF00FF' },
-    { name: 'Lime', hex: '#00FF00' },
-    { name: 'Maroon', hex: '#800000' },
-    { name: 'Navy', hex: '#000080' },
-    { name: 'Olive', hex: '#808000' },
-    { name: 'Teal', hex: '#008080' },
-    { name: 'Coral', hex: '#FF7F50' },
-    { name: 'Turquoise', hex: '#40E0D0' },
-    { name: 'Salmon', hex: '#FA8072' },
-    { name: 'Khaki', hex: '#F0E68C' },
-    { name: 'Violet', hex: '#EE82EE' },
-    { name: 'Gold', hex: '#FFD700' },
-    { name: 'Chocolate', hex: '#D2691E' },
-    { name: 'Crimson', hex: '#DC143C' },
-    { name: 'Indigo', hex: '#4B0082' },
-    { name: 'Lavender', hex: '#E6E6FA' },
-    { name: 'Plum', hex: '#DDA0DD' },
-    // Added 10 more colors
-    { name: 'Silver', hex: '#C0C0C0' },
-    { name: 'SkyBlue', hex: '#87CEEB' },
-    { name: 'SteelBlue', hex: '#4682B4' },
-    { name: 'DarkGreen', hex: '#006400' },
-    { name: 'DarkOrange', hex: '#FF8C00' },
-    { name: 'IndianRed', hex: '#CD5C5C' },
-    { name: 'DarkMagenta', hex: '#8B008B' },
-    { name: 'Peru', hex: '#CD853F' },
-    { name: 'SlateGray', hex: '#708090' },
-    { name: 'ForestGreen', hex: '#228B22' }
-  ];
+      const colorList = [
+        { name: 'Red', hex: '#FF0000' },
+        { name: 'Green', hex: '#008000' },
+        { name: 'Blue', hex: '#0000FF' },
+        { name: 'Yellow', hex: '#FFFF00' },
+        { name: 'Orange', hex: '#FFA500' },
+        { name: 'Purple', hex: '#800080' },
+        { name: 'Pink', hex: '#FFC0CB' },
+        { name: 'Brown', hex: '#A52A2A' },
+        { name: 'Black', hex: '#000000' },
+        { name: 'White', hex: '#FFFFFF' },
+        { name: 'Gray', hex: '#808080' },
+        { name: 'Cyan', hex: '#00FFFF' },
+        { name: 'Magenta', hex: '#FF00FF' },
+        { name: 'Lime', hex: '#00FF00' },
+        { name: 'Maroon', hex: '#800000' },
+        { name: 'Navy', hex: '#000080' },
+        { name: 'Olive', hex: '#808000' },
+        { name: 'Teal', hex: '#008080' },
+        { name: 'Coral', hex: '#FF7F50' },
+        { name: 'Turquoise', hex: '#40E0D0' },
+        { name: 'Salmon', hex: '#FA8072' },
+        { name: 'Khaki', hex: '#F0E68C' },
+        { name: 'Violet', hex: '#EE82EE' },
+        { name: 'Gold', hex: '#FFD700' },
+        { name: 'Chocolate', hex: '#D2691E' },
+        { name: 'Crimson', hex: '#DC143C' },
+        { name: 'Indigo', hex: '#4B0082' },
+        { name: 'Lavender', hex: '#E6E6FA' },
+        { name: 'Plum', hex: '#DDA0DD' },
+        { name: 'Silver', hex: '#C0C0C0' },
+        { name: 'SkyBlue', hex: '#87CEEB' },
+        { name: 'SteelBlue', hex: '#4682B4' },
+        { name: 'DarkGreen', hex: '#006400' },
+        { name: 'DarkOrange', hex: '#FF8C00' },
+        { name: 'IndianRed', hex: '#CD5C5C' },
+        { name: 'DarkMagenta', hex: '#8B008B' },
+        { name: 'Peru', hex: '#CD853F' },
+        { name: 'SlateGray', hex: '#708090' },
+        { name: 'ForestGreen', hex: '#228B22' },
+        // 10 additional random colors
+        { name: 'CoralPink', hex: '#F88379' },
+        { name: 'DeepSkyBlue', hex: '#00BFFF' },
+        { name: 'SpringGreen', hex: '#00FF7F' },
+        { name: 'DarkViolet', hex: '#9400D3' },
+        { name: 'LightSalmon', hex: '#FFA07A' },
+        { name: 'Chocolate', hex: '#D2691E' },
+        { name: 'RoyalBlue', hex: '#4169E1' },
+        { name: 'DarkSlateGray', hex: '#2F4F4F' },
+        { name: 'RosyBrown', hex: '#BC8F8F' },
+        { name: 'MediumSlateBlue', hex: '#7B68EE' }
+      ];
 
-  let correctColor = null;
-  let options = [];
-  let answerTimeoutId = null;
+      let correctColor = null;
+      let options = [];
+      let answerTimeoutId = null;
 
-  function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
-  }
-
-  function setupNewRound() {
-    // Clear previous answer timeout
-    if (answerTimeoutId !== null) {
-      clearTimeout(answerTimeoutId);
-      answerTimeoutId = null;
-    }
-
-    messageDiv.textContent = '';
-    choicesDiv.innerHTML = ''; // Clear previous options
-    choicesDiv.style.display = 'none'; // Hide choices initially
-    answerBtn.style.display = 'none'; // Hide answer button initially
-
-    // Pick a random color
-    correctColor = colorList[getRandomInt(colorList.length)];
-
-    // Set circle background
-    colorCircle.style.backgroundColor = correctColor.hex;
-    colorNameDiv.textContent = 'Look at the color. Click "Start Game" to see the choices.';
-
-    // Rename the button for the starting state
-    resetBtn.textContent = 'Start Game';
-  }
-
-  function startGameRound() {
-     // Clear previous answer timeout if any
-    if (answerTimeoutId !== null) {
-      clearTimeout(answerTimeoutId);
-      answerTimeoutId = null;
-    }
-
-    messageDiv.textContent = '';
-    colorNameDiv.textContent = 'What is this color?';
-    choicesDiv.style.display = 'flex'; // Show choices
-    answerBtn.style.display = 'inline-block'; // Show answer button
-
-    // Generate options
-    options = [correctColor]; // Ensure the correct color is always included
-    while (options.length < 4) {
-      const randomColor = colorList[getRandomInt(colorList.length)];
-      if (!options.some(c => c.name === randomColor.name)) {
-        options.push(randomColor);
+      function getRandomInt(max) {
+        return Math.floor(Math.random() * max);
       }
-    }
 
-    // Shuffle options
-    for (let i = options.length -1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [options[i], options[j]] = [options[j], options[i]];
-    }
+      function setupNewRound() {
+        if (answerTimeoutId !== null) {
+          clearTimeout(answerTimeoutId);
+          answerTimeoutId = null;
+        }
+        messageDiv.textContent = '';
+        choicesDiv.innerHTML = '';
+        choicesDiv.style.display = 'none';
+        answerBtn.style.display = 'none';
 
-    // Create buttons
-    choicesDiv.innerHTML = ''; // Clear any previous buttons
-    options.forEach(option => {
-      const btn = document.createElement('button');
-      btn.textContent = option.name;
-      btn.onclick = () => {
-        if (option.name === correctColor.name) {
-          messageDiv.textContent = 'Correct! 🎉 Click "Play Again" for a new color.';
-          choicesDiv.style.display = 'none'; // Hide choices after correct guess
-          answerBtn.style.display = 'none'; // Hide answer button after correct guess
-          resetBtn.textContent = 'Play Again'; // Change button text
+        correctColor = colorList[getRandomInt(colorList.length)];
+        colorCircle.style.backgroundColor = correctColor.hex;
+        colorNameDiv.textContent =
+          'Color Name'; // Reset to default prompt
+
+        resetBtn.textContent = 'Start Game';
+      }
+
+      function startGameRound() {
+        if (answerTimeoutId !== null) {
+          clearTimeout(answerTimeoutId);
+          answerTimeoutId = null;
+        }
+        messageDiv.textContent = '';
+        colorNameDiv.textContent = 'What is this color?';
+        choicesDiv.style.display = 'flex';
+        answerBtn.style.display = 'inline-block';
+
+        options = [correctColor];
+        while (options.length < 4) {
+          const randomColor = colorList[getRandomInt(colorList.length)];
+          if (!options.some(c => c.name === randomColor.name)) {
+            options.push(randomColor);
+          }
+        }
+
+        for (let i = options.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [options[i], options[j]] = [options[j], options[i]];
+        }
+
+        choicesDiv.innerHTML = '';
+        options.forEach(option => {
+          const btn = document.createElement('button');
+          btn.textContent = option.name;
+          btn.onclick = () => {
+            if (option.name === correctColor.name) {
+              messageDiv.textContent =
+                'Correct! 🎉 Click "Play Again" for a new color.';
+              choicesDiv.style.display = 'none';
+              answerBtn.style.display = 'none';
+              resetBtn.textContent = 'Play Again';
+            } else {
+              messageDiv.textContent = 'Try Again!';
+            }
+          };
+          choicesDiv.appendChild(btn);
+        });
+
+        resetBtn.textContent = 'Play Again';
+      }
+
+      resetBtn.onclick = () => {
+        if (resetBtn.textContent === 'Start Game') {
+          startGameRound();
         } else {
-          messageDiv.textContent = 'Try Again!';
+          setupNewRound();
         }
       };
-      choicesDiv.appendChild(btn);
-    });
 
-    // Change the button text to "Play Again" after starting the round
-    resetBtn.textContent = 'Play Again';
-  }
+      answerBtn.onclick = () => {
+        colorNameDiv.textContent = correctColor.name;
+        if (answerTimeoutId !== null) {
+          clearTimeout(answerTimeoutId);
+        }
+        answerTimeoutId = setTimeout(() => {
+          colorNameDiv.textContent = 'What is this color?';
+          answerTimeoutId = null;
+        }, 2000);
+      };
 
-  // Handle the "Start Game" / "Play Again" button click
-  resetBtn.onclick = () => {
-    if (resetBtn.textContent === 'Start Game') {
-      startGameRound();
-    } else {
-      setupNewRound(); // Go back to the initial state for a new round
-    }
-  };
-
-  // Exit functionality
-  exitBtn.onclick = () => {
-    document.body.innerHTML = '<h2>Thanks for playing!</h2>';
-  };
-
-  // Show answer for 2 seconds
-  answerBtn.onclick = () => {
-    // Display the correct color name
-    colorNameDiv.textContent = correctColor.name;
-
-    // Clear previous timeout if exists
-    if (answerTimeoutId !== null) {
-      clearTimeout(answerTimeoutId);
-    }
-
-    // Hide after 2 seconds
-    answerTimeoutId = setTimeout(() => {
-      // Reset to default prompt
-      colorNameDiv.textContent = 'What is this color?';
-      answerTimeoutId = null;
-    }, 2000);
-  };
-
-  // Initialize the game in the setup state
-  setupNewRound();
-</script>
+      setupNewRound();
+    </script>
   </body>
 </html>
