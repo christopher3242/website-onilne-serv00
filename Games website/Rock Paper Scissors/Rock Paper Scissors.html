@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,
       initial-scale=1.0">
-    <title>Rock Paper Scissors</title>
+    <title>Rock Paper Scissors with Countdown</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
     <div class="container">
       <h1>Rock Paper Scissors</h1>
-      <div class="choices"> <button class="choice" id="rock">Rock</button>
-        <button class="choice" id="paper">Paper</button> <button
-          class="choice" id="scissors">Scissors</button> </div>
-      <div class="result">
+      <!-- Countdown Display -->
+      <div id="countdown">3</div>
+      <!-- Choice Buttons -->
+      <div id="choices" class="choices"> <button class="choice"
+          id="rock">Rock</button> <button class="choice" id="paper">Paper</button>
+        <button class="choice" id="scissors">Scissors</button> </div>
+      <!-- Results Display -->
+      <div id="result" class="result">
         <p id="message"></p>
         <p id="computer-choice"></p>
       </div>
-      <button id="reset" style="display:none;">Play Again</button> <a
-        moz-do-not-send="true" href="../games.html"><button id="exit">Exit</button></a>
+      <!-- Reset Button --> <button id="reset" style="display:none;">Play
+        Again</button>
+      <!-- Exit Button --> <a href="../games.html"><button id="exit">Exit</button></a>
     </div>
     <script src="script.js"></script>
   </body>

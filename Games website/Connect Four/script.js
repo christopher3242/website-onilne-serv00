@@ -6,108 +6,133 @@ let isGameActive = true;
 
 const boardElement = document.getElementById('board');
 const restartButton = document.getElementById('restart');
+const exitButton = document.getElementById('exit');
 
 // Create the initial board
 function createBoard() {
-    boardElement.innerHTML = '';
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < columns; col++) {
-            const cell = document.createElement('div');
-            cell.classList.add('cell');
-            cell.dataset.col = col;
-            boardElement.appendChild(cell);
-        }
+  boardElement.innerHTML = '';
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < columns; col++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.dataset.row = row;
+      cell.dataset.col = col;
+      boardElement.appendChild(cell);
     }
+  }
 }
 
-// Handle click on cell (human player's turn)
+// Handle human move
 function handleCellClick(event) {
-    const col = parseInt(event.target.dataset.col);
-    if (!isGameActive || board[0][col] !== null) return; // Check if the column is full
+  const col = parseInt(event.target.dataset.col);
+  if (!isGameActive || board[0][col] !== null) return; // Column full or game over
 
-    for (let row = rows - 1; row >= 0; row--) {
-        if (board[row][col] === null) {
-            board[row][col] = currentPlayer;
-            const cell = boardElement.children[row * columns + col];
-            cell.classList.add(currentPlayer);
-            if (checkWinner(row, col)) {
-                alert(`${currentPlayer} wins!`);
-                isGameActive = false;
-            } else {
-                currentPlayer = 'yellow'; // Switch to AI player
-                setTimeout(aiMove, 500); // Delay for AI move
-            }
-            break;
-        }
+  // Drop piece
+  for (let row = rows - 1; row >= 0; row--) {
+    if (board[row][col] === null) {
+      placePiece(row, col, currentPlayer);
+      if (checkWinner(row, col)) {
+        alert(`${capitalize(currentPlayer)} wins!`);
+        isGameActive = false;
+      } else {
+        currentPlayer = 'yellow'; // AI turn
+        setTimeout(aiMove, 500);
+      }
+      break;
     }
+  }
 }
 
-// AI move function
+// Place a piece on the board
+function placePiece(row, col, player) {
+  board[row][col] = player;
+  const index = row * columns + col;
+  const cell = boardElement.children[index];
+  cell.classList.add(player);
+}
+
+// AI move
 function aiMove() {
-    if (!isGameActive) return;
+  if (!isGameActive) return;
 
-    let col;
-    do {
-        col = Math.floor(Math.random() * columns);
-    } while (board[0][col] !== null); // Ensure AI only picks valid columns
+  // Simple AI: random available column
+  const availableCols = [];
+  for (let c = 0; c < columns; c++) {
+    if (board[0][c] === null) availableCols.push(c);
+  }
+  if (availableCols.length === 0) return; // Draw
 
-    for (let row = rows - 1; row >= 0; row--) {
-        if (board[row][col] === null) {
-            board[row][col] = currentPlayer;
-            const cell = boardElement.children[row * columns + col];
-            cell.classList.add(currentPlayer);
-            if (checkWinner(row, col)) {
-                alert(`${currentPlayer} wins!`);
-                isGameActive = false;
-            } else {
-                currentPlayer = 'red'; // Switch back to human player
-            }
-            break;
-        }
+  const col = availableCols[Math.floor(Math.random() * availableCols.length)];
+  for (let row = rows - 1; row >= 0; row--) {
+    if (board[row][col] === null) {
+      placePiece(row, col, currentPlayer);
+      if (checkWinner(row, col)) {
+        alert(`${capitalize(currentPlayer)} wins!`);
+        isGameActive = false;
+      } else {
+        currentPlayer = 'red'; // Human turn
+      }
+      break;
     }
+  }
 }
 
-// Check if the player has won
+// Check for a winner
 function checkWinner(row, col) {
-    return (
-        checkDirection(row, col, 1, 0) ||  // Horizontal
-        checkDirection(row, col, 0, 1) ||  // Vertical
-        checkDirection(row, col, 1, 1) ||  // Diagonal /
-        checkDirection(row, col, 1, -1)     // Diagonal \
-    );
+  const player = board[row][col];
+  if (!player) return false;
+
+  return (
+    checkDirection(row, col, 1, 0, player) || // Horizontal
+    checkDirection(row, col, 0, 1, player) || // Vertical
+    checkDirection(row, col, 1, 1, player) || // Diagonal /
+    checkDirection(row, col, 1, -1, player)   // Diagonal \
+  );
 }
 
-// Helper function to check specific directions
-function checkDirection(row, col, rowDir, colDir) {
-    let count = 0;
+// Check in a specific direction
+function checkDirection(row, col, deltaRow, deltaCol, player) {
+  let count = 1;
 
-    // Check in one direction
-    for (let r = row, c = col; r >= 0 && r < rows && c >= 0 && c < columns && board[r][c] === currentPlayer; r += rowDir, c += colDir) {
-        count++;
-    }
+  // Check forward
+  let r = row + deltaRow;
+  let c = col + deltaCol;
+  while (r >= 0 && r < rows && c >= 0 && c < columns && board[r][c] === player) {
+    count++;
+    r += deltaRow;
+    c += deltaCol;
+  }
 
-    // Check in the opposite direction
-    for (let r = row - rowDir, c = col - colDir; r >= 0 && r < rows && c >= 0 && c < columns && board[r][c] === currentPlayer; r -= rowDir, c -= colDir) {
-        count++;
-    }
+  // Check backward
+  r = row - deltaRow;
+  c = col - deltaCol;
+  while (r >= 0 && r < rows && c >= 0 && c < columns && board[r][c] === player) {
+    count++;
+    r -= deltaRow;
+    c -= deltaCol;
+  }
 
-    return count >= 4; // Check if there are 4 in a row
+  return count >= 4;
 }
 
-// Restart the game
+// Capitalize first letter
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Restart game
 restartButton.addEventListener('click', () => {
-    board = Array.from({ length: rows }, () => Array(columns).fill(null));
-    currentPlayer = 'red'; // Reset to human player
-    isGameActive = true;
-    createBoard();
-});
-
-// Set up event listeners for each cell
-boardElement.addEventListener('click', (event) => {
-    if (event.target.classList.contains('cell')) {
-        handleCellClick(event);
-    }
+  board = Array.from({ length: rows }, () => Array(columns).fill(null));
+  currentPlayer = 'red';
+  isGameActive = true;
+  createBoard();
 });
 
 // Initialize the game
 createBoard();
+
+boardElement.addEventListener('click', (event) => {
+  if (event.target.classList.contains('cell') && currentPlayer === 'red') {
+    handleCellClick(event);
+  }
+});

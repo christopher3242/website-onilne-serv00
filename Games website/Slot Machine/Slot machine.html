@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Euro Slot Game with Exit and Game Over</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    color: #fff;
+    text-align: center;
+    padding: 50px;
+  }
+  h1 {
+    margin-bottom: 10px;
+  }
+  #money, #topScore {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+  #gameContainer {
+    display: block;
+  }
+  #topScoreContainer {
+    display: none;
+  }
+  #slot-machine {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .reel {
+    width: 100px;
+    height: 100px;
+    margin: 0 10px;
+    font-size: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #444;
+    border: 2px solid #888;
+    border-radius: 8px;
+    box-shadow: inset 0 0 10px #000;
+  }
+  #buttons {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  button {
+    padding: 10px 15px;
+    font-size: 1em;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+  }
+  #spin1 { background-color: #28a745; color: #fff; }
+  #spin2 { background-color: #007bff; color: #fff; }
+  #spin5 { background-color: #ffc107; color: #000; }
+  #spin10 { background-color: #6f42c1; color: #fff; }
+  #spin20 { background-color: #17a2b8; color: #fff; }
+  #addFive { background-color: #20c997; color: #fff; }
+  #exit { background-color: #dc3545; color: #fff; }
+  #restart { background-color: #17a2b8; color: #fff; }
+  #result {
+    margin-top: 15px;
+    font-size: 1.2em;
+  }
+</style>
+</head>
+<body>
+
+<h1>Euro Slot Game</h1>
+<div id="gameContainer">
+  <div id="money">Balance: €10.00</div>
+</div>
+<div id="slot-machine">
+  <div class="reel" id="reel1">🍒</div>
+  <div class="reel" id="reel2">🍒</div>
+  <div class="reel" id="reel3">🍒</div>
+</div>
+<div id="buttons">
+  <button id="spin1">Spin (€1, Win €2)</button>
+  <button id="spin2">Spin (€2, Win €5)</button>
+  <button id="spin5">Spin (€5, Win €20)</button>
+  <button id="spin10">Spin (€10, Win €40)</button>
+  <button id="spin20">Spin (€20, Win €50)</button>
+  <button id="addFive">Add €5</button>
+  <button id="exit">Exit</button>
+</div>
+<div id="result"></div>
+
+<!-- Game Over Screen with Restart -->
+<div id="topScoreContainer">
+  <h2>Game Over!</h2>
+  <div id="finalScore"></div>
+  <div id="topScore">Top Score: €0.00</div>
+  <button id="restart">Restart Game</button>
+</div>
+
+<script>
+const symbols = ['🍒', '🍋', '🔔', '⭐', '🍀', '7️⃣'];
+const reels = [
+  document.getElementById('reel1'),
+  document.getElementById('reel2'),
+  document.getElementById('reel3')
+];
+
+const moneyDiv = document.getElementById('money');
+const resultDiv = document.getElementById('result');
+const gameContainer = document.getElementById('gameContainer');
+const topScoreContainer = document.getElementById('topScoreContainer');
+const finalScoreDiv = document.getElementById('finalScore');
+const topScoreDiv = document.getElementById('topScore');
+
+let balance = 10.00;
+let topScore = 0;
+let totalWinnings = 0;
+
+// Helper functions
+function updateMoney() {
+  moneyDiv.textContent = `Balance: €${balance.toFixed(2)}`;
+}
+function updateTopScore() {
+  topScoreDiv.textContent = `Top Score: €${topScore.toFixed(2)}`;
+}
+function getRandomSymbol() {
+  return symbols[Math.floor(Math.random() * symbols.length)];
+}
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Spin reels with animation
+async function spinReel(reel) {
+  for (let i = 0; i < 20; i++) {
+    reel.textContent = getRandomSymbol();
+    await sleep(50);
+  }
+  return reel.textContent;
+}
+
+// Main spin function
+async function spin(betAmount, winForTwo, winForThree) {
+  if (balance < betAmount) {
+    endGame();
+    return;
+  }
+  balance -= betAmount;
+  updateMoney();
+
+  const results = await Promise.all(reels.map(r => spinReel(r)));
+
+  const matchCount = results.filter(s => s === results[0]).length;
+
+  // 3% jackpot chance
+  const jackpotChance = Math.random();
+  const isJackpot = jackpotChance < 0.03;
+
+  let winnings = 0;
+
+  if (isJackpot) {
+    // Random jackpot between €20 and €100
+    const jackpotAmount = Math.floor(Math.random() * (100 - 20 + 1)) + 20;
+    winnings = jackpotAmount;
+    balance += winnings;
+    resultDiv.textContent = `🎉 JACKPOT! 3 Match! You earned €${winnings}!`;
+  } else if (matchCount >= 3) {
+    // Special case for 3 "7️⃣"
+    if (results.every(s => s === '7️⃣')) {
+      winnings = 50; // special reward for 3 "7️⃣"
+      resultDiv.textContent = '🎉 Lucky 7️⃣! 3 Match! You earned €50!';
+    } else {
+      winnings = winForThree;
+      resultDiv.textContent = `🎉 3 Match! You earned €${winnings}!`;
+    }
+    balance += winnings;
+  } else if (matchCount >= 2) {
+    winnings = winForTwo;
+    resultDiv.textContent = `✨ 2 Match! You earned €${winnings}!`;
+    balance += winnings;
+  } else {
+    resultDiv.textContent = 'Try Again!';
+  }
+
+  updateMoney();
+
+  // Track total winnings for top score
+  totalWinnings += winnings;
+  if (totalWinnings > topScore) {
+    topScore = totalWinnings;
+    updateTopScore();
+  }
+
+  // Check game over
+  if (balance < 0.01) {
+    endGame();
+  }
+}
+
+// End game: show game over screen
+function endGame() {
+  gameContainer.style.display = 'none';
+  document.getElementById('buttons').style.display = 'none';
+  document.getElementById('slot-machine').style.display = 'none';
+  resultDiv.textContent = '';
+  finalScoreDiv.textContent = `Your total winnings: €${totalWinnings.toFixed(2)}`;
+  topScoreContainer.style.display = 'block';
+}
+
+// Restart game
+document.getElementById('restart').addEventListener('click', () => {
+  balance = 10.00;
+  totalWinnings = 0;
+  updateMoney();
+  resultDiv.textContent = '';
+  gameContainer.style.display = 'block';
+  document.getElementById('buttons').style.display = 'flex';
+  document.getElementById('slot-machine').style.display = 'flex';
+  topScoreContainer.style.display = 'none';
+});
+
+// Exit button navigates to ../games.html
+document.getElementById('exit').addEventListener('click', () => {
+  window.location.href = '../games.html';
+});
+
+// Button event listeners
+document.getElementById('spin1').addEventListener('click', () => {
+  spin(1, 2, 3);
+});
+document.getElementById('spin2').addEventListener('click', () => {
+  spin(2, 5, 8);
+});
+document.getElementById('spin5').addEventListener('click', () => {
+  spin(5, 20, 50);
+});
+document.getElementById('spin10').addEventListener('click', () => {
+  spin(10, 40, 0);
+});
+document.getElementById('spin20').addEventListener('click', () => {
+  spin(20, 50, 0);
+});
+// New button event to add €5
+document.getElementById('addFive').addEventListener('click', () => {
+  balance += 5;
+  updateMoney();
+});
+
+</script>
+
+</body>
+</html>

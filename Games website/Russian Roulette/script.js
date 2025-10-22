@@ -9,12 +9,11 @@ let bulletPosition = -1; // Indicates that there is no bullet until the cylinder
 
 // Function to spin the cylinder and randomly place the bullet
 function spinCylinder() {
-    bulletPosition = Math.floor(Math.random() * 6) + 1; // Generates a number between 1 and 6
-    const chancePercentage = Math.floor((bulletPosition / 6) * 100); // Calculate percentage chance
-
+    bulletPosition = Math.floor(Math.random() * 6) + 1; // 1 to 6
+    const chancePercentage = Math.floor((1 / 6) * 100); // Always 16.67%
     resultDiv.textContent = `The cylinder has been spun! Chance of hitting: ${chancePercentage}% at chamber ${bulletPosition}.`;
     
-    // Clear the message after 1 second
+    // Clear message after 1 second
     setTimeout(() => { resultDiv.textContent = ""; }, 1000);
 }
 
@@ -27,35 +26,33 @@ triggerButton.addEventListener('click', () => {
         return;
     }
 
-    if (selectedChamber < 1 || selectedChamber > 6) {
+    if (isNaN(selectedChamber) || selectedChamber < 1 || selectedChamber > 6) {
         resultDiv.textContent = "Please choose a chamber between 1 and 6.";
         return;
     }
 
-    // Determine survival based on the selected chamber and bullet position
+    // Check if the selected chamber matches the bullet position
     if (selectedChamber === bulletPosition) {
         resultDiv.textContent = "BANG! You're out!";
-        resultDiv.style.color = "red";
     } else {
         resultDiv.textContent = "Click! You're safe!";
-        resultDiv.style.color = "green";
     }
 
-    // Clear result after 1 second
+    // Clear message after 1 second
     setTimeout(() => { resultDiv.textContent = ""; }, 1000);
 });
 
-// Reset button functionality
+// Reset game
 resetButton.addEventListener('click', () => {
-    bulletPosition = -1; // Reset bullet position
+    bulletPosition = -1;
     resultDiv.textContent = '';
-    selectedChamberInput.value = ''; // Clear input
+    selectedChamberInput.value = '';
 });
 
-// Exit button functionality
+// Exit
 exitButton.addEventListener('click', () => {
-    window.close(); // Close the window (or redirect)
+    window.location.href = "../games.html"; // Or use window.close() if appropriate
 });
 
-// Spin button functionality
+// Spin cylinder
 spinButton.addEventListener('click', spinCylinder);

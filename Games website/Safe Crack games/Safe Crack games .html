@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Safe Crack Game with Exit and Reset Buttons</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    color: #fff;
+    text-align: center;
+    padding: 50px;
+  }
+  #safe {
+    font-size: 24px;
+    margin: 20px 0;
+  }
+  input[type="number"] {
+    font-size: 20px;
+    padding: 5px;
+    width: 100px;
+  }
+  button {
+    font-size: 20px;
+    padding: 5px 10px;
+    margin: 10px 5px;
+  }
+  #message {
+    margin-top: 20px;
+    font-size: 20px;
+    height: 30px;
+  }
+  #attemptsLeft {
+    margin-top: 10px;
+    font-size: 18px;
+    height: 24px;
+  }
+</style>
+</head>
+<body>
+<h1>Safe Crack Game</h1>
+<p>Guess the 3-digit code to open the safe!</p>
+<div id="safe">
+  <input id="guess" min="0" max="999" type="number" />
+</div>
+<div>
+  <button onclick="checkGuess()">Guess</button>
+  <button onclick="showAnswer()">Answer</button>
+  <button onclick="resetGame()">Reset</button>
+  <a href="../games.html"><button onclick="exitGame()">Exit</button></a>
+</div>
+<div id="attemptsLeft">Attempts left: 3</div>
+<div id="message"></div>
+<script>
+  let code = Math.floor(Math.random() * 1000); // Random code
+  let attempts = 0;
+  const maxAttempts = 3;
+  let gameActive = true;
+
+  function updateAttemptsLeft() {
+    const attemptsLeftDiv = document.getElementById('attemptsLeft');
+    const attemptsLeft = maxAttempts - attempts;
+    attemptsLeftDiv.textContent = 'Attempts left: ' + attemptsLeft;
+  }
+
+  function resetGame() {
+    code = Math.floor(Math.random() * 1000); // Generate new code
+    attempts = 0;
+    gameActive = true;
+    document.getElementById('guess').disabled = false;
+    document.getElementById('guess').value = ''; // Clear input
+    document.getElementById('message').textContent = '';
+    updateAttemptsLeft();
+  }
+
+  function checkGuess() {
+    if (!gameActive) return;
+    const guessInput = document.getElementById('guess');
+    const message = document.getElementById('message');
+    const guess = parseInt(guessInput.value);
+
+    attempts++;
+
+    // Update attempts remaining display
+    updateAttemptsLeft();
+
+    if (isNaN(guess) || guess < 0 || guess > 999) {
+      message.textContent = 'Please enter a valid 3-digit number.';
+      return;
+    }
+
+    if (guess === code) {
+      message.textContent = `Congratulations! You cracked the safe in ${attempts} attempts!`;
+      gameActive = false;
+    } else if (attempts >= maxAttempts) {
+      message.innerHTML = `Game Over! You've reached ${attempts} attempts. The code was: ${String(code).padStart(3, '0')}`;
+      gameActive = false;
+      document.getElementById('guess').disabled = true;
+    } else {
+      if (guess < code) {
+        message.textContent = 'Too low! Try a higher number.';
+      } else {
+        message.textContent = 'Too high! Try a lower number.';
+      }
+    }
+  }
+
+  function showAnswer() {
+    const message = document.getElementById('message');
+    message.innerHTML = `The code is: ${String(code).padStart(3, '0')}`;
+    setTimeout(() => {
+      message.innerHTML = 'Answer hidden for suspense!';
+    }, 2000);
+  }
+
+  // Exit button: resets the game
+  function exitGame() {
+    resetGame();
+  }
+
+  // Event listener for Enter key
+  document.getElementById('guess').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      checkGuess();
+    }
+  });
+
+  // Initialize attempts left display on page load
+  updateAttemptsLeft();
+</script>
+</body>
+</html>
