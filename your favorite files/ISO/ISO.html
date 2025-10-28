@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
@@ -11,6 +11,29 @@
     color: #333;
     /* Blue gradient background */
     background: linear-gradient(135deg, #87CEFA, #00BFFF);
+    position: relative;
+  }
+
+  /* Exit Button styling */
+  .exit-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #dc3545; /* Bootstrap red */
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.2s;
+    z-index: 1000;
+    text-decoration: none;
+  }
+
+  .exit-btn:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
   }
 
   /* Container styling */
@@ -21,12 +44,13 @@
     padding: 20px 30px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    margin-top: 60px; /* space for fixed button */
   }
 
   /* Header styling */
   h1 {
     text-align: center;
-    color: #fff; /* Light color for contrast */
+    color: #000; /* Black for contrast */
     margin-bottom: 20px;
   }
 
@@ -48,7 +72,13 @@
     display: inline-block;
     width: 171px;
     height: 171px;
-    margin: auto;
+  }
+
+  .spin img {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    object-fit: cover;
     animation: spin 4s linear infinite;
   }
 
@@ -57,24 +87,13 @@
     to { transform: rotate(360deg); }
   }
 
-  /* Exit button styling */
-  .exit-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: #dc3545; /* Bootstrap red */
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s, transform 0.2s;
-  }
-
-  .exit-btn:hover {
-    background-color: #c82333;
-    transform: scale(1.05);
+  /* Footer styling */
+  .footer {
+    margin-top: 30px;
+    text-align: right;
+    font-style: italic;
+    font-size: 1em;
+    color: #000; /* Black for contrast on light background */
   }
 
   /* Responsive adjustments */
@@ -87,48 +106,55 @@
       height: 150px;
     }
   }
-
-  /* Footer styling */
-  .footer {
-    margin-top: 30px;
-    text-align: right;
-    font-style: italic;
-    font-size: 1em;
-    color: #fff; /* Light color for contrast on blue background */
-  }
 </style>
   </head>
   <body>
-    <!-- Exit Button --> <a href="../../your%20favorite.html"><button
-        class="exit-btn" onclick="window.close()">Exit</button></a>
+    <!-- Fixed Exit Button --> <a href="../../your%20favorite.html"
+      class="exit-btn">Exit</a>
     <div class="container">
-      <h1><font color="#000000">ISO</font></h1>
+      <h1>ISO</h1>
       <table cellspacing="2" cellpadding="2" border="1">
         <tbody>
           <tr>
             <td valign="top" align="center">
-              <div class="spin"> <img src="DVDS1.png" alt="DVD"
-                  width="171" height="171"> </div>
+              <div class="spin"> <img src="DvdplayerVolume1.png"
+                  alt="DVD"> </div>
             </td>
-            <td valign="top"> <strong>Name :-&nbsp; ???</strong><br>
+            <td valign="top"> <strong>Name :-&nbsp; </strong>DvdplayerVolume1<br>
               <br>
               Download Link:-<br>
               <br>
-              ?????? </td>
+              <div align="center"><a
+                  href="https://mxdrop.to/f/pj668qpnt77o73"><img
+                    src="MixDrop.png" alt="" width="150" height="44"
+                    border="0"></a> <a
+                  href="https://pixeldrain.com/u/6zHWejYB"><img
+                    src="pixeldrain.png" alt="" width="233" height="43"
+                    border="0"></a> </div>
+            </td>
           </tr>
           <tr>
-            <td valign="top"><br>
+            <td valign="top" align="center">
+              <div class="spin"> <img src="DvdplayerVolume2.png" alt="">
+              </div>
             </td>
-            <td valign="top"> <strong>Name :-&nbsp; ???</strong><br>
+            <td valign="top"> <strong>Name :-&nbsp; </strong>DvdplayerVolume2<br>
               <br>
               Download Link:-<br>
               <br>
-              ?????? </td>
+              <div align="center"><a
+                  href="https://mxdrop.to/f/03zzmrr7ak7xx9d"><img
+                    src="MixDrop.png" alt="" width="150" height="44"
+                    border="0"></a> <a
+                  href="https://pixeldrain.com/u/EDqyXZ8k"><img
+                    src="pixeldrain.png" alt="" width="233" height="43"
+                    border="0"></a></div>
+            </td>
           </tr>
         </tbody>
       </table>
       <div class="footer"> <u><b><font color="#000000">( Dvd, cd and
-              More etc) !!! </font></b></u></div>
+              More etc) !!! </font></b></u> </div>
     </div>
   </body>
 </html>
