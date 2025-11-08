@@ -14,8 +14,6 @@
     flex-direction: column;
     min-height: 100vh;
     box-sizing: border-box;
-    /* Smooth background color transition on hover or other interactions */
-    transition: background-color 0.5s ease;
     scroll-behavior: smooth; /* Enables smooth scrolling */
   }
   h1 {
@@ -26,7 +24,7 @@
   table {
     width: 100%;
     max-width: 1046px;
-    margin: 0 auto;
+    margin: 0 auto 20px auto;
     border-collapse: collapse;
     background-color: #ffffff;
     border-radius: 10px;
@@ -39,15 +37,36 @@
     text-align: center;
     font-size: 1em;
   }
-  /* Style for the exit link container */
+  /* Container for the download button at bottom left with full space around */
+  .bottom-left-container {
+    display: flex;
+    justify-content: flex-start; /* Align to left */
+    align-items: center; /* Vertically center within space */
+    padding: 20px;
+    margin-top: auto; /* Push to bottom of flex container */
+  }
+  /* Style for the download button */
+  .download-button {
+    text-decoration: none;
+    background-color: #007BFF; /* Blue button */
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  /* Hover effect for download button */
+  .download-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+  /* Additional styling for exit link container if needed */
   .exit-container {
-    margin-top: auto;
     width: 100%;
     display: flex;
     justify-content: flex-end;
     padding: 10px 20px;
   }
-  /* Style for the exit link */
   .exit-link {
     text-decoration: none;
     background-color: #007BFF; /* Blue button */
@@ -57,7 +76,6 @@
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.2s ease;
   }
-  /* Hover effect for exit button with smooth transition */
   .exit-link:hover {
     background-color: #0056b3;
     transform: scale(1.05);
@@ -149,6 +167,12 @@
   </tbody>
 </table>
 
+<!-- Download PDF Button at bottom left, full space around -->
+<div class="bottom-left-container">
+  <a href="videos-list.pdf" class="download-button" download>Download PDF</a>
+</div>
+
+<!-- Exit link at the bottom right -->
 <div class="exit-container">
   <a href="../../your%20favorite.html" class="exit-link">exit</a>
 </div>

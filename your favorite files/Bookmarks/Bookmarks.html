@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <title>Bookmarks</title>
+    <style>
+  body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    margin: 20px;
+    line-height: 1.6;
+  }
+
+  /* Centered header */
+  .center {
+    text-align: center;
+  }
+
+  /* Exit button style */
+  .exit-button {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 8px 16px;
+    background-color: #ff6f61;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  .exit-button:hover {
+    background-color: #e65c50;
+    transform: translateY(-2px);
+  }
+
+  /* Section headers with toggle buttons */
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-top: 30px;
+  }
+
+  /* Toggle button styles */
+  .toggle-button {
+    margin-left: 12px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
+    background-color: #4a90e2;
+    color: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  .toggle-button:hover {
+    background-color: #357ab8;
+    transform: translateY(-1px);
+  }
+
+  /* Content boxes for sections */
+  #pcContent, #mobileInstructions {
+    margin-left: 20px;
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+    overflow: hidden;
+  }
+
+  /* Smooth transition for toggle */
+  #pcContent, #mobileInstructions {
+    max-height: 500px;
+    opacity: 1;
+  }
+  #pcContent.hidden, #mobileInstructions.hidden {
+    max-height: 0;
+    opacity: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Paragraph styles */
+  p {
+    font-size: 16px;
+    margin-top: 20px;
+  }
+
+  /* List styles */
+  ul {
+    list-style-type: disc;
+    padding-left: 20px;
+  }
+
+  li {
+    margin-bottom: 10px;
+  }
+</style>
+    <script>
+  function toggleVisibility(id, button) {
+    const section = document.getElementById(id);
+    if (section.classList.contains('hidden')) {
+      section.classList.remove('hidden');
+      button.textContent = "Hide";
+    } else {
+      section.classList.add('hidden');
+      button.textContent = "Show";
+    }
+  }
+</script>
+  </head>
+  <body>
+    <!-- Exit Button -->
+    <a href="../../your%20favorite.html"><button class="exit-button"
+        onclick="window.close()">Exit</button></a>
+    <div class="center">
+      <h2>Bookmarks</h2>
+    </div>
+    <p>How to save Bookmarks with xxsexy.serv00 to my (your) folder.</p>
+    <!-- PC Section with Toggle Button -->
+    <div class="section-header">
+      <h3>PC:</h3>
+      <button class="toggle-button"
+        onclick="toggleVisibility('pcContent', this)">Show</button>
+    </div>
+    <div id="pcContent" class="hidden">
+      <ul>
+        <li><strong>Google:</strong> - First, search on
+          xxsexy.serv00.net and then add bookmarks to the "name" folder
+          with a "done" click button.</li>
+        <li><strong>Microsoft Edge:</strong> - First, search on
+          xxsexy.serv00.net and then add favorites to the "name" folder
+          with a "done" click button.</li>
+        <li><strong>Firefox:</strong> - Click favorites like bookmarks
+          list &amp; right-click with the "name" folder with a "done"
+          click button.</li>
+        <li><strong>DuckDuckGo:</strong> - Favorites are bookmarked
+          websites that are made easily accessible on the new tab page
+          or through the bookmarks bar.</li>
+        <li><strong>Opera:</strong> - Organize and customize visual
+          bookmarks in Opera.</li>
+      </ul>
+    </div>
+    <!-- Mobile Section -->
+    <h3>Mobile:</h3>
+    <p>"Add to home screen" to xxsexy.serv00.net</p>
+    <!-- Android & iPhone Instructions with Toggle Button -->
+    <div class="section-header">
+      <h3>Android &amp; iPhone:</h3>
+      <button class="toggle-button"
+        onclick="toggleVisibility('mobileInstructions', this)">Show</button>
+    </div>
+    <div id="mobileInstructions" class="hidden">
+      <ul>
+        <li>Android: Go to search on xxsexy.serv00.net and add to home
+          screen.</li>
+        <li>iPhone: Tap the Share icon in the bottom toolbar. Scroll
+          down until you reach the list of actions. Tap Add to Home
+          Screen. Enter the website’s name (or another description) that
+          will appear on your Home Screen. Tap the Add button in the top
+          right corner.</li>
+      </ul>
+    </div>
+  </body>
+</html>

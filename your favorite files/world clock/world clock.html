@@ -1,30 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stylish World Clock</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="container">
+  <h1>World Clock with DST Adjustment</h1>
+  <div id="clock" class="clock">
+    <h2 id="cityName"></h2>
+    <div id="time" class="time"></div>
+  </div>
+  <div class="buttons">
+    <button onclick="previousTimeZone()">Previous</button>
+    <button onclick="nextTimeZone()">Next</button>
+    <button id="formatBtn" onclick="toggleTimeFormat()">Switch to 24-Hour</button>
+  </div>
+  <a href="../../your%20favorite.html">
+    <button class="exit-button" id="exitBtn" onclick="exitPage()">Exit</button>
+  </a>
+</div>
 
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>World Clock</title>
-  </head>
-  <body>
-    <div class="container">
-      <h1>World Clock</h1>
-      <div class="time-format-buttons"> <button id="toggle24Hour"
-          onclick="toggleTimeFormat()">Switch to 24-Hour Format</button>
-      </div>
-      <div class="clock">
-        <h2 id="cityName">City Name</h2>
-        <div class="time" id="timeDisplay">00:00:00</div>
-      </div>
-      <div class="buttons"> <button id="backBtn"
-          onclick="previousTimeZone()">Back</button> <button
-          id="nextBtn" onclick="nextTimeZone()">Next</button> </div>
-      <a moz-do-not-send="true" href="../../your%20favorite.html"><button
-          class="exit-button" id="exitBtn" onclick="exitPage()">Exit</button></a>
-    </div>
-    <script src="script.js"></script>
-  </body>
+<script src="script.js"></script>
+</body>
 </html>

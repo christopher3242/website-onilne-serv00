@@ -35,6 +35,7 @@
 
   .button-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     margin-top: 20px;
   }
@@ -47,11 +48,13 @@
     transition: opacity 0.5s ease;
   }
 
+  /* Hidden class for hiding buttons */
   .hidden {
     opacity: 0;
     pointer-events: none;
   }
 
+  /* Custom styles for Video.js components */
   .my-custom-player {
     border: 0.5px solid #4a9b94;
     border-radius: 15px;
@@ -77,12 +80,13 @@
 <div class="video-container">
   <h1>Custom Video Player</h1>
   <div class="video-number" id="videoNumber">Video 1</div>
-<video id="videoPlayer" class="video-js my-custom-player vjs-matrix" controls preload="auto" width="600" height="300">
+  <video id="videoPlayer" class="video-js my-custom-player vjs-matrix" controls preload="auto" width="600" height="300">
     <source src="video1.mp4" type="video/mp4" />
+    <!-- Multiple subtitle tracks -->
     <track kind="subtitles" label="English (USA)" srclang="en" src="subtitles_en.vtt" />
-	<track kind="subtitles" label="English (UK)" srclang="en-GB" src="subtitles_uk.vtt" />
-	<track kind="subtitles" label="Italiano" srclang="it" src="subtitles_it.vtt" />
-	<track kind="subtitles" label="Maltese" srclang="mt" src="subtitles_mt.vtt" />
+    <track kind="subtitles" label="English (UK)" srclang="en-GB" src="subtitles_uk.vtt" />
+    <track kind="subtitles" label="Italiano" srclang="it" src="subtitles_it.vtt" />
+    <track kind="subtitles" label="Maltese" srclang="mt" src="subtitles_mt.vtt" />
     <track kind="subtitles" label="French" srclang="fr" src="subtitles_fr.vtt" />
     <track kind="subtitles" label="Deutsch" srclang="de" src="subtitles_de.vtt" />
     <track kind="subtitles" label="Ukrainian" srclang="uk" src="subtitles_ua.vtt" />
@@ -116,12 +120,13 @@
     <track kind="subtitles" label="Ireland" srclang="ga" src="subtitles_ga.vtt" />
     <track kind="subtitles" label="Norway" srclang="no" src="subtitles_no.vtt" />
     <track kind="subtitles" label="France" srclang="fr" src="subtitles_fr.vtt" />
-    <track kind="subtitles" label="Turkey" srclang="tr" src="subtitles_tr.vtt" />	
-</video>
+    <track kind="subtitles" label="Turkey" srclang="tr" src="subtitles_tr.vtt" />  
+  </video>
   <div class="button-container">
     <button id="prev" class="hidden" onclick="prevVideo()">Back</button>
     <button id="random" onclick="randomVideo()">Random</button>
     <button id="next" class="hidden" onclick="nextVideo()">Next</button>
+    <button id="search" onclick="searchVideo()">Search Video</button>
     <a href="../../your%20favorite.html">
       <button id="exit">Exit</button>
     </a>
@@ -131,9 +136,9 @@
   const videoNumberDisplay = document.getElementById('videoNumber');
   let currentVideoIndex = 0;
 
-  // Generate video sources from 1 to 2000
+  // Generate video sources from 1 to 1000
   const videoSources = [];
-  for (let i = 1; i <= 2000; i++) {
+  for (let i = 1; i <= 1000; i++) {
     videoSources.push(`video${i}.mp4`);
   }
 
@@ -165,7 +170,7 @@
   }
 
   function handleAudioTrack() {
-    // Implementation for audio track, if needed
+    // Implement if needed
   }
 
   function updateVideoNumber() {
@@ -189,6 +194,17 @@
   function randomVideo() {
     currentVideoIndex = Math.floor(Math.random() * videoSources.length);
     updateVideo();
+  }
+
+  function searchVideo() {
+    const input = prompt("Enter video number (1-1000):");
+    const num = parseInt(input);
+    if (!isNaN(num) && num >= 1 && num <= 1000) {
+      currentVideoIndex = num - 1;
+      updateVideo();
+    } else {
+      alert("Invalid number. Please enter a number between 1 and 1000.");
+    }
   }
 
   // Initialize with the first video

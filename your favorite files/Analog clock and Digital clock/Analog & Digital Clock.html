@@ -1,47 +1,147 @@
 <!DOCTYPE html>
-<html lang="en-US">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>A Digital &amp; Analog Clock</title>
-    <link rel="stylesheet" href="style.css" type="text/css" media="all">
-    <link
-href="https://fonts.googleapis.com/css2?family=Orbitron&amp;display=swap"
-      rel="stylesheet">
-    <script src="script.js" defer="defer"></script>
-  </head>
-  <body>
-    <div class="digitalClock">
-      <h1>00:00:00</h1>
-    </div>
-    <main class="main">
-      <div class="clockbox">
-        <svg id="clock" xmlns="http://www.w3.org/2000/svg" width="600"
-          height="600" viewBox="0 0 600 600">
-          <g id="face">
-            <circle class="circle" cx="300" cy="300" r="253.9"></circle>
-            <path class="hour-marks" d="M300.5 94V61M506 300.5h32M300.5
-              506v33M94 300.5H60M411.3 107.8l7.9-13.8M493
-              190.2l13-7.4M492.1 411.4l16.5 9.5M411 492.3l8.9 15.3M189
-              492.3l-9.2 15.9M107.7 411L93 419.5M107.5
-              189.3l-17.1-9.9M188.1 108.2l-9-15.6"></path>
-            <circle class="mid-circle" cx="300" cy="300" r="16.2"></circle>
-          </g>
-          <g id="hour">
-            <path class="hour-arm" d="M300.5 298V142"></path>
-            <circle class="sizing-box" cx="300" cy="300" r="253.9"></circle>
-          </g>
-          <g id="minute">
-            <path class="minute-arm" d="M300.5 298V67"></path>
-            <circle class="sizing-box" cx="300" cy="300" r="253.9"></circle>
-          </g>
-          <g id="second">
-            <path class="second-arm" d="M300.5 350V55"></path>
-            <circle class="sizing-box" cx="300" cy="300" r="253.9"></circle>
-          </g> </svg> </div>
-      <!-- .clockbox --> </main>
-    <a moz-do-not-send="true" href="../../your%20favorite.html"><button
-        id="exit-btn">Exit</button></a>
-  </body>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8" />
+<title>Digital Clock with Glowing Effect</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+  }
+  html, body {
+    display: grid;
+    height: 100%;
+    place-items: center;
+    background: #000;
+  }
+  h1 {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 2em;
+    color: #fff;
+    text-shadow: 0 0 10px #fff, 0 0 20px #ff00de, 0 0 30px #00ffe7;
+  }
+  .wrapper {
+    height: 150px;
+    width: 400px;
+    position: relative;
+    background: linear-gradient(135deg, #14ffe9, #ffeb3b, #ff00e0);
+    border-radius: 10px;
+    cursor: default;
+    animation: animate 1.5s linear infinite;
+  }
+  .wrapper .display,
+  .wrapper span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .wrapper .display {
+    z-index: 999;
+    height: 85px;
+    width: 345px;
+    background: #1b1b1b;
+    border-radius: 6px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #time {
+    line-height: 85px;
+    font-size: 50px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #14ffe9, #ffeb3b, #ff00e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: animate 1.5s linear infinite;
+  }
+  @keyframes animate {
+    100% {
+      filter: hue-rotate(360deg);
+    }
+  }
+  .wrapper span {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    background: inherit;
+  }
+  .wrapper span:first-child {
+    filter: blur(7px);
+  }
+  .wrapper span:last-child {
+    filter: blur(20px);
+  }
+  /* Exit link styling */
+  .exit-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+  }
+  .exit-link {
+    background: rgba(255,255,255,0.2);
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    transition: background 0.3s, transform 0.3s;
+  }
+  .exit-link:hover {
+    background: rgba(255,255,255,0.4);
+    transform: scale(1.05);
+  }
+</style>
+</head>
+<body>
+
+<h1>Digital Clock with Glowing Effect</h1>
+
+<div class="wrapper">
+  <div class="display">
+    <div id="time"></div>
+  </div>
+  <span></span>
+  <span></span>
+</div>
+
+<div class="exit-container">
+  <a href="../../your%20favorite.html" class="exit-link">exit</a>
+</div>
+
+<script>
+  // Function to update local time every second
+  setInterval(() => {
+    const time = document.querySelector("#time");
+    let date = new Date();
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    let seconds = date.getSeconds();
+
+    // Format hours for 12-hour clock with AM/PM
+    let day_night = "AM";
+    if (hours >= 12) {
+      day_night = "PM";
+      if (hours > 12) hours -= 12;
+    } else if (hours === 0) {
+      hours = 12;
+    }
+
+    // Add leading zeros
+    if (hours < 10 && hours !== 12) hours = "0" + hours;
+    if (minutes < 10) minutes = "0" + minutes;
+    if (seconds < 10) seconds = "0" + seconds;
+
+    time.textContent = `${hours}:${minutes}:${seconds} ${day_night}`;
+  }, 1000);
+</script>
+
+</body>
 </html>
