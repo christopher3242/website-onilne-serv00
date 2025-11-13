@@ -1,32 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Countdown Timer</title>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Countdown Timer</h1>
-      <div class="timer"> <span id="hours">00</span>:<span id="minutes">00</span>:<span
-          id="seconds">00</span> </div>
-      <div class="input-container"> <input id="inputHours"
-          placeholder="Hours" min="0" type="number"> <input
-          id="inputMinutes" placeholder="Minutes" min="0" max="59"
-          type="number"> <input id="inputSeconds" placeholder="Seconds"
-          min="0" max="59" type="number"> <button id="startButton">Start
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Countdown Timer</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
 
+<div class="container">
+  <h1>Countdown Timer</h1>
+  <div class="timer">
+    <div id="countdownDisplay">
+      <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+    </div>
+    <div id="totalTimeDisplay" style="margin-top:10px;font-size:16px;">Total: 00:00:00</div>
+  </div>
+  <div class="input-container">
+    <input id="inputHours" type="number" placeholder="Hours" min="0" />
+    <input id="inputMinutes" type="number" placeholder="Minutes" min="0" max="59" />
+    <input id="inputSeconds" type="number" placeholder="Seconds" min="0" max="59" />
+    <button id="startButton">Start Countdown</button>
+    <button id="pauseButton" class="hidden">Pause</button>
+    <button id="stopButton" class="hidden">Stop Countdown</button>
+  </div>
+  <div id="message" class="message hidden">Time's Up!</div>
+  <button id="exitButton">Exit</button>
+</div>
 
+<!-- Audio alert for countdown end, looping -->
+<audio id="alarmSound" src="https://gfxsounds.com/wp-content/uploads/2024/09/Peculier-clock-massive-ticking-loop.mp3?_=1" preload="auto" loop></audio>
 
-          Countdown</button> <button id="pauseButton" class="hidden">Pause</button>
-        <button id="resetButton" class="hidden">Reset</button> </div>
-      <div id="message" class="message hidden">Time's Up!</div>
-      <a moz-do-not-send="true" href="../../your%20favorite.html"><button
-          id="exitButton" style="top: 421px; left: 824px; height: 37px;
-          width: 107px;">Exit</button></a> </div>
-    <script src="script.js"></script>
-  </body>
+<script src="script.js"></script>
+
+</body>
 </html>
