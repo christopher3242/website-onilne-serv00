@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bowling Game</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #222;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 {
+    color: #fff;
+    text-align: center;
+    margin: 10px 0;
+  }
+  #buttons {
+    margin: 10px;
+  }
+  button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  #exitLink {
+    padding: 10px 20px;
+    background-color: #6b6a6a;
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 4px;
+  }
+  #exitLink:hover {
+    background-color: #666;
+  }
+  canvas {
+    display: block;
+    background: #222;
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+  }
+</style>
+</head>
+<body>
+
+<h1>Bowling</h1>
+<div id="buttons">
+  <button id="startBtn">Start Game</button>
+  <button id="restartBtn">Restart</button>
+  <button id="closeBtn">Close Game</button>
+  <a id="exitLink" href="../games.html">Exit</a>
+</div>
+<canvas id="gameCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const closeBtn = document.getElementById("closeBtn");
+
+let gameRunning = false;
+let animationId;
+
+// Resize canvas for responsiveness
+function resizeCanvas() {
+  const width = Math.min(window.innerWidth, 400);
+  const height = Math.min(window.innerHeight - 100, 800);
+  canvas.width = width;
+  canvas.height = height;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// Classes for game objects
+class Ball {
+  constructor(x, y, radius, color) {
+    this.x = x; this.y = y;
+    this.radius = radius;
+    this.color = color;
+    this.vx = 0; this.vy = 0;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vx *= 0.99;
+    this.vy *= 0.99;
+
+    if (this.x - this.radius < 50 || this.x + this.radius > canvas.width - 50) {
+      this.vx *= -0.8;
+      this.x = this.x - this.radius < 50 ? 50 + this.radius : canvas.width - 50 - this.radius;
+    }
+    if (this.y - this.radius < 0) {
+      this.vy *= -0.8;
+      this.y = this.radius;
+    }
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+  }
+}
+
+class Pin {
+  constructor(x, y, number) {
+    this.x = x; this.y = y;
+    this.radius = 10;
+    this.vx = 0; this.vy = 0;
+    this.number = number;
+    this.knockedDown = false;
+    this.angle = 0;
+    this.angularVelocity = 0;
+    this.fallVy = 0;
+  }
+  update() {
+    if (this.knockedDown) {
+      this.fallVy += 0.3;
+      this.y += this.fallVy;
+      this.angle += this.angularVelocity;
+      this.angularVelocity += 0.02;
+      if (this.y > canvas.height - this.radius) {
+        this.y = canvas.height - this.radius;
+        this.fallVy = 0;
+        this.angularVelocity = 0;
+      }
+    } else {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.vx *= 0.98;
+      this.vy *= 0.98;
+      if (Math.abs(this.vx) < 0.01) this.vx = 0;
+      if (Math.abs(this.vy) < 0.01) this.vy = 0;
+    }
+  }
+  draw() {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+    ctx.fillStyle = "#fff";
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, this.radius * 0.6, this.radius * 1.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = "black";
+    ctx.font = "10px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(this.number, 0, 0);
+    ctx.restore();
+  }
+}
+
+function drawLane() {
+  let plankWidth = 15;
+  for (let x = 50; x < canvas.width - 50; x += plankWidth) {
+    ctx.fillStyle = (Math.floor(x / plankWidth) % 2 === 0) ? "#deb887" : "#d2a679";
+    ctx.fillRect(x, 0, plankWidth, canvas.height);
+  }
+
+  ctx.fillStyle = "#444";
+  ctx.fillRect(0, 0, 50, canvas.height);
+  ctx.fillRect(canvas.width - 50, 0, 50, canvas.height);
+
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(50, canvas.height - 120, canvas.width - 100, 3);
+
+  ctx.fillStyle = "#fff";
+  const arrowYPositions = [
+    canvas.height - 200,
+    canvas.height - 250,
+    canvas.height - 300
+  ];
+  for (let y of arrowYPositions) {
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2, y);
+    ctx.lineTo(canvas.width / 2 - 5, y + 10);
+    ctx.lineTo(canvas.width / 2 + 5, y + 10);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  ctx.fillStyle = "#999";
+  ctx.fillRect(50, 100, canvas.width - 100, 3);
+}
+
+function circleCollision(a, b) {
+  let dx = b.x - a.x;
+  let dy = b.y - a.y;
+  let dist = Math.sqrt(dx * dx + dy * dy);
+  return dist < a.radius + b.radius;
+}
+
+function resolveCollision(a, b) {
+  let dx = b.x - a.x;
+  let dy = b.y - a.y;
+  let dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist === 0) return;
+  let nx = dx / dist;
+  let ny = dy / dist;
+  let overlap = a.radius + b.radius - dist;
+  b.x += nx * overlap / 2;
+  b.y += ny * overlap / 2;
+  a.x -= nx * overlap / 2;
+  a.y -= ny * overlap / 2;
+
+  let p = 2 * (a.vx * nx + a.vy * ny - b.vx * nx - b.vy * ny) / 2;
+  a.vx -= p * nx;
+  a.vy -= p * ny;
+  b.vx += p * nx;
+  b.vy += p * ny;
+}
+
+let pins = [];
+let ball;
+let score = 0;
+
+// Setup pins
+function setupPins() {
+  pins = [];
+  const startX = canvas.width / 2;
+  const startY = 150;
+  const spacing = 30;
+  let number = 1;
+  for (let row = 0; row < 4; row++) {
+    let rowY = startY + row * spacing;
+    let rowCount = 4 - row;
+    for (let i = 0; i < rowCount; i++) {
+      let pinX = startX - (spacing / 2) * (rowCount - 1) + i * spacing;
+      pins.push(new Pin(pinX, rowY, number));
+      number++;
+    }
+  }
+}
+
+// Initialize game
+function initGame() {
+  score = 0;
+  setupPins();
+  ball = new Ball(canvas.width / 2, canvas.height - 50, 15, "black");
+  ball.vx = 0;
+  ball.vy = 0;
+  gameRunning = true;
+  startAnimation();
+}
+
+// Animation loop
+function startAnimation() {
+  if (typeof requestAnimationFrame !== 'function') {
+    alert("Your browser does not support requestAnimationFrame");
+    return;
+  }
+  function loop() {
+    if (!gameRunning) return;
+    update();
+    draw();
+    animationId = requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// Update game
+function update() {
+  if (!gameRunning) return;
+  ball.update();
+
+  for (let pin of pins) pin.update();
+
+  for (let pin of pins) {
+    if (!pin.knockedDown && circleCollision(ball, pin)) {
+      pin.vx = ball.vx * 1.5;
+      pin.vy = ball.vy * 1.5;
+      resolveCollision(ball, pin);
+      pin.knockedDown = true;
+      pin.angularVelocity = (Math.random() * 0.2 + 0.1) * (Math.random() < 0.5 ? 1 : -1);
+      pin.fallVy = -8;
+      score++;
+    }
+  }
+
+  // Collisions between pins
+  for (let i = 0; i < pins.length; i++) {
+    for (let j = i + 1; j < pins.length; j++) {
+      if (!pins[i].knockedDown && !pins[j].knockedDown && circleCollision(pins[i], pins[j])) {
+        resolveCollision(pins[i], pins[j]);
+      }
+    }
+  }
+
+  // Reset ball if out of bounds
+  if (ball.y < -30 || ball.y > canvas.height + 30) {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height - 50;
+    ball.vx = 0;
+    ball.vy = 0;
+  }
+}
+
+// Draw everything
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawLane();
+  ball.draw();
+  for (let pin of pins) pin.draw();
+  ctx.fillStyle = "#fff";
+  ctx.font = "24px Arial";
+  ctx.textAlign = "left";
+  ctx.fillText("Score: " + score, 20, 40);
+}
+
+// Restart the game
+function restartGame() {
+  if (animationId) cancelAnimationFrame(animationId);
+  gameRunning = false;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  score = 0;
+  initGame();
+}
+
+// Close the game (stop and clear)
+function closeGame() {
+  if (animationId) cancelAnimationFrame(animationId);
+  gameRunning = false;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Event listener for launching the ball
+canvas.addEventListener("click", (e) => {
+  if (ball.vx === 0 && ball.vy === 0 && gameRunning) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    let dx = mouseX - ball.x;
+    let dy = mouseY - ball.y;
+    let length = Math.sqrt(dx * dx + dy * dy);
+    if (length > 0) {
+      ball.vx = (dx / length) * 12;
+      ball.vy = (dy / length) * 12;
+    }
+  }
+});
+
+// Button event handlers
+startBtn.onclick = () => {
+  if (!gameRunning) {
+    initGame();
+  }
+};
+restartBtn.onclick = () => {
+  restartGame();
+};
+closeBtn.onclick = () => {
+  closeGame();
+};
+// Exit button is a link: <a href="../games.html">Exit</a>
+
+</script>
+</body>
+</html>

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Video List</title>
-<style>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Video List with Counter</title>
+    <style>
   body {
     background-color: #72c9ff; /* Light blue background */
     margin: 0;
@@ -14,13 +16,35 @@
     flex-direction: column;
     min-height: 100vh;
     box-sizing: border-box;
-    scroll-behavior: smooth; /* Enables smooth scrolling */
+    scroll-behavior: smooth;
   }
+
   h1 {
     text-align: center;
     font-size: 2.5em;
     margin-bottom: 20px;
   }
+
+  /* Counter styling */
+  .counter-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 30px 0;
+  }
+
+  .counter {
+    font-size: 80px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: rgb(33, 136, 127); /* Green background for contrast */
+    padding: 20px 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    font-family: 'Arial', sans-serif;
+  }
+
+  /* Table styling */
   table {
     width: 100%;
     max-width: 1046px;
@@ -31,12 +55,14 @@
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   }
+
   td {
     padding: 12px 20px;
     border: 1px solid #a8a8a8;
     text-align: center;
     font-size: 1em;
   }
+
   /* Container for the download button at bottom left with full space around */
   .bottom-left-container {
     display: flex;
@@ -45,21 +71,24 @@
     padding: 20px;
     margin-top: auto; /* Push to bottom of flex container */
   }
+
   /* Style for the download button */
   .download-button {
     text-decoration: none;
-    background-color: #007BFF; /* Blue button */
+    background-color: #594dffff; /* Blue button */
     color: #fff;
     padding: 10px 20px;
     border-radius: 5px;
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.2s ease;
   }
+
   /* Hover effect for download button */
   .download-button:hover {
-    background-color: #0056b3;
+    background-color: #254099;
     transform: scale(1.05);
   }
+
   /* Additional styling for exit link container if needed */
   .exit-container {
     width: 100%;
@@ -67,117 +96,60 @@
     justify-content: flex-end;
     padding: 10px 20px;
   }
+
   .exit-link {
     text-decoration: none;
-    background-color: #007BFF; /* Blue button */
+    background-color: #001aff; /* Blue button */
     color: #fff;
     padding: 10px 20px;
     border-radius: 5px;
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.2s ease;
   }
+
   .exit-link:hover {
-    background-color: #0056b3;
+    background-color: #0054b3;
     transform: scale(1.05);
   }
 </style>
-</head>
-<body>
+  </head>
+  <body>
+    <br>
+    <div align="center"><font size="+3" face="Arial Rounded MT">xxxsexy
+        serv00 = Video ID (1000)</font><br>
+      <font size="+3" face="Arial Rounded MT"><br>
+      </font></div>
+    <p align="center"><font size="+1">Its white Update Doing well just
+        video for checking Number Counter Animation.</font><br>
+    </p>
+    <!-- Counter Display -->
+    <div class="counter-container">
+      <div class="counter" id="counter">0</div>
+    </div>
+    <!-- Download PDF Button -->
+    <div class="download-container"> <a
+href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Video%20ID/videos%20list.pdf"
+        class="download-button" target="_blank" download="">Download PDF</a>
+    </div>
+    <!-- Exit link at the bottom right -->
+    <div class="exit-container"> <a href="../../your%20favorite.html"
+        class="exit-link">exit</a>
+    </div>
+    <script>
+  // Counter animation to count up to 30
+  const counter = document.getElementById('counter');
+  const targetNumber = 30;
+  let currentNumber = 0;
+  const duration = 5000; // duration of animation in ms
+  const intervalTime = Math.floor(duration / targetNumber);
 
-<h1>xxxsexy sevr00 = Video ID (1000)</h1>
-
-<table>
-  <tbody>
-    <tr>
-      <td>Video 1</td>
-      <td>Bro Rubbadubbers Get Jumpscare fnaf 2 marionettte</td>
-    </tr>
-    <tr>
-      <td>Video 2</td>
-      <td>yugioh gx atticus vs fujiwara but bro lamar roasts franklin</td>
-    </tr>
-    <tr>
-      <td>Video 3</td>
-      <td>Bro Looney tunes bunny piano yosemite Sam and Duck xylophone</td>
-    </tr>
-    <tr>
-      <td>Video 4</td>
-      <td>Bro Mickey mouse intro skull little baby and End Get out</td>
-    </tr>
-    <tr>
-      <td>Video 5</td>
-      <td>Bro bubble guppies phone call and get out</td>
-    </tr>
-    <tr>
-      <td>Video 6</td>
-      <td>Bro Handy manny middle finger and run</td>
-    </tr>
-    <tr>
-      <td>Video 7</td>
-      <td>Bob the builder Wendy C4 in brick (Meme) (2022)</td>
-    </tr>
-    <tr>
-      <td>Video 8</td>
-      <td>Bro tiger angry again MAD Madagascar 3 Europe Most Wanted</td>
-    </tr>
-    <tr>
-      <td>Video 9</td>
-      <td>Tom and Jerry Missing mouse + Tom and jerry Tales ho ho horrors</td>
-    </tr>
-    <tr>
-      <td>Video 10</td>
-      <td>Tom and jerry the dog meme (2022)</td>
-    </tr>
-    <tr>
-      <td>Video 11</td>
-      <td>Goofy ahh Canale 5 - Ora Esatta</td>
-    </tr>
-    <tr>
-      <td>Video 12</td>
-      <td>Chicago pd Bro gun and explosive</td>
-    </tr>
-    <tr>
-      <td>Video 13</td>
-      <td>phineas and ferb Bro speak Candace Flynn Get out Bitch!</td>
-    </tr>
-    <tr>
-      <td>Video 14</td>
-      <td>Law and order bro Sociopathic Child Diddy pencil time!</td>
-    </tr>
-    <tr>
-      <td>Video 15</td>
-      <td>Bro Hitler Skull Donald duck and Donald daffy</td>
-    </tr>
-    <tr>
-      <td>Video 16</td>
-      <td>bro gun shot baby lesieur ISIO4 Cooking oil</td>
-    </tr>
-    <tr>
-      <td>Video 17</td>
-      <td>Bro David Guetta horse shut the fuck up you nasty bitch and rage</td>
-    </tr>
-    <tr>
-      <td>Video 18</td>
-      <td>Simpatici Be Like</td>
-    </tr>
-    <tr>
-      <td>Video 19</td>
-      <td>bro angry kid is meme</td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- Download PDF Button -->
-<div class="download-container">
-  <a href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Video%20ID/videos%20list.pdf" class="download-button" target="_blank" download>
-    Download PDF
-  </a>
-</div>
-
-<!-- Exit link at the bottom right -->
-<div class="exit-container">
-  <a href="../../your%20favorite.html" class="exit-link">exit</a>
-</div>
-
-</body>
+  const counterInterval = setInterval(() => {
+    currentNumber++;
+    counter.textContent = currentNumber;
+    if (currentNumber >= targetNumber) {
+      clearInterval(counterInterval);
+    }
+  }, intervalTime);
+</script>
+  </body>
 </html>

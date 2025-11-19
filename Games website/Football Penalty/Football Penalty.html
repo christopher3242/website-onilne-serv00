@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Penalty Shootout with AI Goalkeeper</title>
+    <style>
+  body { font-family: Arial, sans-serif; text-align: center; background: #f0f8ff; margin: 0; padding: 20px; }
+  #gameCanvas { border: 3px solid #333; background: linear-gradient(to bottom, #a8edea, #fed6e3); display: block; margin: 20px auto; }
+  button { margin: 10px; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; background: #4CAF50; color: white; transition: background 0.3s; }
+  button:hover { background: #45a049; }
+  #scoreDisplay { font-size: 20px; margin-top: 10px; }
+</style>
+  </head>
+  <body>
+    <h1 style="color:#333;">Penalty Shootout with AI Goalkeeper</h1>
+    <div id="scoreDisplay">Score: <span id="score">0</span></div>
+    <canvas id="gameCanvas" width="400" height="350"></canvas>
+    <div> <button onclick="shoot('left')">Shoot Left</button> <button
+        onclick="shoot('center')">Shoot Center</button> <button
+        onclick="shoot('right')">Shoot Right</button>
+    </div>
+    <div> <button onclick="restartGame()">Restart</button> <a
+        href="../Games.html"><button onclick="exitGame()">Exit</button></a>
+    </div>
+    <script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+let score = 0;
+let goalkeeperX = 200; // Current x position of goalkeeper
+const goalkeeperY = 50; // y position
+const goalkeeperRadius = 20;
+
+let gameActive = true; // To control game state
+
+// Function to randomly move goalkeeper left, center, or right
+function moveGoalkeeper() {
+  if (!gameActive) return;
+  const positions = ['left', 'center', 'right'];
+  const moveTo = positions[Math.floor(Math.random() * 3)];
+  if (moveTo === 'left') goalkeeperX = 100;
+  if (moveTo === 'center') goalkeeperX = 200;
+  if (moveTo === 'right') goalkeeperX = 300;
+}
+setInterval(moveGoalkeeper, 2000);
+
+// Draw the goal frame
+function drawGoal() {
+  ctx.clearRect(0, 0, 400, 350);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(50, 70, 300, 200);
+  ctx.fillStyle = '#228B22'; // green crossbar
+  ctx.fillRect(50, 70, 300, 10);
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(50, 70, 300, 200);
+}
+
+// Draw goalkeeper as a circle
+function drawGoalkeeper() {
+  ctx.beginPath();
+  ctx.arc(goalkeeperX, goalkeeperY, goalkeeperRadius, 0, Math.PI * 2);
+  ctx.fillStyle = '#1E90FF'; // DodgerBlue
+  ctx.fill();
+  ctx.closePath();
+}
+
+// Animate the ball towards target
+function drawBall(targetX, targetY, callback) {
+  const startX = 200;
+  const startY = 250;
+  const duration = 800;
+  const startTime = performance.now();
+
+  function animate(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const currentX = startX + (targetX - startX) * progress;
+    const currentY = startY + (targetY - startY) * progress;
+
+    ctx.clearRect(0, 0, 400, 350);
+    drawGoal();
+    drawGoalkeeper();
+
+    ctx.beginPath();
+    ctx.arc(currentX, currentY, 10, 0, Math.PI * 2);
+    ctx.fillStyle = '#000'; // black ball
+    ctx.fill();
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      // Check save or goal
+      checkSave(targetX, targetY);
+      if (callback) callback();
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+// Check for save or goal
+function checkSave(targetX, targetY) {
+  const dx = targetX - goalkeeperX;
+  const dy = targetY - goalkeeperY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  const thresholdDistance = goalkeeperRadius + 10;
+
+  if (
+    distance < thresholdDistance && // Ball overlaps goalkeeper
+    targetY <= goalkeeperY + goalkeeperRadius + 10 // Close enough vertically
+  ) {
+    alert('Saved by the goalkeeper!');
+  } else {
+    score++;
+    document.getElementById('score').innerText = score;
+    alert('Goal!');
+  }
+}
+
+// Shooting function
+function shoot(direction) {
+  if (!gameActive) return;
+  let targetX, targetY;
+  if (direction === 'left') { targetX = 100; targetY = 70; }
+  if (direction === 'center') { targetX = 200; targetY = 70; }
+  if (direction === 'right') { targetX = 300; targetY = 70; }
+
+  drawGoal();
+  drawGoalkeeper();
+  drawBall(targetX, targetY);
+}
+
+// Restart game
+function restartGame() {
+  score = 0;
+  document.getElementById('score').innerText = score;
+  gameActive = true;
+  drawGoal();
+  drawGoalkeeper();
+}
+
+
+// Initial drawing
+drawGoal();
+drawGoalkeeper();
+
+</script>
+  </body>
+</html>

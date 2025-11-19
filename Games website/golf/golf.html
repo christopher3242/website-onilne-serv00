@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Touch Golf Game</title>
+    <style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #87CEEB;
+  }
+  #gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100vh;
+    background-color: green;
+    touch-action: none; /* prevent default touch actions */
+  }
+  #ui {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  h1 {
+    text-align: center;
+    margin: 10px 0;
+  }
+</style>
+  </head>
+  <body>
+    <h1>Touch Golf Game</h1>
+    <div id="ui"> <a href="../Games.html"><button id="exitBtn">Exit</button></a>
+      <button id="nextBtn">Next Level</button> <button id="restartBtn">Restart</button>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const exitBtn = document.getElementById('exitBtn');
+const nextBtn = document.getElementById('nextBtn');
+const restartBtn = document.getElementById('restartBtn');
+
+let level = 1;
+const maxLevel = 4;
+
+let gameActive = true;
+
+// Resize canvas to fit window
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// Game objects
+let ball = {
+  x: 100,
+  y: 500,
+  radius: 10,
+  color: 'white',
+  vx: 0,
+  vy: 0,
+  isMoving: false
+};
+
+let hole = {
+  x: 700,
+  y: 100,
+  radius: 20,
+  color: 'black'
+};
+
+let obstacle = {
+  x: 400,
+  y: 300,
+  width: 100,
+  height: 20,
+  color: 'brown',
+  visible: true
+};
+
+// Generate obstacle and hole positions
+function generateObstacle() {
+  obstacle.x = Math.random() * (canvas.width - obstacle.width);
+  obstacle.y = Math.random() * (canvas.height - obstacle.height);
+  obstacle.visible = true;
+}
+
+function generateHole() {
+  hole.x = Math.random() * (canvas.width - hole.radius * 2) + hole.radius;
+  hole.y = Math.random() * (canvas.height - hole.radius * 2) + hole.radius;
+}
+
+function resetGame() {
+  ball.x = 100;
+  ball.y = 500;
+  ball.vx = 0;
+  ball.vy = 0;
+  ball.isMoving = false;
+  generateHole();
+  generateObstacle();
+}
+
+// Button handlers
+nextBtn.onclick = () => {
+  if (level < maxLevel) {
+    level++;
+    resetGame();
+  } else {
+    alert("You've completed all levels!");
+  }
+};
+restartBtn.onclick = () => {
+  level = 1;
+  resetGame();
+};
+
+// Touch/swipe variables
+let touchStart = null;
+let touchEnd = null;
+
+// Handle touch start
+canvas.addEventListener('touchstart', (e) => {
+  if (ball.isMoving) return;
+  if (e.touches.length === 1) {
+    const touch = e.touches[0];
+    touchStart = {x: touch.clientX, y: touch.clientY};
+  }
+});
+
+// Handle touch end
+canvas.addEventListener('touchend', (e) => {
+  if (ball.isMoving || !touchStart) return;
+  if (e.changedTouches.length === 1) {
+    const touch = e.changedTouches[0];
+    touchEnd = {x: touch.clientX, y: touch.clientY};
+    // Calculate swipe vector
+    const dx = touchStart.x - touchEnd.x;
+    const dy = touchStart.y - touchEnd.y;
+    // Set velocity based on swipe
+    ball.vx = dx * 0.1;
+    ball.vy = dy * 0.1;
+    ball.isMoving = true;
+    touchStart = null;
+  }
+});
+
+// Optional: handle mouse for desktop testing
+canvas.addEventListener('mousedown', (e) => {
+  if (ball.isMoving) return;
+  touchStart = {x: e.clientX, y: e.clientY};
+});
+canvas.addEventListener('mouseup', (e) => {
+  if (ball.isMoving || !touchStart) return;
+  touchEnd = {x: e.clientX, y: e.clientY};
+  const dx = touchStart.x - touchEnd.x;
+  const dy = touchStart.y - touchEnd.y;
+  ball.vx = dx * 0.1;
+  ball.vy = dy * 0.1;
+  ball.isMoving = true;
+  touchStart = null;
+});
+
+// Main game loop
+function gameLoop() {
+  ctx.fillStyle = 'green';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw hole
+  ctx.beginPath();
+  ctx.arc(hole.x, hole.y, hole.radius, 0, Math.PI * 2);
+  ctx.fillStyle = hole.color;
+  ctx.fill();
+
+  // Draw obstacle
+  if (obstacle.visible) {
+    ctx.fillStyle = obstacle.color;
+    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+  }
+
+  // Draw ball
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  ctx.fillStyle = ball.color;
+  ctx.fill();
+
+  // Update ball position
+  if (ball.isMoving) {
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+    // Apply friction
+    ball.vx *= 0.98;
+    ball.vy *= 0.98;
+
+    // Stop if slow enough
+    if (Math.abs(ball.vx) < 0.1 && Math.abs(ball.vy) < 0.1) {
+      ball.vx = 0;
+      ball.vy = 0;
+      ball.isMoving = false;
+    }
+
+    // Boundary collision
+    if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
+      ball.vx *= -1;
+    }
+    if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+      ball.vy *= -1;
+    }
+  }
+
+  // Check collision with hole
+  const dx = ball.x - hole.x;
+  const dy = ball.y - hole.y;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist < hole.radius) {
+    alert('Level Completed!');
+    if (level < maxLevel) {
+      level++;
+      resetGame();
+    } else {
+      alert('Game Finished! Congratulations!');
+    }
+  }
+
+  // Check collision with obstacle
+  if (obstacle.visible) {
+    if (
+      ball.x + ball.radius > obstacle.x &&
+      ball.x - ball.radius < obstacle.x + obstacle.width &&
+      ball.y + ball.radius > obstacle.y &&
+      ball.y - ball.radius < obstacle.y + obstacle.height
+    ) {
+      // Bounce back
+      ball.vx *= -1;
+      ball.vy *= -1;
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+    }
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+// Initialize game
+resetGame();
+gameLoop();
+
+</script>
+  </body>
+</html>

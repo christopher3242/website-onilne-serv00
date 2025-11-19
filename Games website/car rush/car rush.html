@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Car Rush</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #333;
+  }
+  h1 {
+    text-align: center;
+    color: white;
+    margin: 10px 0;
+  }
+  #gameContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #555;
+  }
+  #playerCar {
+    position: absolute;
+    bottom: 20px;
+    width: 50px;
+    height: 100px;
+    background: red;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 10px;
+    z-index: 10;
+  }
+  .obstacle {
+    position: absolute;
+    width: 50px;
+    height: 100px;
+    top: 0;
+  }
+  /* Different obstacle colors */
+  .black { background: black; }
+  .blue { background: blue; }
+  .green { background: green; }
+
+  #controls {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    z-index: 20;
+  }
+  button {
+    font-size: 1.5em;
+    padding: 10px;
+  }
+  #speedInput {
+    width: 100px;
+  }
+  #scoreBoard {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 1.2em;
+    color: white;
+    z-index: 20;
+  }
+  #gameOverMsg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2em;
+    color: white;
+    background: rgba(0,0,0,0.7);
+    padding: 20px;
+    display: none;
+    text-align: center;
+    z-index: 30;
+  }
+  /* Exit Button Styles */
+  #exitBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 20;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    background: #c00;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<h1>Car Rush</h1>
+<!-- Exit button wrapped in link -->
+<a href="../games.html"><button id="exitBtn">Exit</button></a>
+
+<div id="gameContainer">
+  <div id="scoreBoard">Score: 0 | Top Score: 0</div>
+  <div id="playerCar"></div>
+  <div id="gameOverMsg">
+    Game Over<br/>
+    <button onclick="restartGame()">Restart</button>
+  </div>
+</div>
+<div id="controls">
+  <button id="leftBtn">⬅️</button>
+  <button id="rightBtn">➡️</button>
+  <label for="speedInput">Speed (1-400 mph):</label>
+  <input type="number" id="speedInput" min="1" max="400" value="50" />
+</div>
+<script>
+  const gameContainer = document.getElementById('gameContainer');
+  const playerCar = document.getElementById('playerCar');
+  const gameOverMsg = document.getElementById('gameOverMsg');
+  const scoreBoard = document.getElementById('scoreBoard');
+  const leftBtn = document.getElementById('leftBtn');
+  const rightBtn = document.getElementById('rightBtn');
+  const speedInput = document.getElementById('speedInput');
+
+  let carX = window.innerWidth / 2;
+  const carY = window.innerHeight - 120;
+  let obstacles = [];
+  let gameInterval = null;
+  let obstacleInterval = null;
+  let score = 0;
+  let topScore = parseInt(localStorage.getItem('topScore')) || 0;
+  let gameSpeed = parseInt(speedInput.value);
+  let obstacleSpeed = Math.max(2, gameSpeed / 20);
+  let obstacleFrequency = 1500; // ms
+  let moveLeft = false;
+  let moveRight = false;
+  let gameRunning = false;
+  let cooldown = false; // cooldown flag after hitting obstacle
+
+  // Initialize position
+playerCar.style.left = `${carX - 25}px`;
+playerCar.style.top = `${carY}px`;
+updateScore();
+
+// Update score display with top score fixed
+function updateScore() {
+  scoreBoard.innerHTML = `Score: ${score} | Top Score: ${topScore}`;
+}
+
+// Control buttons and keys
+leftBtn.addEventListener('touchstart', () => { moveLeft = true; });
+leftBtn.addEventListener('touchend', () => { moveLeft = false; });
+rightBtn.addEventListener('touchstart', () => { moveRight = true; });
+rightBtn.addEventListener('touchend', () => { moveRight = false; });
+
+// Keyboard controls
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'ArrowLeft') moveLeft = true;
+  if(e.key === 'ArrowRight') moveRight = true;
+});
+document.addEventListener('keyup', (e) => {
+  if(e.key === 'ArrowLeft') moveLeft = false;
+  if(e.key === 'ArrowRight') moveRight = false;
+});
+
+// Speed control
+speedInput.addEventListener('change', () => {
+  let val = parseInt(speedInput.value);
+  if(val < 1) val = 1;
+  if(val > 400) val = 400;
+  gameSpeed = val;
+  obstacleSpeed = Math.max(2, gameSpeed / 20);
+});
+
+// Exit button (wrapped in link)
+document.getElementById('exitBtn').addEventListener('click', () => {
+  stopGame();
+});
+
+// Create obstacles with random colors
+function createObstacle() {
+  const obstacle = document.createElement('div');
+  obstacle.className = 'obstacle';
+
+  // Random color
+  const colors = ['black', 'blue', 'green'];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  obstacle.classList.add(color);
+
+  // Random lane
+  const lanes = 3;
+  const laneWidth = window.innerWidth / lanes;
+  const lane = Math.floor(Math.random() * lanes);
+  obstacle.style.left = `${lane * laneWidth + laneWidth/2 - 25}px`;
+  obstacle.style.top = `-100px`;
+  gameContainer.appendChild(obstacle);
+  obstacles.push(obstacle);
+}
+
+// Move obstacles downward and check collisions
+function moveObstacles() {
+  for(let i=0; i<obstacles.length; i++) {
+    const obs = obstacles[i];
+    const top = parseFloat(obs.style.top);
+    obs.style.top = `${top + obstacleSpeed}px`;
+
+    // Remove off-screen obstacles
+    if(top > window.innerHeight) {
+      gameContainer.removeChild(obs);
+      obstacles.splice(i,1);
+      i--;
+      score++;
+      updateScore();
+    } else {
+      // Check collision only if not in cooldown
+      if(!cooldown && checkCollision(playerCar, obs)) {
+        handleCollision();
+        break;
+      }
+    }
+  }
+}
+
+// Collision detection
+function checkCollision(car, obstacle) {
+  const cRect = car.getBoundingClientRect();
+  const oRect = obstacle.getBoundingClientRect();
+  return !(
+    cRect.right < oRect.left || 
+    cRect.left > oRect.right || 
+    cRect.bottom < oRect.top || 
+    cRect.top > oRect.bottom
+  );
+}
+
+// Handle collision with cooldown and update top score
+function handleCollision() {
+  cooldown = true;
+  // Show game over message
+  gameOverMsg.style.display = 'block';
+
+  // Update top score if current score exceeds it
+  if (score > topScore) {
+    topScore = score;
+    localStorage.setItem('topScore', topScore);
+  }
+  updateScore();
+
+  // After 3 seconds, reset cooldown
+  setTimeout(() => {
+    cooldown = false;
+  }, 3000);
+}
+
+// Main update loop
+function update() {
+  if(!gameRunning) return;
+
+  // Move car
+  if(moveLeft) {
+    carX -= 5;
+    if(carX < 25) carX = 25;
+  }
+  if(moveRight) {
+    carX += 5;
+    if(carX > window.innerWidth - 25) carX = window.innerWidth - 25;
+  }
+  playerCar.style.left = `${carX - 25}px`;
+
+  // Move obstacles
+  moveObstacles();
+}
+
+// Start game
+function startGame() {
+  // Reset obstacles
+  obstacles.forEach(obs => {
+    if(gameContainer.contains(obs)) gameContainer.removeChild(obs);
+  });
+  obstacles = [];
+  score = 0;
+  updateScore();
+  gameOverMsg.style.display = 'none';
+
+  // Clear intervals
+  if(gameInterval) clearInterval(gameInterval);
+  if(obstacleInterval) clearInterval(obstacleInterval);
+
+  // Start obstacle creation
+  obstacleInterval = setInterval(createObstacle, obstacleFrequency);
+  // Start main game loop
+  gameInterval = setInterval(update, 20);
+  gameRunning = true;
+}
+
+// Stop game
+function stopGame() {
+  gameRunning = false;
+  clearInterval(gameInterval);
+  clearInterval(obstacleInterval);
+  // Hide game over message if visible
+  gameOverMsg.style.display = 'none';
+}
+
+// Restart game
+function restartGame() {
+  startGame();
+}
+
+// Initialize game
+startGame();
+</script>
+</body>
+</html>

@@ -1,65 +1,134 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background 0.5s, color 0.5s;
 }
 
-.calculator {
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+/* Fixed theme buttons at top */
+#themeButtons {
+  position: fixed;
+  top: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  z-index: 999;
+}
+#themeButtons button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  background: #888;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+#themeButtons button:hover {
+  background: #555;
 }
 
+/* Header with Exit button */
+header {
+  width: 100%;
+  padding: 10px 20px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 60px;
+  position: relative;
+}
+#exitBtn {
+  position: absolute;
+  left: 20px;
+  background: #ff4d4d;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+}
+#exitBtn:hover {
+  background: #ff1a1a;
+}
+h1 {
+  margin: 0;
+  font-size: 1.8em;
+  letter-spacing: 2px;
+}
+
+/* Centered calculator container */
+.container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+#calculator {
+  background: rgba(255,255,255,0.9);
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 #display {
-    width: 100%;
-    height: 40px;
-    text-align: right;
-    font-size: 24px;
-    margin-bottom: 10px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  width: 100%;
+  height: 50px;
+  font-size: 1.4em;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  text-align: right;
+  background: #fff;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 15px;
 }
-
-.buttons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+/* Buttons grid */
+.buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  width: 100%;
 }
-
 button {
-    padding: 20px;
-    font-size: 20px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    transition: background-color 0.3s;
+  padding: 15px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  background: #4CAF50;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s;
 }
-
 button:hover {
-    background-color: #0056b3;
+  background: #45a049;
 }
 
-#exitButton {
-    margin-top: 10px;
-    padding: 10px;
-    font-size: 20px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: red;
-    color: white;
-    width: 100%; /* Make it full width */
-    transition: background-color 0.3s;
+/* Exit link styling */
+.exit-container {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 999;
 }
-
-#exitButton:hover {
-    background-color: darkred;
+.exit-link {
+  background: #444;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+.exit-link:hover {
+  background: #222;
 }
