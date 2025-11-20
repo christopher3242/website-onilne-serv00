@@ -4,77 +4,96 @@
 
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,
       initial-scale=1.0">
     <title>Under Construction</title>
     <style>
-body {
-  background-color: rgb(65, 17, 83); /* Dark background for contrast */
-  color: #ffffff; /* Text color */
-  font-family: Arial, sans-serif; /* Font style */
-  text-align: center; /* Center alignment */
-  margin: 0; /* Remove default margin */
-  padding: 50px; /* Padding for spacing */
-  position: relative; /* To contain fixed position elements */
-  min-height: 100vh; /* Ensure full viewport height */
-}
+  body {
+    background-color: rgb(74, 12, 80); /* Dark background for contrast */
+    color: #ffffff; /* Text color */
+    font-family: Arial, sans-serif; /* Font style */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+  }
 
-/* Style for the main content */
-div {
-  max-width: 600px;
-  margin: 0 auto;
-}
+  /* Container for content */
+  div {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+  }
 
-/* Header style */
-h1 {
-  font-size: 2.5em; /* Bigger text size for the title */
-  color: #cc33cc; /* Purple color */
-}
+  /* Header style */
+  h1 {
+    font-size: 4.5em;
+    color: #cc33cc;
+    margin-bottom: 20px;
+  }
 
-/* Paragraph style */
-p {
-  font-size: 1.2em; /* Adjust font size for paragraph */
-}
+  /* Paragraph styles */
+  p {
+    font-size: 1.2em;
+    margin: 15px 0;
+  }
 
-/* Link styles */
-a {
-  color: #1e90ff; /* Color for links */
-  text-decoration: none; /* Remove underline from links */
-  font-weight: bold; /* Make links bold */
-}
+  /* Link styles */
+  a {
+    color: #1e90ff;
+    text-decoration: none;
+    font-weight: bold;
+  }
 
-a:hover {
-  color: #ffcc00; /* Change color on hover */
-}
+  a:hover {
+    color: #ffcc00;
+  }
 
-/* Fixed Exit button at bottom center */
-.exit-button {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #ff4d4d; /* Red background for visibility */
-  color: #fff;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.2em;
-  cursor: pointer;
-  text-decoration: none;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  transition: background-color 0.3s;
-  z-index: 1000;
-}
+  /* Fixed Exit Button at bottom center */
+  .exit-button {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff4d4d; /* Red background for visibility */
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
 
-.exit-button:hover {
-  background-color: #e60000; /* Darker red on hover */
-}
+  /* Remove hover animation, but keep hover color change */
+  .exit-button:hover {
+    background-color: #e60000;
+  }
+
+  /* Responsive typography for smaller screens */
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 2em;
+    }
+    p {
+      font-size: 1em;
+    }
+    .exit-button {
+      padding: 10px 20px;
+      font-size: 1em;
+    }
+  }
 </style>
   </head>
   <body>
     <div>
-      <h1>Sorry Closed Down!<br>
+      <h1><font size="+3" face="Bodoni MT">Sorry Closed Down!</font><br>
       </h1>
       <p>Status : n/a<br>
       </p>
@@ -85,10 +104,9 @@ a:hover {
       </p>
       <p>If you ask Christopher or xxxsexy discord account for DMS only.<br>
       </p>
-      <a href="https://discord.gg/aYM2Cvdm94" moz-do-not-send="true">Contact
-        Me!</a><br>
+      <a href="https://discord.gg/4gmSgegG7Y" target="_blank"
+        rel="noopener noreferrer">Contact Me!</a><br>
     </div>
-    <!-- Fixed Exit Button -->
-    <a href="index.html" class="exit-button">Exit</a>
+    <!-- Fixed Exit Button --> <a href="index.html" class="exit-button">Exit</a>
   </body>
 </html>
