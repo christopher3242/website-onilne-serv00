@@ -5,32 +5,49 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Custom Video Player with Audio and Captions</title>
+<!-- Video.js CSS -->
 <link href="https://vjs.zencdn.net/7.18.1/video-js.css" rel="stylesheet" />
-<script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
+<!-- Optional: Make Video.js controls more touch-friendly -->
 <style>
   body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
+    justify-content: flex-start;
+    min-height: 100vh;
     margin: 0;
-    background: linear-gradient(345deg,rgba(67,183,109,1)0%,rgba(80,120,171,1)100%);
+    background: linear-gradient(345deg, rgba(67,183,109,1) 0%, rgba(80,120,171,1) 100%);
     font-family: Arial, sans-serif;
+    padding: 20px;
   }
 
   .video-container {
+    width: 100%;
+    max-width: 800px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     text-align: center;
   }
 
-  .video-number {
+  h1 {
+    margin-bottom: 10px;
+    color: #fff;
+  }
+
+  #videoPlayer {
+    width: 100% !important;
+    height: auto !important;
+    border: 0.5px solid #0a478d;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+
+  #videoNumber {
     margin-top: 10px;
-    font-size: 20px;
+    font-size: 1.2em;
     font-weight: bold;
+    color: #fff;
   }
 
   .button-container {
@@ -42,37 +59,33 @@
 
   button {
     margin: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 12px 20px;
+    font-size: 1em;
     cursor: pointer;
-    transition: opacity 0.5s ease;
+    border: none;
+    border-radius: 5px;
+    background-color: #0a478d;
+    color: #fff;
+    transition: background-color 0.3s, opacity 0.5s;
+  }
+
+  button:hover {
+    background-color: #09517a;
   }
 
   /* Hidden class for hiding buttons */
   .hidden {
     opacity: 0;
     pointer-events: none;
+    visibility: hidden;
   }
 
-  /* Custom styles for Video.js components */
-  .my-custom-player {
-    border: 0.5px solid #0a478d;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  }
-
-  .vjs-matrix.video-js {
-    color: #ffffff;
-  }
-
-  .vjs-matrix .vjs-big-play-button {
-    border-color: #ffffff;
-  }
-
-  .vjs-matrix .vjs-volume-level,
-  .vjs-matrix .vjs-play-progress,
-  .vjs-matrix .vjs-slider-bar {
-    background: #42d9ff;
+  /* Make controls touch-friendly */
+  @media (max-width: 600px) {
+    button {
+      padding: 10px 16px;
+      font-size: 0.9em;
+    }
   }
 </style>
 </head>
@@ -80,7 +93,7 @@
 <div class="video-container">
   <h1>Custom Video Player</h1>
   <div class="video-number" id="videoNumber">Video 1</div>
-  <video id="videoPlayer" class="video-js my-custom-player vjs-matrix" controls preload="auto" width="600" height="300">
+  <video id="videoPlayer" class="video-js vjs-default-skin" controls preload="auto" poster="placeholder.jpg" playsinline>
     <source src="video1.mp4" type="video/mp4" />
     <!-- Multiple subtitle tracks -->
     <track kind="subtitles" label="English (USA)" srclang="en" src="subtitles_en.vtt" />
@@ -132,6 +145,9 @@
     </a>
   </div>
 </div>
+
+<!-- Video.js JS -->
+<script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
 <script>
   const videoNumberDisplay = document.getElementById('videoNumber');
   let currentVideoIndex = 0;
@@ -142,15 +158,14 @@
     videoSources.push(`video${i}.mp4`);
   }
 
-  const audioSources = {
-    en: 'audio_en.mp3',
-    fr: 'audio_fr.mp3',
-    it: 'audio_it.mp3',
-    de: 'audio_de.mp3'
-  };
-
   const videoPlayer = videojs('videoPlayer', {
-    className: 'my-custom-player',
+    controls: true,
+    preload: 'auto',
+    fluid: true,
+    controlBar: {
+      fullscreenToggle: true,
+      pictureInPictureToggle: true
+    },
     playbackRates: [0.5, 1, 1.5, 2]
   });
 
@@ -166,11 +181,6 @@
     videoPlayer.play();
     updateButtonVisibility();
     updateVideoNumber();
-    handleAudioTrack();
-  }
-
-  function handleAudioTrack() {
-    // Implement if needed
   }
 
   function updateVideoNumber() {
