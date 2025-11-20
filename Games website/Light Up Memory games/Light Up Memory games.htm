@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Memory Game with Levels &amp; Sound</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: #fff;
+  }
+
+  h1 {
+    margin-bottom: 10px;
+  }
+
+  #levelDisplay {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+
+  #game-container {
+    display: grid;
+    grid-template-columns: repeat(2, 150px);
+    grid-gap: 20px;
+  }
+
+  .color-button {
+    width: 150px;
+    height: 150px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  .red { background-color: #ff4d4d; }
+  .green { background-color: #4dff4d; }
+  .blue { background-color: #4d4dff; }
+  .yellow { background-color: #ffff4d; }
+
+  /* Light highlight effect */
+  .light {
+    opacity: 0.6;
+  }
+
+  #status {
+    margin-top: 20px;
+    font-size: 1.2em;
+  }
+
+  #buttons-container {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #555;
+    color: #fff;
+    transition: background-color 0.2s;
+  }
+
+  button:hover {
+    background-color: #777;
+  }
+</style>
+  </head>
+  <body>
+    <h1>Light Up Memory Games with Levels &amp; Sound</h1>
+    <div id="levelDisplay">Level: 0</div>
+    <div id="game-container"> <button class="color-button red"
+        data-color="red"></button> <button class="color-button green"
+        data-color="green"></button> <button class="color-button blue"
+        data-color="blue"></button> <button class="color-button yellow"
+        data-color="yellow"></button> </div>
+    <div id="status">Press Start to Play!</div>
+    <div id="buttons-container"> <button id="startBtn">Start Game</button>
+      <a moz-do-not-send="true" href="../games.html"><button
+          id="exitBtn">Exit</button></a> </div>
+    <script>
+  const colors = ['red', 'green', 'blue', 'yellow'];
+  let sequence = [];
+  let playerSequence = [];
+  let level = 0;
+  let isPlayerTurn = false;
+  let gameActive = false; // To control game state
+
+  const buttons = document.querySelectorAll('.color-button');
+  const status = document.getElementById('status');
+  const startBtn = document.getElementById('startBtn');
+  const exitBtn = document.getElementById('exitBtn');
+  const levelDisplay = document.getElementById('levelDisplay');
+
+  // Setup Web Audio API
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = new AudioContext();
+
+  const colorFrequencies = {
+    red: 440,    // A4
+    green: 550,  // C#5
+    blue: 660,   // E5
+    yellow: 770  // G#5
+  };
+
+  function playSound(frequency, duration=400) {
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.value = frequency;
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.start();
+    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    setTimeout(() => {
+      oscillator.stop();
+    }, duration);
+  }
+
+  function lightUp(color) {
+    const btn = document.querySelector(`.color-button[data-color="${color}"]`);
+    if (!btn) return;
+    btn.classList.add('light');
+    playSound(colorFrequencies[color]);
+    setTimeout(() => {
+      btn.classList.remove('light');
+    }, 500);
+  }
+
+  function generateNext() {
+    const nextColor = colors[Math.floor(Math.random() * colors.length)];
+    sequence.push(nextColor);
+  }
+
+  async function playSequence() {
+    isPlayerTurn = false;
+    status.textContent = 'Watch the sequence!';
+    for (const color of sequence) {
+      lightUp(color);
+      await new Promise(resolve => setTimeout(resolve, 700));
+    }
+    status.textContent = 'Your turn!';
+    isPlayerTurn = true;
+  }
+
+  function updateLevelDisplay() {
+    levelDisplay.textContent = `Level: ${level}`;
+  }
+
+  async function nextLevel() {
+    generateNext();
+    updateLevelDisplay();
+    await playSequence();
+  }
+
+  function startGame() {
+    sequence = [];
+    level = 0;
+    gameActive = true;
+    updateLevelDisplay();
+    status.textContent = 'Game Starting...';
+    // Slight delay before starting first level
+    setTimeout(() => {
+      nextLevel();
+    }, 500);
+  }
+
+  function endGame() {
+    sequence = [];
+    playerSequence = [];
+    level = 0;
+    gameActive = false;
+    isPlayerTurn = false;
+    status.textContent = 'Game Over! Press Start to play again.';
+    updateLevelDisplay();
+  }
+
+  // Button click handling
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      if (!isPlayerTurn || !gameActive) return;
+      const color = button.dataset.color;
+      playerSequence.push(color);
+      lightUp(color);
+
+      const currentIndex = playerSequence.length - 1;
+      if (playerSequence[currentIndex] !== sequence[currentIndex]) {
+        // Wrong move
+        status.textContent = 'Wrong! Game Over!';
+        endGame();
+        return;
+      }
+
+      // Correct move, check if sequence completed
+      if (playerSequence.length === sequence.length) {
+        level++;
+        updateLevelDisplay();
+        status.textContent = 'Good job! Next level...';
+        playerSequence = [];
+        setTimeout(nextLevel, 1000);
+      }
+    });
+  });
+
+  startBtn.addEventListener('click', () => {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    startGame();
+  });
+
+  exitBtn.addEventListener('click', () => {
+  });
+</script>
+  </body>
+</html>

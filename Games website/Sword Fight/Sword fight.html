@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Sword Fight Game with Colored Health Bars</title>
-    <style>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sword Fight Game with Colored Health Bars</title>
+<style>
   body {
     font-family: Arial, sans-serif;
     background-color: #222;
@@ -98,46 +95,49 @@
     font-size: 18px;
   }
 </style>
-  </head>
-  <body>
-    <h1>Sword Fight Game</h1>
-    <div class="settings"> <label for="mode">Game Mode:</label>
-      <select id="mode">
-        <option value="single" selected="selected">Single Player</option>
-        <option value="2player">2 Player</option>
-      </select>
-      &nbsp;&nbsp; <strong>CPU Difficulty:</strong> <span
-        id="fixed-difficulty">Normal</span>
+</head>
+<body>
+<h1>Sword Fight Game</h1>
+<div class="settings">
+  <label for="mode">Game Mode:</label>
+  <select id="mode">
+    <option value="single" selected="selected">Single Player</option>
+    <option value="2player">2 Player</option>
+  </select>
+  &nbsp;&nbsp; <strong>CPU Difficulty:</strong> <span id="fixed-difficulty">Normal</span>
+</div>
+<div class="players" id="players-container">
+  <!-- Player 1 -->
+  <div class="player" id="player1">
+    <h2>Player 1</h2>
+    <div class="health-container">
+      <div class="health-label">Health:</div>
+      <div class="health-bar">
+        <div class="health-fill" id="player1-health"></div>
+      </div>
+      <div id="player1-health-text" style="margin-top:5px;">100</div>
     </div>
-    <div class="players" id="players-container">
-      <!-- Player 1 -->
-      <div class="player" id="player1">
-        <h2>Player 1</h2>
-        <div class="health-container">
-          <div class="health-label">Health:</div>
-          <div class="health-bar">
-            <div class="health-fill" id="player1-health"></div>
-          </div>
-          <div id="player1-health-text" style="margin-top:5px;">100</div>
-        </div>
-        <button id="player1-attack">Attack</button> </div>
-      <!-- Player 2 / CPU -->
-      <div class="player" id="player2">
-        <h2 id="player2-label">Player 2</h2>
-        <div class="health-container">
-          <div class="health-label">Health:</div>
-          <div class="health-bar">
-            <div class="health-fill" id="player2-health"></div>
-          </div>
-          <div id="player2-health-text" style="margin-top:5px;">100</div>
-        </div>
-        <button id="player2-attack">Attack</button> </div>
+    <button id="player1-attack">Attack</button>
+  </div>
+  <!-- Player 2 / CPU -->
+  <div class="player" id="player2">
+    <h2 id="player2-label">Player 2</h2>
+    <div class="health-container">
+      <div class="health-label">Health:</div>
+      <div class="health-bar">
+        <div class="health-fill" id="player2-health"></div>
+      </div>
+      <div id="player2-health-text" style="margin-top:5px;">100</div>
     </div>
-    <div id="status"></div>
-    <!-- Buttons for Reset and Exit -->
-    <button id="resetBtn">Reset / Restart</button>
-    <a href="../games.html"><button id="exitBtn">Exit</button></a>
-    <script>
+    <button id="player2-attack">Attack</button>
+  </div>
+</div>
+<div id="status"></div>
+<!-- Buttons for Reset and Exit -->
+<button id="resetBtn">Reset / Restart</button>
+<a href="../games.html"><button id="exitBtn">Exit</button></a>
+
+<script>
   const maxHealth = 100;
   let p1Health = maxHealth;
   let p2Health = maxHealth;
@@ -172,10 +172,8 @@
 
   // Function to update health bar color
   function updateHealthBarColor() {
-    const p1Percent = p1Health;
-    const p2Percent = p2Health;
-    p1HealthBar.style.backgroundColor = getHealthColor(p1Percent);
-    p2HealthBar.style.backgroundColor = getHealthColor(p2Percent);
+    p1HealthBar.style.backgroundColor = getHealthColor(p1Health);
+    p2HealthBar.style.backgroundColor = getHealthColor(p2Health);
   }
 
   // Update health bars and text
@@ -211,10 +209,21 @@
     attackButton2.disabled = false;
   }
 
-  // Attack function
+  // Attack function with critical hit chance
   function attack(attacker) {
     if (p1Health <= 0 || p2Health <= 0) return;
-    const damage = Math.floor(Math.random() * 10) + 5; // 5-14 damage
+    const damageBase = Math.floor(Math.random() * 10) + 5; // 5-14 damage
+    // Critical hit chance: 20%
+    const isCritical = Math.random() < 0.2;
+    const damage = isCritical ? damageBase * 2 : damageBase;
+
+    // Show critical hit info
+    if (isCritical) {
+      statusDiv.innerHTML = 'Critical Hit!';
+    } else {
+      statusDiv.innerHTML = '';
+    }
+
     if (attacker === 'player1') {
       p2Health = Math.max(p2Health - damage, 0);
     } else {
@@ -233,7 +242,9 @@
   });
 
   attackButton2.addEventListener('click', () => {
-    attack('player2');
+    if (gameMode === '2player') {
+      attack('player2');
+    }
   });
 
   // Mode change handler
@@ -246,10 +257,11 @@
       document.getElementById('player2-label').innerText = 'Player 2';
       attackButton2.disabled = false;
     }
+    resetGame();
   });
 
   // Reset / Restart game
-  resetButton.addEventListener('click', () => {
+  function resetGame() {
     p1Health = maxHealth;
     p2Health = maxHealth;
     updateHealth();
@@ -260,22 +272,36 @@
     } else {
       document.getElementById('player2-label').innerText = 'Player 2';
     }
-  });
+  }
 
+  resetButton.addEventListener('click', () => {
+    resetGame();
+  });
 
   // CPU turn with fixed difficulty
   function cpuTurn() {
     if (p1Health <= 0 || p2Health <= 0) return;
     setTimeout(() => {
-      const fixedDifficulty = 'normal'; // Change to 'easy' or 'hard' as needed
+      // Damage based on difficulty
       let damage;
-      if (fixedDifficulty === 'easy') {
+      if (cpuDifficulty === 'easy') {
         damage = Math.floor(Math.random() * 5) + 1; // 1-5
-      } else if (fixedDifficulty === 'normal') {
+      } else if (cpuDifficulty === 'normal') {
         damage = Math.floor(Math.random() * 10) + 5; // 5-14
-      } else { // hard
+      } else {
         damage = Math.floor(Math.random() * 15) + 10; // 10-24
       }
+
+      // Critical hit chance for CPU
+      const isCritical = Math.random() < 0.2;
+      damage = isCritical ? damage * 2 : damage;
+
+      if (isCritical) {
+        statusDiv.innerHTML = 'CPU Critical Hit!';
+      } else {
+        statusDiv.innerHTML = '';
+      }
+
       p1Health = Math.max(p1Health - damage, 0);
       updateHealth();
       checkGameOver();
@@ -285,5 +311,5 @@
   // Initialize
   updateHealth();
 </script>
-  </body>
+</body>
 </html>

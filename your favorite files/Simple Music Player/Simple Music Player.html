@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <h1 class="title">Music Player</h1>
     <div class="player-container">
       <div class="song-info">
         <h2 id="song-title">Tonp</h2>
@@ -17,10 +18,13 @@
       <audio id="audio-player" controls="controls"></audio>
       <div class="controls"> <button id="prev-btn">Previous</button> <button
           id="play-pause-btn">Play</button> <button id="next-btn">Next</button>
-        <a moz-do-not-send="true" href="../../your%20favorite.html"><button
-            id="exit-btn">Exit</button></a> </div>
-      <div class="download-section"> <button id="download-btn">Download
-          MP3</button> </div>
+        <button id="loop-btn">Loop Off</button> <a
+          href="../../your%20favorite.html" target="_blank"><button
+            id="exit-btn">Exit</button></a><br>
+        <br>
+      </div>
+      <div class="download-section"> <button id="download-btn"
+          class="download-btn">Download MP3</button> </div>
       <div class="volume-control"> <label for="volume-slider">Volume:</label>
         <input id="volume-slider" min="0" max="100" value="50"
           type="range"> </div>

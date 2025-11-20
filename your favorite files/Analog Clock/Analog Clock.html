@@ -1,34 +1,242 @@
 <!DOCTYPE html>
-<!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Analog Clock </title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer="defer"></script>
-  </head>
-  <body>
-    <div class="container">
-      <div class="clock"> <label style="--i: 1"><span>1</span></label>
-        <label style="--i: 2"><span>2</span></label> <label style="--i:
-          3"><span>3</span></label> <label style="--i: 4"><span>4</span></label>
-        <label style="--i: 5"><span>5</span></label> <label style="--i:
-          6"><span>6</span></label> <label style="--i: 7"><span>7</span></label>
-        <label style="--i: 8"><span>8</span></label> <label style="--i:
-          9"><span>9</span></label> <label style="--i: 10"><span>10</span></label>
-        <label style="--i: 11"><span>11</span></label> <label
-          style="--i: 12"><span>12</span></label>
-        <div class="indicator"> <span class="hand hour"></span> <span
-            class="hand minute"></span> <span class="hand second"></span>
-        </div>
-      </div>
-      <a moz-do-not-send="true" href="../../your%20favorite.html"><button
-          class="exit-btn">Exit</button></a>
-      <div class="mode-switch">Dark Mode</div>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Analog Clock</title>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* Set background color using RGB */
+    background-color: rgb(170, 161, 212);
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+
+  .clock-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px; /* Add padding for space around container */
+  }
+
+  /* Added heading text with spacing */
+  .clock-heading {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px; /* Increased space below the heading */
+  }
+
+  .clock {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border: 8px solid #333;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+  }
+
+  .hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    background: #333;
+    transform-origin: bottom;
+    transition: transform 0.5s cubic-bezier(0.4, 2, 0.2, 1);
+  }
+
+  .hour {
+    width: 6px;
+    height: 70px;
+  }
+
+  .minute {
+    width: 4px;
+    height: 100px;
+  }
+
+  .second {
+    width: 2px;
+    height: 120px;
+    background: red;
+  }
+
+  /* Digital clock style */
+  #digitalClock {
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  /* Buttons for toggling 12/24 hour formats */
+  #formatButtons {
+    margin-top: 20px;
+  }
+
+  button {
+    padding: 8px 12px;
+    margin: 0 5px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #ddd;
+  }
+
+  /* Exit link styles */
+  .exit-container {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .exit-link {
+    padding: 8px 12px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  .exit-link:hover {
+    background-color: #555;
+  }
+</style>
+</head>
+<body>
+  <div class="clock-container">
+    <div class="clock-heading">Analog Clock</div>
+    <div class="clock" id="clock">
+      <div class="hand hour" id="hourHand"></div>
+      <div class="hand minute" id="minuteHand"></div>
+      <div class="hand second" id="secondHand"></div>
+      <div id="amPm" style="position:absolute; top:10px; width:100%; text-align:center; font-size:20px; font-weight:bold;"></div>
     </div>
-  </body>
+    <div id="digitalClock"></div>
+    <!-- Buttons to toggle format -->
+    <div id="formatButtons">
+      <button id="btn12">12-hour</button>
+      <button id="btn24">24-hour</button>
+    </div>
+  </div>
+
+  <div class="exit-container">
+    <a href="../../your%20favorite.html" class="exit-link">exit</a>
+  </div>
+
+<script>
+  const hourHand = document.getElementById('hourHand');
+  const minuteHand = document.getElementById('minuteHand');
+  const secondHand = document.getElementById('secondHand');
+  const amPmText = document.getElementById('amPm');
+  const digitalClock = document.getElementById('digitalClock');
+  const clock = document.getElementById('clock');
+
+  let colorType = 1; // For border color
+  let is12HourFormat = true; // Default to 12-hour format
+
+  function updateClock() {
+    const now = new Date();
+
+    let hours = now.getHours();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+
+    // AM/PM indicator
+    const amPm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert to 12-hour format if needed
+    let displayHours = hours;
+    if (is12HourFormat) {
+      displayHours = hours % 12;
+      displayHours = displayHours ? displayHours : 12; // 0 becomes 12
+    } else {
+      displayHours = hours; // 24-hour format
+    }
+
+    // Calculate rotation degrees
+    const secondsDeg = seconds * 6;
+    const minutesDeg = minutes * 6 + seconds * 0.1;
+    const hoursDeg = displayHours * 30 + minutes * 0.5;
+
+    // Set rotations
+    secondHand.style.transform = `rotate(${secondsDeg}deg)`;
+    minuteHand.style.transform = `rotate(${minutesDeg}deg)`;
+    hourHand.style.transform = `rotate(${hoursDeg}deg)`;
+
+    // Display AM/PM or hide
+    if (is12HourFormat) {
+      amPmText.textContent = amPm;
+      amPmText.style.display = 'block';
+    } else {
+      amPmText.style.display = 'none';
+    }
+
+    // Update digital clock with correct format
+    const paddedMinutes = minutes.toString().padStart(2, '0');
+    const paddedSeconds = seconds.toString().padStart(2, '0');
+
+    if (is12HourFormat) {
+      const paddedHours = displayHours.toString().padStart(2, '0');
+      digitalClock.textContent = `${paddedHours}:${paddedMinutes}:${paddedSeconds} ${amPm}`;
+    } else {
+      const paddedHours24 = displayHours.toString().padStart(2, '0');
+      digitalClock.textContent = `${paddedHours24}:${paddedMinutes}:${paddedSeconds}`;
+    }
+  }
+
+  // Function to set border color based on type
+  function setColor(type) {
+    switch (type) {
+      case 1:
+        document.querySelector('.clock').style.borderColor = '#3498db'; // blue
+        break;
+      case 2:
+        document.querySelector('.clock').style.borderColor = '#2ecc71'; // green
+        break;
+      case 3:
+        document.querySelector('.clock').style.borderColor = '#e74c3c'; // red
+        break;
+      case 4:
+        document.querySelector('.clock').style.borderColor = 'lightblue'; // light blue
+        break;
+      case 5:
+        document.querySelector('.clock').style.borderColor = 'black'; // black
+        break;
+      case 6:
+        document.querySelector('.clock').style.borderColor = 'gray'; // gray
+        break;
+    }
+  }
+
+  // Cycle through 6 colors
+  clock.addEventListener('click', () => {
+    // Cycle through 1-6
+    colorType = (colorType % 6) + 1;
+    setColor(colorType);
+  });
+
+  // Buttons to toggle formats
+  document.getElementById('btn12').addEventListener('click', () => {
+    is12HourFormat = true;
+    updateClock();
+  });
+  document.getElementById('btn24').addEventListener('click', () => {
+    is12HourFormat = false;
+    updateClock();
+  });
+
+  // Initialize clock
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+</body>
 </html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Alarm Clock with Multiple Themes</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    background: var(--bg-color, #f9f9f9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    transition: background 0.5s ease;
+  }
+  h1 {
+    font-size: 2.5em;
+    color: #222;
+    margin-top: 20px;
+    text-align: center;
+  }
+  .clock {
+    font-size: 4em;
+    margin: 20px 0;
+    color: #222;
+    text-align: center;
+  }
+  .buttons-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  select {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    color: #222;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+  }
+  /* CSS variables for themes */
+  :root {
+    --bg-color: #f9f9f9;
+    --button-bg: #4A90E2;
+    --button-hover: #357ABD;
+    --text-color: #222;
+    --disabled-bg: #c0c0c0;
+  }
+  body.theme-green {
+    --bg-color: #e0f7e9;
+    --button-bg: #66bb6a;
+    --button-hover: #388e3c;
+    --text-color: #1b5e20;
+  }
+  body.theme-purple {
+    --bg-color: #f3e5f5;
+    --button-bg: #ab47bc;
+    --button-hover: #8e24aa;
+    --text-color: #4a148c;
+  }
+  body.theme-orange {
+    --bg-color: #fff3e0;
+    --button-bg: #fb8c00;
+    --button-hover: #ef6c00;
+    --text-color: #e65100;
+  }
+  body.theme-sky {
+    --bg-color: #87ceeb; /* Sky Blue */
+    --button-bg: #3399ff;
+    --button-hover: #0077cc;
+    --text-color: #222;
+  }
+  body.theme-baby {
+    --bg-color: #fefefc; /* Baby Powder / Ivory */
+    --button-bg: #f2d16b;
+    --button-hover: #d1a14b;
+    --text-color: #222;
+  }
+  body.theme-vanilla {
+    --bg-color: #f3e5ab; /* Vanilla */
+    --button-bg: #f5deb3;
+    --button-hover: #d2b48c;
+    --text-color: #222;
+  }
+  body.theme-rose {
+    --bg-color: #ffe4e1; /* Rose */
+    --button-bg: #ff69b4;
+    --button-hover: #cc527f;
+    --text-color: #222;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--button-bg);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: var(--button-hover);
+  }
+  #setAlarmBtn:disabled {
+    background: var(--disabled-bg);
+    cursor: not-allowed;
+  }
+  #alarmMsg {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: var(--text-color);
+    display: none;
+  }
+  /* Theme switcher styles */
+  .theme-switcher {
+    margin-top: 10px;
+  }
+  label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: var(--text-color);
+  }
+  select {
+    margin-left: 10px;
+    margin-right: 20px;
+  }
+</style>
+  </head>
+  <body class="theme-blue">
+    <h1>Alarm Clock</h1>
+    <div class="clock" id="clock">00:00:00</div>
+    <div class="buttons-container">
+      <select id="hourSelect">
+      </select>
+      <select id="minuteSelect">
+      </select>
+      <select id="ampmSelect">
+        <option value="AM" selected="selected">AM</option>
+        <option value="PM">PM</option>
+      </select>
+    </div>
+    <div class="buttons-container"> <button id="setAlarmBtn">Set Alarm</button>
+      <button id="stopAlarmBtn" disabled="disabled">Stop Alarm</button>
+      <a href="../../your%20favorite.html"><button id="exitBtn">Exit</button></a>
+    </div>
+    <div id="alarmMsg">Alarm ringing!</div>
+    <!-- Theme switcher -->
+    <div class="theme-switcher"> <label for="themeSelect">Select Theme:</label>
+      <select id="themeSelect">
+        <option value="blue" selected="selected">Theme #1 (Blue)</option>
+        <option value="green">Theme #2 (Green)</option>
+        <option value="purple">Theme #3 (Purple)</option>
+        <option value="orange">Theme #4 (Orange)</option>
+        <option value="sky">Theme #5 (Sky Blue)</option>
+        <option value="baby">Theme #6 (Baby Powder)</option>
+        <option value="vanilla">Theme #7 (Vanilla)</option>
+        <option value="rose">Theme #8 (Rose)</option>
+      </select>
+    </div>
+    <!-- Alarm sound -->
+    <audio id="alarmSound" loop=""> <source
+        src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"
+        type="audio/ogg"> Your browser does not support the audio
+      element.
+    </audio>
+    <script>
+const clock = document.getElementById('clock');
+const hourSelect = document.getElementById('hourSelect');
+const minuteSelect = document.getElementById('minuteSelect');
+const ampmSelect = document.getElementById('ampmSelect');
+const setAlarmBtn = document.getElementById('setAlarmBtn');
+const stopAlarmBtn = document.getElementById('stopAlarmBtn');
+const exitBtn = document.getElementById('exitBtn');
+const alarmMsg = document.getElementById('alarmMsg');
+const alarmSound = document.getElementById('alarmSound');
+const themeSelect = document.getElementById('themeSelect');
+const body = document.body;
+
+let alarmTime = null;
+
+// Populate hour and minute selects
+for(let i=1; i<=12; i++) {
+  const option = document.createElement('option');
+  option.value = i.toString().padStart(2, '0');
+  option.text = i.toString().padStart(2, '0');
+  hourSelect.appendChild(option);
+}
+for(let i=0; i<60; i++) {
+  const option = document.createElement('option');
+  option.value = i.toString().padStart(2, '0');
+  option.text = i.toString().padStart(2, '0');
+  minuteSelect.appendChild(option);
+}
+
+// Update current time every second
+function updateTime() {
+  const now = new Date();
+  let hours = now.getHours();
+  const minutes = now.getMinutes();
+  const seconds = now.getSeconds();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+
+  const timeString = 
+    hours.toString().padStart(2,'0') + ':' + 
+    minutes.toString().padStart(2,'0') + ':' + 
+    seconds.toString().padStart(2,'0');
+
+  clock.textContent = timeString;
+
+  // Check if alarm should ring
+  if(alarmTime) {
+    const currentHours = new Date().getHours();
+    const currentAmPm = currentHours >= 12 ? 'PM' : 'AM';
+    const currentHour12 = currentHours % 12 || 12;
+    const currentStr = 
+      currentHour12.toString().padStart(2,'0') + ':' +
+      minutes.toString().padStart(2,'0') + ' ' + currentAmPm;
+
+    if(currentStr === alarmTime) {
+      ringAlarm();
+    }
+  }
+}
+setInterval(updateTime, 1000);
+updateTime(); // initial call
+
+function ringAlarm() {
+  alarmMsg.style.display = 'block';
+  alarmSound.play();
+  alarmSound.loop = true;
+  stopAlarmBtn.disabled = false;
+}
+
+document.getElementById('setAlarmBtn').addEventListener('click', () => {
+  const hour = hourSelect.value;
+  const minute = minuteSelect.value;
+  const ampm = ampmSelect.value;
+  alarmTime = `${hour}:${minute} ${ampm}`;
+  
+  // Calculate remaining time for alert
+  const now = new Date();
+  let alarmHour = parseInt(hour);
+  const alarmMinute = parseInt(minute);
+  if(ampm === 'PM' && alarmHour !== 12) alarmHour += 12;
+  if(ampm === 'AM' && alarmHour === 12) alarmHour = 0;
+
+  const alarmDate = new Date();
+  alarmDate.setHours(alarmHour);
+  alarmDate.setMinutes(alarmMinute);
+  alarmDate.setSeconds(0);
+
+  let diffMs = alarmDate - now;
+  if(diffMs < 0) diffMs += 24 * 60 * 60 * 1000; // next day
+
+  const remainingMinutes = Math.floor(diffMs / 60000);
+  const remainingSeconds = Math.floor((diffMs % 60000) / 1000);
+
+  alert(`Alarm set for ${alarmTime}. Remaining: ${remainingMinutes} min ${remainingSeconds} sec.`);
+
+  setAlarmBtn.disabled = true;
+  stopAlarmBtn.disabled = false;
+});
+
+document.getElementById('stopAlarmBtn').addEventListener('click', () => {
+  stopAlarm();
+});
+
+document.getElementById('exitBtn').addEventListener('click', () => {
+  resetAlarm();
+});
+
+document.getElementById('themeSelect').addEventListener('change', () => {
+  const theme = themeSelect.value;
+  body.className = ''; // reset classes
+  if(theme === 'green') {
+    body.classList.add('theme-green');
+  } else if(theme === 'purple') {
+    body.classList.add('theme-purple');
+  } else if(theme === 'orange') {
+    body.classList.add('theme-orange');
+  } else if(theme === 'sky') {
+    body.classList.add('theme-sky');
+  } else if(theme === 'baby') {
+    body.classList.add('theme-baby');
+  } else if(theme === 'vanilla') {
+    body.classList.add('theme-vanilla');
+  } else if(theme === 'rose') {
+    body.classList.add('theme-rose');
+  } else {
+    body.classList.add('theme-blue');
+  }
+});
+
+// Functions to control alarm
+function stopAlarm() {
+  alarmSound.pause();
+  alarmSound.currentTime = 0;
+  alarmMsg.style.display = 'none';
+  alarmTime = null;
+  setAlarmBtn.disabled = false;
+  stopAlarmBtn.disabled = true;
+}
+
+function resetAlarm() {
+  stopAlarm();
+}
+</script>
+  </body>
+</html>

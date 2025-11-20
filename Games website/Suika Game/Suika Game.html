@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Suika Games</title>
+    <style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom right, #869e1d, #ff9e0e);
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  /* Header with fixed scores at the top center */
+  #header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 999;
+  }
+
+  #header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-right: 20px;
+  }
+
+  #score-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .score-box {
+    background: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  /* Exit button fixed at top right */
+  #exitBtn {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    background-color: rgba(255, 0, 0, 0.8);
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 999;
+    transition: background 0.3s;
+    text-decoration: none;
+  }
+  #exitBtn:hover {
+    background-color: rgba(255, 0, 0, 1);
+  }
+
+  /* Centered game container */
+  #game-container {
+    margin-top: 80px; /* below header */
+    width: 400px;
+    height: 600px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #game-area {
+    width: 100%;
+    height: 550px;
+    position: relative;
+  }
+
+  #next-fruit {
+    width: 100%;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fruit {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Controls style for fullscreen button */
+  #controls {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+  }
+
+  #fullscreenBtn {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: none;
+    color: rgba(255, 255, 255, 1);
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  #fullscreenBtn:hover {
+    background-color: rgba(0, 0, 30, 0.8);
+    color: rgba(255, 255, 0, 1);
+  }
+</style>
+  </head>
+  <body>
+    <!-- Header with title and scores fixed at top center -->
+    <div id="header">
+      <h1>Suika Games</h1>
+      <div id="score-container">
+        <div class="score-box">Score: <span id="score">0</span></div>
+        <div class="score-box">Top Score: <span id="top-score">0</span></div>
+      </div>
+    </div>
+    <!-- Exit Button fixed at top right --> <a href="../Games.html"
+      id="exitBtn">Exit</a>
+    <!-- Main controls for fullscreen toggle -->
+    <div id="controls"> <button id="fullscreenBtn" title="Toggle
+        Fullscreen">⤢</button> </div>
+    <!-- Game container centered -->
+    <div id="game-container">
+      <div id="game-area"></div>
+      <div id="next-fruit"></div>
+    </div>
+    <!-- Matter.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+    <script>
+  // Initialize scores
+  let score = 0;
+  let topScore = localStorage.getItem('topScore') || 0;
+  document.getElementById('score').textContent = score;
+  document.getElementById('top-score').textContent = topScore;
+
+  const updateScores = (points) => {
+    score += points;
+    document.getElementById('score').textContent = score;
+    if (score > topScore) {
+      topScore = score;
+      localStorage.setItem('topScore', topScore);
+      document.getElementById('top-score').textContent = topScore;
+    }
+  };
+
+  // Setup Matter.js
+  const { Engine, Render, World, Bodies, Collision } = Matter;
+  const engine = Engine.create();
+
+  const render = Render.create({
+    element: document.getElementById('game-area'),
+    engine: engine,
+    options: {
+      width: 400,
+      height: 550,
+      wireframes: false,
+      background: 'transparent'
+    }
+  });
+
+  // Centered boundary walls
+  const ground = Bodies.rectangle(200, 600, 400, 50, { isStatic: true });
+  const leftWall = Bodies.rectangle(0, 275, 50, 550, { isStatic: true });
+  const rightWall = Bodies.rectangle(400, 275, 50, 550, { isStatic: true });
+  World.add(engine.world, [ground, leftWall, rightWall]);
+
+  Engine.run(engine);
+  Render.run(render);
+
+  const fruitTypes = [
+    { name: '🍒', radius: 15, color: '#ff0000' },
+    { name: '🍓', radius: 20, color: '#ff3366' },
+    { name: '🍇', radius: 25, color: '#9932cc' },
+    { name: '🍊', radius: 30, color: '#ffa500' },
+    { name: '🍋', radius: 35, color: '#ffff00' },
+    { name: '🍎', radius: 40, color: '#ff0000' },
+    { name: '🍐', radius: 45, color: '#90ee90' },
+    { name: '🍑', radius: 50, color: '#ffdab9' },
+    { name: '🍈', radius: 55, color: '#98fb98' },
+    { name: '🍉', radius: 60, color: '#ff6347' }
+  ];
+
+  function getRandomFruit() {
+    return fruitTypes[Math.floor(Math.random() * 5)];
+  }
+
+  function createFruit(x, y, fruit) {
+    const circle = Bodies.circle(x, y, fruit.radius, {
+      restitution: 0.3,
+      friction: 0.1,
+      render: { fillStyle: fruit.color }
+    });
+    World.add(engine.world, circle);
+
+    const fruitElement = document.createElement('div');
+    fruitElement.className = 'fruit';
+    fruitElement.style.width = `${fruit.radius * 2}px`;
+    fruitElement.style.height = `${fruit.radius * 2}px`;
+    fruitElement.style.backgroundColor = fruit.color;
+    fruitElement.textContent = fruit.name;
+    document.getElementById('game-area').appendChild(fruitElement);
+
+    return { body: circle, element: fruitElement, radius: fruit.radius, name: fruit.name, color: fruit.color };
+  }
+
+  function updateFruitPosition(fruit) {
+    const { x, y } = fruit.body.position;
+    fruit.element.style.left = `${x - fruit.radius}px`;
+    fruit.element.style.top = `${y - fruit.radius}px`;
+  }
+
+  function displayNextFruit() {
+    nextFruit = getRandomFruit();
+    document.getElementById('next-fruit').innerHTML = `<div class="fruit" style="width: ${nextFruit.radius * 2}px; height: ${nextFruit.radius * 2}px; background-color: ${nextFruit.color};">${nextFruit.name}</div>`;
+  }
+
+  let currentFruit = null;
+  let fruits = [];
+
+  function dropFruit(x) {
+    if (currentFruit) return;
+    currentFruit = createFruit(x, 50, nextFruit);
+    fruits.push(currentFruit);
+    displayNextFruit();
+  }
+
+  document.getElementById('game-area').addEventListener('mousemove', (e) => {
+    if (!currentFruit) {
+      const rect = document.getElementById('game-area').getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      document.getElementById('next-fruit').style.left = `${x - nextFruit.radius}px`;
+    }
+  });
+
+  document.getElementById('game-area').addEventListener('click', (e) => {
+    const rect = document.getElementById('game-area').getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    dropFruit(x);
+  });
+
+  function gameLoop() {
+    fruits.forEach(updateFruitPosition);
+
+    if (currentFruit && currentFruit.body.position.y > 100) {
+      currentFruit = null;
+    }
+
+    // Merge logic for same-sized fruits
+    for (let i = 0; i < fruits.length; i++) {
+      for (let j = i + 1; j < fruits.length; j++) {
+        const fA = fruits[i];
+        const fB = fruits[j];
+        if (Matter.Collision.collides(fA.body, fB.body) && fA.radius === fB.radius) {
+          const nextSizeIndex = fruitTypes.findIndex(f => f.radius === fA.radius) + 1;
+          if (nextSizeIndex < fruitTypes.length) {
+            const newFruit = createFruit(
+              (fA.body.position.x + fB.body.position.x) / 2,
+              (fA.body.position.y + fB.body.position.y) / 2,
+              fruitTypes[nextSizeIndex]
+            );
+            fruits.push(newFruit);
+            World.remove(engine.world, fA.body);
+            World.remove(engine.world, fB.body);
+            document.getElementById('game-area').removeChild(fA.element);
+            document.getElementById('game-area').removeChild(fB.element);
+            updateScores(10);
+            // Remove merged fruits from array
+            fruits = fruits.filter(f => f !== fA && f !== fB);
+          }
+        }
+      }
+    }
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  displayNextFruit();
+  gameLoop();
+
+  // Fullscreen toggle
+  document.getElementById("fullscreenBtn").addEventListener("click", () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  });
+
+  // Exit button click
+  document.getElementById('exitBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = '../Games.html';
+  });
+</script>
+  </body>
+</html>

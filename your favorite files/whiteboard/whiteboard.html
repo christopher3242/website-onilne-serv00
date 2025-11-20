@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Smooth Touch Drawing Whiteboard</title>
+    <style>
+  body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    padding: 20px;
+  }
+  #toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #fff;
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+  }
+  #toolbar label {
+    margin-right: 8px;
+    font-weight: 500;
+  }
+  #toolbar input[type="color"],
+  #toolbar input[type="number"],
+  #toolbar select {
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  #toolbar button {
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+  #toolbar button:hover {
+    background: #45a049;
+  }
+  #whiteboard {
+    width: 90vw;
+    max-width: 900px;
+    height: 70vh;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    touch-action: none;
+    cursor: crosshair;
+  }
+  .bottom-buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+</style>
+  </head>
+  <body>
+    <h2>Modern Touch &amp; PC Drawing Board</h2>
+    <div id="toolbar"> <label for="colorPicker">Color:</label> <input
+        id="colorPicker" value="#000000" type="color"> <label
+        for="brushSize">Size:</label>
+      <select id="brushSize">
+        <option value="3">Small</option>
+        <option value="5" selected="selected">Medium</option>
+        <option value="10">Large</option>
+        <option value="15">XL</option>
+      </select>
+      <label for="sizePicker">Custom Size:</label> <input
+        id="sizePicker" min="1" max="50" value="5" type="number">
+    </div>
+    <canvas id="whiteboard"></canvas>
+    <div class="bottom-buttons"> <button onclick="saveCanvas()">Save</button>
+      <button onclick="exportDrawing()">Export Data</button> <button
+        onclick="clearCanvas()">Clear</button> <input
+        accept="application/json" onchange="importData(event)"
+        type="file"> <a href="../../your%20favorite.html"><button
+          onclick="exit()">Exit</button></a> <button onclick="undo()">Undo</button>
+      <button onclick="redo()">Redo</button>
+    </div>
+    <script>
+const canvas = document.getElementById('whiteboard');
+const ctx = canvas.getContext('2d');
+
+const colorPicker = document.getElementById('colorPicker');
+const brushSizeSelect = document.getElementById('brushSize');
+const sizePicker = document.getElementById('sizePicker');
+
+let currentColor = colorPicker.value;
+let currentSize = parseInt(brushSizeSelect.value);
+
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+
+let undoStack = [];
+let redoStack = [];
+const maxStackSize = 50;
+
+// Update current color and size
+colorPicker.addEventListener('change', () => {
+  currentColor = colorPicker.value;
+});
+brushSizeSelect.addEventListener('change', () => {
+  currentSize = parseInt(brushSizeSelect.value);
+});
+sizePicker.addEventListener('change', () => {
+  currentSize = parseInt(sizePicker.value);
+});
+
+// Resize canvas to fit window
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// Save state for undo
+function saveState() {
+  if (undoStack.length >= maxStackSize) {
+    undoStack.shift();
+  }
+  undoStack.push(canvas.toDataURL());
+  redoStack = [];
+}
+
+// Save as PNG
+function saveCanvas() {
+  const dataURL = canvas.toDataURL('image/png');
+  const link = document.createElement('a');
+  link.href = dataURL;
+  link.download = 'drawing.png';
+  link.click();
+}
+
+// Export JSON data
+function exportDrawing() {
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const json = JSON.stringify({
+    width: canvas.width,
+    height: canvas.height,
+    data: Array.from(imageData.data)
+  });
+  const blob = new Blob([json], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'drawing.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Import JSON
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const json = JSON.parse(reader.result);
+      if (json.width && json.height && json.data) {
+        const imgData = ctx.createImageData(json.width, json.height);
+        imgData.data.set(new Uint8ClampedArray(json.data));
+        ctx.putImageData(imgData, 0, 0);
+        saveState();
+      } else {
+        alert('Invalid data format.');
+      }
+    } catch {
+      alert('Error parsing JSON.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Clear canvas
+function clearCanvas() {
+  saveState();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Exit
+function exit() {
+  location.reload();
+}
+
+// Undo
+function undo() {
+  if (undoStack.length === 0) return;
+  redoStack.push(canvas.toDataURL());
+  const last = undoStack.pop();
+  const img = new Image();
+  img.onload = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+  };
+  img.src = last;
+}
+
+// Redo
+function redo() {
+  if (redoStack.length === 0) return;
+  undoStack.push(canvas.toDataURL());
+  const last = redoStack.pop();
+  const img = new Image();
+  img.onload = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+  };
+  img.src = last;
+}
+
+// Drawing with support for touch and mouse
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('touchstart', startDrawing);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('touchmove', draw);
+canvas.addEventListener('mouseup', endDrawing);
+canvas.addEventListener('touchend', endDrawing);
+canvas.addEventListener('mouseout', endDrawing);
+
+function getPointerPosition(e) {
+  if (e.touches && e.touches.length > 0) {
+    return { x: e.touches[0].clientX - canvas.getBoundingClientRect().left,
+             y: e.touches[0].clientY - canvas.getBoundingClientRect().top };
+  } else {
+    return { x: e.offsetX, y: e.offsetY };
+  }
+}
+
+function startDrawing(e) {
+  saveState();
+  isDrawing = true;
+  const pos = getPointerPosition(e);
+  lastX = pos.x;
+  lastY = pos.y;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = currentSize;
+  ctx.strokeStyle = currentColor;
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  e.preventDefault();
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  const pos = getPointerPosition(e);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+  lastX = pos.x;
+  lastY = pos.y;
+  e.preventDefault();
+}
+
+function endDrawing(e) {
+  if (isDrawing) {
+    ctx.closePath();
+    isDrawing = false;
+  }
+  e.preventDefault();
+}
+</script>
+  </body>
+</html>

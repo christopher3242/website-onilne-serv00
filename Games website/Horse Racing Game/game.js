@@ -127,7 +127,7 @@ function Horse(id, x, y){
 	}
 }
 
-var num_lap = 1, results = [], funds = 50000, bethorse, amount;
+var num_lap = 1, results = [], funds = 100000, bethorse, amount;
 
 //Start the function when the document loaded
 document.addEventListener("DOMContentLoaded", function(event) {

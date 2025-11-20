@@ -1,155 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Video Player with Drag and Drop</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            padding: 20px; /* Add some padding */
-            background-color: rgb(240, 240, 240); /* Example background */
-            background-image: linear-gradient(50deg, rgba(255, 109, 109, 0.795), rgb(66, 202, 191)); /* RGB gradient as background */
-            animation: backgroundMotion 10s linear infinite; /* Background motion animation */
-        }
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Enhanced Video Player with Drag and Drop</title>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    background-image: linear-gradient(40deg, rgba(175, 153, 136, 1) 0%, rgba(49, 40, 40, 1) 100%);
+    font-family: 'Arial', sans-serif;
+    color: #fff;
+  }
 
-        @keyframes backgroundMotion {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
+  h1 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
 
-        video {
-            max-width: 80%;
-            border: 2px solid #333;
-            margin-bottom: 20px;
-        }
-        #dropArea {
-            border: 2px dashed #666;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            background-color: #e6e6e6;
-            margin-bottom: 30px; /* Add space below the drop area */
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 20px; /* Space above the button */
-        }
-        .highlight {
-            border-color: #0c84ff;
-            background-color: #d3e6d3;
-        }
-        .exit-text {
-            position: absolute;
-            top: 20px; /* Adjust as needed */
-            right: 20px; /* Aligns to the right */
-            font-size: 20px;
-            color: white;
-            animation: slideIn 0.5s forwards;
-        }
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-    </style>
-  </head>
-  <body>
-    <h1>My Video Player</h1>
-    <div id="dropArea">Drag and drop a video file (MP4, MOV, AVI, MKV,
-      WEBM) here</div>
-    <video id="myVideo" controls="controls" loop="" width="640"
-      height="360"> Your browser does not support the video tag. </video>
-    <button id="fileSelectButton">Select Video File</button> <input
-      id="fileInput" accept="video/*" style="display: none;" type="file">
-    <div class="exit-text"><a moz-do-not-send="true"
-        href="../../your%20favorite.html">Exit</a></div>
-    <script>
-        const video = document.getElementById('myVideo');
-        const dropArea = document.getElementById('dropArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileSelectButton = document.getElementById('fileSelectButton');
+  #dropArea {
+    width: 90%;
+    max-width: 600px;
+    padding: 30px;
+    border: 3px dashed #ccc;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    text-align: center;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    margin-bottom: 20px;
+  }
 
-        // Prevent default behavior (Prevent file from being opened)
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, preventDefaults, false);   
-            document.body.addEventListener(eventName, preventDefaults, false); 
-        });
+  #dropArea.highlight {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: #0c84ff;
+  }
 
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
+  #myVideo {
+    width: 90%;
+    max-width: 640px;
+    height: auto;
+    border: 3px solid #333;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    margin-bottom: 20px;
+  }
 
-        // Highlight the drop area when a file is dragged over it
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, highlight, false);
-        });
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, unhighlight, false);
-        });
+  #controlsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 640px;
+  }
 
-        function highlight() {
-            dropArea.classList.add('highlight');
-        }
+  #fileSelectButton {
+    padding: 12px 24px;
+    font-size: 1em;
+    background-color: #0c84ff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+  }
+  #fileSelectButton:hover {
+    background-color: #0957d1;
+  }
 
-        function unhighlight() {
-            dropArea.classList.remove('highlight');
-        }
+  #fileInput {
+    display: none;
+  }
 
-        // Handle dropped files
-        dropArea.addEventListener('drop', handleDrop, false);
+  .exit-text {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 1.2em;
+    background: rgba(0,0,0,0.3);
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background 0.3s;
+  }
 
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
+  .exit-text:hover {
+    background: rgba(0,0,0,0.6);
+  }
 
-            // Check if a proper video file is dropped
-            if (files.length > 0) {
-                const file = files[0];
-                const validVideoTypes = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska', 'video/webm'];
-                
-                if (validVideoTypes.includes(file.type)) {
-                    const videoURL = URL.createObjectURL(file);
-                    video.src = videoURL;
-                    video.play(); // Auto play the dropped video
-                } else {
-                    alert("Please drop a valid video file (MP4, MOV, AVI, MKV, WEBM).");
-                }
-            }
-        }
+  .exit-text a {
+    color: #fff;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
 
-        // Open the file selector when the button is clicked
-        fileSelectButton.addEventListener('click', () => {
-            fileInput.click();
-        });
+<h1>My Video Player</h1>
 
-        // Handle the file input to load the selected file
-        fileInput.addEventListener('change', () => {
-            const file = fileInput.files[0];
+<div id="dropArea">Drag and drop a video file (MP4, MOV, AVI, MKV, WEBM, MPG, OGG, M4A, M4P, M4B, M4R, M4V, FLV, MKV, WMV, MP4) here</div>
 
-            // Check if a proper video file is selected
-            if (file && ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska', 'video/webm'].includes(file.type)) {
-                const videoURL = URL.createObjectURL(file);
-                video.src = videoURL;
-                video.play(); // Auto play the selected video
-            } else {
-                alert("Please select a valid video file (MP4, MOV, AVI, MKV, WEBM).");
-            }
-        });
-    </script>
-  </body>
+<video id="myVideo" controls loop>
+  Your browser does not support the video tag.
+</video>
+
+<div id="controlsContainer">
+  <button id="fileSelectButton">Select Video File</button>
+  <input id="fileInput" accept="video/*" type="file" />
+</div>
+
+<div class="exit-text">
+  <a href="../../your%20favorite.html" target="_blank" rel="noopener noreferrer">Exit</a>
+</div>
+
+<script>
+  const video = document.getElementById('myVideo');
+  const dropArea = document.getElementById('dropArea');
+  const fileInput = document.getElementById('fileInput');
+  const fileSelectButton = document.getElementById('fileSelectButton');
+
+  // Supported video MIME types
+  const validVideoTypes = [
+    'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska', 'video/webm',
+    'video/ogg', 'video/x-m4a', 'video/x-m4p', 'video/x-m4b', 'video/x-m4r', 'video/x-m4v',
+    'video/avi', 'video/x-flv', 'video/x-ms-wmv'
+  ];
+
+  // Prevent default behavior for drag events
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+    dropArea.addEventListener(evt, e => {
+      e.preventDefault();
+      e.stopPropagation();
+    }, false);
+  });
+
+  // Highlight drop area on drag over
+  ['dragenter', 'dragover'].forEach(evt => {
+    dropArea.addEventListener(evt, () => {
+      dropArea.classList.add('highlight');
+    });
+  });
+
+  // Remove highlight
+  ['dragleave', 'drop'].forEach(evt => {
+    dropArea.addEventListener(evt, () => {
+      dropArea.classList.remove('highlight');
+    });
+  });
+
+  // Handle file drop
+  dropArea.addEventListener('drop', e => {
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleFile(files[0]);
+    }
+  });
+
+  // Handle file select button
+  document.getElementById('fileSelectButton').addEventListener('click', () => {
+    document.getElementById('fileInput').click();
+  });
+
+  // Handle file input change
+  document.getElementById('fileInput').addEventListener('change', () => {
+    const file = document.getElementById('fileInput').files[0];
+    if (file) {
+      handleFile(file);
+    }
+  });
+
+  // Function to validate and load video
+  function handleFile(file) {
+    if (validVideoTypes.includes(file.type)) {
+      const url = URL.createObjectURL(file);
+      video.src = url;
+      video.play();
+    } else {
+      alert("Please select a valid video file (MP4, MOV, AVI, MKV, WEBM, MPG, OGG, M4A, M4P, M4B, M4R, M4V, FLV, MKV, WMV).");
+    }
+  }
+</script>
+</body>
 </html>
