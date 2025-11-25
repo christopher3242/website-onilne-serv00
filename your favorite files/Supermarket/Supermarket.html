@@ -1,68 +1,89 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>Supermarket</title>
-    <style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Supermarket</title>
+<style>
   body {
-    background-color: #302212; /* Light gray background */
-    font-family: sans-serif; /* A common, readable font */
+    background-color: #302212; /* Dark background for contrast */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
   }
   .container {
-    max-width: 600px; /* Limit content width for better readability */
-    margin: 20px auto; /* Center the content block */
-    padding: 20px;
-    background-color: #ffffff; /* White background for the content */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
   h1 {
     text-align: center;
-    color: #333; /* Darker heading color */
+    color: #333;
+    margin-bottom: 10px;
+  }
+  p {
+    text-align: center;
+    font-size: 1.1em;
+    margin: 10px 0;
   }
   ul {
-    list-style-type: disc; /* Use standard disc bullets */
-    margin-left: 20px; /* Indent the list */
-  }
-  li {
-    margin-bottom: 8px; /* Space between list items */
-  }
-  a {
-    color: #007bff; /* A common link color */
-    text-decoration: none; /* Remove underline */
-  }
-  a:hover {
-    text-decoration: underline; /* Underline on hover */
-  }
-  .exit-link {
-    text-align: right;
+    list-style-type: disc;
+    margin-left: 40px;
     margin-top: 20px;
   }
+  li {
+    margin-bottom: 10px;
+  }
+  .section-title {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 30px;
+    font-size: 1.2em;
+    color: #555;
+  }
+  .coming-soon {
+    text-align: center;
+    font-style: italic;
+    margin-top: 20px;
+    color: #888;
+  }
+  .exit-link {
+    margin-top: 30px;
+    text-align: right;
+  }
+  .exit-link a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+  }
+  .exit-link a:hover {
+    text-decoration: underline;
+  }
 </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Supermarket</h1>
-      <p align="center">Nursery power 50g :-<br>
-      </p>
-      <ul>
-        <li>59 cent : Sparkle Image</li>
-        <li>65 cent : EConvenience Shop</li>
-        <li>65 Cent : EUROSPAR Marsaskala</li>
-      </ul>
-      <ul>
-        <li>70 cent : chinese (orient market 3)</li>
-      </ul>
-      <p>==================================================================<br>
-      </p>
-      <p align="center">Coming soon<br>
-      </p>
-      <p align="center">?<br>
-      </p>
-      <ul>
-      </ul>
-      <div class="exit-link"> <a href="../../your%20favorite.html"
-          moz-do-not-send="true">Exit</a> </div>
-    </div>
-  </body>
+</head>
+<body>
+<div class="container">
+  <h1>Supermarket</h1>
+  <p>When found shop in Marsaskala</p>
+  <p>Nursery power 50g :-</p>
+  
+  <div class="section-title">Available Products</div>
+  <ul>
+    <li>52 cent : Ganza Extras</li>
+    <li>59 cent : Sparkle Image</li>
+    <li>65 cent : EConvenience Shop</li>
+    <li>65 cent : EUROSPAR Marsaskala</li>
+    <li>70 cent : Chinese (Orient Market 3)</li>
+  </ul>
+  
+  <div class="section-title">Coming Soon</div>
+  <p class="coming-soon">Stay tuned for exciting new products!</p>
+  
+  <div class="exit-link">
+    <a href="../../your%20favorite.html" target="_blank" rel="noopener noreferrer">Exit</a>
+  </div>
+</div>
+</body>
 </html>
