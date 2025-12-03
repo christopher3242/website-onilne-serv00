@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Android Test HTML</title>
+    <style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ff6ec4, #7873f5);
+    color: #fff;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+  }
+
+  header {
+    padding: 20px;
+    font-size: 2em;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .content {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .text {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+  }
+
+  .write-maker {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  input[type="text"] {
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    width: 200px;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #ff4757;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #ff6b81;
+  }
+
+  .exit-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #2ed573;
+  }
+
+  .exit-btn:hover {
+    background-color: #32e083;
+  }
+</style>
+  </head>
+  <body>
+    <h1>Android Test HTML</h1>
+    <a href="../../your%20favorite.html"><button class="exit-btn">Exit</button></a>
+    <div class="content">
+      <div class="text">hello [text]</div>
+      <div class="write-maker"> <input placeholder="Write something..."
+          id="userInput" type="text"> <button onclick="alert('You
+          wrote: ' + document.getElementById('userInput').value)">Write</button>
+      </div>
+    </div>
+  </body>
+</html>
