@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Darts Game</title>
-<style>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>The Darts Game</title>
+    <style>
   body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -120,41 +123,35 @@
     background-color: #e0a800;
   }
 </style>
-</head>
-<body>
-
-<header>
-  <h1>The Darts Game</h1>
-</header>
-
-<div class="controls">
-  <button id="exitBtn">Exit</button>
-  <button id="restartBtn">Restart</button>
-  <button id="playerVsCpuBtn">Player vs CPU</button>
-  <button id="playerVsPlayerBtn">Player vs Player</button>
-</div>
-
-<div class="player-list">
-  <h2>Players</h2>
-  <ul id="players">
-    <li><span class="name">Player 1</span> <span class="score" id="score1">501</span></li>
-    <li><span class="name">Player 2</span> <span class="score" id="score2">501</span></li>
-  </ul>
-</div>
-
-<h2 style="text-align:center;">Select Number</h2>
-<div class="dart-grid" id="dartGrid"></div>
-
-<h2 style="text-align:center;">Select Segment</h2>
-<div class="segment-controls">
-  <button class="segment-btn" data-multiplier="1">Single</button>
-  <button class="segment-btn" data-multiplier="2">Double</button>
-  <button class="segment-btn" data-multiplier="3">Triple</button>
-</div>
-
-<button id="throwBtn">Throw Dart</button>
-
-<script>
+  </head>
+  <body>
+    <header>
+      <h1>The Darts Game</h1>
+    </header>
+    <div class="controls"> <a href="../Games.html"><button id="exitBtn">Exit</button></a>
+      <button id="restartBtn">Restart</button> <button
+        id="playerVsCpuBtn">Player vs CPU</button> <button
+        id="playerVsPlayerBtn">Player vs Player</button>
+    </div>
+    <div class="player-list">
+      <h2>Players</h2>
+      <ul id="players">
+        <li><span class="name">Player 1</span> <span class="score"
+            id="score1">501</span></li>
+        <li><span class="name">Player 2</span> <span class="score"
+            id="score2">501</span></li>
+      </ul>
+    </div>
+    <h2 style="text-align:center;">Select Number</h2>
+    <div class="dart-grid" id="dartGrid"></div>
+    <h2 style="text-align:center;">Select Segment</h2>
+    <div class="segment-controls"> <button class="segment-btn"
+        data-multiplier="1">Single</button> <button class="segment-btn"
+        data-multiplier="2">Double</button> <button class="segment-btn"
+        data-multiplier="3">Triple</button>
+    </div>
+    <button id="throwBtn">Throw Dart</button>
+    <script>
   const dartGrid = document.getElementById('dartGrid');
   for (let i = 1; i <= 50; i++) {
     const cell = document.createElement('div');
@@ -312,6 +309,5 @@ document.getElementById('restartBtn').addEventListener('click', () => {
   }
 });
 </script>
-
-</body>
+  </body>
 </html>
