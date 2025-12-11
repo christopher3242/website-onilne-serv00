@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Darts Game</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  h1 {
+    margin: 0;
+    font-size: 2em;
+  }
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  .player-list {
+    max-width: 400px;
+    margin: 0 auto 30px auto;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .player-list h2 {
+    margin-top: 0;
+    text-align: center;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  li {
+    padding: 8px 12px;
+    margin: 4px 0;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .score {
+    font-weight: bold;
+  }
+  /* Darts number grid */
+  .dart-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+    max-width: 600px;
+    margin: 0 auto 30px;
+  }
+  .dart-cell {
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+  }
+  .dart-cell:hover {
+    background-color: #e0e0e0;
+  }
+  /* Segment control for single/double/triple */
+  .segment-controls {
+    max-width: 600px;
+    margin: 0 auto 30px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+  .segment-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s, border 0.2s;
+  }
+  .segment-btn:hover {
+    background-color: #1e7e34;
+  }
+  /* Throw button style */
+  #throwBtn {
+    display: block;
+    margin: 0 auto 30px;
+    padding: 12px 24px;
+    font-size: 1.2em;
+    background-color: #ffc107;
+    color: #000;
+  }
+  #throwBtn:hover {
+    background-color: #e0a800;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The Darts Game</h1>
+</header>
+
+<div class="controls">
+  <button id="exitBtn">Exit</button>
+  <button id="restartBtn">Restart</button>
+  <button id="playerVsCpuBtn">Player vs CPU</button>
+  <button id="playerVsPlayerBtn">Player vs Player</button>
+</div>
+
+<div class="player-list">
+  <h2>Players</h2>
+  <ul id="players">
+    <li><span class="name">Player 1</span> <span class="score" id="score1">501</span></li>
+    <li><span class="name">Player 2</span> <span class="score" id="score2">501</span></li>
+  </ul>
+</div>
+
+<h2 style="text-align:center;">Select Number</h2>
+<div class="dart-grid" id="dartGrid"></div>
+
+<h2 style="text-align:center;">Select Segment</h2>
+<div class="segment-controls">
+  <button class="segment-btn" data-multiplier="1">Single</button>
+  <button class="segment-btn" data-multiplier="2">Double</button>
+  <button class="segment-btn" data-multiplier="3">Triple</button>
+</div>
+
+<button id="throwBtn">Throw Dart</button>
+
+<script>
+  const dartGrid = document.getElementById('dartGrid');
+  for (let i = 1; i <= 50; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'dart-cell';
+    cell.textContent = i;
+    cell.dataset.number = i;
+    dartGrid.appendChild(cell);
+  }
+
+  let selectedNumber = null;
+  let selectedMultiplier = 1;
+  let currentPlayer = 1; // 1 or 2
+  let isVsCpu = false; // Mode flag
+
+  const score1El = document.getElementById('score1');
+  const score2El = document.getElementById('score2');
+
+  // Number selection
+  dartGrid.addEventListener('click', (e) => {
+    if (e.target.classList.contains('dart-cell')) {
+      Array.from(dartGrid.children).forEach(c => c.style.backgroundColor = '');
+      e.target.style.backgroundColor = '#ffc107';
+      selectedNumber = parseInt(e.target.dataset.number);
+    }
+  });
+
+  // Segment buttons
+  document.querySelectorAll('.segment-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedMultiplier = parseInt(btn.dataset.multiplier);
+      document.querySelectorAll('.segment-btn').forEach(b => b.style.border = '');
+      btn.style.border = '2px solid #000';
+    });
+  });
+
+  // Switch player
+  function switchPlayer() {
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+  }
+
+  // Handle throw
+document.getElementById('throwBtn').addEventListener('click', () => {
+  if (selectedNumber === null) {
+    alert('Please select a number.');
+    return;
+  }
+
+  // Deduct score
+  const deduction = selectedNumber * selectedMultiplier;
+  if (currentPlayer === 1) {
+    let currentScore = parseInt(score1El.textContent);
+    if (currentScore - deduction < 0) {
+      alert('Bust! Score cannot go below zero.');
+      return;
+    } else if (currentScore - deduction === 0) {
+      alert('Player 1 wins!');
+      score1El.textContent = '0';
+      // Reset game
+      return;
+    } else {
+      score1El.textContent = currentScore - deduction;
+    }
+  } else {
+    let currentScore = parseInt(score2El.textContent);
+    if (currentScore - deduction < 0) {
+      alert('Bust! Score cannot go below zero.');
+      return;
+    } else if (currentScore - deduction === 0) {
+      alert('Player 2 wins!');
+      score2El.textContent = '0';
+      return;
+    } else {
+      score2El.textContent = currentScore - deduction;
+    }
+  }
+
+  Array.from(dartGrid.children).forEach(c => c.style.backgroundColor = '');
+  selectedNumber = null;
+
+  // Switch player
+  switchPlayer();
+
+  // If vs CPU mode and it's CPU's turn, make AI move
+  if (isVsCpu && currentPlayer === 2) {
+    setTimeout(aiTurn, 500); // delay for realism
+  }
+});
+
+function aiTurn() {
+  // AI picks random number and segment
+  const availableNumbers = Array.from(dartGrid.children).map(c => parseInt(c.dataset.number));
+  const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+  selectedNumber = availableNumbers[randomIndex];
+
+  // Random segment
+  const segments = [1, 2, 3];
+  selectedMultiplier = segments[Math.floor(Math.random() * segments.length)];
+
+  // Make AI throw
+  // Find the cell and highlight it
+  const cell = Array.from(dartGrid.children).find(c => parseInt(c.dataset.number) === selectedNumber);
+  Array.from(dartGrid.children).forEach(c => c.style.backgroundColor = '');
+  if (cell) {
+    cell.style.backgroundColor = '#ffc107';
+  }
+
+  // Deduct score automatically
+  const deduction = selectedNumber * selectedMultiplier;
+  if (currentPlayer === 2) {
+    let currentScore = parseInt(score2El.textContent);
+    if (currentScore - deduction < 0) {
+      // Bust, skip turn
+      alert('AI busts!');
+    } else if (currentScore - deduction === 0) {
+      alert('AI wins!');
+      score2El.textContent = '0';
+      return;
+    } else {
+      score2El.textContent = currentScore - deduction;
+    }
+  }
+  // Clear selection
+  selectedNumber = null;
+  Array.from(dartGrid.children).forEach(c => c.style.backgroundColor = '');
+
+  // Switch back to player 1
+  switchPlayer();
+
+  // Optionally, if you want AI to keep playing automatically, call aiTurn() again here
+}
+
+// Mode buttons
+document.getElementById('playerVsCpuBtn').addEventListener('click', () => {
+  isVsCpu = true;
+  // Reset game
+  document.getElementById('score1').textContent = '501';
+  document.getElementById('score2').textContent = '501';
+  currentPlayer = 1;
+});
+
+document.getElementById('playerVsPlayerBtn').addEventListener('click', () => {
+  isVsCpu = false;
+  // Reset game
+  document.getElementById('score1').textContent = '501';
+  document.getElementById('score2').textContent = '501';
+  currentPlayer = 1;
+});
+
+
+document.getElementById('restartBtn').addEventListener('click', () => {
+  if (confirm('Restart game?')) {
+    document.getElementById('score1').textContent = '501';
+    document.getElementById('score2').textContent = '501';
+    currentPlayer = 1;
+  }
+});
+</script>
+
+</body>
+</html>

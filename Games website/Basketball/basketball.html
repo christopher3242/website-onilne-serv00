@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Basketball Game</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    margin: 0;
+    overflow: hidden;
+  }
+  h1 {
+    color: #ffcc00;
+    text-align: center;
+    margin-top: 10px;
+  }
+  #gameCanvas {
+    display: block;
+    margin: 20px auto;
+    background-color: #4CAF50;
+    border: 2px solid #fff;
+  }
+  #controls {
+    text-align: center;
+    margin-top: 10px;
+  }
+  button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  #score {
+    color: #fff;
+    font-size: 20px;
+  }
+  #topScore {
+    color: #fff;
+    font-size: 20px;
+  }
+</style>
+  </head>
+  <body>
+    <h1>Basketball</h1>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <div id="controls"> <button id="restartBtn">Restart</button> <a
+        href="../games.html"><button id="exitBtn">Exit</button></a>
+      <div id="score">Score: 0</div>
+      <div id="topScore">Top Score: 0</div>
+    </div>
+    <script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const scoreDiv = document.getElementById('score');
+const topScoreDiv = document.getElementById('topScore');
+const restartBtn = document.getElementById('restartBtn');
+const exitBtn = document.getElementById('exitBtn');
+
+let gameInterval;
+let score = 0;
+let topScore = 0;
+
+// Ball properties
+const ball = {
+  x: 100,
+  y: 350,
+  radius: 15,
+  color: 'orange',
+  dx: 0,
+  dy: 0,
+  isMoving: false
+};
+
+// Hoop properties
+const hoop = {
+  x: 500,
+  y: 150,
+  width: 60,
+  height: 10
+};
+
+// Physics
+const gravity = 0.3;
+
+// Mouse interaction for aiming
+let isDragging = false;
+let mouseX = 0;
+let mouseY = 0;
+
+// Initialize game
+function init() {
+  // Load top score from localStorage if needed
+  // For session, just keep in variable
+  score = 0;
+  updateScore();
+  updateTopScore();
+  resetBall();
+  if (gameInterval) clearInterval(gameInterval);
+  gameInterval = setInterval(update, 20);
+}
+
+// Reset ball position
+function resetBall() {
+  ball.x = 100;
+  ball.y = 350;
+  ball.dx = 0;
+  ball.dy = 0;
+  ball.isMoving = false;
+}
+
+// Update score display
+function updateScore() {
+  scoreDiv.innerText = 'Score: ' + score;
+}
+
+// Update top score display
+function updateTopScore() {
+  topScoreDiv.innerText = 'Top Score: ' + topScore;
+}
+
+// Draw everything
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw hoop
+  ctx.fillStyle = 'red';
+  ctx.fillRect(hoop.x, hoop.y, hoop.width, hoop.height);
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(hoop.x, hoop.y, hoop.width, hoop.height);
+
+  // Draw ball
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  ctx.fillStyle = ball.color;
+  ctx.fill();
+  ctx.closePath();
+
+  // Draw aiming line if dragging
+  if (isDragging) {
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(ball.x, ball.y);
+    ctx.lineTo(mouseX, mouseY);
+    ctx.stroke();
+  }
+}
+
+// Update physics
+function update() {
+  if (ball.isMoving) {
+    ball.dy += gravity;
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    // Collision with ground
+    if (ball.y + ball.radius > canvas.height) {
+      ball.y = canvas.height - ball.radius;
+      ball.dy *= -0.6; // bounce effect
+      ball.dx *= 0.9; // friction
+      if (Math.abs(ball.dy) < 1) {
+        ball.dy = 0;
+        ball.isMoving = false;
+      }
+    }
+
+    // Collision with walls
+    if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+      ball.x = Math.min(Math.max(ball.x, ball.radius), canvas.width - ball.radius);
+      ball.dx *= -1;
+    }
+
+    // Check for scoring
+    if (
+      ball.y - ball.radius < hoop.y + hoop.height &&
+      ball.y + ball.radius > hoop.y &&
+      ball.x > hoop.x &&
+      ball.x < hoop.x + hoop.width
+    ) {
+      if (ball.dy > 0 && ball.y < hoop.y + hoop.height) {
+        score += 1; // Increment score by 1
+        if (score > topScore) {
+          topScore = score;
+          updateTopScore();
+        }
+        updateScore();
+        animateScore();
+      }
+    }
+  }
+  draw();
+}
+
+// Animate scoring (simple flash)
+function animateScore() {
+  ctx.fillStyle = 'yellow';
+  ctx.font = '40px Arial';
+  ctx.fillText('Score!', canvas.width / 2 - 60, canvas.height / 2);
+  setTimeout(() => {}, 500);
+}
+
+// Mouse events for aiming and shooting
+canvas.addEventListener('mousedown', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  mouseX = e.clientX - rect.left;
+  mouseY = e.clientY - rect.top;
+  const dist = Math.hypot(mouseX - ball.x, mouseY - ball.y);
+  if (dist < ball.radius + 5 && !ball.isMoving) {
+    isDragging = true;
+  }
+});
+
+canvas.addEventListener('mouseup', (e) => {
+  if (isDragging) {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+    const dx = mouseX - ball.x;
+    const dy = mouseY - ball.y;
+    // Set velocity based on drag
+    ball.dx = dx * 0.2;
+    ball.dy = dy * 0.2;
+    ball.isMoving = true;
+    isDragging = false;
+  }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (isDragging) {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+  }
+});
+
+// Restart game
+document.getElementById('restartBtn').addEventListener('click', () => {
+  init();
+});
+
+
+
+// Start game
+init();
+</script>
+  </body>
+</html>
