@@ -152,9 +152,9 @@
   const videoNumberDisplay = document.getElementById('videoNumber');
   let currentVideoIndex = 0;
 
-  // Generate video sources from 1 to 1000
+  // Generate video sources from 1 to 2000
   const videoSources = [];
-  for (let i = 1; i <= 1000; i++) {
+  for (let i = 1; i <= 2000; i++) {
     videoSources.push(`video${i}.mp4`);
   }
 
@@ -207,13 +207,13 @@
   }
 
   function searchVideo() {
-    const input = prompt("Enter video number (1-1000):");
+    const input = prompt("Enter video number (1-2000):");
     const num = parseInt(input);
-    if (!isNaN(num) && num >= 1 && num <= 1000) {
+    if (!isNaN(num) && num >= 1 && num <= 2000) {
       currentVideoIndex = num - 1;
       updateVideo();
     } else {
-      alert("Invalid number. Please enter a number between 1 and 1000.");
+      alert("Invalid number. Please enter a number between 1 and 2000.");
     }
   }
 
