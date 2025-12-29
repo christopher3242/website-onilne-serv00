@@ -18,6 +18,8 @@ https://xxsexy.serv00.net/
 Beta website :- 
 https://beta-final.website-onilne-serv00.pages.dev
 
+[![Crowdin](https://badges.crowdin.net/serv00-sexy/localized.svg)](https://crowdin.com/project/serv00-sexy)
+
 
 
 On partner
