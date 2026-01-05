@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Poll with Reset and Exit</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+    font-family: 'Roboto', sans-serif;
+  }
+  .poll-container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    max-width: 500px;
+    width: 100%;
+  }
+  h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 2rem;
+  }
+  .option {
+    margin-bottom: 20px;
+  }
+  label {
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  input[type="radio"] {
+    margin-right: 15px;
+    accent-color: #4CAF50;
+  }
+  .count {
+    margin-left: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    color: #555;
+  }
+  .bar-container {
+    background-color: #e0e0e0;
+    height: 25px;
+    border-radius: 12.5px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .bar {
+    height: 100%;
+    width: 0%;
+    background-color: #4CAF50;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: #fff;
+    padding-right: 10px;
+    font-size: 0.9rem;
+    border-radius: 12.5px 0 0 12.5px;
+    transition: width 0.5s ease, background-color 0.3s;
+  }
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    flex-wrap: wrap;
+  }
+  button {
+    flex: 1 1 45%;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background 0.3s, transform 0.2s;
+  }
+  #voteBtn {
+    background-color: #4CAF50;
+    color: #fff;
+  }
+  #voteBtn:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+  }
+  #clearBtn {
+    background-color: #2196F3;
+    color: #fff;
+  }
+  #clearBtn:hover {
+    background-color: #1976D2;
+    transform: scale(1.05);
+  }
+  #results {
+    margin-top: 30px;
+    padding: 15px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+  }
+  .exit-link {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    color: #fff;
+    background-color: #555;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+  }
+  .exit-link:hover {
+    background-color: #333;
+  }
+  @media(max-width: 600px) {
+    .buttons {
+      flex-direction: column;
+    }
+    button {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="poll-container">
+  <h1>Favorite Color Poll</h1>
+  <form id="pollForm">
+    <div class="option">
+      <label>
+        <input type="radio" name="color" value="Red" required> Red
+        <span class="count" id="count-Red">0 votes</span>
+      </label>
+      <div class="bar-container">
+        <div class="bar" id="bar-Red">0%</div>
+      </div>
+    </div>
+    <div class="option">
+      <label>
+        <input type="radio" name="color" value="Blue"> Blue
+        <span class="count" id="count-Blue">0 votes</span>
+      </label>
+      <div class="bar-container">
+        <div class="bar" id="bar-Blue">0%</div>
+      </div>
+    </div>
+    <div class="option">
+      <label>
+        <input type="radio" name="color" value="Green"> Green
+        <span class="count" id="count-Green">0 votes</span>
+      </label>
+      <div class="bar-container">
+        <div class="bar" id="bar-Green">0%</div>
+      </div>
+    </div>
+    <div class="option">
+      <label>
+        <input type="radio" name="color" value="Yellow"> Yellow
+        <span class="count" id="count-Yellow">0 votes</span>
+      </label>
+      <div class="bar-container">
+        <div class="bar" id="bar-Yellow">0%</div>
+      </div>
+    </div>
+    <div class="buttons">
+      <button type="submit" id="voteBtn">Vote</button>
+      <button type="button" id="clearBtn">Clear Votes</button>
+    </div>
+  </form>
+  <div id="results"></div>
+  <a href="../../your%20favorite.html" class="exit-link">Exit </a>
+</div>
+
+<script>
+  const form = document.getElementById('pollForm');
+  const resultDiv = document.getElementById('results');
+
+  // Initialize votes object
+  const votes = {
+    Red: 0,
+    Blue: 0,
+    Green: 0,
+    Yellow: 0
+  };
+
+  function updateBars() {
+    const totalVotes = Object.values(votes).reduce((a, b) => a + b, 0) || 1;
+    for (const color in votes) {
+      const percent = ((votes[color] / totalVotes) * 100).toFixed(1);
+      const bar = document.getElementById(`bar-${color}`);
+      bar.style.width = percent + '%';
+      bar.textContent = percent + '%';
+    }
+  }
+
+  function updateCounts() {
+    for (const color in votes) {
+      document.getElementById(`count-${color}`).textContent = `${votes[color]} vote${votes[color] !== 1 ? 's' : ''}`;
+    }
+  }
+
+  function displayResults() {
+    const totalVotes = Object.values(votes).reduce((a, b) => a + b);
+    let html = '<h3>Results:</h3><ul style="list-style:none; padding:0;">';
+    for (const color in votes) {
+      const percent = totalVotes ? ((votes[color] / totalVotes) * 100).toFixed(1) : '0.0';
+      html += `<li style="margin-bottom:8px;">${color}: ${votes[color]} votes (${percent}%)</li>`;
+    }
+    resultDiv.innerHTML = html;
+  }
+
+  document.getElementById('voteBtn').addEventListener('click', e => {
+    e.preventDefault();
+    const selected = document.querySelector('input[name="color"]:checked');
+    if (selected) {
+      votes[selected.value]++;
+      updateCounts();
+      updateBars();
+      displayResults();
+    }
+  });
+
+  // Vote on Enter
+  form.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('voteBtn').click();
+    }
+  });
+
+  // Clear votes
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    for (let color in votes) votes[color] = 0;
+    updateCounts();
+    updateBars();
+    resultDiv.innerHTML = '';
+    document.querySelectorAll('input[name="color"]').forEach(input => input.checked = false);
+  });
+
+</script>
+
+</body>
+</html>
