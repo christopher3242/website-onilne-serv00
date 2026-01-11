@@ -1,155 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Video List with Counter</title>
-    <style>
-  body {
-    background-color: #72c9ff; /* Light blue background */
-    margin: 0;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-  }
-
-  h1 {
-    text-align: center;
-    font-size: 2.5em;
-    margin-bottom: 20px;
-  }
-
-  /* Counter styling */
-  .counter-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 30px 0;
-  }
-
-  .counter {
-    font-size: 80px;
-    font-weight: bold;
-    color: #ffffff;
-    background-color: rgb(33, 136, 127); /* Green background for contrast */
-    padding: 20px 40px;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    font-family: 'Arial', sans-serif;
-  }
-
-  /* Table styling */
-  table {
-    width: 100%;
-    max-width: 1046px;
-    margin: 0 auto 20px auto;
-    border-collapse: collapse;
-    background-color: #ffffff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  }
-
-  td {
-    padding: 12px 20px;
-    border: 1px solid #a8a8a8;
-    text-align: center;
-    font-size: 1em;
-  }
-
-  /* Container for the download button at bottom left with full space around */
-  .bottom-left-container {
-    display: flex;
-    justify-content: flex-start; /* Align to left */
-    align-items: center; /* Vertically center within space */
-    padding: 20px;
-    margin-top: auto; /* Push to bottom of flex container */
-  }
-
-  /* Style for the download button */
-  .download-button {
-    text-decoration: none;
-    background-color: #594dffff; /* Blue button */
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-
-  /* Hover effect for download button */
-  .download-button:hover {
-    background-color: #254099;
-    transform: scale(1.05);
-  }
-
-  /* Additional styling for exit link container if needed */
-  .exit-container {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    padding: 10px 20px;
-  }
-
-  .exit-link {
-    text-decoration: none;
-    background-color: #001aff; /* Blue button */
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-
-  .exit-link:hover {
-    background-color: #0054b3;
-    transform: scale(1.05);
-  }
-</style>
-  </head>
-  <body>
-    <br>
-    <div align="center"><font size="+3" face="Arial Rounded MT">xxxsexy
-        serv00 = Video ID (2000)</font><br>
-      <font size="+3" face="Arial Rounded MT"><br>
-      </font></div>
-    <p align="center"><font size="+1">Its white Update Doing well just
-        video for checking Number Counter Animation.</font><br>
-    </p>
-    <!-- Counter Display -->
-    <div class="counter-container">
-      <div class="counter" id="counter">0</div>
-    </div>
-    <!-- Download PDF Button -->
-    <div class="download-container"> <a
-href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Video%20ID/videos%20list.pdf"
-        class="download-button" target="_blank" download="">Download PDF</a>
-    </div>
-    <!-- Exit link at the bottom right -->
-    <div class="exit-container"> <a href="../../your%20favorite.html"
-        class="exit-link">exit</a>
-    </div>
-    <script>
-  // Counter animation to count up to 30
-  const counter = document.getElementById('counter');
-  const targetNumber = 22;
-  let currentNumber = 0;
-  const duration = 7000; // duration of animation in ms
-  const intervalTime = Math.floor(duration / targetNumber);
-
-  const counterInterval = setInterval(() => {
-    currentNumber++;
-    counter.textContent = currentNumber;
-    if (currentNumber >= targetNumber) {
-      clearInterval(counterInterval);
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video List with Counter</title>
+  <style>
+    body {
+      background-color: #78c0d6; /* Light blue background */
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
     }
-  }, intervalTime);
-</script>
-  </body>
+
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    /* Table styling */
+    table {
+      width: 100%;
+      max-width: 1046px;
+      margin: 0 auto 20px auto;
+      border-collapse: collapse;
+      background-color: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    td {
+      padding: 12px 20px;
+      border: 1px solid #a8a8a8;
+      text-align: center;
+      font-size: 1em;
+    }
+
+    /* Container for the download button at bottom left with full space around */
+    .bottom-left-container {
+      display: flex;
+      justify-content: flex-start; /* Align to left */
+      align-items: center; /* Vertically center within space */
+      padding: 20px;
+      margin-top: auto; /* Push to bottom of flex container */
+    }
+
+    /* Style for the download button */
+    .download-button {
+      text-decoration: none;
+      background-color: #269ee4; /* Changed to a valid blue color */
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    /* Hover effect for download button */
+    .download-button:hover {
+      background-color: #4061ce;
+      transform: scale(1.05);
+    }
+
+    /* Additional styling for exit link container */
+    .exit-container {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 20px;
+    }
+
+    .exit-link {
+      text-decoration: none;
+      background-color: #4759ff; /* Blue button */
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .exit-link:hover {
+      background-color: #121464;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <br>
+  <div align="center">
+    <font size="+3" face="Arial Rounded MT">xxxsexy serv00 = Video ID (5000)</font><br>
+    <font size="+3" face="Arial Rounded MT"><br></font>
+  </div>
+  <p align="center">
+    <font size="+1">I will download PDF Only or view<br></font>
+  </p>
+  <p align="center">
+    <font size="+1"><br></font>
+  </p>
+  <p align="center">
+    <font size="+1"><br></font>
+  </p>
+  <!-- Download PDF Button -->
+  <div class="download-container">
+    <a
+      href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Video%20ID/videos%20list.pdf"
+      class="download-button"
+      target="_blank"
+      download
+    >
+      Download PDF
+    </a>
+    <br><br><br><br>
+  </div>
+  <!-- Exit link at the bottom right -->
+  <div class="exit-container">
+    <a href="../../your%20favorite.html" class="exit-link">exit</a>
+  </div>
+</body>
 </html>

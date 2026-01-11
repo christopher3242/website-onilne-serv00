@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Malta Radio Stations with Theme Switcher</title>
+<style>
+  :root {
+    --bg-color: #222;
+    --text-color: #fff;
+    --button-bg: #555;
+    --button-hover: #777;
+    --accent-color: #ff4d4d;
+    --station-bg: #333;
+    --station-hover: #555;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    transition: background-color 0.5s, color 0.5s;
+    display: flex;
+    justify-content: center;
+  }
+
+  .container {
+    max-width: 800px;
+    width: 100%;
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 10px;
+  }
+
+  /* Theme toggle button style */
+  #themeToggle {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: var(--button-bg);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+
+  #themeToggle:hover {
+    background-color: var(--button-hover);
+  }
+
+  /* Station list styles */
+  .station-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .station {
+    background: var(--station-bg);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+    min-width: 250px;
+    text-align: center;
+  }
+  .station:hover {
+    background: var(--station-hover);
+  }
+
+  /* Player controls container */
+  #playerControls {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Buttons styling */
+  .buttons {
+    margin: 10px 0;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  button {
+    font-size: 24px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--button-bg);
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  button:hover {
+    background-color: var(--button-hover);
+  }
+
+  input[type=range] {
+    width: 200px;
+  }
+
+  /* Exit button styles */
+  .exit-button {
+    margin-top: 20px;
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+
+  .exit-button:hover {
+    background-color: #cc0000;
+  }
+
+  /* Themes: Gray, Black, Dark Wood */
+  body.gray-theme {
+    --bg-color: #d3d3d3; /* Light gray background */
+    --text-color: #222;   /* Dark text */
+    --button-bg: #888;    /* Medium gray buttons */
+    --button-hover: #555; /* Darker hover */
+    --station-bg: #aaa;   /* Light gray stations */
+    --station-hover: #888;
+  }
+
+  body.black-theme {
+    --bg-color: #000;      /* Black background */
+    --text-color: #eee;    /* Light text for contrast */
+    --button-bg: #444;     /* Dark gray buttons */
+    --button-hover: #222;  /* Even darker on hover */
+    --station-bg: #222;    /* Dark stations */
+    --station-hover: #444;
+  }
+
+  body.wood-theme {
+    --bg-color: #8B4513; /* Saddle brown background */
+    --text-color: #fff8dc; /* Cornsilk text */
+    --button-bg: #A0522D; /* Sienna buttons */
+    --button-hover: #8B4513; /* Darker brown hover */
+    --station-bg: #A0522D; /* Sienna stations */
+    --station-hover: #8B4513;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>Malta Radio Stations</h1>
+<button id="themeToggle">Switch to Gray Theme</button>
+
+<!-- Station list -->
+<div class="station-list" id="stationList"></div>
+
+<!-- Player controls -->
+<div id="playerControls" style="display:none;">
+  <h2 id="stationName"></h2>
+  <audio id="audioPlayer" controls></audio>
+  
+  <div class="buttons">
+    <button id="playPause" title="Play/Pause">⏯️</button>
+  </div>
+  
+  <!-- Volume slider -->
+  <div>
+    <label for="volumeRange">Volume:</label>
+    <input type="range" id="volumeRange" min="1" max="100" value="50" />
+  </div>
+</div>
+
+<!-- Exit button -->
+<br />
+<a href="../../your%20favorite.html" class="exit-button">Exit</a>
+</div>
+
+<script>
+const stations = [
+  { name: "Radju Malta 1", genre: "Maltes", url: "http://s38.myradiostream.com/6982/listen.mp3" },
+  { name: "NET FM", genre: "Better Music", url: "http://s2.voscast.com:11392/default" },
+  { name: "Radju Malta 2", genre: "Multilingual", url: "http://s11.myradiostream.com/4954/listen.mp3" },
+  { name: "Bay Easy", genre: "More music! More feel good!", url: "http://stream.v3.network:8018/stream" },
+  { name: "Vibe FM", genre: "DEFECTED RADIO WITH SAM DIVINE", url: "https://vibe.mt/stream" },
+  { name: "Radio USA", genre: "America's Best Country", url: "https://playerservices.streamtheworld.com/api/livestream-redirect/WUSZFM.mp3" },
+  { name: "Virgin Radio Italy", genre: "Style Rock", url: "http://icecast.unitedradio.it/Virgin.mp3" },
+  { name: "Calypso Radio 101.8", genre: "Mużika mill-passat", url: "https://s4.radio.co/sf3aa4c25a/listen" },
+  { name: "Radio Flash", genre: "La radio che funziona", url: "https://stream2.xdevel.com/audio5s194-48/stream/icecast.audio" },
+  { name: "Antenne Bayern Pop XXL", genre: "Pop XXL", url: "http://stream.antenne.de/pop-xxl/stream/mp3" },
+  { name: "104.6 RTL DJ Mix", genre: "DJ Mix", url: "http://stream.104.6rtl.com/elektro/mp3-192/" },
+  { name: "Phonk", genre: "Phonk", url: "https://phonk.stream.laut.fm/phonk" },
+];
+
+const stationListDiv = document.getElementById('stationList');
+const playerContainer = document.getElementById('playerControls');
+const stationNameElem = document.getElementById('stationName');
+const audioPlayer = document.getElementById('audioPlayer');
+const volumeRange = document.getElementById('volumeRange');
+const themeToggleBtn = document.getElementById('themeToggle');
+
+let currentStation = null;
+let isPlaying = false;
+let currentThemeIndex = 0; // 0: gray, 1: black, 2: wood
+
+const themes = ['gray-theme', 'black-theme', 'wood-theme'];
+const themeNames = ['Gray', 'Black', 'Wood'];
+
+// Populate station list
+stations.forEach(station => {
+  const div = document.createElement('div');
+  div.className = 'station';
+  div.innerHTML = `<strong>${station.name}</strong><br><em>${station.genre}</em>`;
+  div.onclick = () => {
+    loadStation(station);
+  };
+  stationListDiv.appendChild(div);
+});
+
+function loadStation(station) {
+  currentStation = station;
+  stationNameElem.textContent = station.name;
+  audioPlayer.src = station.url;
+  playerContainer.style.display = 'flex';
+  isPlaying = false;
+  updatePlayPause();
+  audioPlayer.pause();
+  audioPlayer.volume = volumeRange.value / 100;
+}
+
+// Play/Pause toggle
+document.getElementById('playPause').onclick = () => {
+  if (!currentStation) return;
+  if (isPlaying) {
+    audioPlayer.pause();
+  } else {
+    audioPlayer.play();
+  }
+};
+audioPlayer.onplay = () => {
+  isPlaying = true;
+  updatePlayPause();
+};
+audioPlayer.onpause = () => {
+  isPlaying = false;
+  updatePlayPause();
+};
+function updatePlayPause() {
+  document.getElementById('playPause').textContent = '⏯️'; // Always same icon
+}
+
+// Volume control
+volumeRange.oninput = () => {
+  audioPlayer.volume = volumeRange.value / 100;
+};
+
+// Cycle themes: Gray -> Black -> Wood -> Gray...
+document.getElementById('themeToggle').onclick = () => {
+  currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+  document.body.className = themes[currentThemeIndex];
+  document.getElementById('themeToggle').textContent = `Switch to ${themeNames[(currentThemeIndex + 1) % themes.length]} Theme`;
+};
+</script>
+
+</body>
+</html>

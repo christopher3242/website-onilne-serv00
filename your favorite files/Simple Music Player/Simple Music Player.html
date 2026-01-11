@@ -1,34 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Music Player</title>
+<style>
+  :root {
+    --bg-color: #121212;
+    --text-color: #fff;
+    --accent-color: #ff4081;
+    --button-bg: #ff4081;
+    --button-hover: #e91e63;
+    --player-bg: #1e1e1e;
+    --button-active: #d32f2f;
+  }
 
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Music Player</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <h1 class="title">Music Player</h1>
-    <div class="player-container">
-      <div class="song-info">
-        <h2 id="song-title">Tonp</h2>
-      </div>
-      <audio id="audio-player" controls="controls"></audio>
-      <div class="controls"> <button id="prev-btn">Previous</button> <button
-          id="play-pause-btn">Play</button> <button id="next-btn">Next</button>
-        <button id="loop-btn">Loop Off</button> <a
-          href="../../your%20favorite.html" target="_blank"><button
-            id="exit-btn">Exit</button></a><br>
-        <br>
-      </div>
-      <div class="download-section"> <button id="download-btn"
-          class="download-btn">Download MP3</button> </div>
-      <div class="volume-control"> <label for="volume-slider">Volume:</label>
-        <input id="volume-slider" min="0" max="100" value="50"
-          type="range"> </div>
-    </div>
-    <script src="script.js"></script>
-  </body>
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .title {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: var(--accent-color);
+    text-shadow: 2px 2px 4px #000;
+  }
+
+  /* Theme Buttons Container */
+  .theme-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  button.theme-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+
+  /* Themes */
+  .silver-theme {
+    --bg-color: #d3d3d3;
+    --text-color: #333;
+    --accent-color: #555;
+    --player-bg: #bbb;
+    --button-bg: #999;
+    --button-hover: #777;
+  }
+
+  .black-theme {
+    --bg-color: #000;
+    --text-color: #fff;
+    --accent-color: #ffcc00;
+    --player-bg: #222;
+    --button-bg: #444;
+    --button-hover: #666;
+  }
+
+  .lightblue-theme {
+    --bg-color: #e0f7fa;
+    --text-color: #006064;
+    --accent-color: #0288d1;
+    --player-bg: #b2ebf2;
+    --button-bg: #4dd0e1;
+    --button-hover: #26c6da;
+  }
+
+  .player-container {
+    background: var(--player-bg);
+    border-radius: 15px;
+    padding: 30px 20px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  }
+
+  .song-info {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  #song-title {
+    font-size: 1.5em;
+    margin: 0;
+    color: var(--accent-color);
+    font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+  }
+
+  #audio-player {
+    width: 100%;
+    outline: none;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    background-color: var(--button-bg);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1em;
+    margin: 5px;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background-color: var(--button-hover);
+    transform: scale(1.05);
+  }
+
+  #exit-btn {
+    background-color: #607d8b;
+  }
+
+  #exit-btn:hover {
+    background-color: #455a64;
+  }
+
+  .download-section {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .download-btn {
+    background-color: #4caf50;
+  }
+
+  .download-btn:hover {
+    background-color: #388e3c;
+  }
+
+  .volume-control {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #volume-slider {
+    margin-left: 10px;
+  }
+
+  /* Loop Button */
+  #loop-btn {
+    background-color: #8bc34a;
+  }
+
+  #loop-btn:hover {
+    background-color: #689f38;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="title">Music Player</h1>
+
+<!-- Theme switch buttons -->
+<div class="theme-buttons">
+  <button class="theme-btn" id="silver-theme-btn">Silver</button>
+  <button class="theme-btn" id="black-theme-btn">Black</button>
+  <button class="theme-btn" id="lightblue-theme-btn">Light Blue</button>
+</div>
+
+<div class="player-container">
+  <div class="song-info">
+    <h2 id="song-title">Tonp</h2>
+  </div>
+  <audio id="audio-player" controls></audio>
+  <div class="controls">
+    <button id="prev-btn">Previous</button>
+    <button id="play-pause-btn">Play</button>
+    <button id="next-btn">Next</button>
+    <button id="loop-btn">Loop Off</button>
+    <a href="../../your%20favorite.html"><button id="exit-btn">Exit</button></a>
+  </div>
+  <div class="download-section">
+    <button id="download-btn" class="download-btn">Download MP3</button>
+  </div>
+  <div class="volume-control">
+    <label for="volume-slider">Volume:</label>
+    <input id="volume-slider" min="0" max="100" value="50" type="range" />
+  </div>
+</div>
+
+<script>
+  // Theme switcher
+  document.getElementById('silver-theme-btn').addEventListener('click', () => {
+    document.documentElement.className = 'silver-theme';
+  });
+  document.getElementById('black-theme-btn').addEventListener('click', () => {
+    document.documentElement.className = 'black-theme';
+  });
+  document.getElementById('lightblue-theme-btn').addEventListener('click', () => {
+    document.documentElement.className = 'lightblue-theme';
+  });
+
+  // List of songs with external URLs
+  const songs = [
+    {
+      title: "Lobane (2026)",
+      src: "https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Lobane%20(2026).mp3"
+    },
+    {
+      title: "Tonp",
+      src: "https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Tonp.mp3"
+    },
+    {
+      title: "Music Ro",
+      src: "https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Music%20Ro.mp3"
+    }
+  ];
+
+  let currentSongIndex = 0;
+  let isLooping = false;
+
+  const audioPlayer = document.getElementById('audio-player');
+  const songTitle = document.getElementById('song-title');
+  const playPauseBtn = document.getElementById('play-pause-btn');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const downloadBtn = document.getElementById('download-btn');
+  const volumeSlider = document.getElementById('volume-slider');
+  const loopBtn = document.getElementById('loop-btn');
+
+  // Load initial song
+  loadSong(currentSongIndex);
+
+  function loadSong(index) {
+    const song = songs[index];
+    songTitle.textContent = song.title;
+    audioPlayer.src = song.src;
+    playPauseBtn.textContent = 'Play';
+  }
+
+  // Play/Pause toggle
+  playPauseBtn.addEventListener('click', () => {
+    if (audioPlayer.paused || audioPlayer.ended) {
+      audioPlayer.play();
+      playPauseBtn.textContent = 'Pause';
+    } else {
+      audioPlayer.pause();
+      playPauseBtn.textContent = 'Play';
+    }
+  });
+
+  // When song ends
+  audioPlayer.addEventListener('ended', () => {
+    if (isLooping) {
+      audioPlayer.currentTime = 0;
+      audioPlayer.play();
+    } else {
+      nextSong();
+    }
+  });
+
+  // Previous song
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+    loadSong(currentSongIndex);
+    audioPlayer.play();
+    playPauseBtn.textContent = 'Pause';
+  });
+
+  // Next song
+  document.getElementById('next-btn').addEventListener('click', () => {
+    nextSong();
+  });
+
+  function nextSong() {
+    currentSongIndex = (currentSongIndex + 1) % songs.length;
+    loadSong(currentSongIndex);
+    audioPlayer.play();
+    playPauseBtn.textContent = 'Pause';
+  }
+
+  // Exit button
+  document.getElementById('exit-btn').addEventListener('click', () => {
+    audioPlayer.pause();
+    audioPlayer.currentTime = 0;
+    playPauseBtn.textContent = 'Play';
+  });
+
+  // Download song
+  document.getElementById('download-btn').addEventListener('click', () => {
+    const currentSong = songs[currentSongIndex];
+    const link = document.createElement('a');
+    link.href = currentSong.src;
+    link.download = currentSong.src.split('/').pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
+  // Volume control
+  document.getElementById('volume-slider').addEventListener('input', () => {
+    audioPlayer.volume = document.getElementById('volume-slider').value / 100;
+  });
+  // Initial volume
+  audioPlayer.volume = document.getElementById('volume-slider').value / 100;
+
+  // Loop toggle
+  document.getElementById('loop-btn').addEventListener('click', () => {
+    isLooping = !isLooping;
+    audioPlayer.loop = isLooping;
+    document.getElementById('loop-btn').textContent = isLooping ? 'Loop On' : 'Loop Off';
+  });
+</script>
+
+</body>
 </html>

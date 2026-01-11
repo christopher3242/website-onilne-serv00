@@ -6,88 +6,114 @@
 <title>Photo Slideshow with Music</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #f4f4f4;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #f0f2f5;
     margin: 0;
     padding: 20px;
+    text-align: center;
+    color: #333;
   }
+
   h1 {
     margin-bottom: 20px;
+    font-size: 2em;
+    color: #222;
   }
+
+  /* Carousel styling */
   #carousel {
     width: 80%;
-    max-width: 600px;
-    margin: 0 auto 20px auto;
+    max-width: 700px;
+    margin: 0 auto 30px auto;
     overflow: hidden;
-    border: 2px solid #ccc;
-    border-radius: 10px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     background: #fff;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
+
   /* Flex container for sliding images */
   .slides {
     display: flex;
-    transition: transform 0.8s ease-in-out;
+    transition: transform 1s ease-in-out;
   }
+
   /* Each image styling */
   .slides img {
     width: 100%;
     flex-shrink: 0;
-    border-radius: 10px;
+    border-radius: 15px;
+    object-fit: cover;
   }
+
   /* Controls styling */
   #controls {
-    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
   }
+
   .button {
-    padding: 10px 20px;
-    margin: 5px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    padding: 12px 25px;
     font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: #fff;
+    transition: background-color 0.3s, transform 0.2s;
   }
+
   .button:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 1.5em;
+    }
+    .button {
+      padding: 10px 20px;
+      font-size: 0.9em;
+    }
   }
 </style>
 </head>
 <body>
 <h1>Photo Slideshow with Music</h1>
+
 <!-- Carousel container -->
 <div id="carousel">
   <div class="slides" id="slides-container">
-    <!-- Images will be inserted here dynamically -->
+    <!-- Images will be inserted dynamically -->
   </div>
 </div>
 
-<!-- Controls: Back, Download MP3, Exit -->
+<!-- Controls: Back, Next, Search, Download MP3, Exit -->
 <div id="controls">
   <button class="button" id="prev">Back</button>
   <button class="button" id="next">Next</button>
-  <!-- Download MP3 button -->
-  <a href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Porn2.mp3" download>
+  <button class="button" id="search">Search</button>
+  <a href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Porn3.mp3" download>
     <button class="button">Download MP3</button>
   </a>
-  <!-- Exit button -->
-  <a href="../../your%20favorite.html" moz-do-not-send="true">
+  <a href="../../your%20favorite.html">
     <button class="button">Exit</button>
   </a>
 </div>
 
 <!-- Audio player -->
-<audio id="audio" controls autoplay loop>
-  <source src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Porn2.mp3" type="audio/mpeg" />
+<audio id="audio" controls autoplay loop style="margin-top:20px; width:80%;">
+  <source src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Porn3.mp3" type="audio/mpeg" />
   Your browser does not support the audio element.
 </audio>
 
 <script>
-  // Generate list of 1000 images dynamically
+  // Generate list of 2000 images dynamically
   const images = [];
-  for (let i = 1; i <= 1000; i++) {
+  for (let i = 1; i <= 2000; i++) {
     images.push(`image${i}.png`);
   }
 
@@ -105,25 +131,37 @@
   }
 
   // Update slide position
-  function updateSlide() {
+function updateSlide() {
     const offset = -currentIndex * 100; // percentage
     slidesContainer.style.transform = `translateX(${offset}%)`;
   }
 
   // Initialize carousel
-  populateImages();
+populateImages();
+updateSlide();
+
+// Manual controls with wrap-around logic
+document.getElementById('next').onclick = () => {
+  currentIndex = (currentIndex + 1) % images.length;
   updateSlide();
+};
 
-  // Event handlers for buttons
-  document.getElementById('next').onclick = function() {
-    currentIndex = (currentIndex + 1) % images.length;
-    updateSlide();
-  };
+document.getElementById('prev').onclick = () => {
+  currentIndex = (currentIndex - 1 + images.length) % images.length;
+  updateSlide();
+};
 
-  document.getElementById('prev').onclick = function() {
-    currentIndex = (currentIndex - 1 + images.length) % images.length;
+// Search button functionality
+document.getElementById('search').onclick = () => {
+  const input = prompt(`Enter a number between 1 and ${images.length}:`);
+  const num = parseInt(input, 10);
+  if (!isNaN(num) && num >= 1 && num <= images.length) {
+    currentIndex = num - 1;
     updateSlide();
-  };
+  } else {
+    alert('Invalid number. Please enter a number within the specified range.');
+  }
+};
 </script>
 </body>
 </html>
