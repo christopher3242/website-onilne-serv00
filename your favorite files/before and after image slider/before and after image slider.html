@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Before and After Image Slider</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f0f0f0;
+  }
+
+  /* Fixed header */
+  header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    padding: 15px 20px;
+    text-align: center;
+    z-index: 1000;
+  }
+
+  /* Exit button styling */
+  #exit {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    background-color: #ff5c5c;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 1001;
+  }
+  #exit:hover {
+    background-color: #ff1c1c;
+  }
+
+  /* Container for slider, offset for fixed header */
+  .slider-container {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    height: 500px;
+    margin: 100px auto 50px auto; /* margin-top to offset header */
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Overlay clip for the 'after' image */
+  .after-image {
+    clip-path: inset(0 50% 0 0);
+    transition: clip-path 0.2s ease;
+  }
+
+  /* Slider handle */
+  .slider {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background: #fff;
+    cursor: ew-resize;
+    z-index: 10;
+    transform: translateX(-50%);
+  }
+
+  /* Optional: Style for the handle circle */
+  .handle {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border: 2px solid #333;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  /* Style for header text */
+  h1 {
+    margin: 0;
+    font-size: 24px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Before and After Slider</h1>
+</header>
+
+<!-- Exit Button -->
+<a href="../../your%20favorite.html">
+  <button id="exit">Exit</button>
+</a>
+
+<!-- Slider Container -->
+<div class="slider-container" id="slider">
+  <div class="image-wrapper">
+    <img src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Before%20and%20After%20Slider/christopher%20avatar.jpg" alt="Before Image" />
+    <img src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Before%20and%20After%20Slider/before.jpg " alt="After Image" class="after-image" id="afterImage" />
+  </div>
+  <div class="slider" id="sliderHandle"></div>
+</div>
+
+<script>
+  const slider = document.getElementById('slider');
+  const afterImage = document.getElementById('afterImage');
+  const handle = document.getElementById('sliderHandle');
+
+  let isDragging = false;
+
+  const updateClip = (x) => {
+    const rect = slider.getBoundingClientRect();
+    let offsetX = x - rect.left;
+    if (offsetX < 0) offsetX = 0;
+    if (offsetX > rect.width) offsetX = rect.width;
+
+    // Set clip-path for after-image
+    const clipPercentage = (offsetX / rect.width) * 100;
+    afterImage.style.clipPath = `inset(0 ${100 - clipPercentage}% 0 0)`;
+
+    // Move handle
+    handle.style.left = `${offsetX}px`;
+  };
+
+  // Mouse events
+  handle.addEventListener('mousedown', () => { isDragging = true; });
+  document.addEventListener('mouseup', () => { isDragging = false; });
+  document.addEventListener('mouseleave', () => { isDragging = false; });
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      updateClip(e.clientX);
+    }
+  });
+
+  // Touch events
+  handle.addEventListener('touchstart', () => { isDragging = true; });
+  document.addEventListener('touchend', () => { isDragging = false; });
+  document.addEventListener('touchmove', (e) => {
+    if (isDragging && e.touches.length === 1) {
+      updateClip(e.touches[0].clientX);
+    }
+  });
+
+  // Initialize position
+  window.addEventListener('load', () => {
+    updateClip(slider.getBoundingClientRect().left + slider.offsetWidth / 4);
+  });
+</script>
+
+</body>
+</html>

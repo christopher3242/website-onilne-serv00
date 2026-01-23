@@ -5,32 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Music Player</title>
 <style>
-  :root {
-    --bg-color: #121212;
-    --text-color: #fff;
-    --accent-color: #ff4081;
-    --button-bg: #ff4081;
-    --button-hover: #e91e63;
-    --player-bg: #1e1e1e;
-    --button-active: #d32f2f;
-  }
-
   body {
     font-family: 'Arial', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    background-color: #121212;
+    color: #fff;
     margin: 0;
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
-
+  
+  /* Centered Title */
   .title {
     font-size: 2.5em;
-    margin-bottom: 20px;
-    color: var(--accent-color);
+    margin-bottom: 10px;
+    color: #ff4081;
     text-shadow: 2px 2px 4px #000;
+    text-align: center;
   }
 
   /* Theme Buttons Container */
@@ -40,45 +32,24 @@
     margin-bottom: 20px;
   }
 
-  button.theme-btn {
-    padding: 8px 12px;
+  /* Theme Buttons Style */
+  .theme-btn {
+    padding: 8px 14px;
     border: none;
-    border-radius: 8px;
+    border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
-    transition: background 0.3s;
+    transition: background-color 0.3s;
   }
+  /* Specific themes */
+  .default { background-color: #ff4081; color: #fff; }
+  .silver { background-color: #C0C0C0; color: #000; }
+  .black { background-color: #222; color: #fff; }
+  .lightblue { background-color: #ADD8E6; color: #000; }
 
-  /* Themes */
-  .silver-theme {
-    --bg-color: #d3d3d3;
-    --text-color: #333;
-    --accent-color: #555;
-    --player-bg: #bbb;
-    --button-bg: #999;
-    --button-hover: #777;
-  }
-
-  .black-theme {
-    --bg-color: #000;
-    --text-color: #fff;
-    --accent-color: #ffcc00;
-    --player-bg: #222;
-    --button-bg: #444;
-    --button-hover: #666;
-  }
-
-  .lightblue-theme {
-    --bg-color: #e0f7fa;
-    --text-color: #006064;
-    --accent-color: #0288d1;
-    --player-bg: #b2ebf2;
-    --button-bg: #4dd0e1;
-    --button-hover: #26c6da;
-  }
-
+  /* Player container style */
   .player-container {
-    background: var(--player-bg);
+    background: #1e1e1e;
     border-radius: 15px;
     padding: 30px 20px;
     max-width: 400px;
@@ -94,7 +65,7 @@
   #song-title {
     font-size: 1.5em;
     margin: 0;
-    color: var(--accent-color);
+    color: #ffd700;
     font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
   }
 
@@ -111,7 +82,7 @@
   }
 
   button {
-    background-color: var(--button-bg);
+    background-color: #ff4081;
     border: none;
     padding: 10px 15px;
     border-radius: 50px;
@@ -122,7 +93,7 @@
   }
 
   button:hover {
-    background-color: var(--button-hover);
+    background-color: #e91e63;
     transform: scale(1.05);
   }
 
@@ -158,7 +129,7 @@
     margin-left: 10px;
   }
 
-  /* Loop Button */
+  /* Loop Button Style */
   #loop-btn {
     background-color: #8bc34a;
   }
@@ -170,13 +141,14 @@
 </head>
 <body>
 
-<h1 class="title">Music Player</h1>
+<h1 class="title" id="main-title">Music Player</h1>
 
-<!-- Theme switch buttons -->
+<!-- Theme Buttons -->
 <div class="theme-buttons">
-  <button class="theme-btn" id="silver-theme-btn">Silver</button>
-  <button class="theme-btn" id="black-theme-btn">Black</button>
-  <button class="theme-btn" id="lightblue-theme-btn">Light Blue</button>
+  <button class="theme-btn default" data-theme="default">Default</button>
+  <button class="theme-btn silver" data-theme="silver">Silver</button>
+  <button class="theme-btn black" data-theme="black">Black</button>
+  <button class="theme-btn lightblue" data-theme="lightblue">Light Blue</button>
 </div>
 
 <div class="player-container">
@@ -189,7 +161,9 @@
     <button id="play-pause-btn">Play</button>
     <button id="next-btn">Next</button>
     <button id="loop-btn">Loop Off</button>
-    <a href="../../your%20favorite.html"><button id="exit-btn">Exit</button></a>
+    <a href="../../your%20favorite.html">
+      <button id="exit-btn">Exit</button>
+    </a>
   </div>
   <div class="download-section">
     <button id="download-btn" class="download-btn">Download MP3</button>
@@ -201,18 +175,7 @@
 </div>
 
 <script>
-  // Theme switcher
-  document.getElementById('silver-theme-btn').addEventListener('click', () => {
-    document.documentElement.className = 'silver-theme';
-  });
-  document.getElementById('black-theme-btn').addEventListener('click', () => {
-    document.documentElement.className = 'black-theme';
-  });
-  document.getElementById('lightblue-theme-btn').addEventListener('click', () => {
-    document.documentElement.className = 'lightblue-theme';
-  });
-
-  // List of songs with external URLs
+  // List of songs
   const songs = [
     {
       title: "Lobane (2026)",
@@ -231,14 +194,17 @@
   let currentSongIndex = 0;
   let isLooping = false;
 
+  // DOM elements
   const audioPlayer = document.getElementById('audio-player');
   const songTitle = document.getElementById('song-title');
   const playPauseBtn = document.getElementById('play-pause-btn');
   const prevBtn = document.getElementById('prev-btn');
   const nextBtn = document.getElementById('next-btn');
+  const exitBtn = document.getElementById('exit-btn');
   const downloadBtn = document.getElementById('download-btn');
   const volumeSlider = document.getElementById('volume-slider');
   const loopBtn = document.getElementById('loop-btn');
+  const titleElement = document.getElementById('main-title');
 
   // Load initial song
   loadSong(currentSongIndex);
@@ -251,7 +217,7 @@
   }
 
   // Play/Pause toggle
-  playPauseBtn.addEventListener('click', () => {
+  document.getElementById('play-pause-btn').addEventListener('click', () => {
     if (audioPlayer.paused || audioPlayer.ended) {
       audioPlayer.play();
       playPauseBtn.textContent = 'Pause';
@@ -298,7 +264,7 @@
     playPauseBtn.textContent = 'Play';
   });
 
-  // Download song
+  // Download button
   document.getElementById('download-btn').addEventListener('click', () => {
     const currentSong = songs[currentSongIndex];
     const link = document.createElement('a');
@@ -322,7 +288,51 @@
     audioPlayer.loop = isLooping;
     document.getElementById('loop-btn').textContent = isLooping ? 'Loop On' : 'Loop Off';
   });
-</script>
 
+  // Theme buttons event
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const theme = btn.dataset.theme;
+      switch(theme) {
+        case 'default':
+          document.body.style.backgroundColor = '#121212';
+          document.body.style.color = '#fff';
+          titleElement.style.color = '#ff4081';
+          updateButtonColors('#ff4081');
+          break;
+        case 'silver':
+          document.body.style.backgroundColor = '#C0C0C0';
+          document.body.style.color = '#000';
+          titleElement.style.color = '#000';
+          updateButtonColors('#C0C0C0', '#000');
+          break;
+        case 'black':
+          document.body.style.backgroundColor = '#222';
+          document.body.style.color = '#fff';
+          titleElement.style.color = '#fff';
+          updateButtonColors('#222', '#fff');
+          break;
+        case 'lightblue':
+          document.body.style.backgroundColor = '#ADD8E6';
+          document.body.style.color = '#000';
+          titleElement.style.color = '#000';
+          updateButtonColors('#ADD8E6', '#000');
+          break;
+      }
+    });
+  });
+
+  // Helper to update control button colors
+  function updateButtonColors(bgColor, textColor='#fff') {
+    document.querySelectorAll('.controls button, #exit-btn, #download-btn, #loop-btn, #volume-slider').forEach(el => {
+      if(el.tagName.toLowerCase() === 'button' || el.tagName.toLowerCase() === 'a') {
+        if(el.id !== 'loop-btn') { // Keep loop button color consistent
+          el.style.backgroundColor = bgColor;
+          el.style.color = textColor;
+        }
+      }
+    });
+  }
+</script>
 </body>
 </html>
