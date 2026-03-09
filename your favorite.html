@@ -1,111 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF /-8">
-    <meta charset="UT /F-8">
-    <meta http-equiv="X-UA-Compatible" content="IE= /edge">
-   
-      <meta name="vie
-w     port" content="width=device-width,
-      initial-sca
-    /le=1.0">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
     <title>Your Favorite</title>
-    <    style>
-  /* Define CSS variables for co    lors */
-  :    root {
-    --body-bg-color: rgb(162, 195    , 255);
-    --table-bg-color: rgba(114, 179, 170,     0.863);
-    --text-colo    r: white;
-    --link-co    lor: blue;
-    --hover-shadow-color: rgb(15    5, 15    5, 155);
-      }
-
-  body {
-    background-color: var(--    body-bg-color);    
-    margin: 0;
-        height: 100vh;
-    font-family:     Arial, sans-serif;
-        pos    ition: re    lative;
+    <style>
+  /* Define CSS variables for colors */
+  :root {
+    --body-bg-color: rgb(162, 195, 255);
+    --table-bg-color: rgba(114, 179, 170, 0.863);
+    --text-color: white;
+    --link-color: blue;
+    --hover-shadow-color: rgb(155, 155, 155);
   }
 
-  h2 {    
+  body {
+    background-color: var(--body-bg-color);
+    margin: 0;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    position: relative;
+  }
+
+  h2 {
     font-size: 1.5em;
-    tex    t-decoration: underline    ;
-    font-weight: bold    ;
-    text-align: c    enter    ;
+    text-decoration: underline;
+    font-weight: bold;
+    text-align: center;
     margin-top: 20px;
   }
 
-  /*     Style table     for smooth lines */
-      table {
+  /* Style table for smooth lines */
+  table {
     margin: 20px auto;
-    border-collapse: collapse; /* Ensures borde    rs are shared fo    r smooth lines */
+    border-collapse: collapse; /* Ensures borders are shared for smooth lines */
     width: 80%;
-    border: 1px solid black; /* Opti    onal: border around entire table     */
-        
-b     ackground    -color: transparent;
+    border: 1px solid black; /* Optional: border around entire table */
+    background-color: transparent;
   }
 
   th, td {
-    border: 2px solid black;     /* Border for cells for smooth lines */
-        background-color: var(--table    -bg-color);
-    color:     var(--text-color);
-    
+    border: 2px solid black; /* Border for cells for smooth lines */
+    background-color: var(--table-bg-color);
+    color: var(--text-color);
     text-align: center;
-    p    addin    g: 20px;
-    t    ransition: box-shadow 0.3s;
+    padding: 20px;
+    transition: box-shadow 0.3s;
   }
 
   td:hover {
-        b    ox-shado    w: 0 0 30px var(--hover-shadow    -color);
+    box-shadow: 0 0 30px var(--hover-shadow-color);
   }
 
   a {
-        co    lor: var(--lin    k-color);
-    text-decoration    : non    e;
+    color: var(--link-color);
+    text-decoration: none;
   }
 
   a:hover {
     text-decoration: underline;
-      }
-
-  /* Fixed     "News" link styling f    or both PC and     Android */
-  .ne    ws-link {
-    position: fixe    d;
-    top: 20px;    
-    right: 20px;    
-        background: transparent;
-    z-index: 999;
-        font-size: 1em;
   }
 
-  /* R    esponsive font size     for mobile devices */    
-      @m    edia (max-width: 600px) {
+  /* Fixed "News" link styling for both PC and Android */
+  .news-link {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    z-index: 999;
+    font-size: 1em;
+  }
+
+  /* Responsive font size for mobile devices */
+  @media (max-width: 600px) {
     .news-link {
-      font-size: .2em;
+      font-size: 1.2em;
     }
-        
   }
 </style>
   </head>
   <body>
-    <di
-      v style="text-align: center;">
-      <h2><u><b>Which is want  your favorite server?</b></u></h2>
+    <div style="text-align: center;">
+      <h2><u><b>Which is your favorite server?</b></u></h2>
       <!-- Table with links -->
-      <tle role="presen<attion">
+      <table role="presentation">
         <tbody>
           <tr>
-            
-                <td align="c
-              e
-            nter"><a
-                href="your%
-              20favorite%20files/Birthday/Birthday.html">Birthday</a></td>
-            <td align="     href="your%>Analog 20favori
-              t
-            e%20files/Analog%20Clock/Analog%20Clo
-              ck.                html">Analog
+            <td align="center"><a
+                href="your%20favorite%20files/Birthday/Birthday.html">Birthday</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Analog%20Clock/Analog%20Clock.html">Analog
 
 
 
@@ -124,9 +111,7 @@ b     ackground    -color: transparent;
 
                 Clock</a></td>
             <td align="center"><a
-href="yourrog%20clock%20and>Analog %20Digital%20clock/Ana
-              l
-            og%20&amp;%20Digital%20Clock.html">Anog
+href="your%20favorite%20files/Analog%20clock%20and%20Digital%20clock/Analog%20&amp;%20Digital%20Clock.html">Analog
 
 
 
@@ -139,14 +124,13 @@ href="yourrog%20clock%20and>Analog %20Digital%20clock/Ana
 
 
 
-<a
+
+
 
 
                 &amp; Digital Clock</a></td>
-            <tn              hr>World ef="your
-              %
-            20favorite%20files/world%20clock/worl
-              d%20clock.html">World
+            <td align="center"><a
+                href="your%20favorite%20files/world%20clock/world%20clock.html">World
 
 
 
@@ -164,10 +148,8 @@ href="yourrog%20clock%20and>Analog %20Digital%20clock/Ana
 
 
                 Clock</a></td>
-            <tdc           href=>Digital "your%20
-              f
-            avorite%20files/digital%20clock/digital%20clock.ht
-              ml"                >Digital
+            <td align="center"><a
+                href="your%20favorite%20files/digital%20clock/digital%20clock.html">Digital
 
 
 
@@ -185,10 +167,8 @@ href="yourrog%20clock%20and>Analog %20Digital%20clock/Ana
 
 
                 Clock</a></td>
-            <td valtr"><a
-href="you>Free r%20favorite%2
-              0
-            files/free%20web%20hosting/free%20web%20hosting.html">Free
+            <td valign="top" align="center"><a
+href="your%20favorite%20files/free%20web%20hosting/free%20web%20hosting.html">Free
 
 
 
@@ -205,26 +185,17 @@ href="you>Free r%20favorite%2
 
 
 
-              Web Ho<asing</a></td>
+                Web Hosting</a></td>
           </tr>
           <tr>
-    
-                    <td valign="top" align="center"><a
-              href="y<aor%20favorite%20files/Wix/Wix.html">Wix</a></td>
-            <t
-            d valign="top" align="center"><a
-                ef="your%20favo<arte%20files/blogger/blogger.html">Blogger</a></td>
-        
-                    <td valign=
-              "
-            top" align="center"><a
-                href="your
-              %20favorite%20files/Supermarket/Supermarket.html">Supermarket</a></td>
-            a="center"><a
-  >Chat           
-               
-               href="your%20favorite%20files/Chat%20message/Ch
-              at%20message.html">Chat
+            <td valign="top" align="center"><a
+                href="your%20favorite%20files/Wix/Wix.html">Wix</a></td>
+            <td valign="top" align="center"><a
+                href="your%20favorite%20files/blogger/blogger.html">Blogger</a></td>
+            <td valign="top" align="center"><a
+                href="your%20favorite%20files/Supermarket/Supermarket.html">Supermarket</a></td>
+            <td valign="top" align="center"><a
+                href="your%20favorite%20files/Chat%20message/Chat%20message.html">Chat
 
 
 
@@ -242,11 +213,8 @@ href="you>Free r%20favorite%2
 
 
                 Message</a></td>
-           
-                 <td vali Link</agenter"><a
-   >
-               href="your%20favorite%20files/Download%20Link/d
-              ownload%20link.html">Download
+            <td valign="top" align="center"><a
+                href="your%20favorite%20files/Download%20Link/download%20link.html">Download
 
 
 
@@ -264,11 +232,8 @@ href="you>Free r%20favorite%2
 
 
                 Link</a></td>
-      tlign="center"><a>Family 
-      
-               
-                     href="your%20favorite%20files/Family%20photo/Family%20Photo
-              .ht                ml">Family
+            <td valign="top" align="center"><a
+                href="your%20favorite%20files/Family%20photo/Family%20Photo.html">Family
 
 
 
@@ -288,169 +253,65 @@ href="you>Free r%20favorite%2
                 Photo</a></td>
           </tr>
           <tr>
-      <"><a
-href="your>Photo %20favorite%20files/phot
-              o
-            %20sildeshow%20and%20music/photo%20sieshow%20and%20m<auic.html">Photo
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                Slidesh
-                ow &amp; Musi
-              c
-            </a></td>
-            <td align="cenr"><a
-        <a       href="your%20favorite%20files/Stopwatch/Stopwatch.h
-            tml">Stopwatch</a></td>
-            d align="center<a"<a
-                href="your%20favorite%20files/tim
-                er/timer.htm
-              l
-            ">Timer</a></td>
-            <td ali="center"><a
- <a              href="your%20favorite%20files/Flipbook/Flipb
-                ook.html">Flip
-              b
-            ook</a></td>
             <td align="center"><a
-              hr<ae="your%20favorite%20files/Calculator/calculator.html"
-                >Calculator<
-              /
-            a></td>
+href="your%20favorite%20files/photo%20sildeshow%20and%20music/photo%20sildeshow%20and%20music.html">Photo
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Slideshow &amp; Music</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Stopwatch/Stopwatch.html">Stopwatch</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/timer/timer.html">Timer</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Flipbook/Flipbook.html">Flipbook</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Calculator/calculator.html">Calculator</a></td>
             <td valign="top" align="center"><a
-              href="your%2<a0avorite%20files/Calendar/Calendar.html">Calendar</a></td>
-            
+                href="your%20favorite%20files/Calendar/Calendar.html">Calendar</a></td>
           </tr>
           <tr>
-         <td alig<an="center"><a
-                href="your%20favorite%20files/Not
-            es/Notes.html">Notes</a></td>
-      
-                    <td align="center"><a
-                href="your%20favorite%20files/Notepad/Notep> 
-            <>Discordtd align="c
-              e
-            nter"><a
-                href="your%
-              20favorite%20files/Discord%20Severs/Discord%20
-            Severs.html">Discord
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              S<aervers</a></td>
-            <td align="center"><a href="Gam
-                es%20web
-              s
-            ite/Games.html">Games</a></td>
-            <td aln"center"><a
- <a               href="your%20favorite%20files/Info%20PageI nfo</a></td>
- >QR        
-               
-              <td valign="top" align="center"><a
-                href="your%20f
-              avo                rite%20files/Qr%20Card/Qr%20card.html">QR
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                Card</a>
- 
-          <tr>>Music
-        
-               
-               <td align="center"><a
-href="your%fvorite%20files<a/Simple%20Music%20Player/Simple%20Music%20Player.html">Music
-
-
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-                Player<>/td>
-        <a    <td align="center"><a
-                href="your%20favo
-            rite%20files/Spotify/Spotify.html">Spiy</a></td>
-  <a          <td align="center"><a
-                href="you
-                r%20fa ID</ay          occo>
-/.yooco.htmlo</a></td>
-            <td align="cee"><a
-        <a        href="your%20favorite%20files/Video%20ID/Video%20I
-            D.html">Video
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                ID<
-              /a>                </td>
             <td align="center"><a
-                href="your%20favoV ideo.html">Vide>Myo</a></td
-              >
-            
+                href="your%20favorite%20files/Notes/Notes.html">Notes</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Notepad/Notepad.html">Notepad</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Discord%20Severs/Discord%20Severs.html">Discord
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Servers</a></td>
+            <td align="center"><a href="Games%20website/Games.html">Games</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Info%20Page/Info%20Page.html">Info</a></td>
             <td valign="top" align="center"><a
-href="your%20favor
-              ite                %20files/My%20Video%20Player/My%20Video%20Player.html">My
+                href="your%20favorite%20files/Qr%20Card/Qr%20card.html">QR
 
 
 
@@ -467,68 +328,11 @@ href="your%20favor
 
 
 
-    d >
-          </>YouTubetr>
-          
-              <
-            tr>
-            <td align="center"><
-ref="your%20fa<avorite%20files/Youtube%20alternative/Youtube%20alternative
-            .html">YouTube
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-             Alterna<ative</a></td>
-            <td align="center"><a
-  
-                          href="your%20favorite%2ies/Print/Print<a.html">Print</a></td>
-            <td align="center"><
-            a
-                href="your%20favore20files/ISO/IS<aO.html">ISO</a></td>
-            <td align="center"><a
-                
-            
-                   /href="your%20favorite%20files/Ping/ping.html">Ping</a></td>
-   
-                                       <td align="center"><a
-                href="your%20favorite%20files/Book> Bookmarks</a><b>Androidr>
-         
-                 < //td>
-            <td valign="top" align="center"><a
-href="your%20favorite%20fi
-              les/Android%20apk%20games/Android%20APK%20Games.html">Android
-
-
-
-
-
-
-
-
-
-
-
-
-
-          
-                      apk List</a>            </     /    </tr>
+                Card</a></td>
+          </tr>
           <tr>
-            <td valigntp"><a
-       <a         href="your%20favorite%20files/Shopping%20List/Sho
-                pping%20List.h /tml">Shopping
+            <td align="center"><a
+href="your%20favorite%20files/Simple%20Music%20Player/Simple%20Music%20Player.html">Music
 
 
 
@@ -536,52 +340,152 @@ href="your%20favorite%20fi
 
 
 
-           
 
 
 
 
 
 
-                List</a><br>           </td<a>
+
+
+
+                Player</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Spotify/Spotify.html">Spotify</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/.yocco/.yooco.html">Yooco</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Video%20ID/Video%20ID.html">Video
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                ID</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Video/Video.html">Video</a></td>
+            <td valign="top" align="center"><a
+href="your%20favorite%20files/My%20Video%20Player/My%20Video%20Player.html">My
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Video</a></td>
+          </tr>
+          <tr>
+            <td align="center"><a
+href="your%20favorite%20files/Youtube%20alternative/Youtube%20alternative.html">YouTube
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Alternative</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Print/Print.html">Print</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/ISO/ISO.html">ISO</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Ping/ping.html">Ping</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/Bookmarks/Bookmarks.html">Bookmarks</a><br>
+            </td>
+            <td valign="top" align="center"><a
+href="your%20favorite%20files/Android%20apk%20games/Android%20APK%20Games.html">Android
+
+
+
+
+
+
+
+
+
+
+
+
+
+                apk games</a><br>
+            </td>
+          </tr>
+          <tr>
             <td valign="top"><a
-            
-                    href= /"your%20favorite%20f
-           iles/Soundcloud/Soundcloud.html">Soucoud<br>
-     <a         </a> </td>
+                href="your%20favorite%20files/Shopping%20List/Shopping%20List.html">Shopping
+
+
+
+
+
+
+
+
+
+
+
+
+
+                List</a><br>
+            </td>
             <td valign="top"><a
-    
-                            hr
-              e
-            f="your%20favorite%20files/Alarm/al
-              arm                .html">Alarm<br>
+                href="your%20favorite%20files/Soundcloud/Soundcloud.html">Soundcloud<br>
               </a> </td>
             <td valign="top"><a
-      
-                          href hosting</af          avor>
-ite%20files/whiteboard.html">whiteboard</a></td
-           <td<a valign="top"><a
-href="your%20favorite%20files/Revolutionary%20
-            hosting/Revolutionary%20hosting.html">Revolutionary
-
-
-
-
-
-
-
-
-
-    
-                          hosting</a></td>
+                href="your%20favorite%20files/Alarm/alarm.html">Alarm<br>
+              </a> </td>
             <td valign="top"><a
-                href=e %20files/barcod>Androide/barcode
-              .htm /l">Barcode</a></td>
+                href="your%20favorite%20files/whiteboard/whiteboard.html">whiteboard</a></td>
+            <td valign="top"><a
+href="your%20favorite%20files/Revolutionary%20hosting/Revolutionary%20hosting.html">Revolutionary
+
+
+
+
+
+
+
+
+
+                hosting</a></td>
+            <td valign="top"><a
+                href="your%20favorite%20files/barcode/barcode.html">Barcode</a></td>
           </tr>
-          <>
-            <<atd valign="top"><a
-                href="your%20favori
-            te%20files/Android%20Test/Andorid%2et.html">Androi<ad
+          <tr>
+            <td valign="top"><a
+                href="your%20favorite%20files/Android%20Test/Andorid%20Test.html">Android
 
 
 
@@ -591,28 +495,19 @@ href="your%20favorite%20files/Revolutionary%20
 
                 Test </a><br>
             </td>
-            
             <td valign="top"><a
-
-                                              href="your%20favorite%20files/Poll/poll.html">Poll</a></td>
+                href="your%20favorite%20files/Poll/poll.html">Poll</a></td>
             <td valign="top"><a
-       href="your%20f>beforeavorite%20files/Radio/Radi
-              o
-            .html">Radio</a></td>
+                href="your%20favorite%20files/Radio/Radio.html">Radio</a></td>
             <td valign="top"><a
-href=or%20favorite%2<a0files/before%20and%20after%20image%20slider/before%20and%20after%20image%20slider.h
-             tml">
-            before
+href="your%20favorite%20files/before%20and%20after%20image%20slider/before%20and%20after%20image%20slider.html">before
 
 
 
-                and afte
-              ryour%20favorite%20files/ image slider</a></td>
-            <td align="cent          er">>
-<a
-      
-                   Sync</ahref="your%20favorite%20files/TV%20Video/video%20tv.html">
-                TV V /i
+                and after image slider</a></td>
+            <td align="center"><a
+                href="your%20favorite%20files/TV%20Video/video%20tv.html">
+                TV Video </a></td>
             <td valign="top"><a
                 href="LED%20Rave%20Sync/LED%20Rave%20Sync.html">LED Rave
                 Sync</a></td>
@@ -639,10 +534,8 @@ href=or%20favorite%2<a0files/before%20and%20after%20image%20slider/before%20and%
             <td valign="top">Coming soon</td>
             <td valign="top">Coming soon</td>
             <td valign="top">Coming soon</td>
-        
-           <td valign="top"on</td>
-            <td valign="
-     top">Coming soon</td>
+            <td valign="top">Coming soon</td>
+            <td valign="top">Coming soon</td>
           </tr>
           <!-- Additional "Coming soon" rows as needed -->
         </tbody>
