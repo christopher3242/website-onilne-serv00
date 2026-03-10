@@ -27,7 +27,7 @@
   }
 
   .container {
-    max-width: 800px;
+    max-width: 900px;
     width: 100%;
     text-align: center;
   }
@@ -50,6 +50,29 @@
   }
 
   #themeToggle:hover {
+    background-color: var(--button-hover);
+  }
+
+  /* Navigation buttons */
+  .nav-buttons {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+    gap: 10px;
+  }
+
+  .nav-buttons button {
+    font-size: 24px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--button-bg);
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .nav-buttons button:hover {
     background-color: var(--button-hover);
   }
 
@@ -110,50 +133,49 @@
   }
 
   /* Exit button styles */
-  .exit-button {
+  .exit-container {
     margin-top: 20px;
+  }
+  .exit-link {
     display: inline-block;
     background-color: var(--accent-color);
     color: white;
     padding: 10px 20px;
-    border: none;
     border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
     text-decoration: none;
+    font-size: 16px;
     transition: background-color 0.3s;
   }
-
-  .exit-button:hover {
+  .exit-link:hover {
     background-color: #cc0000;
   }
 
-  /* Themes: Gray, Black, Dark Wood */
+  /* Themes: Gray, Black, Green */
   body.gray-theme {
     --bg-color: #d3d3d3; /* Light gray background */
-    --text-color: #222;   /* Dark text */
-    --button-bg: #888;    /* Medium gray buttons */
-    --button-hover: #555; /* Darker hover */
-    --station-bg: #aaa;   /* Light gray stations */
+    --text-color: #222;   
+    --button-bg: #888;
+    --button-hover: #555;
+    --station-bg: #aaa;
     --station-hover: #888;
   }
 
   body.black-theme {
-    --bg-color: #000;      /* Black background */
-    --text-color: #eee;    /* Light text for contrast */
-    --button-bg: #444;     /* Dark gray buttons */
-    --button-hover: #222;  /* Even darker on hover */
-    --station-bg: #222;    /* Dark stations */
+    --bg-color: #000;
+    --text-color: #eee;
+    --button-bg: #444;
+    --button-hover: #222;
+    --station-bg: #222;
     --station-hover: #444;
   }
 
-  body.wood-theme {
-    --bg-color: #8B4513; /* Saddle brown background */
-    --text-color: #fff8dc; /* Cornsilk text */
-    --button-bg: #A0522D; /* Sienna buttons */
-    --button-hover: #8B4513; /* Darker brown hover */
-    --station-bg: #A0522D; /* Sienna stations */
-    --station-hover: #8B4513;
+  body.green-theme {
+    --bg-color: #006400; /* Dark Green */
+    --text-color: #f0f0f0;
+    --button-bg: #228b22; /* Forest Green */
+    --button-hover: #006400;
+    --station-bg: #006400;
+    --station-hover: #228b22;
   }
 </style>
 </head>
@@ -162,6 +184,12 @@
 <div class="container">
 <h1>Malta Radio Stations</h1>
 <button id="themeToggle">Switch to Gray Theme</button>
+
+<!-- Navigation Buttons -->
+<div class="nav-buttons">
+  <button id="prevBtn">&lt;</button>
+  <button id="nextBtn">&gt;</button>
+</div>
 
 <!-- Station list -->
 <div class="station-list" id="stationList"></div>
@@ -182,9 +210,10 @@
   </div>
 </div>
 
-<!-- Exit button -->
-<br />
-<a href="../../your%20favorite.html" class="exit-button">Exit</a>
+<!-- Exit button container -->
+<div class="exit-container">
+  <a href="../../your%20favorite.html" class="exit-link">Exit</a>
+</div>
 </div>
 
 <script>
@@ -193,15 +222,20 @@ const stations = [
   { name: "NET FM", genre: "Better Music", url: "http://s2.voscast.com:11392/default" },
   { name: "Radju Malta 2", genre: "Multilingual", url: "http://s11.myradiostream.com/4954/listen.mp3" },
   { name: "Bay Easy", genre: "More music! More feel good!", url: "http://stream.v3.network:8018/stream" },
-  { name: "Vibe FM", genre: "DEFECTED RADIO WITH SAM DIVINE", url: "https://vibe.mt/stream" },
+  { name: "Vibe FM", genre: "DEFECTED RADIO WITH /w bro", url: "https://vibe.mt/stream" },
   { name: "Radio USA", genre: "America's Best Country", url: "https://playerservices.streamtheworld.com/api/livestream-redirect/WUSZFM.mp3" },
   { name: "Virgin Radio Italy", genre: "Style Rock", url: "http://icecast.unitedradio.it/Virgin.mp3" },
   { name: "Calypso Radio 101.8", genre: "Mużika mill-passat", url: "https://s4.radio.co/sf3aa4c25a/listen" },
   { name: "Radio Flash", genre: "La radio che funziona", url: "https://stream2.xdevel.com/audio5s194-48/stream/icecast.audio" },
   { name: "Antenne Bayern Pop XXL", genre: "Pop XXL", url: "http://stream.antenne.de/pop-xxl/stream/mp3" },
   { name: "104.6 RTL DJ Mix", genre: "DJ Mix", url: "http://stream.104.6rtl.com/elektro/mp3-192/" },
-  { name: "Phonk", genre: "Phonk", url: "https://phonk.stream.laut.fm/phonk" },
+  { name: "Power Pop", genre: "Power Pop", url: "https://live.powerapp.com.tr/powerpop/abr/playlist.m3u8" },
+  { name: "Power 95", genre: "Power 95", url: "https://usa10.fastcast4u.com/power95grenada" },
+  { name: "Bass Mg", genre: "Bass Mg", url: "https://bass-mg.stream.laut.fm/bass-mg" },
+  { name: "Japan City Pop", genre: "Retro Tokyo", url: "https://play.streamafrica.net/japancitypop" },
+  { name: "Phonk", genre: "/w bro", url: "https://stream.laut.fm/phonk" }
 ];
+
 
 const stationListDiv = document.getElementById('stationList');
 const playerContainer = document.getElementById('playerControls');
@@ -209,26 +243,32 @@ const stationNameElem = document.getElementById('stationName');
 const audioPlayer = document.getElementById('audioPlayer');
 const volumeRange = document.getElementById('volumeRange');
 const themeToggleBtn = document.getElementById('themeToggle');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
 
+let currentStationIndex = 0;
 let currentStation = null;
 let isPlaying = false;
-let currentThemeIndex = 0; // 0: gray, 1: black, 2: wood
+let currentThemeIndex = 0; // 0: gray, 1: black, 2: green
 
-const themes = ['gray-theme', 'black-theme', 'wood-theme'];
-const themeNames = ['Gray', 'Black', 'Wood'];
+const themes = ['gray-theme', 'black-theme', 'green-theme'];
+const themeNames = ['Gray', 'Black', 'Green'];
 
 // Populate station list
-stations.forEach(station => {
+stations.forEach((station, index) => {
   const div = document.createElement('div');
   div.className = 'station';
   div.innerHTML = `<strong>${station.name}</strong><br><em>${station.genre}</em>`;
   div.onclick = () => {
-    loadStation(station);
+    loadStation(index);
   };
   stationListDiv.appendChild(div);
 });
 
-function loadStation(station) {
+// Load station by index
+function loadStation(index) {
+  currentStationIndex = index;
+  const station = stations[index];
   currentStation = station;
   stationNameElem.textContent = station.name;
   audioPlayer.src = station.url;
@@ -257,7 +297,7 @@ audioPlayer.onpause = () => {
   updatePlayPause();
 };
 function updatePlayPause() {
-  document.getElementById('playPause').textContent = '⏯️'; // Always same icon
+  document.getElementById('playPause').textContent = '⏯️';
 }
 
 // Volume control
@@ -265,13 +305,25 @@ volumeRange.oninput = () => {
   audioPlayer.volume = volumeRange.value / 100;
 };
 
-// Cycle themes: Gray -> Black -> Wood -> Gray...
+// Theme toggle button
 document.getElementById('themeToggle').onclick = () => {
   currentThemeIndex = (currentThemeIndex + 1) % themes.length;
   document.body.className = themes[currentThemeIndex];
   document.getElementById('themeToggle').textContent = `Switch to ${themeNames[(currentThemeIndex + 1) % themes.length]} Theme`;
 };
-</script>
 
+// Initial load first station
+loadStation(currentStationIndex);
+
+// Navigation buttons
+prevBtn.onclick = () => {
+  const newIndex = (currentStationIndex - 1 + stations.length) % stations.length;
+  loadStation(newIndex);
+};
+nextBtn.onclick = () => {
+  const newIndex = (currentStationIndex + 1) % stations.length;
+  loadStation(newIndex);
+};
+</script>
 </body>
 </html>
