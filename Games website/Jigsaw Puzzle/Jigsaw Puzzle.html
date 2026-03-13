@@ -4,7 +4,7 @@
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jigsaw Puzzle with Toggle Exit</title>
+  <title>Jigsaw Puzzle with Fixed Exit</title>
   <style>
     body {
       margin: 0;
@@ -19,30 +19,15 @@
     }
 
     .controls {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    #toggleButton {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .puzzle-container {
-      width: 100%;
       max-width: 1200px;
       margin: 0 auto;
-      transition: opacity 0.3s ease, max-height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
-      overflow: hidden;
     }
 
-    /* Hidden state styles */
-    .hidden {
-      opacity: 0;
-      max-height: 0;
-      padding: 0;
-      margin: 0;
+    /* Puzzle container styles */
+    .puzzle-container {
+      width: 100%;
+      transition: opacity 0.3s ease, max-height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+      overflow: hidden;
     }
 
     /* Make iframe responsive */
@@ -58,6 +43,31 @@
         height: 50vh;
       }
     }
+
+    /* Fixed Exit button styles */
+    .exit-fixed {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    /* Style link as button */
+    .exit-fixed a {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 16px;
+      display: inline-block;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: background-color 0.3s ease;
+    }
+
+    .exit-fixed a:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
@@ -65,28 +75,16 @@
   <div class="controls">
     <div class="puzzle-container" id="puzzleContainer">
       <iframe
-        src="https://www.jigsawplanet.com/christopher100/my-puzzle?rc=uplay&view=iframe"
+        src="https://www.jigsawplanet.com/?rc=play&amp;pid=35c1eea43132&amp;view=iframe&amp;bgcolor=0x6fe4fb"
         allowfullscreen
         title="Jigsaw Puzzle"
       ></iframe>
-      <button id="toggleButton">Exit Puzzle</button>
     </div>
   </div>
-  <script>
-    const toggleButton = document.getElementById('toggleButton');
-    const puzzleContainer = document.getElementById('puzzleContainer');
-
-    toggleButton.addEventListener('click', () => {
-      // Toggle the 'hidden' class
-      puzzleContainer.classList.toggle('hidden');
-
-      // Change button text accordingly
-      if (puzzleContainer.classList.contains('hidden')) {
-        toggleButton.textContent = 'Show Puzzle';
-      } else {
-        toggleButton.textContent = 'Exit Puzzle';
-      }
-    });
-  </script>
+  
+  <!-- Fixed Exit Button -->
+  <div class="exit-fixed">
+    <a href="../games.html">Exit</a>
+  </div>
 </body>
 </html>
