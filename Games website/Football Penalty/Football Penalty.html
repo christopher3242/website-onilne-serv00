@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Penalty Shootout with AI Goalkeeper</title>
+<style>
+  body { font-family: Arial, sans-serif; text-align: center; background: #f0f8ff; margin: 0; padding: 20px; }
+  #gameCanvas { border: 3px solid #333; background: linear-gradient(to bottom, #a8edea, #fed6e3); display: block; margin: 20px auto; width: 90%; max-width: 400px; height: auto; }
+  button, select { margin: 10px; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; background: #4CAF50; color: white; transition: background 0.3s; }
+  button:hover, select:hover { background: #45a049; }
+  #scoreDisplay { font-size: 20px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<h1 style="color:#333;">Penalty Shootout with AI Goalkeeper</h1>
+<div>
+  Score: <span id="score">0</span>
+</div>
+<div>
+  Mode:
+  <select id="mode">
+    <option value="single">Single Player</option>
+    <option value="two">Two Player</option>
+  </select>
+  Difficulty:
+  <select id="difficulty">
+    <option value="easy">Easy</option>
+    <option value="normal" selected>Normal</option>
+    <option value="hard">Hard</option>
+  </select>
+</div>
+
+<!-- Goalkeeper position selection for two-player mode -->
+<div id="goalkeeperPositionDiv" style="margin-top:10px; display:none;">
+  <button onclick="setGoalkeeperPosition('left')">Goalkeeper Left</button>
+  <button onclick="setGoalkeeperPosition('center')">Goalkeeper Center</button>
+  <button onclick="setGoalkeeperPosition('right')">Goalkeeper Right</button>
+</div>
+
+<canvas id="gameCanvas" width="400" height="350"></canvas>
+
+<!-- Shooting buttons -->
+<div>
+  <button id="btnLeft" onclick="shoot('left')">Shoot Left</button>
+  <button id="btnCenter" onclick="shoot('center')">Shoot Center</button>
+  <button id="btnRight" onclick="shoot('right')">Shoot Right</button>
+</div>
+
+<!-- Restart and Exit -->
+<div>
+  <button onclick="restartGame()">Restart</button>
+  <a href="../Games.html"><button>Exit</button></a>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+let score = 0;
+let goalkeeperX = 200; // current x position
+const goalkeeperY = 50;
+const goalkeeperRadius = 20;
+
+let gameActive = true;
+let mode = document.getElementById('mode').value;
+let difficulty = document.getElementById('difficulty').value;
+
+let currentPlayer = 1; // 1 or 2
+let totalShots = 0;
+const maxShots = 100000000;
+
+// For two-player mode, store goalkeeper position
+let goalkeeperPosition = 'center'; // 'left', 'center', 'right'
+
+// Set goalkeeper movement parameters based on difficulty
+let goalkeeperSpeed = 1; // pixels per frame
+let moveIntervalTime = 2000; // ms
+updateDifficultySettings();
+
+document.getElementById('difficulty').addEventListener('change', () => {
+  difficulty = document.getElementById('difficulty').value;
+  updateDifficultySettings();
+});
+document.getElementById('mode').addEventListener('change', () => {
+  mode = document.getElementById('mode').value;
+  toggleGoalkeeperButtons();
+  restartGame();
+});
+
+function toggleGoalkeeperButtons() {
+  document.getElementById('goalkeeperPositionDiv').style.display = (mode === 'two') ? 'block' : 'none';
+}
+
+// Update difficulty settings
+function updateDifficultySettings() {
+  if (difficulty === 'easy') {
+    goalkeeperSpeed = 0.5;
+    moveIntervalTime = 2500;
+  } else if (difficulty === 'normal') {
+    goalkeeperSpeed = 1;
+    moveIntervalTime = 2000;
+  } else if (difficulty === 'hard') {
+    goalkeeperSpeed = 2;
+    moveIntervalTime = 1500;
+  }
+}
+
+// Set goalkeeper position (for two-player mode)
+function setGoalkeeperPosition(pos) {
+  goalkeeperPosition = pos;
+  if (pos === 'left') targetX = 100;
+  if (pos === 'center') targetX = 200;
+  if (pos === 'right') targetX = 300;
+  moveGoalkeeper();
+}
+
+// Variables for smooth movement
+let targetX = 200;
+
+// For AI in single-player mode, define current AI position
+let aiGoalkeeperX = 200;
+
+// Function to move AI goalkeeper randomly based on difficulty
+function moveAIGoalkeeper() {
+  if (mode !== 'single') return;
+  // Random position based on difficulty
+  const positions = {
+    easy: [100, 200, 300],
+    normal: [100, 200, 300],
+    hard: [100, 200, 300]
+  };
+  const options = positions[difficulty];
+  // Random choice
+  const randIndex = Math.floor(Math.random() * options.length);
+  targetX = options[randIndex];
+}
+
+// Animate goalkeeper smoothly
+function animate() {
+  moveGoalkeeper();
+  draw();
+  if (gameActive) {
+    requestAnimationFrame(animate);
+  }
+}
+
+// Move goalkeeper towards targetX
+function moveGoalkeeper() {
+  if (!gameActive) return;
+  const delta = targetX - goalkeeperX;
+  if (Math.abs(delta) > goalkeeperSpeed) {
+    goalkeeperX += (delta > 0 ? 1 : -1) * goalkeeperSpeed;
+  } else {
+    goalkeeperX = targetX;
+  }
+}
+
+// Draw game elements
+function draw() {
+  ctx.clearRect(0, 0, 400, 350);
+  drawGoal();
+  drawGoalkeeper();
+}
+
+// Draw goal frame
+function drawGoal() {
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(50, 70, 300, 200);
+  ctx.fillStyle = '#228B22';
+  ctx.fillRect(50, 70, 300, 10);
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(50, 70, 300, 200);
+}
+
+// Draw goalkeeper
+function drawGoalkeeper() {
+  ctx.beginPath();
+  ctx.arc(goalkeeperX, goalkeeperY, goalkeeperRadius, 0, Math.PI * 2);
+  ctx.fillStyle = '#1E90FF';
+  ctx.fill();
+  ctx.closePath();
+}
+
+// Animate ball
+function drawBall(targetX, targetY, callback) {
+  const startX = 200;
+  const startY = 250;
+  const duration = 800;
+  const startTime = performance.now();
+
+  function animate(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const currentX = startX + (targetX - startX) * progress;
+    const currentY = startY + (targetY - startY) * progress;
+
+    ctx.clearRect(0, 0, 400, 350);
+    drawGoal();
+    drawGoalkeeper();
+
+    ctx.beginPath();
+    ctx.arc(currentX, currentY, 10, 0, Math.PI * 2);
+    ctx.fillStyle = '#000';
+    ctx.fill();
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      checkSave(targetX, targetY);
+      if (callback) callback();
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+// Check save or goal
+function checkSave(targetX, targetY) {
+  const dx = targetX - goalkeeperX;
+  const dy = targetY - goalkeeperY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  const thresholdDistance = goalkeeperRadius + 10;
+
+  if (
+    distance < thresholdDistance &&
+    targetY <= goalkeeperY + goalkeeperRadius + 10
+  ) {
+    alert('Saved by the goalkeeper!');
+  } else {
+    score++;
+    document.getElementById('score').innerText = score;
+  }
+
+  // Switch turn for two-player mode
+  if (mode === 'two') {
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+  }
+
+  totalShots++;
+  if (totalShots >= maxShots) {
+    alert('Game Over! Final Score: ' + score);
+    gameActive = false;
+  }
+}
+
+// Shooting handler
+function shoot(direction) {
+  if (!gameActive) return;
+  let targetX, targetY;
+  if (direction === 'left') { targetX = 100; targetY = 70; }
+  if (direction === 'center') { targetX = 200; targetY = 70; }
+  if (direction === 'right') { targetX = 300; targetY = 70; }
+
+  if (mode === 'two') {
+    alert('Player ' + currentPlayer + '\'s turn!');
+  }
+
+  draw();
+  drawBall(targetX, targetY);
+}
+
+// Restart game
+function restartGame() {
+  score = 0;
+  document.getElementById('score').innerText = score;
+  gameActive = true;
+  totalShots = 0;
+  currentPlayer = 1;
+  // Reset goalkeeper position
+  targetX = 200;
+  goalkeeperX = 200;
+  // Reset goalkeeper position button
+  setGoalkeeperPosition('center');
+  // Start animation
+  cancelAnimationFrame(animateId);
+  start();
+}
+let animateId;
+function start() {
+  if (mode === 'single') {
+    moveAIGoalkeeper(); // initial move
+  }
+  animate();
+}
+
+// Initialize game
+toggleGoalkeeperButtons();
+start();
+
+// For single-player mode, periodically change AI goalkeeper position
+setInterval(() => {
+  if (mode === 'single' && gameActive) {
+    moveAIGoalkeeper();
+  }
+}, 2000);
+
+// Support touch on shooting buttons
+document.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (btn.id === 'btnLeft') shoot('left');
+    if (btn.id === 'btnCenter') shoot('center');
+    if (btn.id === 'btnRight') shoot('right');
+  });
+});
+</script>
+</body>
+</html>

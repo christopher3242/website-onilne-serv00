@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Break Brick Game with Power-Ups & Swipe</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex; flex-direction: column; align-items: center; padding: 20px;
+  }
+  #gameControls {
+    display: flex; flex-direction: column; align-items: center; margin-bottom: 10px;
+  }
+  #gameControls button {
+    margin: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer;
+  }
+  #title {
+    margin: 10px 0; font-size: 24px; text-align: center;
+  }
+  #scoreDisplay {
+    font-size: 20px; margin-top: 5px;
+  }
+  #gameContainer {
+    position: relative;
+    width: 600px;
+    height: 400px;
+    border: 2px solid #333;
+    background-color: #fff;
+    margin-top: 10px;
+  }
+  #gameCanvas {
+    width: 100%;
+    height: 100%;
+  }
+  #gameOverMessage {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.8); color: #fff; padding: 20px; text-align: center; display: none; z-index: 10;
+  }
+</style>
+</head>
+<body>
+
+<div id="gameControls">
+    <button id="restartButton">Restart</button>
+    <button id="exitButton" onclick="window.location.href='../games.html';">Exit</button>
+    <h1 id="title">Break Brick Game</h1>
+    <h2 id="scoreDisplay">Score: 0</h2>
+</div>
+
+<div id="gameContainer">
+  <canvas id="gameCanvas"></canvas>
+  <div id="gameOverMessage">
+    <h2>Game Over</h2>
+    <p>Press "Restart" to play again!</p>
+  </div>
+</div>
+
+<!-- Audio effects (placeholders, replace src with actual sound files) -->
+<audio id="bounceSound" src="bounce.wav" preload="auto"></audio>
+<audio id="breakSound" src="brick.wav" preload="auto"></audio>
+<audio id="gameOverSound" src="gameover.wav" preload="auto"></audio>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = 600;
+canvas.height = 400;
+
+// Game constants and variables
+const ballRadius = 8;
+let x = canvas.width / 2;
+let y = canvas.height - 30;
+let dx = 2;
+let dy = -2;
+let paddleHeight = 10;
+let paddleWidth = 75;
+let paddleX = (canvas.width - paddleWidth) / 2;
+
+let rightPressed = false;
+let leftPressed = false;
+
+const brickRowCount = 7;
+const brickColumnCount = 8;
+const brickWidth = 60;
+const brickHeight = 20;
+const brickPadding = 10;
+const brickOffsetTop = 30;
+const brickOffsetLeft = 30;
+
+let bricks = [];
+function initBricks() {
+  bricks = [];
+  for (let c=0; c<brickColumnCount; c++) {
+    bricks[c] = [];
+    for (let r=0; r<brickRowCount; r++) {
+      bricks[c][r] = { x: 0, y: 0, status: 1 };
+    }
+  }
+}
+initBricks();
+
+// Power-ups
+const POWER_UPS = ['MultiBall', 'ExtraLife', 'FullLives', 'ExtraLife'];
+let powerUps = [];
+let activePowerUps = {};
+
+let score = 0;
+let lives = 5;
+let comboCount = 0;
+let gameOver = false;
+let balls = [{ x: x, y: y, dx: dx, dy: dy }];
+
+const scoreDisplay = document.getElementById('scoreDisplay');
+const gameOverMsg = document.getElementById('gameOverMessage');
+const restartBtn = document.getElementById('restartButton');
+
+restartBtn.addEventListener('click', restartGame);
+document.getElementById('exitButton').onclick = () => { window.location.href='../games.html'; };
+
+// Keyboard controls
+document.addEventListener("keydown", keyDownHandler);
+document.addEventListener("keyup", keyUpHandler);
+function keyDownHandler(e) {
+  if(e.key === "Right" || e.key === "ArrowRight") { rightPressed = true; }
+  if(e.key === "Left" || e.key === "ArrowLeft") { leftPressed = true; }
+}
+function keyUpHandler(e) {
+  if(e.key === "Right" || e.key === "ArrowRight") { rightPressed = false; }
+  if(e.key === "Left" || e.key === "ArrowLeft") { leftPressed = false; }
+}
+
+// Touch controls for mobile
+let touchStartX = null;
+canvas.addEventListener('touchstart', handleTouchStart, false);
+canvas.addEventListener('touchmove', handleTouchMove, false);
+canvas.addEventListener('touchend', handleTouchEnd, false);
+function handleTouchStart(e) {
+  if(e.touches.length === 1) {
+    touchStartX = e.touches[0].clientX;
+  }
+}
+function handleTouchMove(e) {
+  if(e.touches.length === 1 && touchStartX !== null) {
+    const deltaX = e.touches[0].clientX - touchStartX;
+    if(deltaX > 10) { rightPressed = true; leftPressed = false; }
+    else if(deltaX < -10) { leftPressed = true; rightPressed = false; }
+  }
+}
+function handleTouchEnd() {
+  rightPressed = false; leftPressed = false; touchStartX = null;
+}
+
+// Spawn power-up
+function spawnPowerUp(x, y) {
+  if(Math.random() < 0.2) {
+    const type = POWER_UPS[Math.floor(Math.random() * POWER_UPS.length)];
+    powerUps.push({ x, y, type, active: true });
+  }
+}
+function activatePowerUp(pu) {
+  switch(pu.type) {
+    case 'MultiBall':
+      for(let i=0; i<2; i++) {
+        balls.push({ x: pu.x, y: pu.y, dx: (Math.random() > 0.5 ? 2 : -2), dy: -2 });
+      }
+      break;
+    case 'ExtraLife':
+      lives++;
+      break;
+    case 'FullLives':
+      lives = 5;
+      break;
+    case 'ExtraLife':
+      lives++;
+      break;
+  }
+}
+
+// Drawing functions
+function drawBricks() {
+  for(let c=0; c<brickColumnCount; c++) {
+    for(let r=0; r<brickRowCount; r++) {
+      if(bricks[c][r].status === 1) {
+        let brickX = c*(brickWidth+brickPadding)+brickOffsetLeft;
+        let brickY = r*(brickHeight+brickPadding)+brickOffsetTop;
+        bricks[c][r].x = brickX;
+        bricks[c][r].y = brickY;
+        ctx.fillStyle = "#0095DD";
+        ctx.fillRect(brickX, brickY, brickWidth, brickHeight);
+      }
+    }
+  }
+}
+
+function drawBall(ball) {
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI*2);
+  ctx.fillStyle = "#005984";
+  ctx.fill();
+  ctx.closePath();
+}
+
+function drawPaddle() {
+  let width = paddleWidth;
+  if(activePowerUps['BigPaddle']) width *= 1.5;
+  if(activePowerUps['ShrinkPaddle']) width *= 0.75;
+  ctx.fillStyle = "#0095DD";
+  ctx.fillRect(paddleX, canvas.height - paddleHeight - 2, width, paddleHeight);
+}
+
+function drawPowerUps() {
+  for(let pu of powerUps) {
+    if(pu.active){
+      ctx.fillStyle = { 'MultiBall':'#F39C12','ExtraLife':'#27AE60','FullLives':'#8E44AD' }[pu.type] || '#000';
+      ctx.fillRect(pu.x, pu.y, 20, 20);
+      ctx.fillStyle = "#fff";
+      ctx.font = "10px Arial";
+      ctx.fillText(pu.type.charAt(0), pu.x+3, pu.y+15);
+    }
+  }
+}
+
+function drawScore() {
+  scoreDisplay.textContent = 'Score: ' + score;
+}
+
+function drawLives() {
+  ctx.font = "16px Arial";
+  ctx.fillStyle = "#0095DD";
+  ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+}
+
+// Main game loop
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBricks();
+    for(let ball of balls) {
+        drawBall(ball);
+    }
+    drawPaddle();
+    drawScore();
+    drawLives();
+
+    for(let i=balls.length-1; i>=0; i--) {
+        const ball = balls[i];
+
+        // Wall collision
+        if (ball.x + ball.dx > canvas.width - ballRadius || ball.x + ball.dx < ballRadius) {
+            ball.dx = -ball.dx;
+            document.getElementById("bounceSound").play();
+        }
+        if (ball.y + ball.dy < ballRadius) {
+            ball.dy = -ball.dy;
+        } else if (ball.y + ball.dy > canvas.height - ballRadius) {
+            // Paddle collision
+            let paddleEffectiveWidth = (activePowerUps['BigPaddle']) ? paddleWidth * 1.5 : (activePowerUps['ShrinkPaddle']) ? paddleWidth * 0.75 : paddleWidth;
+            if (ball.x > paddleX && ball.x < paddleX + paddleEffectiveWidth) {
+                ball.dy = -ball.dy;
+                comboCount++;
+                score += 10 * comboCount;
+                spawnPowerUp(ball.x, ball.y);
+                document.getElementById("breakSound").play();
+            } else {
+                lives--;
+                comboCount=0;
+                if (lives===0) {
+                    document.getElementById("gameOverSound").play();
+                    document.getElementById("gameOverMessage").style.display="block";
+                    gameOver=true;
+                    return;
+                } else {
+                    ball.x=canvas.width/2;
+                    ball.y=canvas.height-30;
+                    ball.dx=2*(Math.random()>0.5?1:-1);
+                    ball.dy=-2;
+                }
+            }
+        }
+
+        // Brick collision
+        for(let c=0; c<brickColumnCount; c++) {
+            for(let r=0; r<brickRowCount; r++) {
+                let b=bricks[c][r];
+                if(b.status===1) {
+                    if(ball.x > b.x && ball.x < b.x+brickWidth && ball.y > b.y && ball.y < b.y+brickHeight) {
+                        ball.dy=-ball.dy;
+                        b.status=0;
+                        score+=50;
+                        comboCount++;
+                        score+=50*(comboCount-1);
+                        spawnPowerUp(b.x+brickWidth/2, b.y+brickHeight/2);
+                        document.getElementById("breakSound").play();
+
+                        // Check for win: all bricks destroyed
+                        let bricksLeft = 0;
+                        for(let c2=0; c2<brickColumnCount; c2++) {
+                          for(let r2=0; r2<brickRowCount; r2++) {
+                            if(bricks[c2][r2].status === 1) bricksLeft++;
+                          }
+                        }
+                        if(bricksLeft === 0) {
+                          alert("Congratulations! You Win!");
+                          restartGame();
+                          return;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Move ball
+        ball.x += ball.dx;
+        ball.y += ball.dy;
+    }
+
+    // Power-ups movement and collision
+    for(let i=powerUps.length-1; i>=0; i--) {
+        let pu = powerUps[i];
+        if(pu.active){
+            pu.y += 1.5;
+            if(pu.y > canvas.height) {
+                pu.active=false;
+            }
+            let paddleEffectiveWidth = (activePowerUps['BigPaddle']) ? paddleWidth*1.5 : (activePowerUps['ShrinkPaddle']) ? paddleWidth*0.75 : paddleWidth;
+            if(pu.x < paddleX + paddleEffectiveWidth && pu.x + 20 > paddleX && pu.y + 20 > canvas.height - paddleHeight - 2 && pu.y < canvas.height) {
+                pu.active = false;
+                activatePowerUp(pu);
+            }
+        }
+    }
+    drawPowerUps();
+
+    // Paddle control
+    let width = paddleWidth;
+    if(activePowerUps['BigPaddle']) width *= 1.5;
+    if(activePowerUps['ShrinkPaddle']) width *= 0.75;
+    if(rightPressed && paddleX < canvas.width - width) {
+        paddleX += 7;
+    }
+    if(leftPressed && paddleX > 0) {
+        paddleX -= 7;
+    }
+
+    // Remove expired power-ups
+    const now = Date.now();
+    for(let key in activePowerUps) {
+        if(activePowerUps[key] < now) delete activePowerUps[key];
+    }
+
+    if(!gameOver) requestAnimationFrame(draw);
+}
+
+// Restart game function, resets bricks too
+function restartGame() {
+  document.getElementById("gameOverMessage").style.display="none";
+  score=0;
+  lives=5;
+  x=canvas.width/2;
+  y=canvas.height-30;
+  dx=2;
+  dy=-2;
+  paddleX=(canvas.width - paddleWidth)/2;
+  gameOver=false;
+  balls = [{ x: x, y: y, dx: dx, dy: dy }];
+  activePowerUps={};
+  powerUps=[];
+  initBricks(); // reset bricks
+  draw();
+}
+
+// Start the game
+draw();
+</script>
+</body>
+</html>

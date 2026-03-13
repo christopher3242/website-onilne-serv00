@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Colorful Hangman</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="container">
+  <h1>🎯 Hangman 🎯</h1>
+
+  <!-- Word selection dropdown -->
+  <label for="wordSelect">Choose a word:</label>
+  <select id="wordSelect">
+    <option value="" selected>--Select a word--</option>
+    <option value="javascript">Javascript</option>
+    <option value="hangman">Hangman</option>
+    <option value="coding">Coding</option>
+    <option value="developer">Developer</option>
+    <option value="programming">Programming</option>
+    <option value="html">HTML</option>
+    <option value="css">CSS</option>
+    <option value="skull">Skull</option>
+    <option value="bozo">Bozo</option>
+    <option value="funny">Funny</option>
+    <option value="awesome">Awesome</option>
+    <option value="challenge">Challenge</option>
+    <option value="diddy">Diddy</option>
+  </select>
+
+  <!-- Start and Restart buttons -->
+  <button id="startButton">Start Game</button>
+  <button id="restartButton" style="display:none;">Restart</button>
+
+  <!-- Word display -->
+  <div id="word" class="word-display"></div>
+  <!-- Message display -->
+  <div id="message"></div>
+
+  <!-- Guess input -->
+  <div class="input-button-wrapper" style="display:none;">
+    <input id="letterInput" maxlength="1" placeholder="Guess a letter" type="text" />
+    <button id="guessButton">Guess</button>
+  </div>
+
+  <!-- Show answer button -->
+  <button id="answerButton" style="display:none;">Show Answer</button>
+
+  <!-- Exit button -->
+  <a href="../games.html" class="exit-link">
+    <button id="exitButton">Exit</button>
+  </a>
+
+  <!-- Hangman emoji visual -->
+  <div id="hangman" class="hangman-display"></div>
+  <!-- Remaining tries -->
+  <div id="triesLeft"></div>
+  <!-- Answer display -->
+  <div id="answerDisplay" style="display:none;"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

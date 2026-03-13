@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Counting Game - 150 Goals</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f8ff;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #countDisplay {
+      font-size: 4em;
+      margin: 20px 0;
+      padding: 10px 20px;
+      background-color: #fff;
+      border: 3px solid #ccc;
+      border-radius: 10px;
+      width: fit-content;
+      min-width: 150px;
+      text-align: center;
+    }
+
+    #timeDisplay, #topTimeDisplay {
+      font-size: 1.2em;
+      margin: 10px 0;
+    }
+
+    #message {
+      font-size: 1.2em;
+      margin: 15px 0;
+      min-height: 30px;
+    }
+
+    button {
+      font-size: 1.2em;
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #exitBtn {
+      background-color: #f44336;
+    }
+    #exitBtn:hover {
+      background-color: #da190b;
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 1.5em;
+      }
+      #countDisplay {
+        font-size: 3em;
+        padding: 8px 16px;
+      }
+      button {
+        font-size: 1em;
+        padding: 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Counting Game - Reach 150 Goals!</h1>
+  <div id="countDisplay">0</div>
+  <div id="timeDisplay">Time: 0.0 sec</div>
+  <div id="topTimeDisplay">Top Time: N/A</div>
+  <div id="message"></div>
+  <div>
+    <button id="countBtn">Count</button>
+    <button id="restartBtn">Restart</button>
+    <a href="../games.html"><button id="exitBtn">Exit</button></a>
+  </div>
+
+  <script>
+    let count = 0;
+    const target = 150;
+    const countDisplay = document.getElementById('countDisplay');
+    const messageDiv = document.getElementById('message');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const topTimeDisplay = document.getElementById('topTimeDisplay');
+
+    const countBtn = document.getElementById('countBtn');
+    const restartBtn = document.getElementById('restartBtn');
+
+    let startTime = null;
+    let timerInterval = null;
+    let topTime = null; // in seconds
+
+    function startTimer() {
+      startTime = Date.now();
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(updateTime, 100);
+    }
+
+    function updateTime() {
+      const elapsed = (Date.now() - startTime) / 1000;
+      timeDisplay.textContent = `Time: ${elapsed.toFixed(1)} sec`;
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function updateDisplay() {
+      countDisplay.textContent = count;
+      if (count === target) {
+        stopTimer();
+        const totalTime = (Date.now() - startTime) / 1000;
+        // Update top time if it's better
+        if (topTime === null || totalTime < topTime) {
+          topTime = totalTime;
+          topTimeDisplay.textContent = `Top Time: ${topTime.toFixed(1)} sec`;
+        }
+        messageDiv.innerHTML = '<span id="goodJob" style="color: green; font-weight: bold;">Good job! You reached 150!</span>';
+        countBtn.disabled = true;
+      }
+    }
+
+    countBtn.addEventListener('click', () => {
+      if (count === 0) {
+        startTimer(); // start timer on first click
+      }
+      if (count < target) {
+        count++;
+        updateDisplay();
+      }
+    });
+
+    restartBtn.addEventListener('click', () => {
+      count = 0;
+      messageDiv.innerHTML = '';
+      countBtn.disabled = false;
+      // Reset timer
+      stopTimer();
+      timeDisplay.textContent = `Time: 0.0 sec`;
+      // Keep top time stored
+      updateDisplay();
+    });
+
+    // Initialize display
+    updateDisplay();
+  </script>
+</body>
+</html>

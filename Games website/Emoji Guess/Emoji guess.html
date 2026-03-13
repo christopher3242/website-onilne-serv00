@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Emoji Guess Game</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f8ff;
+    margin: 0;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #333;
+  }
+
+  #emoji {
+    font-size: 120px;
+    margin-bottom: 20px;
+  }
+
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    max-width: 90%;
+  }
+
+  button {
+    padding: 12px 24px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.05);
+  }
+
+  #result {
+    margin-top: 20px;
+    font-size: 1.2em;
+  }
+
+  #score {
+    margin-top: 10px;
+    font-size: 1em;
+    font-weight: bold;
+  }
+
+  #next-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    display: none; /* Hidden initially */
+    transition: background-color 0.3s;
+  }
+
+  #next-btn:hover {
+    background-color: #45a049;
+  }
+
+  #exit-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    background-color: #f44336;
+  }
+
+  #exit-btn a {
+    color: white;
+    text-decoration: none;
+    display: block;
+  }
+
+  /* Show Answer Button */
+  #show-answer-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    background-color: #2196F3;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  #show-answer-btn:hover {
+    background-color: #0b7dda;
+  }
+
+  /* Game over message styling */
+  #game-over-message {
+    margin-top: 30px;
+    font-size: 1.5em;
+    color: red;
+    display: none;
+    max-width: 90%;
+    text-align: center;
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 600px) {
+    #emoji {
+      font-size: 100px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 0.9em;
+    }
+  }
+</style>
+</head>
+<body>
+<h1>Emoji Guess Game</h1>
+<div id="emoji">🎉</div>
+<div class="choices" id="choices-container"></div>
+<div id="result"></div>
+<div id="score">Score: 0</div>
+
+<!-- Buttons for game control -->
+<button id="show-answer-btn">Show Answer</button>
+<button id="next-btn">Next</button>
+<!-- Exit button -->
+<button id="exit-btn"><a href="../games.html">Exit</a></button>
+
+<!-- Game over message -->
+<div id="game-over-message"></div>
+
+<script>
+const emojiData = [
+  { emoji: '🎉', answer: 'Party' },
+  { emoji: '🐶', answer: 'Dog' },
+  { emoji: '🍎', answer: 'Apple' },
+  { emoji: '🚗', answer: 'Car' },
+  { emoji: '🌞', answer: 'Sun' },
+  { emoji: '🌙', answer: 'Moon' },
+  { emoji: '🏀', answer: 'Basketball' },
+  { emoji: '✈️', answer: 'Airplane' },
+  { emoji: '🎂', answer: 'Cake' },
+  { emoji: '🎸', answer: 'Guitar' },
+  { emoji: '🚀', answer: 'Rocket' },
+  { emoji: '🎩', answer: 'Hat' },
+  { emoji: '🍕', answer: 'Pizza' },
+  { emoji: '🏖️', answer: 'Beach' },
+  { emoji: '🐱', answer: 'Cat' },
+  { emoji: '🎮', answer: 'Video Game' },
+  { emoji: '🌟', answer: 'Star' },
+  { emoji: '🍉', answer: 'Watermelon' },
+  { emoji: '🚲', answer: 'Bicycle' },
+  { emoji: '🎻', answer: 'Violin' },
+  { emoji: '🦄', answer: 'Unicorn' },
+  { emoji: '🌈', answer: 'Rainbow' },
+  { emoji: '⚽', answer: 'Football' },
+  { emoji: '🏝️', answer: 'Island' },
+  { emoji: '🚁', answer: 'Helicopter' },
+  { emoji: '🦁', answer: 'Lion' },
+  { emoji: '🌺', answer: 'Hibiscus' },
+  { emoji: '🦋', answer: 'Butterfly' },
+  { emoji: '🎁', answer: 'Gift' },
+  { emoji: '🐘', answer: 'Elephant' },
+  { emoji: '🦢', answer: 'Swan' }
+];
+
+let currentQuestion = {};
+let score = 0;
+let wrongGuesses = 0;
+const maxWrong = 3;
+
+const emojiDiv = document.getElementById('emoji');
+const choicesContainer = document.getElementById('choices-container');
+const resultDiv = document.getElementById('result');
+const scoreDiv = document.getElementById('score');
+const nextBtn = document.getElementById('next-btn');
+const showAnswerBtn = document.getElementById('show-answer-btn');
+const gameOverMsg = document.getElementById('game-over-message');
+
+function shuffleArray(array) {
+  for (let i = array.length -1; i >0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function loadQuestion() {
+  resultDiv.textContent = '';
+  nextBtn.style.display = 'none';
+  showAnswerBtn.style.display = 'inline-block'; // Show "Show Answer" button
+  choicesContainer.innerHTML = '';
+
+  // Pick a random question
+  currentQuestion = emojiData[Math.floor(Math.random() * emojiData.length)];
+  emojiDiv.textContent = currentQuestion.emoji;
+
+  // Generate options
+  const options = [currentQuestion.answer];
+  const otherAnswers = emojiData
+    .filter(item => item.answer !== currentQuestion.answer)
+    .map(item => item.answer);
+  shuffleArray(otherAnswers);
+  const distractors = otherAnswers.slice(0, 3);
+  const choices = shuffleArray([currentQuestion.answer, ...distractors]);
+
+  // Create choice buttons
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.textContent = choice;
+    btn.onclick = () => selectAnswer(choice);
+    choicesContainer.appendChild(btn);
+  });
+}
+
+// Handle answer selection
+function selectAnswer(selected) {
+  if (selected === currentQuestion.answer) {
+    resultDiv.textContent = 'Correct! 🎉';
+    score++;
+    scoreDiv.textContent = `Score: ${score}`;
+  } else {
+    wrongGuesses++;
+    resultDiv.textContent = `Wrong! The correct answer is "${currentQuestion.answer}".`;
+  }
+  Array.from(choicesContainer.children).forEach(btn => {
+    btn.disabled = true;
+  });
+  nextBtn.style.display = 'inline-block';
+
+  if (wrongGuesses >= maxWrong) {
+    endGame();
+  }
+}
+
+// Show answer temporarily
+function showAnswer() {
+  const answerText = `Answer: ${currentQuestion.answer}`;
+  resultDiv.textContent = answerText;
+  showAnswerBtn.style.display = 'none'; // hide button after click
+
+  setTimeout(() => {
+    resultDiv.textContent = '';
+    showAnswerBtn.style.display = 'inline-block'; // show again for next questions
+  }, 2000); // 2 seconds
+}
+
+function endGame() {
+  Array.from(choicesContainer.children).forEach(btn => {
+    btn.disabled = true;
+  });
+  nextBtn.style.display = 'none';
+  showAnswerBtn.style.display = 'none';
+
+  document.getElementById('game-over-message').style.display = 'block';
+  document.getElementById('game-over-message').innerHTML = `
+    <div>Game Over!<br>
+    Your score: ${score}<br>
+    Top Score: ${score}<br><br>
+    <button id="restart-btn" style="margin-top:15px; padding:8px 16px; font-size:16px; border:none; border-radius:8px; background-color:#4CAF50; color:white; cursor:pointer;">Play Again</button>
+    </div>
+  `;
+
+  document.getElementById('restart-btn').onclick = () => {
+    score = 0;
+    wrongGuesses = 0;
+    scoreDiv.textContent = `Score: ${score}`;
+    document.getElementById('game-over-message').style.display='none';
+    loadQuestion();
+  };
+}
+
+// Initialize game
+window.onload = () => {
+  loadQuestion();
+};
+
+document.getElementById('next-btn').onclick = () => {
+  loadQuestion();
+};
+
+document.getElementById('show-answer-btn').onclick = () => {
+  showAnswer();
+};
+</script>
+</body>
+</html>

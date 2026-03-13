@@ -1,0 +1,102 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #8cc5ff;
+    margin: 0;
+}
+
+.container {
+    width: 90%;
+    max-width: 400px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.selectors {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+select {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+input[type=number] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.buttons {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+button {
+    background-color: #145174;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #1f455f;
+}
+
+#message {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#answerDisplay {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #d35400;
+}
+
+#scoreDisplay {
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+/* Responsive for mobile */
+@media (max-width: 500px) {
+    .buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    button {
+        width: 80%;
+        max-width: 200px;
+    }
+}

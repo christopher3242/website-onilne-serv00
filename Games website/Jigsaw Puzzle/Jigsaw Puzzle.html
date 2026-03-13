@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jigsaw Puzzle with Toggle Exit</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    #toggleButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .puzzle-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      transition: opacity 0.3s ease, max-height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+      overflow: hidden;
+    }
+
+    /* Hidden state styles */
+    .hidden {
+      opacity: 0;
+      max-height: 0;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Make iframe responsive */
+    iframe {
+      width: 100%;
+      height: 60vh; /* Use viewport height for better responsiveness */
+      border: none;
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 768px) {
+      iframe {
+        height: 50vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Jigsaw Puzzle</h1>
+  <div class="controls">
+    <div class="puzzle-container" id="puzzleContainer">
+      <iframe
+        src="https://www.jigsawplanet.com/christopher100/my-puzzle?rc=uplay&view=iframe"
+        allowfullscreen
+        title="Jigsaw Puzzle"
+      ></iframe>
+      <button id="toggleButton">Exit Puzzle</button>
+    </div>
+  </div>
+  <script>
+    const toggleButton = document.getElementById('toggleButton');
+    const puzzleContainer = document.getElementById('puzzleContainer');
+
+    toggleButton.addEventListener('click', () => {
+      // Toggle the 'hidden' class
+      puzzleContainer.classList.toggle('hidden');
+
+      // Change button text accordingly
+      if (puzzleContainer.classList.contains('hidden')) {
+        toggleButton.textContent = 'Show Puzzle';
+      } else {
+        toggleButton.textContent = 'Exit Puzzle';
+      }
+    });
+  </script>
+</body>
+</html>

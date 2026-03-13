@@ -1,0 +1,78 @@
+body {
+  font-family: Arial, sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin:0;
+  padding:20px;
+  background:#f0f0f0;
+}
+
+h1 { margin-bottom:20px; }
+
+#game-settings {
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+  margin-bottom:20px;
+  font-size:18px;
+}
+
+#game-container {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
+  max-width:520px;
+}
+
+#board {
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  grid-template-rows:repeat(6,1fr);
+  gap:8px;
+  background:#333;
+  padding:10px;
+  border-radius:10px;
+  width:100%;
+  aspect-ratio:7/6;
+}
+
+.cell {
+  background:#ccc;
+  border-radius:50%;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.cell:hover {
+  transform:scale(1.05);
+}
+
+/* Player colors */
+.cell.red { background-color: red; }
+.cell.yellow { background-color: yellow; }
+.cell.green { background-color: green; }
+.cell.orange { background-color: orange; }
+.cell.black { background-color: black; }
+.cell.gray { background-color: gray; }
+.cell.blue { background-color: #4169E1; }
+
+.buttons-container {
+  display:flex;
+  gap:15px;
+  margin-top:20px;
+}
+
+button {
+  padding:10px 18px;
+  font-size:16px;
+  border:none;
+  border-radius:8px;
+  background:#b1ccff;
+  cursor:pointer;
+}
+
+button:hover {
+  background:#ffd8d8;
+}

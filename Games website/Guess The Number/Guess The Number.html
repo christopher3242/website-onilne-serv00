@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Guess The Number Game</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="container">
+    <h1>Guess The Number Game</h1>
+    <div class="selectors">
+        <label for="range">Select a range:</label>
+        <select id="range">
+            <option value="10">1-10</option>
+            <option value="50">1-50</option>
+            <option value="100">1-100</option>
+            <option value="1000">1-1000</option>
+            <option value="10000">1-10,000</option>
+            <option value="1000000">1-1,000,000</option>
+            <option value="10000000">1-10,000,000</option>
+        </select>
+    </div>
+    <input type="number" id="guess" placeholder="Enter your guess" />
+    <div class="buttons">
+        <button id="submit">Submit Guess</button>
+        <button id="reset">Reset Game</button>
+        <button id="answer">Show Answer</button>
+        <a href="../games.html" class="exit-link">
+            <button id="exit">Exit</button>
+        </a>
+    </div>
+    <p id="message"></p>
+    <p id="answerDisplay" style="display:none; font-weight: bold;"></p>
+    <p id="scoreDisplay">Score: <span id="score">0</span></p>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

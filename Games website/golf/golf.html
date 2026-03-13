@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Touch Golf Game</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #87CEEB;
+  }
+  #gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100vh;
+    background-color: #228B22; /* Darker green for terrain */
+    touch-action: none; /* prevent default touch actions */
+  }
+  #ui {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: rgba(255,255,255,0.8);
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 10;
+  }
+  button, input[type=range] {
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+  }
+  button:hover {
+    background-color: #ddd;
+  }
+  h1 {
+    text-align: center;
+    margin: 10px 0;
+  }
+  label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+</style>
+</head>
+<body>
+<h1>Touch Golf Game</h1>
+<div id="ui">
+  <a href="../Games.html"><button id="exitBtn">Exit</button></a>
+  <button id="nextBtn">Next Level</button>
+  <button id="restartBtn">Restart</button>
+  <label>Wind Speed:
+    <input type="range" id="windRange" min="1" max="10" value="3" />
+  </label>
+  <span id="windValue">3</span>
+</div>
+<canvas id="gameCanvas"></canvas>
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const exitBtn = document.getElementById('exitBtn');
+const nextBtn = document.getElementById('nextBtn');
+const restartBtn = document.getElementById('restartBtn');
+const windRange = document.getElementById('windRange');
+const windValue = document.getElementById('windValue');
+
+let level = 1;
+const maxLevel = 4;
+
+let gameActive = true;
+let windSpeed = parseInt(windRange.value);
+windRange.oninput = () => {
+  windSpeed = parseInt(windRange.value);
+  windValue.textContent = windSpeed;
+};
+
+// Resize canvas to fit window
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// Game objects
+let ball = {
+  x: 100,
+  y: 500,
+  radius: 10,
+  color: 'white',
+  vx: 0,
+  vy: 0,
+  isMoving: false
+};
+
+let hole = {
+  x: 700,
+  y: 100,
+  radius: 20,
+  color: 'black'
+};
+
+let obstacle = {
+  x: 400,
+  y: 300,
+  width: 100,
+  height: 20,
+  color: 'brown',
+  visible: true
+};
+
+// Sand Wall Obstacle
+let sandWall = {
+  x: 600,
+  y: 400,
+  width: 150,
+  height: 20,
+  color: 'yellow',
+  visible: true
+};
+
+// Generate obstacle and hole positions
+function generateObstacle() {
+  obstacle.x = Math.random() * (canvas.width - obstacle.width);
+  obstacle.y = Math.random() * (canvas.height - obstacle.height);
+}
+
+function generateSandWall() {
+  sandWall.x = Math.random() * (canvas.width - sandWall.width);
+  sandWall.y = Math.random() * (canvas.height - sandWall.height);
+}
+
+function generateHole() {
+  hole.x = Math.random() * (canvas.width - hole.radius * 2) + hole.radius;
+  hole.y = Math.random() * (canvas.height - hole.radius * 2) + hole.radius;
+}
+
+function resetGame() {
+  ball.x = 100;
+  ball.y = 500;
+  ball.vx = 0;
+  ball.vy = 0;
+  ball.isMoving = false;
+  generateHole();
+  generateObstacle();
+  generateSandWall();
+}
+
+// Button handlers
+nextBtn.onclick = () => {
+  if (level < maxLevel) {
+    level++;
+    resetGame();
+  } else {
+    alert("You've completed all levels!");
+  }
+};
+restartBtn.onclick = () => {
+  level = 1;
+  resetGame();
+};
+
+// Touch/swipe variables
+let touchStart = null;
+let touchEnd = null;
+
+// Handle touch start
+canvas.addEventListener('touchstart', (e) => {
+  if (ball.isMoving) return;
+  if (e.touches.length === 1) {
+    const touch = e.touches[0];
+    touchStart = {x: touch.clientX, y: touch.clientY};
+  }
+});
+
+// Handle touch end
+canvas.addEventListener('touchend', (e) => {
+  if (ball.isMoving || !touchStart) return;
+  if (e.changedTouches.length === 1) {
+    const touch = e.changedTouches[0];
+    touchEnd = {x: touch.clientX, y: touch.clientY};
+    // Calculate swipe vector
+    const dx = touchStart.x - touchEnd.x;
+    const dy = touchStart.y - touchEnd.y;
+    // Set velocity based on swipe and wind
+    ball.vx = dx * 0.1 + windSpeed * 0.2; // wind influence
+    ball.vy = dy * 0.1;
+    ball.isMoving = true;
+    touchStart = null;
+  }
+});
+
+// Optional: handle mouse for desktop testing
+canvas.addEventListener('mousedown', (e) => {
+  if (ball.isMoving) return;
+  touchStart = {x: e.clientX, y: e.clientY};
+});
+canvas.addEventListener('mouseup', (e) => {
+  if (ball.isMoving || !touchStart) return;
+  touchEnd = {x: e.clientX, y: e.clientY};
+  const dx = touchStart.x - touchEnd.x;
+  const dy = touchStart.y - touchEnd.y;
+  ball.vx = dx * 0.1 + windSpeed * 0.2;
+  ball.vy = dy * 0.1;
+  ball.isMoving = true;
+  touchStart = null;
+});
+
+// Main game loop
+function gameLoop() {
+  ctx.fillStyle = '#228B22'; // terrain
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw hole
+  ctx.beginPath();
+  ctx.arc(hole.x, hole.y, hole.radius, 0, Math.PI * 2);
+  ctx.fillStyle = hole.color;
+  ctx.fill();
+
+  // Draw obstacle
+  if (obstacle.visible) {
+    ctx.fillStyle = obstacle.color;
+    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+  }
+
+  // Draw sand wall
+  if (sandWall.visible) {
+    ctx.fillStyle = sandWall.color;
+    ctx.fillRect(sandWall.x, sandWall.y, sandWall.width, sandWall.height);
+  }
+
+  // Draw ball
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  ctx.fillStyle = ball.color;
+  ctx.fill();
+
+  // Update ball position
+  if (ball.isMoving) {
+    // Apply wind influence
+    ball.vx += windSpeed * 0.01; // gradual wind effect
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+    // Apply friction
+    ball.vx *= 0.98;
+    ball.vy *= 0.98;
+
+    // Stop if slow enough
+    if (Math.abs(ball.vx) < 0.1 && Math.abs(ball.vy) < 0.1) {
+      ball.vx = 0;
+      ball.vy = 0;
+      ball.isMoving = false;
+    }
+
+    // Boundary collision
+    if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
+      ball.vx *= -1;
+    }
+    if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+      ball.vy *= -1;
+    }
+  }
+
+  // Check collision with hole
+  const dx = ball.x - hole.x;
+  const dy = ball.y - hole.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist < hole.radius) {
+    alert('Level Completed!');
+    if (level < maxLevel) {
+      level++;
+      resetGame();
+    } else {
+      alert('Game Finished! Congratulations!');
+    }
+  }
+
+  // Check collision with obstacle
+  if (obstacle.visible) {
+    if (
+      ball.x + ball.radius > obstacle.x &&
+      ball.x - ball.radius < obstacle.x + obstacle.width &&
+      ball.y + ball.radius > obstacle.y &&
+      ball.y - ball.radius < obstacle.y + obstacle.height
+    ) {
+      // Bounce back
+      ball.vx *= -1;
+      ball.vy *= -1;
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+    }
+  }
+
+  // Check collision with sand wall (slower terrain)
+  if (sandWall.visible) {
+    if (
+      ball.x + ball.radius > sandWall.x &&
+      ball.x - ball.radius < sandWall.x + sandWall.width &&
+      ball.y + ball.radius > sandWall.y &&
+      ball.y - ball.radius < sandWall.y + sandWall.height
+    ) {
+      // Reduce velocity further, simulating sand
+      ball.vx *= 0.9;
+      ball.vy *= 0.9;
+    }
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+// Initialize game
+resetGame();
+gameLoop();
+</script>
+</body>
+</html>

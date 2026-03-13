@@ -1,0 +1,74 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #948686;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 10px;
+}
+
+.container {
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+}
+
+h1 {
+  margin-bottom: 10px;
+}
+
+h2, h3 {
+  margin: 10px 0 5px 0;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 20px auto;
+  width: 100%;
+  max-width: 320px;
+}
+
+.cell {
+  background-color: #fff;
+  border: 2px solid #333;
+  font-size: 2em;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
+}
+
+.cell:hover {
+  background-color: #e6e6e6;
+}
+
+.restart-button, .exit-button {
+  margin: 10px 5px;
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+}
+
+.exit-button {
+  background-color: #ff4c4c;
+  color: white;
+}
+
+.exit-button:hover {
+  background-color: #e63939;
+}
+
+.message {
+  margin-top: 10px;
+  font-size: 1.2em;
+  min-height: 1.2em;
+}

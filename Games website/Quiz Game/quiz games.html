@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz Game</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: #677ca3;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .quiz-container {
+      width: 100%;
+      max-width: 450px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 30px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 2em;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    #score {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 20px;
+      color: #555;
+    }
+
+    #question {
+      font-size: 1.3em;
+      text-align: center;
+      margin-bottom: 25px;
+      color: #222;
+    }
+
+    #answer-buttons {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      background-color: #007bff;
+      color: #fff;
+      transition: background-color 0.25s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    #feedback {
+      margin-top: 20px;
+      font-size: 1.2em;
+      min-height: 20px;
+      font-weight: 600;
+    }
+
+    #show-answer {
+      margin-top: 20px;
+      background-color: #ffc107;
+      color: #222;
+      font-weight: 600;
+    }
+
+    #show-answer:hover {
+      background-color: #e0a800;
+    }
+
+    #next-button {
+      margin-top: 25px;
+    }
+
+    /* Exit button styles for consistency */
+    a .btn {
+      margin-top: 20px;
+      background-color: #6c757d;
+    }
+    a .btn:hover {
+      background-color: #5a6268;
+    }
+
+    /* Responsive adjustments */
+    @media(max-width: 500px){
+      .quiz-container {
+        padding: 20px;
+      }
+      #question {
+        font-size: 1.2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container" id="quiz-container">
+    <h1>Quiz Game</h1>
+    <div id="score">Score: 0</div>
+    <div id="question"></div>
+    <div id="answer-buttons"></div>
+    <div id="feedback"></div>
+    <button id="show-answer" class="btn" style="display:none;">Show Answer</button>
+    <button id="next-button" class="btn" style="display:none;">Next</button>
+    <a href="../games.html" style="text-decoration:none;">
+      <button class="btn">Exit</button>
+    </a>
+  </div>
+
+  <script>
+    const questionElement = document.getElementById('question');
+    const answerButtonsContainer = document.getElementById('answer-buttons');
+    const scoreElement = document.getElementById('score');
+    const feedbackElement = document.getElementById('feedback');
+    const nextButton = document.getElementById('next-button');
+    const showAnswerButton = document.getElementById('show-answer');
+
+    let score = 0;
+    let currentQuestionIndex = 0;
+
+   const questions = [
+      {
+        question: 'What is 2 + 2?',
+        answers: [
+          { text: '3', correct: false },
+          { text: '4', correct: true },
+          { text: '5', correct: false },
+          { text: '6', correct: false },
+        ],
+      },
+      {
+        question: 'What is the capital of France?',
+        answers: [
+          { text: 'Berlin', correct: false },
+          { text: 'Madrid', correct: false },
+          { text: 'Paris', correct: true },
+          { text: 'Lisbon', correct: false },
+        ],
+      },
+      {
+        question: 'What is the largest ocean on Earth?',
+        answers: [
+          { text: 'Indian Ocean', correct: false },
+          { text: 'Atlantic Ocean', correct: false },
+          { text: 'Arctic Ocean', correct: false },
+          { text: 'Pacific Ocean', correct: true },
+        ],
+      },
+      {
+        question: 'What this Bozo?',
+        answers: [
+          { text: 'L', correct: true },
+          { text: 'Brairot', correct: false },
+          { text: 'maggot', correct: false },
+          { text: 'get out', correct: false },
+        ],
+      },
+      {
+        question: 'What is Cock?',
+        answers: [
+          { text: 'Suck up', correct: false },
+          { text: 'Balls', correct: true },
+          { text: 'Diddy and Drake Oil', correct: false },
+          { text: 'Sex', correct: false },
+        ],
+      },
+      {
+        question: 'What are diddy?',
+        answers: [
+          { text: 'oil', correct: true },
+          { text: 'Hit and run', correct: false },
+          { text: 'bro', correct: false },
+          { text: 'No care', correct: false },
+        ],
+      },
+      {
+        question: 'What are room night?',
+        answers: [
+          { text: 'Lol', correct: false },
+          { text: 'L + bozo', correct: false },
+          { text: 'sex and sleep', correct: true },
+          { text: 'shut up', correct: false },
+        ],
+        },
+        {
+        question: 'What If ?',
+        answers: [
+          { text: 'F you', correct: true },
+          { text: 'ohohoho', correct: false },
+          { text: 'grounded', correct: true },
+          { text: 'shut down idoit', correct: false },
+        ],
+      },
+    ]
+
+    function startGame() {
+      currentQuestionIndex = 0;
+      score = 0;
+      scoreElement.innerText = 'Score: 0';
+      feedbackElement.innerText = '';
+      nextButton.style.display = 'none';
+      showQuestion(questions[currentQuestionIndex]);
+    }
+
+    function showQuestion(question) {
+      questionElement.innerText = question.question;
+      answerButtonsContainer.innerHTML = '';
+      feedbackElement.innerText = '';
+      showAnswerButton.style.display = 'inline-block';
+      showAnswerButton.disabled = false;
+      nextButton.style.display = 'none';
+
+      question.answers.forEach(answer => {
+        const btn = document.createElement('button');
+        btn.innerText = answer.text;
+        btn.className = 'btn';
+        btn.dataset.correct = answer.correct;
+        btn.onclick = () => selectAnswer(btn);
+        answerButtonsContainer.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(btn) {
+      const correct = btn.dataset.correct === 'true';
+
+      // Highlight answers
+      Array.from(answerButtonsContainer.children).forEach(b => {
+        b.disabled = true;
+        if (b.dataset.correct === 'true') {
+          b.classList.add('correct');
+        } else {
+          b.classList.add('wrong');
+        }
+      });
+
+      if (correct) {
+        score++;
+        feedbackElement.innerText = 'Correct!';
+      } else {
+        feedbackElement.innerText = 'Wrong!';
+      }
+      scoreElement.innerText = `Score: ${score}`;
+      nextButton.style.display = 'inline-block';
+      showAnswerButton.disabled = true;
+    }
+
+    // Show the question + answer briefly
+    showAnswerButton.onclick = () => {
+      const qText = questionElement.innerText;
+      const correctAnswer = Array.from(answerButtonsContainer.children).find(b => b.dataset.correct === 'true').innerText;
+      // Display question + answer
+      questionElement.innerHTML = `<strong>Q:</strong> ${qText}<br/><strong>Answer:</strong> ${correctAnswer}`;
+      
+      // Show for 2 seconds, then restore question
+      setTimeout(() => {
+        showQuestion(questions[currentQuestionIndex]);
+      }, 2000);
+      
+      showAnswerButton.disabled = true;
+    };
+
+    nextButton.onclick = () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        showQuestion(questions[currentQuestionIndex]);
+      } else {
+        questionElement.innerHTML = `<h2>Quiz Finished!</h2><p>Your final score is: ${score}</p>`;
+        answerButtonsContainer.innerHTML = '';
+        feedbackElement.innerText = '';
+        showAnswerButton.style.display = 'none';
+        nextButton.style.display = 'none';
+      }
+    };
+
+    // Initialize game
+    startGame();
+  </script>
+</body>
+</html>
