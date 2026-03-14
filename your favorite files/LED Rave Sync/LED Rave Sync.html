@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LED Sync Visualizer</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  font-family: Arial;
+  color: white;
+  overflow: hidden;
+}
+
+/* Header Title */
+h1 {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 11; /* above the UI panel */
+  color: white;
+}
+
+/* Exit link container */
+.exit-container {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px 12px;
+  border-radius: 8px;
+  z-index: 11; /* above UI panel and title */
+}
+
+.exit-link {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#ui {
+  position: fixed;
+  top: 50px; /* below header and exit link */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.6);
+  padding: 10px 15px;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  z-index: 10;
+}
+
+button, select, input {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+button {
+  background: #ff0066;
+  color: white;
+  cursor: pointer;
+}
+
+canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+</style>
+</head>
+
+<body>
+
+<h1>LED Sync Visualizer</h1>
+
+<div class="exit-container">
+  <a href="../../your%20favorite.html" class="exit-link">exit</a>
+</div>
+
+<div id="ui">
+  <input type="file" id="file" accept="audio/*" />
+  <button id="play">Play</button>
+  <button id="pause">Pause</button>
+  <button id="stop">Stop</button>
+  <button id="loop">Loop Off</button>
+  <button id="fullscreen">Fullscreen</button>
+  <select id="mode">
+    <option value="eq">EQ</option>
+    <option value="wave">Wave</option>
+    <option value="beat">Beat</option>
+    <option value="strobe">Strobe</option>
+    <option value="spiral">Spiral</option>
+    <option value="rain">Rain</option>
+    <option value="burst">Burst</option>
+  </select>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+window.addEventListener("resize", resize);
+resize();
+
+let audio = new Audio();
+let audioCtx;
+let analyser;
+let source;
+let dataArray;
+let bufferLength;
+let animationId;
+
+const fileInput = document.getElementById("file");
+
+fileInput.onchange = e => {
+  const file = e.target.files[0];
+  if (file) {
+    audio.src = URL.createObjectURL(file);
+  }
+};
+
+function setupAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    source = audioCtx.createMediaElementSource(audio);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+  }
+}
+
+document.getElementById("play").onclick = () => {
+  setupAudio();
+  audio.play();
+  animate();
+};
+
+document.getElementById("pause").onclick = () => {
+  audio.pause();
+  cancelAnimationFrame(animationId);
+};
+
+document.getElementById("stop").onclick = () => {
+  audio.pause();
+  audio.currentTime = 0;
+  cancelAnimationFrame(animationId);
+  clear();
+};
+
+let loop = false;
+
+document.getElementById("loop").onclick = () => {
+  loop = !loop;
+  audio.loop = loop;
+  document.getElementById("loop").innerText = loop ? "Loop On" : "Loop Off";
+};
+
+document.getElementById("fullscreen").onclick = () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+};
+
+const modeSelect = document.getElementById("mode");
+
+function clear() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function animate() {
+  animationId = requestAnimationFrame(animate);
+  analyser.getByteFrequencyData(dataArray);
+  clear();
+
+  switch (modeSelect.value) {
+    case "eq":
+      drawEQ();
+      break;
+    case "wave":
+      drawWave();
+      break;
+    case "beat":
+      drawBeat();
+      break;
+    case "strobe":
+      drawStrobe();
+      break;
+    case "spiral":
+      drawSpiral();
+      break;
+    case "rain":
+      drawRain();
+      break;
+    case "burst":
+      drawBurst();
+      break;
+  }
+}
+
+function drawEQ() {
+  let barWidth = (canvas.width / bufferLength) * 2;
+  let x = 0;
+  for (let i = 0; i < bufferLength; i++) {
+    let barHeight = dataArray[i];
+    ctx.fillStyle = `hsl(${i * 3}, 100%, 50%)`;
+    ctx.fillRect(x, canvas.height - barHeight * 2, barWidth, barHeight * 2);
+    x += barWidth + 1;
+  }
+}
+
+function drawWave() {
+  ctx.beginPath();
+  let slice = canvas.width / bufferLength;
+  for (let i = 0; i < bufferLength; i++) {
+    let v = dataArray[i] / 255;
+    let y = v * canvas.height;
+    if (i === 0) {
+      ctx.moveTo(0, y);
+    } else {
+      ctx.lineTo(i * slice, y);
+    }
+  }
+  ctx.strokeStyle = "cyan";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function drawBeat() {
+  let avg = dataArray.reduce((a, b) => a + b) / bufferLength;
+  ctx.fillStyle = `rgba(255, 0, 150, ${avg / 255})`;
+  ctx.beginPath();
+  ctx.arc(canvas.width / 2, canvas.height / 2, avg * 2, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawStrobe() {
+  let avg = dataArray.reduce((a, b) => a + b) / bufferLength;
+  if (avg > 140) {
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+function drawSpiral() {
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  for (let i = 0; i < bufferLength; i++) {
+    let angle = i * 0.3;
+    let radius = dataArray[i] * 2;
+    let x = cx + Math.cos(angle) * radius;
+    let y = cy + Math.sin(angle) * radius;
+    ctx.fillStyle = `hsl(${i * 4}, 100%, 50%)`;
+    ctx.fillRect(x, y, 4, 4);
+  }
+}
+
+function drawRain() {
+  for (let i = 0; i < bufferLength; i++) {
+    let x = i * (canvas.width / bufferLength);
+    let y = (dataArray[i] * 4) % canvas.height;
+    ctx.fillStyle = "lime";
+    ctx.fillRect(x, y, 3, 15);
+  }
+}
+
+function drawBurst() {
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  for (let i = 0; i < bufferLength; i++) {
+    let angle = (i / bufferLength) * Math.PI * 2;
+    let radius = dataArray[i] * 2;
+    let x = cx + Math.cos(angle) * radius;
+    let y = cy + Math.sin(angle) * radius;
+    ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 60%)`;
+    ctx.fillRect(x, y, 5, 5);
+  }
+}
+</script>
+
+</body>
+</html>

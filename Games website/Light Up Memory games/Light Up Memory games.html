@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Memory Game with Levels & Sound</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    color: #fff;
+  }
+
+  h1 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  #levelDisplay {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+  }
+
+  #game-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .color-button {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+    outline: none;
+    font-size: 1.2em;
+  }
+
+  .red { background-color: #ff4d4d; }
+  .green { background-color: #4dff4d; }
+  .blue { background-color: #4d4dff; }
+  .yellow { background-color: #ffff4d; }
+
+  /* Light highlight effect */
+  .light {
+    opacity: 0.6;
+  }
+
+  #status {
+    margin-top: 20px;
+    font-size: 1.4em;
+    text-align: center;
+  }
+
+  #buttons-container {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  button {
+    padding: 12px 24px;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #555;
+    color: #fff;
+    transition: background-color 0.2s;
+  }
+
+  button:hover {
+    background-color: #777;
+  }
+
+  /* Show Answer button style */
+  #showAnswerBtn {
+    background-color: #007bff;
+  }
+  #showAnswerBtn:hover {
+    background-color: #0056b3;
+  }
+
+  /* Responsive adjustments for small screens */
+  @media (max-width: 500px) {
+    h1 {
+      font-size: 1.5em;
+    }
+    #status {
+      font-size: 1.2em;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+    }
+  }
+</style>
+</head>
+<body>
+<h1>Light Up Memory Games with Levels & Sound</h1>
+<div id="levelDisplay">Level: 0</div>
+<div id="game-container">
+  <button class="color-button red" data-color="red"></button>
+  <button class="color-button green" data-color="green"></button>
+  <button class="color-button blue" data-color="blue"></button>
+  <button class="color-button yellow" data-color="yellow"></button>
+</div>
+<div id="status">Press Start to Play!</div>
+
+<!-- Buttons: Start, Show Answer, Exit -->
+<div id="buttons-container">
+  <button id="startBtn">Start Game</button>
+  <button id="showAnswerBtn">Show Answer</button>
+  <a href="../games.html" style="text-decoration: none;"><button id="exitBtn">Exit</button></a>
+</div>
+
+<script>
+const colors = ['red', 'green', 'blue', 'yellow'];
+let sequence = [];
+let playerSequence = [];
+let level = 0;
+let isPlayerTurn = false;
+let gameActive = false;
+let showAnswerTimeout = null;
+
+// Select elements
+const buttons = document.querySelectorAll('.color-button');
+const status = document.getElementById('status');
+const startBtn = document.getElementById('startBtn');
+const showAnswerBtn = document.getElementById('showAnswerBtn');
+const exitBtn = document.getElementById('exitBtn');
+const levelDisplay = document.getElementById('levelDisplay');
+
+// Setup Web Audio API
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
+
+const colorFrequencies = {
+  red: 440,
+  green: 550,
+  blue: 660,
+  yellow: 770
+};
+
+function playSound(frequency, duration=400) {
+  const oscillator = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+  oscillator.type = 'sine';
+  oscillator.frequency.value = frequency;
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  oscillator.start();
+  gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  setTimeout(() => { oscillator.stop(); }, duration);
+}
+
+function lightUp(color) {
+  const btn = document.querySelector(`.color-button[data-color="${color}"]`);
+  if (!btn) return;
+  btn.classList.add('light');
+  playSound(colorFrequencies[color]);
+  setTimeout(() => { btn.classList.remove('light'); }, 500);
+}
+
+function generateNext() {
+  const nextColor = colors[Math.floor(Math.random() * colors.length)];
+  sequence.push(nextColor);
+}
+
+async function playSequence() {
+  isPlayerTurn = false;
+  status.textContent = 'Watch the sequence!';
+  for (const color of sequence) {
+    lightUp(color);
+    await new Promise(resolve => setTimeout(resolve, 700));
+  }
+  status.textContent = 'Your turn!';
+  isPlayerTurn = true;
+}
+
+function updateLevelDisplay() {
+  levelDisplay.textContent = `Level: ${level}`;
+}
+
+async function nextLevel() {
+  generateNext();
+  updateLevelDisplay();
+  await playSequence();
+}
+
+function startGame() {
+  sequence = [];
+  level = 0;
+  gameActive = true;
+  updateLevelDisplay();
+  status.textContent = 'Game Starting...';
+  setTimeout(() => {
+    nextLevel();
+  }, 500);
+}
+
+function endGame() {
+  sequence = [];
+  playerSequence = [];
+  level = 0;
+  gameActive = false;
+  isPlayerTurn = false;
+  status.textContent = 'Game Over! Press Start to play again.';
+  updateLevelDisplay();
+}
+
+// Handle color button clicks
+buttons.forEach(button => {
+  button.addEventListener('click', () => {
+    if (!isPlayerTurn || !gameActive) return;
+    const color = button.dataset.color;
+    playerSequence.push(color);
+    lightUp(color);
+
+    const idx = playerSequence.length - 1;
+    if (playerSequence[idx] !== sequence[idx]) {
+      status.textContent = 'Wrong! Game Over!';
+      endGame();
+      return;
+    }
+
+    if (playerSequence.length === sequence.length) {
+      level++;
+      updateLevelDisplay();
+      status.textContent = 'Good job! Next level...';
+      playerSequence = [];
+      setTimeout(nextLevel, 1000);
+    }
+  });
+});
+
+// Start game
+startBtn.addEventListener('click', () => {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  startGame();
+});
+
+// Show Answer button
+showAnswerBtn.addEventListener('click', () => {
+  if (sequence.length === 0) return;
+  // Cancel previous timeout if any
+  if (showAnswerTimeout) clearTimeout(showAnswerTimeout);
+  status.textContent = 'Answer:';
+  sequence.forEach((color, index) => {
+    setTimeout(() => {
+      lightUp(color);
+    }, index * 600);
+  });
+  // Hide after 2 seconds
+  showAnswerTimeout = setTimeout(() => {
+    status.textContent = 'Your turn!';
+  }, sequence.length * 600 + 2000);
+});
+
+// Exit button (inside link)
+</script>
+</body>
+</html>

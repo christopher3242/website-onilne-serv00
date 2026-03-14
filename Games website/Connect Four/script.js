@@ -1,138 +1,139 @@
 const rows = 6;
 const columns = 7;
-let board = Array.from({ length: rows }, () => Array(columns).fill(null));
-let currentPlayer = 'red'; // Human player
+
+let board;
+let currentPlayer = 1;
 let isGameActive = true;
 
-const boardElement = document.getElementById('board');
-const restartButton = document.getElementById('restart');
-const exitButton = document.getElementById('exit');
+let playerColors = {1:"red", 2:"yellow"};
+let gameMode = "2p";
 
-// Create the initial board
-function createBoard() {
-  boardElement.innerHTML = '';
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < columns; col++) {
-      const cell = document.createElement('div');
-      cell.classList.add('cell');
-      cell.dataset.row = row;
-      cell.dataset.col = col;
+const boardElement = document.getElementById("board");
+const restartBtn = document.getElementById("restart");
+const modeSelect = document.getElementById("mode");
+const p1Select = document.getElementById("p1color");
+const p2Select = document.getElementById("p2color");
+
+// Initialize board
+function createBoard(){
+  board = Array.from({length:rows}, ()=>Array(columns).fill(null));
+  boardElement.innerHTML="";
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<columns;c++){
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.dataset.row=r;
+      cell.dataset.col=c;
       boardElement.appendChild(cell);
     }
   }
 }
 
-// Handle human move
-function handleCellClick(event) {
-  const col = parseInt(event.target.dataset.col);
-  if (!isGameActive || board[0][col] !== null) return; // Column full or game over
+// Get cell element
+function getCell(r,c){ return boardElement.children[r*columns + c]; }
 
-  // Drop piece
-  for (let row = rows - 1; row >= 0; row--) {
-    if (board[row][col] === null) {
-      placePiece(row, col, currentPlayer);
-      if (checkWinner(row, col)) {
-        alert(`${capitalize(currentPlayer)} wins!`);
-        isGameActive = false;
-      } else {
-        currentPlayer = 'yellow'; // AI turn
-        setTimeout(aiMove, 500);
+// Drop piece
+function dropPiece(col){
+  for(let r=rows-1;r>=0;r--){
+    if(board[r][col]===null){
+      board[r][col]=currentPlayer;
+      const cell=getCell(r,col);
+      cell.classList.add(playerColors[currentPlayer]);
+
+      if(checkWinner(r,col)){
+        setTimeout(()=>alert("Player "+currentPlayer+" wins!"), 10);
+        isGameActive=false;
+        return;
+      }
+      if(isBoardFull()){
+        setTimeout(()=>alert("Draw!"), 10);
+        isGameActive=false;
+        return;
+      }
+
+      switchPlayer();
+      if(gameMode.startsWith("ai") && currentPlayer===2 && isGameActive){
+        setTimeout(aiMove, 400);
       }
       break;
     }
   }
 }
 
-// Place a piece on the board
-function placePiece(row, col, player) {
-  board[row][col] = player;
-  const index = row * columns + col;
-  const cell = boardElement.children[index];
-  cell.classList.add(player);
+function switchPlayer(){ currentPlayer = currentPlayer===1 ? 2 : 1; }
+
+function aiMove(){
+  if(!isGameActive) return;
+  let col;
+  if(gameMode==="ai_easy"){
+    col=getRandomMove();
+  } else if(gameMode==="ai_normal"){
+    col=getBestMove(1)||getRandomMove(); // block player
+  } else if(gameMode==="ai_hard"){
+    col=getBestMove(2)||getBestMove(1)||getRandomMove(); // win or block
+  }
+  dropPiece(col);
 }
 
-// AI move
-function aiMove() {
-  if (!isGameActive) return;
+function getRandomMove(){
+  const available=[];
+  for(let c=0;c<columns;c++) if(board[0][c]===null) available.push(c);
+  return available[Math.floor(Math.random()*available.length)];
+}
 
-  // Simple AI: random available column
-  const availableCols = [];
-  for (let c = 0; c < columns; c++) {
-    if (board[0][c] === null) availableCols.push(c);
-  }
-  if (availableCols.length === 0) return; // Draw
-
-  const col = availableCols[Math.floor(Math.random() * availableCols.length)];
-  for (let row = rows - 1; row >= 0; row--) {
-    if (board[row][col] === null) {
-      placePiece(row, col, currentPlayer);
-      if (checkWinner(row, col)) {
-        alert(`${capitalize(currentPlayer)} wins!`);
-        isGameActive = false;
-      } else {
-        currentPlayer = 'red'; // Human turn
+function getBestMove(player){
+  for(let c=0;c<columns;c++){
+    for(let r=rows-1;r>=0;r--){
+      if(board[r][c]===null){
+        board[r][c]=player;
+        if(checkWinner(r,c)){ board[r][c]=null; return c; }
+        board[r][c]=null;
+        break;
       }
-      break;
     }
   }
+  return null;
 }
 
-// Check for a winner
-function checkWinner(row, col) {
+function isBoardFull(){ return board.every(r=>r.every(c=>c!==null)); }
+
+function checkWinner(row,col){
   const player = board[row][col];
-  if (!player) return false;
-
-  return (
-    checkDirection(row, col, 1, 0, player) || // Horizontal
-    checkDirection(row, col, 0, 1, player) || // Vertical
-    checkDirection(row, col, 1, 1, player) || // Diagonal /
-    checkDirection(row, col, 1, -1, player)   // Diagonal \
-  );
+  return checkDir(row,col,1,0,player)||
+         checkDir(row,col,0,1,player)||
+         checkDir(row,col,1,1,player)||
+         checkDir(row,col,1,-1,player);
 }
 
-// Check in a specific direction
-function checkDirection(row, col, deltaRow, deltaCol, player) {
-  let count = 1;
-
-  // Check forward
-  let r = row + deltaRow;
-  let c = col + deltaCol;
-  while (r >= 0 && r < rows && c >= 0 && c < columns && board[r][c] === player) {
-    count++;
-    r += deltaRow;
-    c += deltaCol;
-  }
-
-  // Check backward
-  r = row - deltaRow;
-  c = col - deltaCol;
-  while (r >= 0 && r < rows && c >= 0 && c < columns && board[r][c] === player) {
-    count++;
-    r -= deltaRow;
-    c -= deltaCol;
-  }
-
-  return count >= 4;
+function checkDir(r,c,dr,dc,player){
+  let count=1, row=r+dr, col=c+dc;
+  while(row>=0 && row<rows && col>=0 && col<columns && board[row][col]===player){count++; row+=dr; col+=dc;}
+  row=r-dr; col=c-dc;
+  while(row>=0 && row<rows && col>=0 && col<columns && board[row][col]===player){count++; row-=dr; col-=dc;}
+  return count>=4;
 }
 
-// Capitalize first letter
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
+// Event listeners
+boardElement.addEventListener("click", e=>{
+  if(!isGameActive) return;
+  if(!e.target.classList.contains("cell")) return;
+  if(currentPlayer!==1 && gameMode.startsWith("ai")) return;
 
-// Restart game
-restartButton.addEventListener('click', () => {
-  board = Array.from({ length: rows }, () => Array(columns).fill(null));
-  currentPlayer = 'red';
-  isGameActive = true;
+  const col=parseInt(e.target.dataset.col);
+  if(board[0][col]!==null) return;
+  dropPiece(col);
+});
+
+restartBtn.addEventListener("click", ()=>{
+  playerColors[1]=p1Select.value;
+  playerColors[2]=p2Select.value;
+  currentPlayer=1;
+  isGameActive=true;
   createBoard();
 });
 
-// Initialize the game
-createBoard();
-
-boardElement.addEventListener('click', (event) => {
-  if (event.target.classList.contains('cell') && currentPlayer === 'red') {
-    handleCellClick(event);
-  }
+modeSelect.addEventListener("change", ()=>{
+  gameMode = modeSelect.value;
 });
+
+createBoard();
