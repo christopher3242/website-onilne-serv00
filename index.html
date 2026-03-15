@@ -1,82 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome xxxsexy</title>
-    <!-- Favicon with base64 data URI -->
-    <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAro/8AAAAAAFX/UgCJUv8A/1LxAGscSwD/ZmkAMFwvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREREREREREREREREREVVVVVVVUREVVEQDMzM1ERVEQiA3czURVUd3d3dzNRFUR2ZmZnM1EVRHZmZmc1URVEdmZmdzURFUR3ZmZzNREVVEd3d3M1ERFURAAzM1UREVVEADM1URERFVVVVVURERERERERERERERERERERERH//wAA//8AAOADAADAAQAAwAEAAIABAACAAQAAgAEAAIADAACAAwAAgAMAAMADAADABwAA4A8AAP//AAD//wAA" rel="icon" type="image/x-icon">
-    <link href="/YOUR_PATH/favicon.ico" rel="icon" type="image/x-icon" />
-    <!-- Include Animate.css -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Welcome xxxsexy</title>
+<!-- Favicon with base64 data URI -->
+<link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAro/8AAAAAAFX/UgCJUv8A/1LxAGscSwD/ZmkAMFwvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREREREREREREREREREVVVVVVVUREVVEQDMzM1ERVEQiA3czURVUd3d3dzNRFUR2ZmZnM1EVRHZmZmc1URVEdmZmdzURFUR3ZmZzNREVVEd3d3M1ERFURAAzM1UREVVEADM1URERFVVVVVURERERERERERERERERERERERH//wAA//8AAOADAADAAQAAwAEAAIABAACAAQAAgAEAAIADAACAAwAAgAMAAMADAADABwAA4A8AAP//AAD//wAA" rel="icon" type="image/x-icon" />
+<link href="/YOUR_PATH/favicon.ico" rel="icon" type="image/x-icon" />
+<!-- Include Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+    }
 
-        /* Fullscreen Overlay */
-        .overlay {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh; /* Full height of the viewport */
-            background: linear-gradient(216deg,rgb(95, 35, 50) 0%, rgb(163, 37, 132) 100%);
-            position: fixed; /* Cover entire viewport */
-            top: 0; /* Start at the very top */
-            left: 0; /* Start at the very left */
-            width: 100%; /* Full width */
-            z-index: 999; /* On top of everything else */
-            color: white; /* Text color */
-            text-align: center; /* Center the text */
-        }
+    /* Fullscreen Overlay */
+    .overlay {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* Full height of the viewport */
+        background: linear-gradient(200deg,rgb(68, 18, 31) 0%, rgb(47, 19, 66)100%);
+        position: fixed; /* Cover entire viewport */
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 999;
+        color: white;
+        text-align: center;
+    }
 
-        .loading-message {
-            padding: 20px;
-            background-color: rgba(180, 103, 170, 0.966); /* Semi-transparent background */
-            border-radius: 10px; /* Rounded corners */
-            box-shadow: 0 0 20px rgba(255, 45, 108, 0.91); /* Shadow for depth */
-        }
+    .loading-message {
+        padding: 20px;
+        background-color: rgba(129, 37, 148, 0.966);
+        border-radius: 10px;
+        box-shadow: 0 0 25px rgba(241, 56, 102, 0.91);
+        max-width: 400px;
+        width: 80%;
+    }
 
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px); /* Start 50px lower */
-                opacity: 0; /* Fully transparent */
-            }
-            to {
-                transform: translateY(0); /* End at original position */
-                opacity: 1; /* Fully opaque */
-            }
+    @keyframes slideUp {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
         }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
 
-        .button {
-            margin-top: 20px;
-            padding: 20px 20px;
-            background-color: #b405ab; /* Neon-like pink color */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
+    .button {
+        margin-top: 20px;
+        padding: 15px 25px;
+        background-color: #be3278;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s, transform 0.3s;
+    }
 
-        .button:hover {
-            background-color: #6e2865; /* Lighter pink on hover */
-            transform: scale(1.05); /* Slight scale on hover */
-        }
-    </style>
-  </head>
-  <body>
-    <div class="overlay">
-      <div class="loading-message animate__animated animate__jackInTheBox">
-        <h1>Welcome xxxsexy</h1>
-        <p>Do you want a link? Of course! Choose what you want. We're
-          open today, available 24/7.</p>
-        <a moz-do-not-send="true" href="your%20favorite.html">
-          <button class="button" onclick="handleClick()">Click me</button>
-        </a>
-      </div>
+    .button:hover {
+        background-color: #771d4a;
+        transform: scale(1.05);
+    }
+
+    /* Progress Bar Container */
+    .progress-container {
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        margin-top: 20px;
+        height: 20px;
+        overflow: hidden;
+    }
+
+    /* Progress Bar Fill */
+    .progress-bar {
+        height: 100%;
+        width: 0%;
+        background-color: #340e4e;
+        transition: width 0.05s linear;
+    }
+
+    /* Loading message during progress */
+    #loading-text {
+        margin-top: 10px;
+        font-size: 1rem;
+        display: none;
+    }
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+  <div class="loading-message animate__animated animate__jackInTheBox" id="message-box">
+    <h1>Welcome xxxsexy</h1>
+    <p>Do you want a link? Of course! Choose what you want. We're open today, available 24/7.</p>
+    <a href="your%20favorite.html" id="link">
+      <button class="button" id="clickButton">Click me</button>
+    </a>
+    <!-- Progress bar and loading text -->
+    <div class="progress-container" id="progressContainer" style="display:none;">
+      <div class="progress-bar" id="progressBar"></div>
     </div>
-  </body>
+    <div id="loading-text">Loading, please wait...</div>
+  </div>
+</div>
+
+<script>
+  const button = document.getElementById('clickButton');
+  const progressBar = document.getElementById('progressBar');
+  const progressContainer = document.getElementById('progressContainer');
+  const loadingText = document.getElementById('loading-text');
+
+  button.addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent default to control timing
+
+    // Show progress bar and loading text
+    progressContainer.style.display = 'block';
+    loadingText.style.display = 'block';
+
+    // Reset progress bar
+    progressBar.style.width = '0%';
+
+    let progress = 0;
+    const duration = 6000; // 5 seconds
+    const intervalTime = 60; // update every 50ms
+    const totalSteps = duration / intervalTime;
+    let currentStep = 0;
+
+    const interval = setInterval(() => {
+      currentStep++;
+      progress = (currentStep / totalSteps) * 100;
+      progressBar.style.width = progress + '%';
+
+      if (currentStep >= totalSteps) {
+        clearInterval(interval);
+        // After loading completes, redirect to the link
+        window.location.href = 'your%20favorite.html';
+      }
+    }, intervalTime);
+  });
+</script>
+</body>
 </html>
