@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blackjack Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #7a7a7a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .game-area {
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      background-color: #e0e0e0;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .rectangle {
+      width: 100%;
+      background-color: #161f4e;
+      border-radius: 5px;
+      color: white;
+      padding: 15px;
+      box-sizing: border-box;
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .rectangle p {
+      margin: 10px 0;
+      word-wrap: break-word;
+    }
+
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button {
+      flex: 1 1 45%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #start-game {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    #hit {
+      background-color: #2196F3;
+      color: white;
+    }
+
+    #stand {
+      background-color: #FF9800;
+      color: white;
+    }
+
+    #double {
+      background-color: #9c27b0;
+      color: white;
+    }
+
+    #split {
+      background-color: #00bcd4;
+      color: white;
+    }
+
+    #exit-game {
+      background-color: #f44336;
+      color: white;
+    }
+
+    button:hover:enabled {
+      opacity: 0.8;
+    }
+
+    /* Responsive typography */
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 1.5em;
+      }
+      button {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="game-area">
+  <h1>Blackjack Game</h1>
+  <div class="rectangle">
+    <p id="player-hand">Player's Hand: </p>
+    <p id="player-score">Score: 0</p>
+    <p id="dealer-hand">Dealer's Hand: </p>
+    <p id="dealer-score">Score: 0</p>
+  </div>
+  <div class="button-container">
+    <button id="start-game">Start Game</button>
+    <button id="hit" disabled>Hit</button>
+    <button id="stand" disabled>Stand</button>
+    <button id="double" disabled>Double Down</button>
+    <button id="split" disabled>Split</button>
+    <a href="../games.html" style="text-decoration: none;">
+      <button id="exit-game">Exit Game</button>
+    </a>
+  </div>
+</div>
+
+<script>
+  let deck = [];
+  let playerHand = [];
+  let dealerHand = [];
+  let playerScore = 0;
+  let dealerScore = 0;
+  let isGameActive = false;
+  let canSplit = false;
+  let splitHands = [];
+  let activeHandIndex = 0;
+
+  const suits = ['♥', '♦', '♣', '♠'];
+  const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+  function createDeck() {
+    deck = [];
+    for (let suit of suits) {
+      for (let value of values) {
+        deck.push(`${value}${suit}`);
+      }
+    }
+    shuffle(deck);
+  }
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function dealCard() {
+    return deck.pop();
+  }
+
+  function startGame() {
+    createDeck();
+    playerHand = [dealCard(), dealCard()];
+    dealerHand = [dealCard(), dealCard()];
+    playerScore = calculateScore(playerHand);
+    dealerScore = calculateScore(dealerHand);
+    isGameActive = true;
+    canSplit = false;
+    splitHands = [];
+    activeHandIndex = 0;
+
+    document.getElementById('hit').disabled = false;
+    document.getElementById('stand').disabled = false;
+    document.getElementById('double').disabled = false;
+    document.getElementById('split').disabled = true; // Only if possible
+
+    updateDisplay();
+
+    // Check for split possibility
+    if (playerHand.length === 2) {
+      const val1 = playerHand[0].slice(0, -1);
+      const val2 = playerHand[1].slice(0, -1);
+      if (val1 === val2) {
+        canSplit = true;
+        document.getElementById('split').disabled = false;
+      }
+    }
+  }
+
+  function calculateScore(hand) {
+    let score = 0;
+    let aceCount = 0;
+    for (let card of hand) {
+      const cardValue = card.slice(0, -1);
+      if (values.includes(cardValue)) {
+        if (cardValue === 'A') {
+          aceCount++;
+          score += 11;
+        } else if (['K', 'Q', 'J'].includes(cardValue)) {
+          score += 10;
+        } else {
+          score += parseInt(cardValue);
+        }
+      }
+    }
+    while (score > 21 && aceCount > 0) {
+      score -= 10;
+      aceCount--;
+    }
+    return score;
+  }
+
+  function updateDisplay() {
+    // Display current hand (active or split)
+    const currentHand = playerHand;
+    document.getElementById('player-hand').innerText = `Player's Hand: ${currentHand.join(', ')}`;
+    document.getElementById('player-score').innerText = `Score: ${calculateScore(currentHand)}`;
+
+    // Dealer's hand
+    document.getElementById('dealer-hand').innerText = `Dealer's Hand: ${dealerHand.join(', ')}`;
+    document.getElementById('dealer-score').innerText = `Score: ${calculateScore(dealerHand)}`;
+  }
+
+  function handleEndTurn() {
+    // Dealer's turn
+    while (dealerScore < 17) {
+      dealerHand.push(dealCard());
+      dealerScore = calculateScore(dealerHand);
+    }
+    isGameActive = false;
+    document.getElementById('hit').disabled = true;
+    document.getElementById('stand').disabled = true;
+    document.getElementById('double').disabled = true;
+    document.getElementById('split').disabled = true;
+    updateDisplay();
+    determineWinner();
+  }
+
+  function determineWinner() {
+    if (dealerScore > 21) {
+      alert("Dealer busts! You win!");
+    } else if (playerScore > dealerScore) {
+      alert("You win!");
+    } else if (playerScore < dealerScore) {
+      alert("Dealer wins.");
+    } else {
+      alert("It's a tie!");
+    }
+  }
+
+  function hit() {
+    if (!isGameActive) return;
+    playerHand.push(dealCard());
+    playerScore = calculateScore(playerHand);
+    updateDisplay();
+    if (playerScore > 21) {
+      alert("Bust! You lose.");
+      isGameActive = false;
+      disableButtons();
+    }
+  }
+
+  function stand() {
+    if (!isGameActive) return;
+    handleEndTurn();
+  }
+
+  function doubleDown() {
+    if (!isGameActive) return;
+    // Double the bet (not implemented, just logic)
+    playerHand.push(dealCard());
+    playerScore = calculateScore(playerHand);
+    updateDisplay();
+    handleEndTurn();
+  }
+
+  function split() {
+    if (!canSplit || !isGameActive) return;
+    // Create two hands
+    const firstCard = playerHand[0];
+    const secondCard = playerHand[1];
+    playerHand = [firstCard];
+    splitHands = [[secondCard]];
+
+    // Deal one additional card to each
+    playerHand.push(dealCard());
+    splitHands[0].push(dealCard());
+
+    // For simplicity, just handle first hand
+    // You could implement full split logic with switching between hands
+    alert("Split! Now playing first hand.");
+    playerScore = calculateScore(playerHand);
+    updateDisplay();
+
+    // Disable split after one split for simplicity
+    document.getElementById('split').disabled = true;
+  }
+
+  function disableButtons() {
+    document.getElementById('hit').disabled = true;
+    document.getElementById('stand').disabled = true;
+    document.getElementById('double').disabled = true;
+    document.getElementById('split').disabled = true;
+  }
+
+  document.getElementById('start-game').addEventListener('click', startGame);
+  document.getElementById('hit').addEventListener('click', hit);
+  document.getElementById('stand').addEventListener('click', stand);
+  document.getElementById('double').addEventListener('click', doubleDown);
+  document.getElementById('split').addEventListener('click', split);
+</script>
+</body>
+</html>
