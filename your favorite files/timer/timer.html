@@ -14,22 +14,24 @@
     <div id="countdownDisplay">
       <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
     </div>
-    <div id="totalTimeDisplay" style="margin-top:10px;font-size:16px;">Total: 00:00:00</div>
+    <div id="totalTimeDisplay" class="total-time">Total: 00:00:00</div>
   </div>
   <div class="input-container">
     <input id="inputHours" type="number" placeholder="Hours" min="0" />
     <input id="inputMinutes" type="number" placeholder="Minutes" min="0" max="59" />
     <input id="inputSeconds" type="number" placeholder="Seconds" min="0" max="59" />
-    <button id="startButton">Start Countdown</button>
+  </div>
+  <div class="buttons">
+    <button id="startButton">Start</button>
     <button id="pauseButton" class="hidden">Pause</button>
-    <button id="stopButton" class="hidden">Stop Countdown</button>
+    <button id="stopButton" class="hidden">Stop</button>
+    <button id="exitButton">Exit</button>
   </div>
   <div id="message" class="message hidden">Time's Up!</div>
-  <button id="exitButton">Exit</button>
 </div>
 
 <!-- Audio alert for countdown end, looping -->
-<audio id="alarmSound" src="https://gfxsounds.com/wp-content/uploads/2024/09/Peculier-clock-massive-ticking-loop.mp3?_=1" preload="auto" loop></audio>
+<audio id="alarmSound" src="https://cdn.uppbeat.io/audio-files/8a0ead3ea7dbf25377a13251625e6d3d/b5551c3ef74a67f30264be5fe84ab0a4/bd1cf5b358146e6209d3b7db3295c6d1/STREAMING-digital-timer-beeping-epic-stock-media-1-00-08.mp3" preload="auto" loop></audio>
 
 <script src="script.js"></script>
 

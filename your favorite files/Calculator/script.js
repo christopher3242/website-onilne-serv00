@@ -1,29 +1,23 @@
 const display = document.getElementById('display');
+const historyDiv = document.getElementById('history');
 
 const themes = {
   1: { background: 'linear-gradient(135deg, #ece9e6, #ffffff)', color: '#333' },
-  2: { background: 'linear-gradient(90deg, #4A4066, #002BFF)', color: '#fff' },
-  3: { background: '#222', color: '#eee' }
+  2: { background: 'linear-gradient(90deg, #4A4066, #002BFF)', color: '#000000' },
+  3: { background: '#222', color: '#9b7818' } // Will be overridden with random colors
 };
-
-function getRandomColor() {
-  const r = Math.floor(Math.random() * 256);
-  const g = Math.floor(Math.random() * 256);
-  const b = Math.floor(Math.random() * 256);
-  return `rgb(${r}, ${g}, ${b})`;
-}
 
 function setTheme(themeNumber) {
   const theme = themes[themeNumber];
   if (theme.background.startsWith('linear-gradient')) {
     document.body.style.background = theme.background;
   } else {
-    document.body.style.background = `linear-gradient(135deg, ${getRandomColor()}, ${getRandomColor()})`;
+    document.body.style.background = theme.background;
   }
   document.body.style.color = theme.color;
 }
 
-// Set initial theme
+// Initialize default theme
 setTheme(1);
 
 function appendToDisplay(value) {
@@ -67,9 +61,24 @@ function calculateResult() {
                .replace(/log\(/g, 'Math.log(')
                .replace(/sqrt\(/g, 'Math.sqrt(')
                .replace(/\^/g, '**');
+
     const result = eval(expr);
+    addToHistory(expr, result);
     display.value = result;
   } catch (e) {
     display.value = 'Error';
+  }
+}
+
+function addToHistory(expr, result) {
+  const entry = document.createElement('div');
+  entry.textContent = `${expr} = ${result}`;
+  entry.onclick = () => {
+    display.value = expr;
+  };
+  if (historyDiv.firstChild) {
+    historyDiv.insertBefore(entry, historyDiv.firstChild);
+  } else {
+    historyDiv.appendChild(entry);
   }
 }
