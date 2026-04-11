@@ -6,12 +6,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flipbook with Fixed Exit Button</title>
   <style>
+    /* Reset default margins and paddings */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Style for the body */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+    }
+
+    /* Header style */
+    h1 {
+      text-align: center;
+      margin: 20px 10px 10px 10px;
+      font-size: 24px;
+      color: #333;
+    }
+
     /* Style for the flipbook container */
     #flipbook-container {
       width: 100%;
       max-width: 800px;
-      margin: auto;
-      position: relative;
+      margin: 0 auto 20px auto;
+      padding: 0 10px;
     }
 
     /* Style for the fixed exit button */
@@ -22,16 +43,16 @@
       background-color: rgba(255, 0, 0, 0.8);
       border: none;
       color: white;
-      padding: 12px 20px; /* Slightly larger padding for touch devices */
+      padding: 12px 20px; /* Larger padding for touch devices */
       cursor: pointer;
       font-size: 16px;
-      z-index: 1000; /* Ensure it stays on top */
+      z-index: 1000; /* Stay on top */
       border-radius: 4px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       transition: background-color 0.3s, transform 0.2s;
     }
 
-    /* Optional hover and active states for PC */
+    /* Hover and active states for PC */
     #exitButton:hover {
       background-color: rgba(255, 0, 0, 1);
       transform: scale(1.05);
@@ -43,11 +64,20 @@
         padding: 10px 15px;
         font-size: 14px;
       }
+
+      h1 {
+        font-size: 20px;
+        margin: 15px 10px 10px 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Fixed Exit Button -->
+
+  <!-- Header Title -->
+  <h1>Flipbook</h1>
+
+  <!-- Fixed Exit Button wrapped in a link -->
   <a href="../../your%20favorite.html">
     <button id="exitButton">Exit</button>
   </a>
@@ -55,11 +85,12 @@
   <!-- Flipbook Embed -->
   <div id="flipbook-container">
     <iframe
-      src="https://heyzine.com/flip-book/3380fed0d1.html"
+      src="https://heyzine.com/flip-book/552f87e0bb.html"
       style="border:none;"
       width="100%"
       height="600"
     ></iframe>
   </div>
+
 </body>
 </html>
