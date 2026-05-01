@@ -7,112 +7,113 @@
       initial-scale=1.0">
     <title>ISO</title>
     <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    color: #333;
-    /* Blue gradient background */
-    background: linear-gradient(135deg, #6cc7ff, #00aeff);
-    position: relative;
-  }
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  color: #333;
+  /* Blue gradient background */
+  background: linear-gradient(135deg, #6cc7ff, #00aeff);
+  position: relative;
+}
 
-  /* Exit Button styling */
-  .exit-btn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #fa3b4f; /* Bootstrap red */
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s, transform 0.2s;
-    z-index: 1000;
-    text-decoration: none;
-  }
+/* Exit Button styling */
+.exit-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #fa3b4f; /* Bootstrap red */
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s, transform 0.2s;
+  z-index: 1000;
+  text-decoration: none;
+}
 
-  .exit-btn:hover {
-    background-color: #c82333;
-    transform: scale(1.05);
-  }
+.exit-btn:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}
 
-  /* Container styling */
+/* Container styling */
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  margin-top: 60px; /* space for fixed button */
+}
+
+/* Header styling */
+h1 {
+  text-align: center;
+  color: #000; /* Black for contrast */
+  margin-bottom: 20px;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+td {
+  padding: 10px;
+  vertical-align: top;
+  border: 1px solid #ddd;
+  word-wrap: break-word;
+}
+
+/* Spinning image styling */
+.spin {
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+}
+
+.spin img {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+  animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Footer styling */
+.footer {
+  margin-top: 30px;
+  text-align: right;
+  font-style: italic;
+  font-size: 1em;
+  color: #000; /* Black for contrast on light background */
+}
+
+/* Responsive adjustments */
+@media(max-width: 768px){
   .container {
-    max-width: 700px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 20px 30px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    margin-top: 60px; /* space for fixed button */
+    padding: 10px 20px;
   }
-
-  /* Header styling */
-  h1 {
-    text-align: center;
-    color: #000; /* Black for contrast */
-    margin-bottom: 20px;
-  }
-
-  /* Table styling */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-
-  td {
-    padding: 10px;
-    vertical-align: top;
-    border: 1px solid #ddd;
-  }
-
-  /* Spinning image styling */
   .spin {
-    display: inline-block;
-    width: 171px;
-    height: 171px;
+    width: 120px;
+    height: 120px;
   }
-
-  .spin img {
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-    object-fit: cover;
-    animation: spin 4s linear infinite;
+  /* Make images in links responsive */
+  a img {
+    max-width: 100%;
+    height: auto;
   }
-
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  /* Footer styling */
-  .footer {
-    margin-top: 30px;
-    text-align: right;
-    font-style: italic;
-    font-size: 1em;
-    color: #000; /* Black for contrast on light background */
-  }
-
-  /* Responsive adjustments */
-  @media(max-width: 768px){
-    .container {
-      padding: 10px 20px;
-    }
-    .spin {
-      width: 150px;
-      height: 150px;
-    }
-    /* Make images in links responsive */
-    a img {
-      max-width: 100%;
-      height: auto;
-    }
-  }
+}
 </style>
   </head>
   <body>
@@ -125,29 +126,25 @@
           <tr>
             <td valign="top" align="center">
               <div class="spin"> <img src="Disc1.png" alt="DVD"
-                  width="500" height="500"> </div>
+                  width="150" height="150"> </div>
             </td>
             <td valign="top"> <strong>Name :</strong> OG Family 2026<br>
               <br>
               Download Link:<br>
               <br>
               <div style="text-align:center;"> <a
-                  href="https://mixdrop.top/f/z1z8ojx6agg6rmk"> </a><a
-                  href="https://mixdrop.top/f/q1v7ndxgfx8wkj3"><img
+                  href="https://mixdrop.top/f/q1v7ndxgfx8wkj3"> <img
                     src="MixDrop.png" alt="MixDrop" width="150"
-                    height="44" border="0"></a> <a
-                  href="https://pixeldrain.com/u/VqkYZRiU"> </a><a
-                  href="https://pixeldrain.com/u/VqkYZRiU"><img
+                    height="44" border="0"> </a> <a
+                  href="https://pixeldrain.com/u/VqkYZRiU"> <img
                     src="pixeldrain.png" alt="Pixeldrain" width="168"
-                    height="43" border="0"></a><a
-                  href="https://pixeldrain.com/u/VqkYZRiU">&nbsp;</a> <a
-                  href="https://pixeldrain.com/u/VqkYZRiU"> </a> </div>
+                    height="43" border="0"> </a> </div>
             </td>
           </tr>
           <tr>
             <td valign="top" align="center">
               <div class="spin"> <img src="Disc2.png" alt=""
-                  width="500" height="500"> </div>
+                  width="150" height="150"> </div>
             </td>
             <td valign="top"> <strong>Name :</strong> MixPlayer Volume
               1<br>
@@ -155,42 +152,39 @@
               Download Link:<br>
               <br>
               <div style="text-align:center;"> <a
-                  href="https://mixdrop.top/f/369og8nqbmz6deq"> </a><a
-                  href="https://mixdrop.top/f/369og8nqbmz6deq"><img
-src="file:///C:/Users/Christopher/Desktop/Goofy%20Ur%20Ahh!/beta%202/ISO/MixDrop.png"
-                    alt="" width="150" height="44" border="0"></a> <a
-                  href="https://pixeldrain.com/u/RduUATPS"> </a><a
-                  href="https://pixeldrain.com/u/RduUATPS"><img
-src="file:///C:/Users/Christopher/Desktop/Goofy%20Ur%20Ahh!/beta%202/ISO/pixeldrain.png"
-                    alt="" width="176" height="43" border="0"></a><a
-                  href="https://pixeldrain.com/u/VqkYZRiU">&nbsp;</a> </div>
+                  href="https://mixdrop.top/f/369og8nqbmz6deq"> <img
+                    src="MixDrop.png" alt="" width="150" height="44"
+                    border="0"> </a> <a
+                  href="https://pixeldrain.com/u/RduUATPS"> <img
+                    src="pixeldrain.png" alt="" width="176" height="43"
+                    border="0"> </a> </div>
             </td>
           </tr>
           <tr>
             <td valign="top" align="center">
-              <div class="spin"> <img src="DvdplayerVolume1.png" alt=""
-                  width="500" height="500"> </div>
+              <div class="spin"> <img src="Disc3.png" alt=""
+                  width="150" height="150"> </div>
             </td>
-            <td valign="top"> <strong>Name :</strong> ????<br>
+            <td valign="top"> <strong>Name :</strong> Dvdtvplayer vol 1<br>
               <br>
               Download Link:<br>
               <br>
-              <a href="https://mxdrop.to/f/03zzmrr7ak7xx9d"> <img
-src="file:///C:/Users/Christopher/Desktop/Goofy%20Ur%20Ahh!/beta%202/ISO/MixDrop.png"
-                  alt="" style="border:0;" width="150" height="44"> </a>
-              <a href="https://pixeldrain.com/u/EDqyXZ8k"> <img
-src="file:///C:/Users/Christopher/Desktop/Goofy%20Ur%20Ahh!/beta%202/ISO/pixeldrain.png"
-                  alt="" style="border:0;" width="176" height="43"></a><a
-                href="https://pixeldrain.com/u/VqkYZRiU"> </a><a
-                href="https://gofile.io/d/si6QxQ"><img src="gofile.png"
-                  alt="https://gofile.io/d/si6QxQ" width="168"
-                  height="43" border="0"></a> <a
-                href="https://pixeldrain.com/u/EDqyXZ8k"> </a> </td>
+              <div style="text-align:center;"> <a
+                  href="https://mixdrop.top/f/gj0d9qj6bw4m9qw"> </a><a
+                  href="https://mixdrop.top/f/gj0d9qj6bw4m9qw"><img
+                    src="MixDrop.png" alt="" width="150" height="44"
+                    border="0"></a> <a
+                  href="https://pixeldrain.com/u/qKBf8YvC"> </a><a
+                  href="https://pixeldrain.com/u/qKBf8YvC"><img
+                    src="pixeldrain.png" alt="" width="176" height="43"
+                    border="0"></a>&nbsp;<a
+                  href="https://gofile.io/d/si6QxQ"> </a> </div>
+            </td>
           </tr>
         </tbody>
       </table>
-      <div class="footer"> <u><b><font color="#000000">( Dvd, cd and
-              More etc) !!! </font></b></u> </div>
+      <div class="footer"><u><b><font color="#000000">( Dvd, cd and More
+              etc) !!! </font></b></u></div>
     </div>
   </body>
 </html>
