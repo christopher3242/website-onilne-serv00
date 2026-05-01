@@ -53,9 +53,11 @@
       gap: 10px;
     }
 
+    /* Individual page styles, hidden by default */
     #page1,
     #page2,
-    #page3 {
+    #page3,
+    #page4 {
       display: none;
     }
 
@@ -149,18 +151,29 @@
       <a href="Slot%20Machine/Slot%20machine.html">Slot Machine</a>
       <a href="Snake%20games/snake%20game.html">Snake Games</a>
       <a href="Tic-Tac-Toe%20Challenge/tictactoe.html">Tic-Tac-Toe</a>
-	    <a href="Blackjack/Blackjack.html">Blackjack</a>
+      <a href="Blackjack/Blackjack.html">Blackjack</a>
       <a href="Crossword/Crossword.html">Crossword</a>
+      <a href="Baccarat/Baccarat.html">Baccarat</a>
+      <a href="Flag%20Quiz/Flag%20Quiz.html">Flag Quiz</a>
+      <a href="Texas%20Hold'em/Texas%20Hold'em.html">Texas Hold'em</a>
     </div>
   </div>
   
+  <!-- PAGE 4 -->
+  <div class="pages" id="page4">
+    <h2>Page 4</h2>
+    <div class="links">
+      <a href="Texas%20Hold'em/Texas%20Hold'em.html">None button</a>
+    </div>
+  </div>
+      
   <div class="exit-container">
     <a href="../your%20favorite.html" class="exit-link">Exit</a>
   </div>
   
   <script>
     let currentPage = 1;
-    const totalPages = 3;
+    const totalPages = 4;
 
     function showPage(page) {
       for (let i = 1; i <= totalPages; i++) {

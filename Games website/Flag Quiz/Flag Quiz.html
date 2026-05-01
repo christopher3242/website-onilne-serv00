@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Flag Quiz</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+  #quiz-container {
+    background: #fff;
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  #question {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+  #flag-img {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin: 10px auto;
+    border: 2px solid #ccc;
+  }
+  #buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  button {
+    padding: 10px 15px;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background: #3498db;
+    color: #fff;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #2980b9;
+  }
+  #score {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+  }
+  #answer-text {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 1.1em;
+    display: none;
+    font-weight: bold;
+  }
+  .exit-link {
+    display: inline-block;
+    margin-bottom: 15px;
+    text-decoration: none;
+    color: #e74c3c;
+    font-weight: bold;
+  }
+  .exit-link:hover {
+    text-decoration: underline;
+  }
+  #show-answer-btn, #next-btn, #restart-btn {
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+  }
+  #show-answer-btn {
+    background-color: #2ecc71;
+  }
+  #show-answer-btn:hover {
+    background-color: #27ae60;
+  }
+  #next-btn {
+    background-color: #f39c12;
+  }
+  #next-btn:hover {
+    background-color: #e67e22;
+  }
+  #restart-btn {
+    background-color: #e67e22;
+  }
+  #restart-btn:hover {
+    background-color: #d35400;
+  }
+</style>
+</head>
+<body>
+
+<h1>Flag Quiz</h1>
+<a href="../games.html" class="exit-link">Exit</a>
+
+<div id="quiz-container">
+  <div id="question"></div>
+  <img id="flag-img" src="" alt="Country Flag"/>
+  <div id="buttons"></div>
+  <button id="show-answer-btn">Show Answer</button>
+  <button id="next-btn">Next</button>
+  <button id="restart-btn">Restart Quiz</button>
+  <div id="answer-text"></div>
+  <div id="score"></div>
+</div>
+
+<script>
+const questions = [
+  { country: "United States", flag: "https://flagcdn.com/us.svg" },
+  { country: "Canada", flag: "https://flagcdn.com/ca.svg" },
+  { country: "Germany", flag: "https://flagcdn.com/de.svg" },
+  { country: "France", flag: "https://flagcdn.com/fr.svg" },
+  { country: "China", flag: "https://flagcdn.com/cn.svg" },
+  { country: "South Korea", flag: "https://flagcdn.com/kr.svg" },
+  { country: "Argentina", flag: "https://flagcdn.com/ar.svg" },
+  { country: "South Africa", flag: "https://flagcdn.com/za.svg" },
+  { country: "Greece", flag: "https://flagcdn.com/gr.svg" },
+  { country: "Portugal", flag: "https://flagcdn.com/pt.svg" },
+  { country: "Netherlands", flag: "https://flagcdn.com/nl.svg" },
+  { country: "Sweden", flag: "https://flagcdn.com/se.svg" },
+  { country: "Norway", flag: "https://flagcdn.com/no.svg" },
+  { country: "Kenya", flag: "https://flagcdn.com/ke.svg" },
+  { country: "Turkey", flag: "https://flagcdn.com/tr.svg" },
+  { country: "Saudi Arabia", flag: "https://flagcdn.com/sa.svg" },
+  { country: "Egypt", flag: "https://flagcdn.com/eg.svg" },
+  { country: "Belgium", flag: "https://flagcdn.com/be.svg" },
+  { country: "Switzerland", flag: "https://flagcdn.com/ch.svg" },
+  { country: "Austria", flag: "https://flagcdn.com/at.svg" },
+  { country: "Poland", flag: "https://flagcdn.com/pl.svg" },
+  { country: "Czech Republic", flag: "https://flagcdn.com/cz.svg" },
+  { country: "Hungary", flag: "https://flagcdn.com/hu.svg" },
+  { country: "Ireland", flag: "https://flagcdn.com/ie.svg" },
+  { country: "New Zealand", flag: "https://flagcdn.com/nz.svg" },
+  { country: "Singapore", flag: "https://flagcdn.com/sg.svg" },
+  { country: "Thailand", flag: "https://flagcdn.com/th.svg" },
+  { country: "South Sudan", flag: "https://flagcdn.com/ss.svg" },
+  { country: "Colombia", flag: "https://flagcdn.com/co.svg" },
+  { country: "Peru", flag: "https://flagcdn.com/pe.svg" },
+  { country: "Chile", flag: "https://flagcdn.com/cl.svg" },
+  { country: "Japan", flag: "https://flagcdn.com/jp.svg" },
+  { country: "Brazil", flag: "https://flagcdn.com/br.svg" },
+  { country: "Syria", flag: "https://flagcdn.com/sy.svg" },
+  { country: "India", flag: "https://flagcdn.com/in.svg" },
+  { country: "Australia", flag: "https://flagcdn.com/au.svg" },
+  { country: "Italy", flag: "https://flagcdn.com/it.svg" },
+  { country: "Mexico", flag: "https://flagcdn.com/mx.svg" },
+  { country: "United Kingdom", flag: "https://flagcdn.com/gb.svg" },
+  { country: "Russia", flag: "https://flagcdn.com/ru.svg" },
+  { country: "Venezuela", flag: "https://flagcdn.com/ve.svg" },
+  { country: "Malaysia", flag: "https://flagcdn.com/my.svg" },
+  { country: "Indonesia", flag: "https://flagcdn.com/id.svg" },
+  { country: "Philippines", flag: "https://flagcdn.com/ph.svg" },
+  { country: "Vietnam", flag: "https://flagcdn.com/vn.svg" },
+  { country: "Pakistan", flag: "https://flagcdn.com/pk.svg" },
+  { country: "Morocco", flag: "https://flagcdn.com/ma.svg" },
+  { country: "Nigeria", flag: "https://flagcdn.com/ng.svg" },
+  { country: "Ethiopia", flag: "https://flagcdn.com/et.svg" },
+  { country: "Israel", flag: "https://flagcdn.com/il.svg" },
+  { country: "Bangladesh", flag: "https://flagcdn.com/bd.svg" },
+  { country: "Sri Lanka", flag: "https://flagcdn.com/lk.svg" },
+  { country: "Nepal", flag: "https://flagcdn.com/np.svg" },
+  { country: "Afghanistan", flag: "https://flagcdn.com/af.svg" },
+  { country: "Kazakhstan", flag: "https://flagcdn.com/kz.svg" },
+  { country: "Uzbekistan", flag: "https://flagcdn.com/uz.svg" },
+  { country: "Tajikistan", flag: "https://flagcdn.com/tj.svg" },
+  { country: "Kyrgyzstan", flag: "https://flagcdn.com/kg.svg" },
+  { country: "Laos", flag: "https://flagcdn.com/la.svg" },
+  { country: "Myanmar", flag: "https://flagcdn.com/mm.svg" },
+  { country: "Cambodia", flag: "https://flagcdn.com/kh.svg" },
+  { country: "Mongolia", flag: "https://flagcdn.com/mn.svg" },
+  { country: "North Korea", flag: "https://flagcdn.com/kp.svg" },
+  { country: "Brunei", flag: "https://flagcdn.com/bn.svg" },
+  { country: "Timor-Leste", flag: "https://flagcdn.com/tl.svg" },
+  { country: "Fiji", flag: "https://flagcdn.com/fj.svg" },
+  { country: "Papua New Guinea", flag: "https://flagcdn.com/pg.svg" },
+  { country: "Solomon Islands", flag: "https://flagcdn.com/sb.svg" },
+  { country: "Vanuatu", flag: "https://flagcdn.com/vu.svg" },
+  // European countries
+  { country: "Iceland", flag: "https://flagcdn.com/is.svg" },
+  { country: "Luxembourg", flag: "https://flagcdn.com/lu.svg" },
+  { country: "Croatia", flag: "https://flagcdn.com/hr.svg" },
+  { country: "Slovakia", flag: "https://flagcdn.com/sk.svg" },
+  { country: "Slovenia", flag: "https://flagcdn.com/si.svg" },
+  { country: "Serbia", flag: "https://flagcdn.com/rs.svg" },
+  { country: "Bulgaria", flag: "https://flagcdn.com/bg.svg" },
+  { country: "Romania", flag: "https://flagcdn.com/ro.svg" },
+  { country: "Ukraine", flag: "https://flagcdn.com/ua.svg" },
+  { country: "Belarus", flag: "https://flagcdn.com/by.svg" },
+  { country: "Estonia", flag: "https://flagcdn.com/ee.svg" },
+  { country: "Latvia", flag: "https://flagcdn.com/lv.svg" },
+  { country: "Lithuania", flag: "https://flagcdn.com/lt.svg" },
+  { country: "Albania", flag: "https://flagcdn.com/al.svg" },
+  { country: "North Macedonia", flag: "https://flagcdn.com/mk.svg" },
+  { country: "Montenegro", flag: "https://flagcdn.com/me.svg" },
+  { country: "Bosnia and Herzegovina", flag: "https://flagcdn.com/ba.svg" },
+  { country: "San Marino", flag: "https://flagcdn.com/sm.svg" },
+  { country: "Malta", flag: "https://flagcdn.com/mt.svg" },
+  // Additional countries
+  { country: "Bhutan", flag: "https://flagcdn.com/bt.svg" },
+  { country: "Nepal", flag: "https://flagcdn.com/np.svg" },
+  { country: "Malawi", flag: "https://flagcdn.com/mw.svg" }
+];
+
+let score = 0;
+let currentQuestion = {};
+
+const questionElement = document.getElementById("question");
+const flagImage = document.getElementById("flag-img");
+const buttonsContainer = document.getElementById("buttons");
+const scoreElement = document.getElementById("score");
+const answerText = document.getElementById("answer-text");
+const showAnswerBtn = document.getElementById("show-answer-btn");
+const nextBtn = document.getElementById("next-btn");
+const restartBtn = document.getElementById("restart-btn");
+
+// Function to shuffle array
+function shuffleArray(array) {
+  for (let i = array.length -1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i +1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+// Generate a question
+function generateQuestion() {
+  currentQuestion = questions[Math.floor(Math.random() * questions.length)];
+  questionElement.textContent = "Which country's flag is this?";
+  flagImage.src = currentQuestion.flag;
+  answerText.style.display = "none"; // hide answer
+  answerText.textContent = "";
+}
+
+function generateOptions() {
+  // prepare options
+  const options = [currentQuestion.country];
+  const otherCountries = questions.filter(q => q.country !== currentQuestion.country);
+  shuffleArray(otherCountries);
+  for (let i = 0; i < 3; i++) {
+    options.push(otherCountries[i].country);
+  }
+  shuffleArray(options);
+  // display options as buttons
+  buttonsContainer.innerHTML = "";
+  options.forEach(option => {
+    const btn = document.createElement("button");
+    btn.textContent = option;
+    btn.onclick = () => handleAnswer(option);
+    buttonsContainer.appendChild(btn);
+  });
+}
+
+// Handle answer
+function handleAnswer(selected) {
+  if (selected === currentQuestion.country) {
+    alert("Correct!");
+    score++;
+  } else {
+    alert(`Wrong! It was ${currentQuestion.country}`);
+  }
+  updateScore();
+}
+
+// Update score display
+function updateScore() {
+  scoreElement.textContent = `Score: ${score}`;
+}
+
+// Next button
+nextBtn.addEventListener("click", () => {
+  generateQuestion();
+  generateOptions();
+});
+
+// Show answer
+showAnswerBtn.addEventListener("click", () => {
+  answerText.textContent = `Answer: ${currentQuestion.country}`;
+  answerText.style.display = "block";
+  setTimeout(() => {
+    answerText.style.display = "none";
+  }, 2000);
+});
+
+// Restart game
+restartBtn.addEventListener("click", () => {
+  score = 0;
+  updateScore();
+  generateQuestion();
+  generateOptions();
+});
+
+// Initialize first question
+generateQuestion();
+generateOptions();
+updateScore();
+
+</script>
+
+</body>
+</html>
