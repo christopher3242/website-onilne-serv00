@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Rating System with Color Zones</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff; /* Light blue background for UI color */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  h1 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+  #controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .button {
+    font-size: 1.5em;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: #fff;
+    transition: background-color 0.3s;
+  }
+  .button:hover {
+    background-color: #0056b3;
+  }
+  #exitButton {
+    background-color: #dc3545; /* Red color for exit */
+  }
+  #exitButton:hover {
+    background-color: #a71d2a;
+  }
+  #rateDisplay {
+    font-size: 2em;
+    margin: 20px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: #fff;
+    width: 150px;
+    text-align: center;
+    background-color: #333;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+  }
+  #rateInput {
+    margin-top: 10px;
+    width: 100px;
+    padding: 5px;
+    font-size: 1em;
+    text-align: center;
+  }
+</style>
+  </head>
+  <body>
+    <h1>Rating System with Color Zones</h1>
+    <div id="controls"> <button class="button" onclick="decrease()">-</button>
+      <button class="button" onclick="increase()">+</button> <a
+        href="../../your%20favorite.html"><button class="button"
+          id="exitButton" onclick="exit()">Exit</button></a>
+    </div>
+    <!-- Display current rate and allow manual input -->
+    <div id="rateDisplay">0</div>
+    <input id="rateInput" value="0" type="text">
+    <script>
+  // Set initial rate
+  let rate = 0;
+
+  // Define limits
+  const MIN = -9999999;
+  const MAX = 9999999;
+
+  // Function to update display with color based on value
+  function updateDisplay() {
+    document.getElementById('rateDisplay').textContent = rate.toFixed(2);
+    document.getElementById('rateInput').value = rate.toFixed(2);
+    // Apply color based on value
+    if (rate >= -9999999 && rate <= 4.5) {
+      document.getElementById('rateDisplay').style.backgroundColor = 'red';
+    } else if (rate >= 5 && rate <= 9999999) {
+      document.getElementById('rateDisplay').style.backgroundColor = 'green';
+    } else {
+      document.getElementById('rateDisplay').style.backgroundColor = '#333';
+    }
+  }
+
+  // Increase rate
+  function increase() {
+    if (rate + 0.5 <= MAX) {
+      rate += 0.5;
+      updateDisplay();
+    }
+  }
+
+  // Decrease rate
+  function decrease() {
+    if (rate - 0.5 >= MIN) {
+      rate -= 0.5;
+      updateDisplay();
+    }
+  }
+
+  // Manual input change
+  document.getElementById('rateInput').addEventListener('change', () => {
+    const val = parseFloat(document.getElementById('rateInput').value);
+    if (!isNaN(val) && val >= MIN && val <= MAX) {
+      rate = val;
+      updateDisplay();
+    } else {
+      // Reset to current rate if invalid
+      document.getElementById('rateInput').value = rate.toFixed(2);
+    }
+  });
+
+
+  // Initialize display
+  updateDisplay();
+</script>
+  </body>
+</html>

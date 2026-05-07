@@ -8,90 +8,132 @@
       initial-scale=1.0">
     <title>Your Favorite</title>
     <style>
-  /* Define CSS variables for colors */
-  :root {
-    --body-bg-color: rgb(162, 195, 255);
-    --table-bg-color: rgba(114, 179, 170, 0.863);
-    --text-color: white;
-    --link-color: blue;
-    --hover-shadow-color: rgb(155, 155, 155);
-  }
+/* Define CSS variables for colors */
+:root {
+  --body-bg-color: #7fb0d8; /* softer blue background */
+  --table-bg-color: #6d95c9e6;
+  --text-color: #000000;
+  --link-color: #1851ce; /* blue for links */
+  --hover-shadow-color: #00000033;
+  --news-btn-bg-color: #ffb24d; /* bright red for the news button */
+  --news-btn-hover-bg: #cc6d00; /* darker red on hover */
+  --border-color: #333; /* for subtle borders */
+  --card-shadow: #0000005b;
+}
 
-  body {
-    background-color: var(--body-bg-color);
-    margin: 0;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-    position: relative;
-  }
+body {
+  background-color: var(--body-bg-color);
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40px;
+}
 
+/* Heading styling */
+h2 {
+  font-size: 2em;
+  text-decoration: underline;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #000000;
+}
+
+/* Table styling */
+table {
+  width: 95%;
+  max-width: 1200px;
+  border-collapse: separate;
+  border-spacing: 10px;
+  background-color: transparent;
+  box-shadow: 0 4px 8px var(--card-shadow);
+  border-radius: 8px;
+}
+
+/* Cells styling */
+th, td {
+  background-color: var(--table-bg-color);
+  border: 2px solid var(--border-color);
+  padding: 15px;
+  border-radius: 8px;
+  transition: box-shadow 0.3s, background-color 0.3s;
+  text-align: center;
+}
+
+/* Hover effect for cells */
+td:hover {
+  box-shadow: 0 0 15px var(--hover-shadow-color);
+  background-color: #7caffdf2;
+}
+
+/* Link styles */
+a {
+  text-decoration: none;
+  color: var(--link-color);
+  font-weight: 600;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 2px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+a:hover {
+  background-color: rgba(0, 0, 0, 0);
+  color: #0056b3;
+}
+
+/* News button styling */
+.news-link {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: var(--news-btn-bg-color);
+  padding: 6px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px var(--hover-shadow-color);
+  font-size: 1.1em;
+  transition: background-color 0.3s, transform 0.2s;
+  z-index: 999;
+}
+
+.news-link a {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.news-link:hover {
+  background-color: var(--news-btn-hover-bg);
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments for smaller screens */
+@media(max-width: 600px) {
   h2 {
     font-size: 1.5em;
-    text-decoration: underline;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 20px;
   }
-
-  /* Style table for smooth lines */
-  table {
-    margin: 20px auto;
-    border-collapse: collapse; /* Ensures borders are shared for smooth lines */
-    width: 80%;
-    border: 1px solid black; /* Optional: border around entire table */
-    background-color: transparent;
-  }
-
-  th, td {
-    border: 2px solid black; /* Border for cells for smooth lines */
-    background-color: var(--table-bg-color);
-    color: var(--text-color);
-    text-align: center;
-    padding: 20px;
-    transition: box-shadow 0.3s;
-  }
-
-  td:hover {
-    box-shadow: 0 0 30px var(--hover-shadow-color);
-  }
-
-  a {
-    color: var(--link-color);
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
-  }
-
-  /* Fixed "News" link styling for both PC and Android */
   .news-link {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: transparent;
-    z-index: 999;
-    font-size: 1em;
+    font-size: 1.2em;
+    padding: 8px 16px;
   }
-
-  /* Responsive font size for mobile devices */
-  @media (max-width: 600px) {
-    .news-link {
-      font-size: 1.2em;
-    }
+  table {
+    font-size: 0.8em;
   }
+}
 </style>
   </head>
   <body>
-    <div style="text-align: center;">
+    <div style="width: 100%; max-width: 1200px; padding: 0 20px;">
       <h2><u><b>Which is your favorite server?</b></u></h2>
-      <!-- Table with links -->
+      <!-- Data table -->
       <table role="presentation">
         <tbody>
           <tr>
-            <td align="center"><a
-                href="your%20favorite%20files/Birthday/Birthday.html">Birthday</a></td>
-            <td align="center"><a
+            <td><a
                 href="your%20favorite%20files/Analog%20Clock/Analog%20Clock.html">Analog
 
 
@@ -101,15 +143,8 @@
 
 
 
-
-
-
-
-
-
-
                 Clock</a></td>
-            <td align="center"><a
+            <td><a
 href="your%20favorite%20files/Analog%20clock%20and%20Digital%20clock/Analog%20&amp;%20Digital%20Clock.html">Analog
 
 
@@ -119,15 +154,8 @@ href="your%20favorite%20files/Analog%20clock%20and%20Digital%20clock/Analog%20&a
 
 
 
-
-
-
-
-
-
-
                 &amp; Digital Clock</a></td>
-            <td align="center"><a
+            <td><a
                 href="your%20favorite%20files/world%20clock/world%20clock.html">World
 
 
@@ -137,15 +165,8 @@ href="your%20favorite%20files/Analog%20clock%20and%20Digital%20clock/Analog%20&a
 
 
 
-
-
-
-
-
-
-
                 Clock</a></td>
-            <td align="center"><a
+            <td><a
                 href="your%20favorite%20files/digital%20clock/digital%20clock.html">Digital
 
 
@@ -155,23 +176,9 @@ href="your%20favorite%20files/Analog%20clock%20and%20Digital%20clock/Analog%20&a
 
 
 
-
-
-
-
-
-
-
                 Clock</a></td>
-            <td valign="top" align="center"><a
+            <td><a
 href="your%20favorite%20files/free%20web%20hosting/free%20web%20hosting.html">Free
-
-
-
-
-
-
-
 
 
 
@@ -183,13 +190,11 @@ href="your%20favorite%20files/free%20web%20hosting/free%20web%20hosting.html">Fr
                 Web Hosting</a></td>
           </tr>
           <tr>
-            <td valign="top" align="center"><a
-                href="your%20favorite%20files/Wix/Wix.html">Wix</a></td>
-            <td valign="top" align="center"><a
-                href="your%20favorite%20files/blogger/blogger.html">Blogger</a></td>
-            <td valign="top" align="center"><a
+            <td><a href="your%20favorite%20files/Wix/Wix.html">Wix</a></td>
+            <td><a href="your%20favorite%20files/blogger/blogger.html">Blogger</a></td>
+            <td><a
                 href="your%20favorite%20files/Supermarket/Supermarket.html">Supermarket</a></td>
-            <td valign="top" align="center"><a
+            <td><a
                 href="your%20favorite%20files/Chat%20message/Chat%20message.html">Chat
 
 
@@ -199,15 +204,8 @@ href="your%20favorite%20files/free%20web%20hosting/free%20web%20hosting.html">Fr
 
 
 
-
-
-
-
-
-
-
                 Message</a></td>
-            <td valign="top" align="center"><a
+            <td><a
                 href="your%20favorite%20files/Download%20Link/download%20link.html">Download
 
 
@@ -217,15 +215,10 @@ href="your%20favorite%20files/free%20web%20hosting/free%20web%20hosting.html">Fr
 
 
 
-
-
-
-
-
-
-
                 Link</a></td>
-            <td valign="top" align="center"><a
+          </tr>
+          <tr>
+            <td><a
                 href="your%20favorite%20files/Family%20photo/Family%20Photo.html">Family
 
 
@@ -235,17 +228,8 @@ href="your%20favorite%20files/free%20web%20hosting/free%20web%20hosting.html">Fr
 
 
 
-
-
-
-
-
-
-
                 Photo</a></td>
-          </tr>
-          <tr>
-            <td align="center"><a
+            <td><a
 href="your%20favorite%20files/photo%20sildeshow%20and%20music/photo%20sildeshow%20and%20music.html">Photo
 
 
@@ -255,31 +239,19 @@ href="your%20favorite%20files/photo%20sildeshow%20and%20music/photo%20sildeshow%
 
 
 
-
-
-
-
-
-
-
                 Slideshow &amp; Music</a></td>
-            <td align="center"><a
+            <td><a
                 href="your%20favorite%20files/Stopwatch/Stopwatch.html">Stopwatch</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/timer/timer.html">Timer</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/Flipbook/Flipbook.html">Flipbook</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/Calculator/calculator.html">Calculator</a></td>
-            <td valign="top" align="center"><a
-                href="your%20favorite%20files/Calendar/Calendar.html">Calendar</a></td>
+            <td><a href="your%20favorite%20files/timer/timer.html">Timer</a></td>
+            <td><a href="your%20favorite%20files/Flipbook/Flipbook.html">Flipbook</a></td>
           </tr>
           <tr>
-            <td align="center"><a
-                href="your%20favorite%20files/Notes/Notes.html">Notes</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/Notepad/Notepad.html">Notepad</a></td>
-            <td align="center"><a
+            <td><a
+                href="your%20favorite%20files/Calculator/calculator.html">Calculator</a></td>
+            <td><a href="your%20favorite%20files/Calendar/Calendar.html">Calendar</a></td>
+            <td><a href="your%20favorite%20files/Notes/Notes.html">Notes</a></td>
+            <td><a href="your%20favorite%20files/Notepad/Notepad.html">Notepad</a></td>
+            <td><a
                 href="your%20favorite%20files/Discord%20Severs/Discord%20Severs.html">Discord
 
 
@@ -289,18 +261,21 @@ href="your%20favorite%20files/photo%20sildeshow%20and%20music/photo%20sildeshow%
 
 
 
-
-
-
-
-
-
-
                 Servers</a></td>
-            <td align="center"><a href="Games%20website/Games.html">Games</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/Info%20Page/Info%20Page.html">Info</a></td>
-            <td valign="top" align="center"><a
+          </tr>
+          <tr>
+            <td><a href="Games%20website/Games.html">Games</a></td>
+            <td><a
+                href="your%20favorite%20files/Info%20Page/Info%20Page.html">Info
+
+
+
+
+
+
+                Page<br>
+              </a></td>
+            <td><a
                 href="your%20favorite%20files/Qr%20Card/Qr%20card.html">QR
 
 
@@ -310,25 +285,9 @@ href="your%20favorite%20files/photo%20sildeshow%20and%20music/photo%20sildeshow%
 
 
 
-
-
-
-
-
-
-
                 Card</a></td>
-          </tr>
-          <tr>
-            <td align="center"><a
-href="your%20favorite%20files/Simple%20Music%20Player/Simple%20Music%20Player.html">Music
-
-
-
-
-
-
-
+            <td><a
+                href="your%20favorite%20files/Music%20Player/Music%20Player.html">Music
 
 
 
@@ -338,11 +297,11 @@ href="your%20favorite%20files/Simple%20Music%20Player/Simple%20Music%20Player.ht
 
 
                 Player</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/Spotify/Spotify.html">Spotify</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/.yocco/.yooco.html">Yooco</a></td>
-            <td align="center"><a
+            <td><a href="your%20favorite%20files/Spotify/Spotify.html">Spotify</a></td>
+          </tr>
+          <tr>
+            <td><a href="your%20favorite%20files/.yocco/.yooco.html">Yooco</a></td>
+            <td><a
                 href="your%20favorite%20files/Video%20ID/Video%20ID.html">Video
 
 
@@ -352,17 +311,9 @@ href="your%20favorite%20files/Simple%20Music%20Player/Simple%20Music%20Player.ht
 
 
 
-
-
-
-
-
-
-
                 ID</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/Video/Video.html">Video</a></td>
-            <td valign="top" align="center"><a
+            <td><a href="your%20favorite%20files/Video/Video.html">Video</a></td>
+            <td><a
 href="your%20favorite%20files/My%20Video%20Player/My%20Video%20Player.html">My
 
 
@@ -372,17 +323,9 @@ href="your%20favorite%20files/My%20Video%20Player/My%20Video%20Player.html">My
 
 
 
-
-
-
-
-
-
-
-                Video</a></td>
-          </tr>
-          <tr>
-            <td align="center"><a
+                Video Player<br>
+              </a></td>
+            <td><a
 href="your%20favorite%20files/Youtube%20alternative/Youtube%20alternative.html">YouTube
 
 
@@ -392,43 +335,16 @@ href="your%20favorite%20files/Youtube%20alternative/Youtube%20alternative.html">
 
 
 
-
-
-
-
-
-
-
                 Alternative</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/Print/Print.html">Print</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/ISO/ISO.html">ISO</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/Ping/ping.html">Ping</a></td>
-            <td align="center"><a
-                href="your%20favorite%20files/Bookmarks/Bookmarks.html">Bookmarks</a><br>
-            </td>
-            <td valign="top" align="center"><a
-href="your%20favorite%20files/Android%20apk%20games/Android%20APK%20Games.html">Android
-
-
-
-
-
-
-
-
-
-
-
-
-                apk games</a><br>
-            </td>
           </tr>
           <tr>
-            <td valign="top"><a
-                href="your%20favorite%20files/Shopping%20List/Shopping%20List.html">Shopping
+            <td><a href="your%20favorite%20files/Print/Print.html">Print</a></td>
+            <td><a href="your%20favorite%20files/ISO/ISO.html">ISO</a></td>
+            <td><a href="your%20favorite%20files/Ping/ping.html">Ping</a></td>
+            <td><a
+                href="your%20favorite%20files/Bookmarks/Bookmarks.html">Bookmarks</a></td>
+            <td><a
+                href="your%20favorite%20files/Android%20apk/Android%20APK.html">Android
 
 
 
@@ -437,21 +353,16 @@ href="your%20favorite%20files/Android%20apk%20games/Android%20APK%20Games.html">
 
 
 
-
-
-
-
-                List</a><br>
-            </td>
-            <td valign="top"><a
-                href="your%20favorite%20files/Soundcloud/Soundcloud.html">Soundcloud<br>
-              </a> </td>
-            <td valign="top"><a
-                href="your%20favorite%20files/Alarm/alarm.html">Alarm<br>
-              </a> </td>
-            <td valign="top"><a
-                href="your%20favorite%20files/whiteboard/whiteboard.html">whiteboard</a></td>
-            <td valign="top"><a
+                APK<br>
+              </a></td>
+          </tr>
+          <tr>
+            <td><a
+                href="your%20favorite%20files/Soundcloud/Soundcloud.html">Soundcloud</a></td>
+            <td><a href="your%20favorite%20files/Alarm/alarm.html">Alarm</a></td>
+            <td><a
+                href="your%20favorite%20files/whiteboard/whiteboard.html">Whiteboard</a></td>
+            <td><a
 href="your%20favorite%20files/Revolutionary%20hosting/Revolutionary%20hosting.html">Revolutionary
 
 
@@ -461,11 +372,73 @@ href="your%20favorite%20files/Revolutionary%20hosting/Revolutionary%20hosting.ht
 
 
 
-                hosting</a></td>
-            <td valign="top"><a
-                href="your%20favorite%20files/barcode/barcode.html">Barcode</a></td>
+                Hosting</a></td>
+            <td><a href="your%20favorite%20files/barcode/barcode.html">Barcode</a></td>
           </tr>
           <tr>
+            <td><a href="your%20favorite%20files/Poll/poll.html">Poll</a></td>
+            <td><a href="your%20favorite%20files/Radio/Radio.html">Radio</a></td>
+            <td><a
+href="your%20favorite%20files/before%20and%20after%20image%20slider/before%20and%20after%20image%20slider.html">Before
+
+
+
+
+
+
+
+
+                &amp; After Slider</a></td>
+            <td><a
+                href="your%20favorite%20files/TV%20Video/video%20tv.html">TV
+
+
+
+
+
+
+
+
+                Video</a></td>
+            <td><a
+                href="your%20favorite%20files/LED%20Rave%20Sync/LED%20Rave%20Sync.html">LED
+
+
+
+
+
+
+
+
+                Rave Sync</a></td>
+          </tr>
+          <tr>
+            <td valign="top"><a
+href="your%20favorite%20files/Website%20Beta%20Serv00/Website%20Beta%20Serv00.html">Website
+
+
+
+
+
+
+
+
+                Beta Serv00</a></td>
+            <td valign="top"><a
+                href="your%20favorite%20files/Rating%20System/Rating%20System.html">Rating
+
+
+
+
+
+
+
+
+                System</a><br>
+            </td>
+            <td valign="top"><a
+                href="your%20favorite%20files/Birthday/Birthday.html">Birthday</a><br>
+            </td>
             <td valign="top"><a
                 href="your%20favorite%20files/Android%20Test/Andorid%20Test.html">Android
 
@@ -474,52 +447,54 @@ href="your%20favorite%20files/Revolutionary%20hosting/Revolutionary%20hosting.ht
 
 
 
-                Test </a><br>
-            </td>
+                Test</a></td>
             <td valign="top"><a
-                href="your%20favorite%20files/Poll/poll.html">Poll</a></td>
-            <td valign="top"><a
-                href="your%20favorite%20files/Radio/Radio.html">Radio</a></td>
-            <td valign="top"><a
-href="your%20favorite%20files/before%20and%20after%20image%20slider/before%20and%20after%20image%20slider.html">before
+                href="your%20favorite%20files/Shopping%20List/Shopping%20List.html">Shopping
 
 
-                and after image slider</a></td>
-            <td align="center"><a href="your%20favorite%20files/TV%20Video/video%20tv.html"> TV
-                Video </a></td>
+
+
+
+
+                List</a></td>
+          </tr>
+          <tr>
+            <td valign="top"><a
+href="your%20favorite%20files/Soundboard%20Button/Soundboard%20Button.html">Soundboard
+
+
+
+
+
+                Button</a></td>
+            <td valign="top"><a
+                href="your%20favorite%20files/status/status.html">Status</a></td>
+            <td valign="top"><a
+                href="your%20favorite%20files/Webcam/Webcam.html">Webcam</a></td>
+            <td valign="top"><a
+                href="your%20favorite%20files/MIDI/MIDI.html">MIDI</a></td>
+            <td valign="top"><a
+                href="your%20favorite%20files/Voice%20Recorder/Voice%20Recorder.html">Voice
+                Recorder</a></td>
+          </tr>
+          <tr>
+            <td valign="top">Coming soon</td>
+            <td valign="top">Coming soon</td>
+            <td valign="top">Coming soon</td>
+            <td valign="top">Coming soon</td>
             <td valign="top">Coming soon</td>
           </tr>
           <tr>
-            <td valign="top">Coming soon<br>
-            </td>
             <td valign="top">Coming soon</td>
             <td valign="top">Coming soon</td>
             <td valign="top">Coming soon</td>
             <td valign="top">Coming soon</td>
             <td valign="top">Coming soon</td>
           </tr>
-          <tr>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-          </tr>
-          <tr>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-          </tr>
-          <!-- Additional "Coming soon" rows as needed -->
         </tbody>
       </table>
-      <!-- Fixed News link -->
-      <div class="news-link"> <a href="News.html"
-          moz-do-not-send="true">News:</a> </div>
+      <!-- Fixed News Button -->
+      <div class="news-link"><a href="News.html" moz-do-not-send="true">News</a></div>
     </div>
   </body>
 </html>

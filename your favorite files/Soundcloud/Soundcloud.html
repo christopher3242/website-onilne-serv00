@@ -1,6 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Soundcloud Playlists</title>
 <style>
   body {
-    background-color: #3e70a1; /* Gray-blue background */
+    background-color: #375f9c;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
@@ -9,96 +15,81 @@
   h1 {
     color: #ffffff;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     font-size: 2em;
   }
 
-  /* Add smooth transitions for iframe hover effects */
+  /* Responsive iframes */
   iframe {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    height: 450px;
+    border: none;
     border-radius: 8px;
-    display: block;
     margin: 20px 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
-  /* Optional: Add a hover effect to make it look smoother */
   iframe:hover {
     transform: scale(1.02);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   }
 
-  /* Style for the exit container */
-  .exit-container {
-    margin-top: 30px;
-    text-align: right;
-  }
-
-  .exit-link {
-    text-decoration: none;
-    font-weight: bold;
-    color: #ffffff;
-    padding: 8px 12px;
-    border: 2px solid #ffffff;
-    border-radius: 4px;
-    transition: background-color 0.3s, color 0.3s;
-  }
-
-  .exit-link:hover {
-    background-color: #ffffff;
-    color: #6699cc;
-  }
-
-  /* Style for caption links */
-  .caption-link {
+  /* Caption styles */
+  .caption {
     font-size: 10px;
     color: #cccccc;
-    line-break: anywhere;
-    word-break: normal;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
     font-family: Interstate, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Garuda, Verdana, Tahoma, sans-serif;
     font-weight: 100;
-    display: inline-block;
     margin: 5px 0;
   }
 
-  .caption-link a {
+  /* Links inside caption */
+  .caption a {
     color: #cccccc;
     text-decoration: none;
   }
+
+  /* Responsive font size for small screens */
+  @media(max-width: 600px){
+    h1 {
+      font-size: 1.5em;
+    }
+    .caption {
+      font-size: 8px;
+    }
+  }
 </style>
+</head>
+<body>
 
 <h1>Soundcloud</h1>
 
-<!-- First SoundCloud Playlist -->
-<iframe width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" 
-        src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A2048561826&color=%2349c2e8&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true">
-</iframe>
-<div class="caption-link">
-  <a href="https://soundcloud.com/christopher-2138471" title="Christopher Camilleri" target="_blank">Christopher Camilleri</a> · 
-  <a href="https://soundcloud.com/christopher-2138471/sets/epic-phonk" title="EPIC PHONK / GG" target="_blank">EPIC PHONK / GG</a>
+<!-- First Playlist -->
+<iframe 
+  src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A2048561826&color=%2369a0f2&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true" 
+  allow="autoplay"></iframe>
+<div class="caption">
+  <a href="https://soundcloud.com/christopher-2138471" target="_blank" title="Christopher Camilleri">Christopher Camilleri</a> · 
+  <a href="https://soundcloud.com/christopher-2138471/sets/epic-phonk" target="_blank" title="EPIC PHONK / GG">EPIC PHONK / GG</a>
 </div>
 
-<!-- Second SoundCloud Playlist -->
-<iframe width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" 
-        src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A1728792786&color=%232aad40&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true">
-</iframe>
-<div style="font-size: 10px; color: #cccccc; line-break: anywhere; word-break: normal; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-family: Interstate, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Garuda, Verdana, Tahoma, sans-serif; font-weight: 100;">
-  <a href="https://soundcloud.com/christopher-2138471" title="Christopher Camilleri" target="_blank" style="color: #cccccc; text-decoration: none;">Christopher Camilleri</a> · 
-  <a href="https://soundcloud.com/christopher-2138471/sets/epic-music" title="Epic music" target="_blank" style="color: #cccccc; text-decoration: none;">Epic music</a>
+<!-- Second Playlist -->
+<iframe 
+  src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A1728792786&color=%23118245&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true" 
+  allow="autoplay"></iframe>
+<div class="caption">
+  <a href="https://soundcloud.com/christopher-2138471" target="_blank" title="Christopher Camilleri">Christopher Camilleri</a> · 
+  <a href="https://soundcloud.com/christopher-2138471/sets/epic-music" target="_blank" title="Epic music">Epic music</a>
 </div>
 
-<!-- Third SoundCloud Playlist -->
-<iframe width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" 
-        src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A1829893449&color=%236e62ff&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true">
-</iframe>
-<div class="caption-link">
-  <a href="https://soundcloud.com/christopher-2138471" title="Christopher Camilleri" target="_blank">Christopher Camilleri</a> · 
-  <a href="https://soundcloud.com/christopher-2138471/sets/christopher-radio" title="Christopher Radio" target="_blank">Christopher Radio</a>
+<!-- Third Playlist -->
+<iframe 
+  src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A1829893449&color=%23232896&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true" 
+  allow="autoplay"></iframe>
+<div class="caption">
+  <a href="https://soundcloud.com/christopher-2138471" target="_blank" title="Christopher Camilleri">Christopher Camilleri</a> · 
+  <a href="https://soundcloud.com/christopher-2138471/sets/christopher-radio" target="_blank" title="Christopher Radio">Christopher Radio</a>
 </div>
 
-<!-- Exit link container with styling -->
-<div class="exit-container">
-  <a href="../../your%20favorite.html" class="exit-link">exit</a>
-</div>
+</body>
+</html>

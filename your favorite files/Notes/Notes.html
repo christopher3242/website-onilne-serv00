@@ -49,6 +49,22 @@
     font-size: 14px;
     cursor: pointer;
   }
+  /* Drag & Drop area styles */
+  #dropZone {
+    margin-top: 15px;
+    padding: 20px;
+    border: 2px dashed #999;
+    border-radius: 8px;
+    text-align: center;
+    color: #555;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #f9f9f9;
+  }
+  #dropZone.hover {
+    border-color: #333;
+    background-color: #eef;
+  }
 </style>
 </head>
 <body>
@@ -102,11 +118,43 @@
     <button onclick="saveNotes()">Save</button>
     <a href="../../your%20favorite.html"><button onclick="exitEditor()">Exit</button></a>
   </div>
+  <!-- Drag & Drop area -->
+  <div id="dropZone">Drag & Drop a .txt file here to load notes</div>
+  <!-- File load input -->
+  <div style="margin-top:10px;">
+    <input type="file" id="loadFile" accept=".txt" />
+    <button onclick="loadNotes()">Load File</button>
+  </div>
 </div>
 <script>
+  const bgColors = [
+    "#ffffff", "#f8d7da", "#d4edda", "#d1ecf1", "#fff3cd",
+    "#ffe4e1", "#e0ffff", "#f0e68c", "#dda0dd", "#ffe4b5",
+    "#d2b48c", "#add8e6", "#90ee90", "#ffb6c1", "#fa8072",
+    "#f5f5dc", "#e6e6fa", "#bcf5bc", "#ffd700", "#2f4f4f"
+  ];
+
+  // Load saved notes if any
+  window.onload = function() {
+    const savedNotes = localStorage.getItem('notes');
+    if (savedNotes) {
+      document.getElementById('notes').value = savedNotes;
+    }
+    const savedColor = localStorage.getItem('bgColor');
+    if (savedColor) {
+      document.getElementById('notes').style.backgroundColor = savedColor;
+      document.getElementById('bgColor').value = savedColor;
+    } else {
+      const randomColor = bgColors[Math.floor(Math.random() * bgColors.length)];
+      document.getElementById('notes').style.backgroundColor = randomColor;
+      document.getElementById('bgColor').value = randomColor;
+    }
+  }
+
   // Change background color
   document.getElementById('bgColor').addEventListener('change', function() {
     document.getElementById('notes').style.backgroundColor = this.value;
+    localStorage.setItem('bgColor', this.value);
   });
 
   // Clear notes
@@ -114,33 +162,67 @@
     document.getElementById('notes').value = '';
   }
 
-  // Save notes to local storage
+  // Save notes
   function saveNotes() {
-    const notesContent = document.getElementById('notes').value;
-    localStorage.setItem('notes', notesContent);
+    localStorage.setItem('notes', document.getElementById('notes').value);
     alert('Notes saved!');
   }
 
-  // Load saved notes on page load
-  window.onload = function() {
-    const savedNotes = localStorage.getItem('notes');
-    if (savedNotes) {
-      document.getElementById('notes').value = savedNotes;
+  // Load notes from file
+  function loadNotes() {
+    const fileInput = document.getElementById('loadFile');
+    const file = fileInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('notes').value = e.target.result;
+        localStorage.setItem('notes', e.target.result);
+      };
+      reader.readAsText(file);
+    } else {
+      alert('Please select a file to load.');
     }
   }
 
-  // Optional: set background color from saved preference
-  document.addEventListener('DOMContentLoaded', () => {
-    const savedColor = localStorage.getItem('bgColor');
-    if (savedColor) {
-      document.getElementById('notes').style.backgroundColor = savedColor;
-      document.getElementById('bgColor').value = savedColor;
+  // Drag & Drop functionality
+  const dropZone = document.getElementById('dropZone');
+
+  dropZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.add('hover');
+  });
+
+  dropZone.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.remove('hover');
+  });
+
+  dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.remove('hover');
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.name.endsWith('.txt')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('notes').value = e.target.result;
+          localStorage.setItem('notes', e.target.result);
+        };
+        reader.readAsText(file);
+      } else {
+        alert('Please drop a .txt file.');
+      }
     }
   });
 
-  // Save background color preference
-  document.getElementById('bgColor').addEventListener('change', function() {
-    localStorage.setItem('bgColor', this.value);
+  // Optional: clicking the drop zone opens file dialog
+  dropZone.addEventListener('click', function() {
+    document.getElementById('loadFile').click();
   });
 </script>
 </body>

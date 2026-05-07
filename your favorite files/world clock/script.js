@@ -30,6 +30,14 @@ const timeZones = [
   { name: 'China', offset: 8, dstStart: '', dstEnd: '', id: 'china' },
   { name: 'Tokyo', offset: 9, dstStart: '', dstEnd: '', id: 'tokyo' },
   { name: 'South Korea', offset: 9, dstStart: '', dstEnd: '', id: 'southKorea' },
+  { name: 'Peru', offset: -5, dstStart: '', dstEnd: '', id: 'peru' },
+  { name: 'Los Angeles', offset: -8, dstStart: '03-14', dstEnd: '11-07', id: 'los-angeles' },
+  { name: 'Russia', offset: 3, dstStart: '03-29', dstEnd: '10-25', id: 'russia' }, // Adjust as per specific region
+  { name: 'Iran', offset: 3.5, dstStart: '03-21', dstEnd: '09-21', id: 'iran' }, // Note: Iran DST rules vary
+  { name: 'Israel', offset: 2, dstStart: '03-29', dstEnd: '10-25', id: 'israel' },
+  { name: 'Lebanon', offset: 2, dstStart: '03-29', dstEnd: '10-25', id: 'lebanon' },
+  { name: 'Syria', offset: 2, dstStart: '03-29', dstEnd: '10-25', id: 'syria' },
+  { name: 'Venezuela', offset: -4, dstStart: '', dstEnd: '', id: 'venezuela' },
 ];
 
 let currentTimeZoneIndex = 0;

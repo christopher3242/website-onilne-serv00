@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Webcam with Flashlight, Hold Preview, and Preview Camera</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f0f0;
+    text-align: center;
+  }
+  h2 {
+    margin-bottom: 10px;
+  }
+  video {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border: 2px solid #333;
+    border-radius: 8px;
+  }
+  .buttons {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  button, a.btn {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+  button:hover, a.btn:hover {
+    background-color: #0056b3;
+  }
+  #holdDurationContainer {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #holdDurationContainer label {
+    margin-right: 8px;
+  }
+  #overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 9999;
+    padding: 20px;
+  }
+  #overlay img {
+    max-width: 80%;
+    max-height: 80%;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Webcam with Flashlight, Hold Preview, and Preview Camera</h2>
+<video id="video" autoplay playsinline></video>
+
+<div class="buttons">
+  <a href="../../your%20favorite.html" class="btn">Exit</a>
+  <button id="startBtn">Start Camera</button>
+  <button id="stopBtn">Stop Camera</button>
+  <button id="switchBtn">Switch Camera</button>
+  <button id="flashlightBtn">Toggle Flashlight</button>
+  <button id="previewCameraBtn">Preview Camera</button>
+</div>
+
+<div id="holdDurationContainer">
+  <label for="holdDurationInput">Hold Duration (sec): </label>
+  <input type="text" id="holdDurationInput" value="3" />
+</div>
+
+<div class="buttons" style="margin-top:15px;">
+  <button id="captureBtn">Hold for Preview</button>
+</div>
+
+<!-- Overlay for preview -->
+<div id="overlay">
+  <img id="previewImg" src="" alt="Preview" />
+  <div>
+    <button id="downloadPreview">Download PNG</button>
+    <button id="closePreview">Close</button>
+  </div>
+</div>
+
+<script>
+const video = document.getElementById('video');
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+const switchBtn = document.getElementById('switchBtn');
+const flashlightBtn = document.getElementById('flashlightBtn');
+const captureBtn = document.getElementById('captureBtn');
+const overlay = document.getElementById('overlay');
+const previewImg = document.getElementById('previewImg');
+const downloadPreview = document.getElementById('downloadPreview');
+const closePreview = document.getElementById('closePreview');
+const holdDurationInput = document.getElementById('holdDurationInput');
+const previewCameraBtn = document.getElementById('previewCameraBtn');
+
+let stream = null;
+let currentFacingMode = 'user'; // default
+let currentVideoTrack = null;
+let torchOn = false;
+
+// Detect if device is mobile
+const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+if (isMobile) {
+  currentFacingMode = 'environment';
+}
+
+// Start camera
+async function startCamera() {
+  if (stream) stopCamera();
+  try {
+    const constraints = {
+      video: { facingMode: currentFacingMode }
+    };
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = stream;
+    currentVideoTrack = stream.getVideoTracks()[0];
+  } catch(err) {
+    alert('Error accessing webcam: ' + err.message);
+  }
+}
+
+// Stop camera
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+    currentVideoTrack = null;
+    video.srcObject = null;
+  }
+}
+
+// Switch camera
+function switchCamera() {
+  currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user';
+  startCamera();
+}
+
+// Toggle flashlight
+async function toggleFlashlight() {
+  if (!currentVideoTrack) {
+    alert('Start camera first');
+    return;
+  }
+  const capabilities = currentVideoTrack.getCapabilities();
+  if (!capabilities.torch) {
+    alert('Flashlight not supported on this device.');
+    return;
+  }
+  torchOn = !torchOn;
+  try {
+    await currentVideoTrack.applyConstraints({ advanced: [{ torch: torchOn }] });
+  } catch (err) {
+    alert('Error toggling flashlight: ' + err.message);
+  }
+}
+
+// Turn off flashlight
+async function turnOffFlashlight() {
+  if (!currentVideoTrack || !torchOn) return;
+  try {
+    await currentVideoTrack.applyConstraints({ advanced: [{ torch: false }] });
+    torchOn = false;
+  } catch (err) {
+    console.error('Error turning off flashlight:', err);
+  }
+}
+
+// Hold feature
+let holdTimeout = null;
+
+captureBtn.onmousedown = () => {
+  const holdDurationSec = parseInt(holdDurationInput.value, 10) || 3;
+  holdTimeout = setTimeout(() => {
+    showPreview();
+  }, holdDurationSec * 1000);
+};
+captureBtn.onmouseup = () => {
+  clearTimeout(holdTimeout);
+  holdTimeout = null;
+};
+captureBtn.ontouchstart = () => {
+  const holdDurationSec = parseInt(holdDurationInput.value, 10) || 3;
+  holdTimeout = setTimeout(() => {
+    showPreview();
+  }, holdDurationSec * 1000);
+};
+captureBtn.ontouchend = () => {
+  clearTimeout(holdTimeout);
+  holdTimeout = null;
+};
+
+// Show preview overlay
+function showPreview() {
+  if (!stream) {
+    alert('Start camera first');
+    return;
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  previewImg.src = canvas.toDataURL('image/png'); // PNG format
+  overlay.style.display = 'flex';
+
+  // Turn off flashlight automatically
+  if (torchOn) {
+    turnOffFlashlight();
+  }
+}
+
+// Download PNG
+downloadPreview.onclick = () => {
+  const dataUrl = previewImg.src;
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = `preview_${Date.now()}.png`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+// Close overlay
+closePreview.onclick = () => {
+  overlay.style.display = 'none';
+};
+
+// Preview camera live feed
+function showLivePreview() {
+  if (!stream) {
+    alert('Start camera first');
+    return;
+  }
+  const liveCanvas = document.createElement('canvas');
+  liveCanvas.width = video.videoWidth;
+  liveCanvas.height = video.videoHeight;
+  const ctx = liveCanvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, liveCanvas.width, liveCanvas.height);
+  previewImg.src = liveCanvas.toDataURL('image/png');
+  overlay.style.display = 'flex';
+
+  // Turn off flashlight if on
+  if (torchOn) {
+    turnOffFlashlight();
+  }
+}
+
+// Input validation to allow only numbers
+holdDurationInput.oninput = () => {
+  holdDurationInput.value = holdDurationInput.value.replace(/\D/g, '');
+};
+
+// Button event handlers
+startBtn.onclick = startCamera;
+stopBtn.onclick = stopCamera;
+switchBtn.onclick = switchCamera;
+flashlightBtn.onclick = toggleFlashlight;
+previewCameraBtn.onclick = showLivePreview;
+
+</script>
+
+</body>
+</html>

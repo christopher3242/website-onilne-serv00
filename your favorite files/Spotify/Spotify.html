@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Spotify Playlist</title>
-    <style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotify Playlist</title>
+  <style>
     body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: start;
       min-height: 100vh;
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #9e9999; /* Corrected color code */
+      padding: 20px;
     }
+
     #exitButton {
       margin-bottom: 20px;
       padding: 10px 20px;
@@ -28,32 +27,43 @@
       border: none;
       border-radius: 40px;
       transition: background-color 0.3s;
+      text-decoration: none; /* Remove default link underline if any */
     }
+
     #exitButton:hover {
       background-color: #14833b; /* Darker green on hover */
     }
+
     h1 {
-      margin-bottom: 10px;
+      margin-bottom: 20px;
+      text-align: center;
     }
+
     /* Responsive iframe styling */
     iframe {
       width: 90%;
-      max-width: 1000px; /* you can size want  */
+      max-width: 1000px;
       height: 500px;
       border: none;
+      border-radius: 10px;
     }
+
     @media (max-width: 400px) {
       iframe {
         height: 300px;
       }
+      #exitButton {
+        width: 100%;
+        box-sizing: border-box;
+      }
     }
   </style>
-  </head>
-  <body>
-    <a href="../../your%20favorite.html"><button id="exitButton">Exit</button></a>
-    <h1>My Spotify Playlist</h1>
-    <iframe
-      src="https://open.spotify.com/embed/playlist/3LFosqFZ17J0kNQvVul3NU"
-      allowtransparency="false" allow="encrypted-media"> </iframe>
-  </body>
+</head>
+<body>
+  <a href="../../your%20favorite.html" id="exitLink"><button id="exitButton">Exit</button></a>
+  <h1>My Spotify Playlist</h1>
+  <iframe
+    src="https://open.spotify.com/embed/playlist/3LFosqFZ17J0kNQvVul3NU"
+    allowtransparency="true" allow="encrypted-media"></iframe>
+</body>
 </html>

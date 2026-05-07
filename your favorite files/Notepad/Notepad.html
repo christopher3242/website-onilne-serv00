@@ -1,146 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HTML Notepad</title>
-    <style>
-      body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        justify-content: center; /* Horizontal centering */
-        align-items: center;    /* Vertical centering */
-        background-color: #f0f0f0; /* Optional background color */
-        font-family: Arial, sans-serif;
-      }
-      .container {
-        width: 80%;
-        max-width: 800px;
-        padding: 20px;
-        background-color: #fff;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        box-sizing: border-box;
-      }
-      h1 {
-        text-align: center;
-      }
-      #notepad {
-        width: 100%;
-        height: 300px;
-        padding: 10px;
-        box-sizing: border-box;
-        resize: none;
-      }
-      .buttons {
-        margin-top: 10px;
-        text-align: center;
-      }
-      button, select {
-        margin: 5px;
-        padding: 8px 12px;
-        font-size: 14px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>HTML Notepad</h1>
-      <!-- Background color selector with 35 ideas -->
-      <label for="bgColor">Choose Background Color:</label>
-      <select id="bgColor">
-        <option value="#ffffff" selected="selected">White</option>
-        <option value="#f8f9fa">Light Gray</option>
-        <option value="#ffe4e1">Misty Rose</option>
-        <option value="#e0ffff">Light Cyan</option>
-        <option value="#f0e68c">Khaki</option>
-        <option value="#d3ffd3">Light Green</option>
-        <option value="#ffe4b5">Moccasin</option>
-        <option value="#d8bfd8">Thistle</option>
-        <option value="#fafad2">Light Yellow</option>
-        <option value="#f5f5dc">Beige</option>
-        <option value="#ffe4e1">Pink</option>
-        <option value="#e6e6fa">Lavender</option>
-        <option value="#fff0f5">Lavender Blush</option>
-        <option value="#f0ffff">Azure</option>
-        <option value="#faf0e6">Linen</option>
-        <option value="#ffe4b5">Peach</option>
-        <option value="#dcdcdc">Gainsboro</option>
-        <option value="#ffe4c4">Bisque</option>
-        <option value="#f0fff0">Honeydew</option>
-        <option value="#ffe4e1">Pink</option>
-        <option value="#ff6347">Tomato</option>
-        <option value="#40e0d0">Turquoise</option>
-        <option value="#ffd700">Gold</option>
-        <option value="#adff2f">Green Yellow</option>
-        <option value="#ff69b4">Hot Pink</option>
-        <option value="#7b68ee">Medium Slate Blue</option>
-        <option value="#ff4500">Orange Red</option>
-        <option value="#2e8b57">Sea Green</option>
-        <option value="#b22222">Firebrick</option>
-        <option value="#708090">Slate Gray</option>
-        <option value="#b0c4de">Light Steel Blue</option>
-        <option value="#dda0dd">Plum</option>
-        <option value="#bc8f8f">Rosy Brown</option>
-        <option value="#ffa07a">Light Salmon</option>
-        <option value="#20b2aa">Light Sea Green</option>
-      </select>
-      <!-- Textarea for notepad -->
-      <textarea id="notepad" placeholder="Start typing..."></textarea>
-      <!-- Buttons -->
-      <div class="buttons">
-        <button onclick="saveText()">Save</button>
-        <button onclick="loadText()">Load</button>
-        <button onclick="clearText()">Clear</button>
-        <a href="../../your%20favorite.html"><button onclick="exit()">Exit</button></a>
-      </div>
-      <!-- Hidden file input for loading files -->
-      <input id="fileInput" style="display:none" accept=".txt" type="file" />
-    </div>
-    <script>
-      const notepad = document.getElementById('notepad');
-      const bgColorSelect = document.getElementById('bgColor');
-      const fileInput = document.getElementById('fileInput');
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HTML Notepad with Drag & Drop</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center;    /* Vertical centering */
+    background-color: #d3d3d3; /* Light gray background */
+    font-family: Arial, sans-serif;
+  }
+  .container {
+    width: 90%;
+    max-width: 800px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  label, select {
+    margin-bottom: 10px;
+    display: block;
+  }
+  #notepad {
+    width: 100%;
+    height: 300px;
+    padding: 10px;
+    box-sizing: border-box;
+    resize: none;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+  }
+  /* Drag and Drop area styling */
+  #dropArea {
+    border: 2px dashed #aaa;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    color: #555;
+    margin-bottom: 10px;
+  }
+  #dropArea.dragover {
+    border-color: #333;
+    background-color: #f0f0f0;
+  }
+  .buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+  }
+  button {
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  /* Style for the Exit link/button */
+  a.exit-link {
+    text-decoration: none;
+  }
+  a.exit-link button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+  }
+  a.exit-link button:hover {
+    background-color: #d32f2f;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>HTML Notepad</h1>
+  
+  <!-- Background color selector -->
+  <label for="bgColor">Choose Background Color:</label>
+  <select id="bgColor">
+    <option value="#ffffff" selected>White</option>
+    <option value="#f8f9fa">Light Gray</option>
+    <option value="#ffe4e1">Misty Rose</option>
+    <option value="#e0ffff">Light Cyan</option>
+    <option value="#f0e68c">Khaki</option>
+    <option value="#d3ffd3">Light Green</option>
+    <option value="#ffe4b5">Moccasin</option>
+    <option value="#d8bfd8">Thistle</option>
+    <option value="#fafad2">Light Yellow</option>
+    <option value="#f5f5dc">Beige</option>
+    <option value="#ffe4e1">Pink</option>
+    <option value="#e6e6fa">Lavender</option>
+    <option value="#fff0f5">Lavender Blush</option>
+    <option value="#f0ffff">Azure</option>
+    <option value="#faf0e6">Linen</option>
+    <option value="#ffe4b5">Peach</option>
+    <option value="#dcdcdc">Gainsboro</option>
+    <option value="#ffe4c4">Bisque</option>
+    <option value="#f0fff0">Honeydew</option>
+    <option value="#ff6347">Tomato</option>
+    <option value="#40e0d0">Turquoise</option>
+    <option value="#ffd700">Gold</option>
+    <option value="#adff2f">Green Yellow</option>
+    <option value="#ff69b4">Hot Pink</option>
+    <option value="#7b68ee">Medium Slate Blue</option>
+    <option value="#ff4500">Orange Red</option>
+    <option value="#2e8b57">Sea Green</option>
+    <option value="#b22222">Firebrick</option>
+    <option value="#708090">Slate Gray</option>
+    <option value="#b0c4de">Light Steel Blue</option>
+    <option value="#dda0dd">Plum</option>
+    <option value="#bc8f8f">Rosy Brown</option>
+    <option value="#ffa07a">Light Salmon</option>
+    <option value="#20b2aa">Light Sea Green</option>
+    <!-- Additional colors -->
+    <option value="#ffe4b2">Light Orange</option>
+    <option value="#b0e0e6">Powder Blue</option>
+    <option value="#ffe4e0">Pinkish</option>
+    <option value="#e0ffff">Light Cyan</option>
+    <option value="#f5f5f5">White Smoke</option>
+    <option value="#ffe4e1">Light Pink</option>
+    <option value="#d2b48c">Tan</option>
+    <option value="#faf0e6">Linen</option>
+    <option value="#ffe4c4">Bisque</option>
+    <option value="#c0c0c0">Silver</option>
+    <option value="#ffe4e0">Misty Rose</option>
+    <option value="#f0ffff">Azure</option>
+    <option value="#ffe4b5">Peach Puff</option>
+    <option value="#e6e6fa">Lavender</option>
+    <option value="#ffe4e1">Pink</option>
+    <option value="#d3ffd3">Light Green</option>
+    <option value="#f0f8ff">Alice Blue</option>
+    <option value="#ffe4e0">Pink</option>
+    <option value="#f0ffff">Azure</option>
+  </select>
 
-      // Change background color
-      bgColorSelect.addEventListener('change', () => {
-        notepad.style.backgroundColor = bgColorSelect.value;
-      });
+  <!-- Drag and Drop area -->
+  <div id="dropArea">Drop your .txt file here</div>
 
-      // Save content as .txt file
-      function saveText() {
-        const text = notepad.value;
-        const blob = new Blob([text], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'notepad.txt';
-        a.click();
-        URL.revokeObjectURL(url);
+  <!-- Notepad textarea -->
+  <textarea id="notepad" placeholder="Start typing..."></textarea>
+
+  <!-- Buttons -->
+  <div class="buttons">
+    <button onclick="saveText()">Save</button>
+    <button onclick="loadText()">Load</button>
+    <button onclick="clearText()">Clear</button>
+    <!-- Exit button linking to your page -->
+    <a href="../../your%20favorite.html" class="exit-link">
+      <button>Exit</button>
+    </a>
+  </div>
+
+  <!-- Hidden file input for loading files -->
+  <input id="fileInput" style="display:none" accept=".txt" type="file" />
+</div>
+
+<script>
+  const notepad = document.getElementById('notepad');
+  const bgColorSelect = document.getElementById('bgColor');
+  const fileInput = document.getElementById('fileInput');
+  const dropArea = document.getElementById('dropArea');
+
+  // Change background color
+  bgColorSelect.addEventListener('change', () => {
+    notepad.style.backgroundColor = bgColorSelect.value;
+  });
+
+  // Save notepad content as a text file
+  function saveText() {
+    const text = notepad.value;
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'notepad.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Load text file into notepad
+  function loadText() {
+    fileInput.click();
+  }
+
+  // When a file is selected, load its content
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        notepad.value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+  });
+
+  // Clear the notepad
+  function clearText() {
+    notepad.value = '';
+  }
+
+  // Drag and Drop functionality
+  dropArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropArea.classList.add('dragover');
+  });
+  dropArea.addEventListener('dragleave', () => {
+    dropArea.classList.remove('dragover');
+  });
+  dropArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropArea.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.name.endsWith('.txt')) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          notepad.value = event.target.result;
+        };
+        reader.readAsText(file);
+      } else {
+        alert('Please drop a .txt file.');
       }
-
-      // Load content from a .txt file
-      function loadText() {
-        fileInput.click();
-      }
-
-      // When a file is chosen
-      fileInput.addEventListener('change', () => {
-        const file = fileInput.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            notepad.value = e.target.result;
-          };
-          reader.readAsText(file);
-        }
-      });
-
-      // Clear text area
-      function clearText() {
-        notepad.value = '';
-      }
-    </script>
-  </body>
+    }
+  });
+</script>
+</body>
 </html>

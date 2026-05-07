@@ -65,6 +65,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
 
   /* Overlay clip for the 'after' image */
@@ -86,7 +87,7 @@
     transform: translateX(-50%);
   }
 
-  /* Optional: Style for the handle circle */
+  /* Style for the handle circle */
   .handle {
     position: absolute;
     top: 50%;
@@ -122,30 +123,36 @@
 <div class="slider-container" id="slider">
   <div class="image-wrapper">
     <img src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Before%20and%20After%20Slider/christopher%20avatar.jpg" alt="Before Image" />
-    <img src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Before%20and%20After%20Slider/before.jpg " alt="After Image" class="after-image" id="afterImage" />
+    <img src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Before%20and%20After%20Slider/before.jpg" alt="After Image" class="after-image" id="afterImage" />
   </div>
   <div class="slider" id="sliderHandle"></div>
+  <!-- Optional handle circle for better UX -->
+  <div class="handle" id="handleCircle"></div>
 </div>
 
 <script>
   const slider = document.getElementById('slider');
   const afterImage = document.getElementById('afterImage');
   const handle = document.getElementById('sliderHandle');
+  const handleCircle = document.getElementById('handleCircle');
 
   let isDragging = false;
 
   const updateClip = (x) => {
     const rect = slider.getBoundingClientRect();
     let offsetX = x - rect.left;
-    if (offsetX < 0) offsetX = 0;
-    if (offsetX > rect.width) offsetX = rect.width;
+    // Clamp within slider bounds
+    offsetX = Math.max(0, Math.min(offsetX, rect.width));
 
-    // Set clip-path for after-image
+    // Calculate clip percentage
     const clipPercentage = (offsetX / rect.width) * 100;
+
+    // Update clip-path for after-image
     afterImage.style.clipPath = `inset(0 ${100 - clipPercentage}% 0 0)`;
 
-    // Move handle
+    // Move handle and circle
     handle.style.left = `${offsetX}px`;
+    handleCircle.style.left = `${offsetX}px`;
   };
 
   // Mouse events
@@ -161,15 +168,22 @@
   // Touch events
   handle.addEventListener('touchstart', () => { isDragging = true; });
   document.addEventListener('touchend', () => { isDragging = false; });
+  document.addEventListener('touchcancel', () => { isDragging = false; });
   document.addEventListener('touchmove', (e) => {
     if (isDragging && e.touches.length === 1) {
       updateClip(e.touches[0].clientX);
     }
   });
 
-  // Initialize position
+  // Optional: allow clicking anywhere within slider container to move handle
+  slider.addEventListener('click', (e) => {
+    updateClip(e.clientX);
+  });
+
+  // Initialize position on window load
   window.addEventListener('load', () => {
-    updateClip(slider.getBoundingClientRect().left + slider.offsetWidth / 4);
+    const rect = slider.getBoundingClientRect();
+    updateClip(rect.left + rect.width / 2);
   });
 </script>
 

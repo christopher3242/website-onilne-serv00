@@ -62,6 +62,7 @@
     background-color: #007BFF;
     color: #fff;
     transition: background-color 0.3s, transform 0.2s;
+    touch-action: manipulation; /* Better responsiveness on touch devices */
   }
 
   .button:hover {
@@ -111,9 +112,9 @@
 </audio>
 
 <script>
-  // Generate list of 2000 images dynamically
+  // Generate list of 3000 images dynamically
   const images = [];
-  for (let i = 1; i <= 2000; i++) {
+  for (let i = 1; i <= 3000; i++) {
     images.push(`image${i}.png`);
   }
 
@@ -126,6 +127,8 @@
       const img = document.createElement('img');
       img.src = src;
       img.alt = 'Carousel Image';
+      // Optional: add loading attribute for better performance
+      img.loading = 'lazy';
       slidesContainer.appendChild(img);
     });
   }
@@ -162,6 +165,39 @@ document.getElementById('search').onclick = () => {
     alert('Invalid number. Please enter a number within the specified range.');
   }
 };
+
+// Optional: Add swipe gesture support for mobile
+let startX = 0;
+let isSwiping = false;
+
+const carouselElem = document.getElementById('carousel');
+
+carouselElem.addEventListener('touchstart', (e) => {
+  startX = e.touches[0].clientX;
+  isSwiping = true;
+});
+
+carouselElem.addEventListener('touchmove', (e) => {
+  if (!isSwiping) return;
+  const deltaX = e.touches[0].clientX - startX;
+  // Optional: add visual feedback or threshold
+});
+
+carouselElem.addEventListener('touchend', (e) => {
+  if (!isSwiping) return;
+  const endX = e.changedTouches[0].clientX;
+  const deltaX = endX - startX;
+  if (deltaX > 50) {
+    // Swipe right -> previous
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    updateSlide();
+  } else if (deltaX < -50) {
+    // Swipe left -> next
+    currentIndex = (currentIndex + 1) % images.length;
+    updateSlide();
+  }
+  isSwiping = false;
+});
 </script>
 </body>
 </html>

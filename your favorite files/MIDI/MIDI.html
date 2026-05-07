@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>MIDI Mix Studio</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f4f4f4;
+  text-align: center;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+h1 { margin: 10px; }
+
+/* UI panel */
+.ui {
+  background: white;
+  padding: 10px;
+  margin: 10px auto;
+  width: 90%;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #ccc;
+}
+
+/* Buttons */
+button {
+  margin: 4px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+/* Exit button styled as a large primary button */
+a.btn.btn-primary.btn-lg {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border-radius: 5px;
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+/* Volume */
+input[type=range] {
+  width: 150px;
+}
+
+/* Layout */
+.layout {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Keyboard */
+.keyboard {
+  position: relative;
+  display: flex;
+}
+
+.white {
+  width: 50px;
+  height: 200px;
+  background: white;
+  border: 1px solid #333;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.black {
+  width: 35px;
+  height: 120px;
+  background: black;
+  color: white;
+  position: absolute;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.b1 { left: 35px; }
+.b2 { left: 85px; }
+.b3 { left: 185px; }
+.b4 { left: 235px; }
+.b5 { left: 285px; }
+
+/* Notes */
+.panel {
+  width: 220px;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* Drum pads */
+.drums {
+  margin-top: 15px;
+}
+
+.pad {
+  width: 70px;
+  height: 70px;
+  background: orange;
+  display: inline-block;
+  margin: 5px;
+  line-height: 70px;
+  font-weight: bold;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>MIDI Mix Studio</h1>
+
+<div class="ui">
+
+<!-- 🎛 Instrument list -->
+<button onclick="setInstrument('piano')">🎹 Piano</button>
+<button onclick="setInstrument('trumpet')">🎺 Trumpet</button>
+<button onclick="setInstrument('beat')">🥁 Beat</button>
+
+<!-- 🎚 Volume control -->
+Volume:
+<input type="range" min="0" max="1" step="0.01" value="1" oninput="volume=this.value" />
+
+<br><br>
+
+<!-- Controls -->
+<button onclick="startRecording()">Record</button>
+<button onclick="stopRecording()">Stop</button>
+<button onclick="playRecording()">Playback</button>
+<button onclick="downloadMIDI()">Export MIDI</button>
+<button onclick="clearNotes()">Clear</button>
+<!-- Updated Exit Button -->
+<a href="../../your%20favorite.html" class="btn btn-primary btn-lg">Exit</a>
+
+</div>
+
+<div class="layout">
+
+<!-- 🎹 Keyboard -->
+<div class="keyboard">
+
+  <div class="white" onclick="playNote(261.63,'C',60)">C</div>
+  <div class="white" onclick="playNote(293.66,'D',62)">D</div>
+  <div class="white" onclick="playNote(329.63,'E',64)">E</div>
+  <div class="white" onclick="playNote(349.23,'F',65)">F</div>
+  <div class="white" onclick="playNote(392.00,'G',67)">G</div>
+  <div class="white" onclick="playNote(440.00,'A',69)">A</div>
+  <div class="white" onclick="playNote(493.88,'B',71)">B</div>
+
+  <div class="black b1" onclick="playNote(277.18,'C#',61)">C#</div>
+  <div class="black b2" onclick="playNote(311.13,'D#',63)">D#</div>
+  <div class="black b3" onclick="playNote(369.99,'F#',66)">F#</div>
+  <div class="black b4" onclick="playNote(415.30,'G#',68)">G#</div>
+  <div class="black b5" onclick="playNote(466.16,'A#',70)">A#</div>
+
+</div>
+
+<!-- 📜 Notes list -->
+<div class="panel">
+  <h3>Notes</h3>
+  <ul id="notes"></ul>
+</div>
+
+</div>
+
+<!-- 🥁 Drum pads -->
+<div class="drums">
+  <h3>Drums</h3>
+  <div class="pad" onclick="drum(120,'Kick')">Kick</div>
+  <div class="pad" onclick="drum(220,'Snare')">Snare</div>
+  <div class="pad" onclick="drum(320,'Hat')">Hat</div>
+</div>
+
+<script>
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+/* 🎛 global controls */
+let instrument = "piano";
+let volume = 1;
+
+/* 🎤 recording */
+let recording = false;
+let startTime = 0;
+let midiEvents = [];
+
+/* Android audio unlock */
+document.addEventListener("touchstart", ()=> {
+  if(ctx.state==="suspended") ctx.resume();
+},{once:true});
+
+/* 🎹 instrument selector */
+function setInstrument(i){
+  instrument = i;
+}
+
+/* 📜 notes UI */
+function addNote(n){
+  let li = document.createElement("li");
+  li.textContent = n;
+  document.getElementById("notes").appendChild(li);
+}
+
+/* 🎧 core sound engine */
+function playNote(freq, name, midi){
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.frequency.value = freq;
+
+  if(instrument==="piano") osc.type="sine";
+  if(instrument==="trumpet") osc.type="sawtooth";
+  if(instrument==="beat") osc.type="square";
+
+  gain.gain.value = volume;
+
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+1);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start();
+  osc.stop(ctx.currentTime+1);
+
+  addNote(name);
+
+  /* 🎼 recording */
+  if(recording){
+    let t = Date.now()-startTime;
+    midiEvents.push({type:"on",note:midi,time:t});
+    midiEvents.push({type:"off",note:midi,time:t+300});
+  }
+}
+
+/* 🥁 drum */
+function drum(freq,name){
+  const osc=ctx.createOscillator();
+  const gain=ctx.createGain();
+
+  osc.frequency.value=freq;
+  osc.type="square";
+
+  gain.gain.value=volume;
+  gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.2);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start();
+  osc.stop(ctx.currentTime+0.2);
+
+  addNote("Drum "+name);
+}
+
+/* 🎤 recording */
+function startRecording(){
+  midiEvents=[];
+  recording=true;
+  startTime=Date.now();
+}
+
+function stopRecording(){
+  recording=false;
+}
+
+/* ▶ playback */
+function playRecording(){
+  let start=midiEvents[0]?.time||0;
+
+  midiEvents.forEach(e=>{
+    setTimeout(()=>{
+      if(e.type==="on"){
+        playNote(440,"MIDI",e.note);
+      }
+    },e.time-start);
+  });
+}
+
+/* 🧹 clear */
+function clearNotes(){
+  document.getElementById("notes").innerHTML="";
+}
+
+/* 💾 REAL MIDI EXPORT */
+function downloadMIDI(){
+
+  let data=[];
+
+  midiEvents.forEach(e=>{
+    data.push(e.type==="on"?0x90:0x80);
+    data.push(e.note);
+    data.push(64);
+  });
+
+  const header=[
+    0x4d,0x54,0x68,0x64,
+    0x00,0x00,0x00,0x06,
+    0x00,0x01,0x00,0x01,0x00,0x60
+  ];
+
+  const track=[
+    0x4d,0x54,0x72,0x6b,
+    0x00,0x00,0x00,data.length,
+    ...data,
+    0x00,0xff,0x2f,0x00
+  ];
+
+  const midi=new Uint8Array([...header,...track]);
+
+  const blob=new Blob([midi],{type:"audio/midi"});
+  const url=URL.createObjectURL(blob);
+
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="mix.mid";
+  a.click();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Music Player</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Centered Title */
+  .title {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #ff4081;
+    text-shadow: 1px 1px 2px #000;
+    text-align: center;
+  }
+
+  /* Theme Buttons Container */
+  .theme-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+
+  /* Theme Buttons Style */
+  .theme-btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+    transition: background-color 0.3s;
+    min-width: 80px;
+  }
+  /* Specific themes */
+  .default { background-color: #ff4081; color: #fff; }
+  .silver { background-color: #C0C0C0; color: #000; }
+  .black { background-color: #222; color: #fff; }
+  .lightblue { background-color: #00008B; color: #fff; } /* Changed to Dark Blue */
+
+  /* Player container style */
+  .player-container {
+    background: #1e1e1e;
+    border-radius: 15px;
+    padding: 20px;
+    max-width: 90%;
+    width: 400px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  }
+
+  .song-info {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  #song-title {
+    font-size: 1.5em;
+    margin: 0;
+    color: #ffd700;
+    font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+  }
+
+  #audio-player {
+    width: 100%;
+    outline: none;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    background-color: #ff4081;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1em;
+    margin: 5px;
+    transition: background 0.3s, transform 0.2s;
+    min-width: 80px;
+  }
+
+  button:hover {
+    background-color: #e91e63;
+    transform: scale(1.05);
+  }
+
+  #exit-btn {
+    background-color: #607d8b;
+  }
+
+  #exit-btn:hover {
+    background-color: #455a64;
+  }
+
+  .download-section {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .download-btn {
+    background-color: #4caf50;
+  }
+
+  .download-btn:hover {
+    background-color: #388e3c;
+  }
+
+  .volume-control {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #volume-slider {
+    margin-left: 10px;
+    width: 150px;
+  }
+
+  /* Loop Button Style */
+  #loop-btn {
+    background-color: #8bc34a;
+  }
+
+  #loop-btn:hover {
+    background-color: #689f38;
+  }
+
+  /* Responsive adjustments for smaller screens */
+  @media (max-width: 500px) {
+    .controls {
+      flex-direction: column;
+      align-items: center;
+    }
+    #volume-slider {
+      width: 100px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1 class="title" id="main-title">Music Player</h1>
+
+<!-- Theme Buttons -->
+<div class="theme-buttons">
+  <button class="theme-btn default" data-theme="default">Default</button>
+  <button class="theme-btn silver" data-theme="silver">Silver</button>
+  <button class="theme-btn black" data-theme="black">Black</button>
+  <button class="theme-btn lightblue" data-theme="lightblue">Dark Blue</button>
+</div>
+
+<div class="player-container">
+  <div class="song-info">
+    <h2 id="song-title">Tonp</h2>
+  </div>
+  <audio id="audio-player" controls></audio>
+  <div class="controls">
+    <button id="prev-btn">Previous</button>
+    <button id="play-pause-btn">Play</button>
+    <button id="next-btn">Next</button>
+    <button id="loop-btn">Loop Off</button>
+    <a href="../../your%20favorite.html" style="text-decoration:none;">
+      <button id="exit-btn">Exit</button>
+    </a>
+  </div>
+  <div class="download-section">
+    <button id="download-btn" class="download-btn">Download MP3</button>
+  </div>
+  <div class="volume-control">
+    <label for="volume-slider">Volume:</label>
+    <input id="volume-slider" min="0" max="100" value="50" type="range" />
+  </div>
+</div>
+
+<script>
+  // List of songs
+  const songs = [
+    {
+      title: "Lobane (2026)",
+      src: "https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Lobane%20(2026).mp3"
+    },
+	 {
+      title: "Orlpn",
+      src: "https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Orlpn.mp3"
+    }
+  ];
+
+  let currentSongIndex = 0; // Default to second song "Lobane"
+  let isLooping = false;
+
+  // DOM elements
+  const audioPlayer = document.getElementById('audio-player');
+  const songTitle = document.getElementById('song-title');
+  const playPauseBtn = document.getElementById('play-pause-btn');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const exitBtn = document.getElementById('exit-btn');
+  const downloadBtn = document.getElementById('download-btn');
+  const volumeSlider = document.getElementById('volume-slider');
+  const loopBtn = document.getElementById('loop-btn');
+  const titleElement = document.getElementById('main-title');
+
+  // Load initial song
+  loadSong(currentSongIndex);
+
+  function loadSong(index) {
+    const song = songs[index];
+    songTitle.textContent = song.title;
+    audioPlayer.src = song.src;
+    playPauseBtn.textContent = 'Play';
+  }
+
+  // Play/Pause toggle
+  document.getElementById('play-pause-btn').addEventListener('click', () => {
+    if (audioPlayer.paused || audioPlayer.ended) {
+      audioPlayer.play();
+      playPauseBtn.textContent = 'Pause';
+    } else {
+      audioPlayer.pause();
+      playPauseBtn.textContent = 'Play';
+    }
+  });
+
+  // When song ends
+  audioPlayer.addEventListener('ended', () => {
+    if (isLooping) {
+      audioPlayer.currentTime = 0;
+      audioPlayer.play();
+    } else {
+      nextSong();
+    }
+  });
+
+  // Previous song
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+    loadSong(currentSongIndex);
+    audioPlayer.play();
+    playPauseBtn.textContent = 'Pause';
+  });
+
+  // Next song
+  document.getElementById('next-btn').addEventListener('click', () => {
+    nextSong();
+  });
+
+  function nextSong() {
+    currentSongIndex = (currentSongIndex + 1) % songs.length;
+    loadSong(currentSongIndex);
+    audioPlayer.play();
+    playPauseBtn.textContent = 'Pause';
+  }
+
+  // Exit button
+  document.getElementById('exit-btn').addEventListener('click', () => {
+    audioPlayer.pause();
+    audioPlayer.currentTime = 0;
+    playPauseBtn.textContent = 'Play';
+  });
+
+  // Download button
+  document.getElementById('download-btn').addEventListener('click', () => {
+    const currentSong = songs[currentSongIndex];
+    const link = document.createElement('a');
+    link.href = currentSong.src;
+    link.download = currentSong.src.split('/').pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
+  // Volume control
+  document.getElementById('volume-slider').addEventListener('input', () => {
+    audioPlayer.volume = document.getElementById('volume-slider').value / 100;
+  });
+  // Initial volume
+  audioPlayer.volume = document.getElementById('volume-slider').value / 100;
+
+  // Loop toggle
+  document.getElementById('loop-btn').addEventListener('click', () => {
+    isLooping = !isLooping;
+    audioPlayer.loop = isLooping;
+    document.getElementById('loop-btn').textContent = isLooping ? 'Loop On' : 'Loop Off';
+  });
+
+  // Theme buttons event
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const theme = btn.dataset.theme;
+      switch(theme) {
+        case 'default':
+          document.body.style.backgroundColor = '#121212';
+          document.body.style.color = '#fff';
+          titleElement.style.color = '#ff4081';
+          updateButtonColors('#ff4081');
+          break;
+        case 'silver':
+          document.body.style.backgroundColor = '#C0C0C0';
+          document.body.style.color = '#000';
+          titleElement.style.color = '#000';
+          updateButtonColors('#C0C0C0', '#000');
+          break;
+        case 'black':
+          document.body.style.backgroundColor = '#222';
+          document.body.style.color = '#fff';
+          titleElement.style.color = '#fff';
+          updateButtonColors('#222', '#fff');
+          break;
+        case 'lightblue':
+          document.body.style.backgroundColor = '#00008B'; // Changed to Dark Blue
+          document.body.style.color = '#fff';
+          titleElement.style.color = '#fff';
+          updateButtonColors('#00008B');
+          break;
+      }
+    });
+  });
+
+  // Helper to update control button colors
+  function updateButtonColors(bgColor, textColor='#fff') {
+    document.querySelectorAll('.controls button, #exit-btn, #download-btn, #loop-btn, #volume-slider').forEach(el => {
+      if(el.tagName.toLowerCase() === 'button' || el.tagName.toLowerCase() === 'a') {
+        if(el.id !== 'loop-btn') { // Keep loop button color consistent
+          el.style.backgroundColor = bgColor;
+          el.style.color = textColor;
+        }
+      }
+    });
+  }
+</script>
+</body>
+</html>
