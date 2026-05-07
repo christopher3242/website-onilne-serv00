@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Minesweeper</title>
-    <style>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Minesweeper</title>
+<style>
   body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
@@ -18,6 +15,11 @@
     padding: 20px;
   }
   h1 {
+    margin-bottom: 10px;
+  }
+  #topTime {
+    font-size: 24px;
+    font-weight: bold;
     margin-bottom: 10px;
   }
   #controls {
@@ -75,7 +77,7 @@
     font-size: 18px;
     font-weight: bold;
   }
-  /* Responsive adjustments */
+  /* Responsive adjustments for smaller screens */
   @media(max-width: 700px){
     #game {
       grid-template-columns: repeat(15, 30px);
@@ -85,27 +87,30 @@
       height: 30px;
       font-size: 14px;
     }
+    #topTime {
+      font-size: 20px;
+    }
   }
 </style>
-  </head>
-  <body>
-    <h1>Minesweeper</h1>
-    <div id="controls"> <label> <input id="flagMode" checked="checked"
-          type="checkbox"> Flag Mode </label> <button id="showAnswer">Show
-        Answer</button> <button id="reset">Reset</button> <a
-        href="../Games.html"><button id="exit" aria-label="Exit">Exit</button></a>
-      <div style="margin-left:20px;"> Flags Remaining: <span
-          id="flagsRemaining"></span>
-        <div style="display:inline-block; margin-left:20px;">Time: <span
-            id="timeDisplay">0s</span></div>
-      </div>
-    </div>
-    <div id="game"></div>
-    <div id="status"></div>
-    <script>
+</head>
+<body>
+<h1>Minesweeper</h1>
+<div id="topTime">Time: 0s</div> <!-- Top timer display -->
+<div id="controls">
+  <label><input id="flagMode" checked type="checkbox" /> Flag Mode</label>
+  <button id="showAnswer">Show Answer</button>
+  <button id="reset">Reset</button>
+  <a href="../Games.html"><button id="exit" aria-label="Exit">Exit</button></a>
+  <div style="margin-left:20px;">
+    Flags Remaining: <span id="flagsRemaining"></span>
+  </div>
+</div>
+<div id="game"></div>
+<div id="status"></div>
+<script>
 const ROWS = 10;
 const COLS = 15;
-const MINES_COUNT = 8;
+const MINES_COUNT = 6;
 
 const gameContainer = document.getElementById('game');
 const statusDiv = document.getElementById('status');
@@ -114,7 +119,7 @@ const showAnswerButton = document.getElementById('showAnswer');
 const exitButton = document.getElementById('exit');
 const flagModeCheckbox = document.getElementById('flagMode');
 const flagsRemainingSpan = document.getElementById('flagsRemaining');
-const timerSpan = document.getElementById('timeDisplay');
+const topTimeDiv = document.getElementById('topTime');
 
 let board = [];
 let gameOver = false;
@@ -124,12 +129,12 @@ let flagsRemaining = MINES_COUNT;
 let timerInterval = null;
 let secondsElapsed = 0;
 
-// Update display
+// Update functions
 function updateFlagsRemaining() {
   flagsRemainingSpan.textContent = flagsRemaining;
 }
-function updateTimer() {
-  timerSpan.textContent = `${secondsElapsed}s`;
+function updateTopTime() {
+  topTimeDiv.textContent = `Time: ${secondsElapsed}s`;
 }
 
 // Initialize game
@@ -141,7 +146,7 @@ function initGame() {
   flagsRemaining = MINES_COUNT;
   secondsElapsed = 0;
   clearInterval(timerInterval);
-  updateTimer();
+  updateTopTime();
   statusDiv.textContent = '';
 
   updateFlagsRemaining();
@@ -149,7 +154,7 @@ function initGame() {
   // Clear previous board
   gameContainer.innerHTML = '';
 
-  // Set flag mode
+  // Reset flag mode
   flagMode = flagModeCheckbox.checked;
 
   // Create board data
@@ -196,9 +201,11 @@ function initGame() {
       cellDiv.dataset.row = r;
       cellDiv.dataset.col = c;
       cellDiv.setAttribute('aria-label', `Cell ${r + 1}, ${c + 1}`);
+      
+      // Add event listeners
       cellDiv.addEventListener('click', handleCellClick);
       cellDiv.addEventListener('contextmenu', handleCellRightClick);
-      // Support touch events
+      // Touch support
       cellDiv.addEventListener('touchstart', (e) => {
         e.preventDefault();
         handleCellClick.call(cellDiv, e);
@@ -207,6 +214,7 @@ function initGame() {
         e.preventDefault();
         handleCellRightClick.call(cellDiv, e);
       });
+      
       gameContainer.appendChild(cellDiv);
       board[r][c].element = cellDiv;
     }
@@ -215,7 +223,7 @@ function initGame() {
   // Start timer
   timerInterval = setInterval(() => {
     secondsElapsed++;
-    updateTimer();
+    updateTopTime();
   }, 1000);
 }
 
@@ -253,10 +261,11 @@ function handleCellRightClick(e) {
   toggleFlagQuestion(r, c);
 }
 
-// Toggle flag or question mark
+// Toggle flag or question
 function toggleFlagQuestion(r, c) {
   const cell = board[r][c];
   if (cell.revealed) return;
+
   if (flagMode) {
     if (cell.flagged) {
       cell.flagged = false;
@@ -366,14 +375,13 @@ showAnswerButton.onclick = () => {
 // Reset game
 resetButton.onclick = initGame;
 
-
 // Mode toggle
 flagModeCheckbox.onchange = () => {
   flagMode = flagModeCheckbox.checked;
 };
 
-// Start game
+// Start game on page load
 initGame();
 </script>
-  </body>
+</body>
 </html>

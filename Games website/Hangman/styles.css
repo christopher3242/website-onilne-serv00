@@ -1,51 +1,126 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+  background: linear-gradient(135deg, #9395fb 0%, #434cc9 100%);
+  margin: 0;
+  padding: 10px;
 }
 
+/* Container styling */
 .container {
-    text-align: center;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  max-width: 450px;
+  width: 100%;
+  text-align: center;
 }
 
-.word-display {
-    font-size: 24px;
-    margin: 20px 0;
+/* Header */
+h1 {
+  margin-bottom: 20px;
+  font-size: 2em;
+  color: #222;
 }
 
-.input-button-wrapper {
-    margin: 20px 0;
+/* Labels */
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #444;
 }
 
-.hangman-display {
-    font-size: 50px;
-    margin: 20px 0;
+/* Dropdown */
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #888;
+  font-size: 1em;
+  margin-bottom: 15px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+select:focus {
+  border-color: #4CAF50;
 }
 
+/* Buttons */
 button {
-    margin: 5px;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
+  margin: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #4CAF50;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
 }
-
 button:hover {
-    background-color: #0056b3;
+  background-color: #45a049;
+  transform: scale(1.05);
 }
 
+/* Guess input */
+#letterInput {
+  padding: 12px;
+  width: 140px;
+  border-radius: 8px;
+  border: 2px solid #4CAF50;
+  font-size: 1em;
+  text-align: center;
+  margin-right: 10px;
+}
+
+/* Word display */
+.word-display {
+  font-size: 2em;
+  letter-spacing: 8px;
+  margin: 20px 0;
+  font-weight: bold;
+  color: #222;
+}
+
+/* Message styling */
+#message {
+  margin-top: 10px;
+  font-size: 1.2em;
+  color: #444;
+}
+
+/* Hangman emoji display */
+#hangman {
+  font-size: 3em;
+  margin: 20px 0;
+}
+
+/* Tries remaining */
+#triesLeft {
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+/* Answer display */
 #answerDisplay {
-    font-size: 18px;
-    color: #28a745;
-    margin: 20px 0;
+  margin-top: 15px;
+  font-size: 1.4em;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Responsive for small screens */
+@media(max-width: 500px){
+  body {
+    padding: 10px;
+  }
+  #letterInput {
+    width: 100px;
+  }
 }

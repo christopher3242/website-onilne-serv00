@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Crossword Puzzle</title>
+<style>
+  /* Basic styling for the body and container */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f0f0f0;
+    text-align: center;
+  }
+
+  /* Header styling */
+  h1 {
+    margin-bottom: 10px;
+  }
+
+  /* Main puzzle container styling */
+  #puzzleContainer {
+    display: inline-block;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    max-width: 100%;
+  }
+
+  /* Crossword grid styling */
+  .crossword {
+    display: grid;
+    grid-template-columns: repeat(12, 40px); /* 12 columns grid */
+    gap: 4px;
+    justify-content: center; /* Center grid horizontally */
+  }
+
+  /* Individual cell styling */
+  .cell {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #555;
+    font-size: 20px;
+    text-align: center;
+    text-transform: uppercase;
+    background: #fff;
+    outline: none;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  /* Styling for black cells (blocked cells) */
+  .black {
+    background: #000;
+    border: none;
+  }
+
+  /* Button styles for user actions */
+  button {
+    margin: 10px 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 100px;
+  }
+
+  /* Specific button colors */
+  #showSolutionBtn { background: #4CAF50; color: #fff; }
+  #checkBtn { background: #2196F3; color: #fff; }
+  #restartBtn { background: #f44336; color: #fff; }
+
+  /* Exit link styling as a button */
+  .exit-link {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #777;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .exit-link:hover {
+    background-color: #555;
+  }
+
+  /* Win message styling */
+  #winMessage {
+    font-size: 1.2em;
+    color: green;
+    margin-top: 15px;
+    display: none; /* Hidden by default */
+  }
+</style>
+</head>
+<body>
+
+<h1>Crossword Puzzle</h1>
+<div id="puzzleContainer">
+  <!-- Crossword grid will be generated inside this container -->
+  <div class="crossword" id="crossword"></div>
+  <!-- Action buttons -->
+  <div style="margin-top: 10px;">
+    <button id="showSolutionBtn">Show Solution</button>
+    <button id="checkBtn">Check Answers</button>
+    <button id="restartBtn">Restart</button>
+    <!-- Exit link styled as button -->
+    <a href="../games.html" class="exit-link">Exit</a>
+  </div>
+  <!-- Win message -->
+  <div id="winMessage">🎉 You Win! 🎉</div>
+</div>
+
+<script>
+  // Define grid pattern: 1 for cells, 0 for black cells
+  const gridPattern = [
+    // 12 columns
+    [1,1,1,1,1,1,1,1,1,1,1,1], // Row 0: "EPSTEIN"
+    [1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1],
+  ];
+
+  // Define answers array: spell out "EPSTEIN" across row 0 and "FILES" on row 7
+  const answers = [
+    ['E', 'P', 'S', 'T', 'E', 'I', 'N', null, null, null, null, null], // Top row
+    [null,null,null,null,null,null,null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null,null,null,null,null],
+    ['F', 'I', 'L', 'E', 'S', null, null, null, null, null, null, null], // Bottom row "FILES"
+  ];
+
+  const container = document.getElementById('crossword');
+  const cells = []; // 2D array to reference input elements
+
+  // Generate the grid dynamically
+  for (let r=0; r<gridPattern.length; r++) {
+    cells[r] = [];
+    for (let c=0; c<gridPattern[r].length; c++) {
+      const input = document.createElement('input');
+      input.type='text';
+      input.maxLength=1;
+      input.style.width='40px';
+      input.style.height='40px';
+      input.style.textAlign='center';
+      input.style.fontSize='20px';
+      // Style for black cells
+      if(gridPattern[r][c]===0 || c>=answers[r].length || answers[r][c]===null){
+        input.className='cell black';
+        input.disabled=true;
+        input.style.background='#000';
+      } else {
+        input.className='cell';
+      }
+      container.appendChild(input);
+      cells[r][c]=input;
+
+      // Auto-focus next cell after input
+      input.addEventListener('input', ()=> {
+        if(input.value.length===1) {
+          moveToNext(r,c);
+        }
+      });
+      // Keyboard navigation with arrow keys
+      input.addEventListener('keydown', (e)=>{
+        if(e.key==='ArrowRight') { moveAdjacent(r,c,'right'); e.preventDefault(); }
+        if(e.key==='ArrowLeft') { moveAdjacent(r,c,'left'); e.preventDefault(); }
+        if(e.key==='ArrowDown') { moveAdjacent(r,c,'down'); e.preventDefault(); }
+        if(e.key==='ArrowUp') { moveAdjacent(r,c,'up'); e.preventDefault(); }
+      });
+    }
+  }
+
+  // Move focus to next empty cell
+  function moveToNext(r,c) {
+    for(let rr=0; rr<gridPattern.length; rr++) {
+      for(let cc=0; cc<gridPattern[rr].length; cc++) {
+        if(gridPattern[rr][cc]===1 && cells[rr][cc].value==='') {
+          cells[rr][cc].focus();
+          return;
+        }
+      }
+    }
+  }
+
+  // Move focus to adjacent cells based on direction
+  function moveAdjacent(r,c,direction) {
+    let nr=r, nc=c;
+    if(direction==='right'){ do{ nc++; }while(nc<cells[0].length && cells[r][nc].classList.contains('black')); }
+    if(direction==='left'){ do{ nc--; }while(nc>=0 && cells[r][nc].classList.contains('black')); }
+    if(direction==='down'){ do{ nr++; }while(nr<cells.length && cells[nr][c].classList.contains('black')); }
+    if(direction==='up'){ do{ nr--; }while(nr>=0 && cells[nr][c].classList.contains('black')); }
+    if(nr>=0 && nr<cells.length && nc>=0 && nc<cells[0].length && !cells[nr][nc].classList.contains('black')){
+      cells[nr][nc].focus();
+    }
+  }
+
+  // Button references
+  const btnShow = document.getElementById('showSolutionBtn');
+  const btnCheck = document.getElementById('checkBtn');
+  const btnRestart = document.getElementById('restartBtn');
+  const winMsg = document.getElementById('winMessage');
+
+  // Show solution for 2 seconds
+  btnShow.onclick = ()=> {
+    for(let r=0; r<answers.length; r++){
+      for(let c=0; c<answers[r].length; c++){
+        if(answers[r][c]){
+          cells[r][c].value=answers[r][c];
+        }
+      }
+    }
+    // Hide button during display
+    btnShow.style.display='none';
+    setTimeout(()=> {
+      btnShow.style.display='inline-block';
+    },2000);
+  }
+
+  // Check answers
+  document.getElementById('checkBtn').onclick= ()=> {
+    let allCorrect=true;
+    for(let r=0; r<answers.length; r++){
+      for(let c=0; c<answers[r].length; c++){
+        if(answers[r][c]){
+          const val = cells[r][c].value.toUpperCase();
+          if(val===answers[r][c]){
+            cells[r][c].style.background='lightgreen';
+            cells[r][c].style.border='2px solid green';
+          } else {
+            cells[r][c].style.background='lightcoral';
+            cells[r][c].style.border='2px solid red';
+            allCorrect=false;
+          }
+        }
+      }
+    }
+    if(allCorrect && answers.some(row => row.some(cell => cell))) {
+      showWin();
+    }
+  }
+
+  // Restart game
+ document.getElementById('restartBtn').onclick=()=> {
+    for(let r=0; r<cells.length; r++){
+      for(let c=0; c<cells[r].length; c++){
+        if(!cells[r][c].classList.contains('black')){
+          cells[r][c].value='';
+          cells[r][c].style.background='';
+          cells[r][c].style.border='2px solid #555';
+        }
+      }
+    }
+    winMsg.style.display='none';
+  }
+
+  // Show Win message
+  function showWin() {
+    winMsg.style.display='block';
+  }
+</script>
+</body>
+</html>

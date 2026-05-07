@@ -6,53 +6,72 @@ let resetButton = document.getElementById('reset');
 let answerButton = document.getElementById('answer');
 let messageDisplay = document.getElementById('message');
 let answerDisplay = document.getElementById('answerDisplay');
+let scoreSpan = document.getElementById('score');
+
+let score = 0;
 
 // Function to start a new game
 function startGame() {
-    let range = parseInt(rangeSelector.value);
+    const range = parseInt(rangeSelector.value);
     targetNumber = Math.floor(Math.random() * range) + 1;
     messageDisplay.textContent = 'Guess a number between 1 and ' + range;
-    guessInput.value = ''; // Clear the guess input
-    answerDisplay.style.display = 'none'; // Hide answer display
+    guessInput.value = '';
+    answerDisplay.style.display = 'none';
 }
 
-// Event listener for the range selection
+// Update score display
+function updateScore() {
+    document.getElementById('score').textContent = score;
+}
+
+// Event listener for range change
 rangeSelector.addEventListener('change', startGame);
 
-// Event listener for the submit button
-submitButton.addEventListener('click', function() {
-    let guess = parseInt(guessInput.value);
-    
+// Submit guess
+function handleGuess() {
+    const range = parseInt(rangeSelector.value);
+    const guess = parseInt(guessInput.value);
+
     if (isNaN(guess)) {
         messageDisplay.textContent = 'Please enter a valid number.';
         return;
     }
 
-    if (guess < 1 || guess > parseInt(rangeSelector.value)) {
+    if (guess < 1 || guess > range) {
         messageDisplay.textContent = 'Your guess is out of range. Try again!';
-    } else if (guess > targetNumber) {
+        return;
+    }
+
+    if (guess > targetNumber) {
         messageDisplay.textContent = 'Too high! Try again.';
     } else if (guess < targetNumber) {
         messageDisplay.textContent = 'Too low! Try again.';
     } else {
         messageDisplay.textContent = 'Congratulations! You guessed the number!';
-        setTimeout(() => startGame(), 2000); // Restart game after 2 seconds if guessed correctly
+        score += 10;
+        updateScore();
+        setTimeout(startGame, 2000);
     }
-});
+}
 
-// Event listener for the reset button
+// Event listeners
+submitButton.addEventListener('click', handleGuess);
 resetButton.addEventListener('click', startGame);
-
-// Event listener for the answer button
-answerButton.addEventListener('click', function() {
+answerButton.addEventListener('click', () => {
     answerDisplay.textContent = 'The answer is: ' + targetNumber;
     answerDisplay.style.display = 'block';
-    
-    // Hide the answer after 2 seconds
     setTimeout(() => {
         answerDisplay.style.display = 'none';
     }, 2000);
 });
 
-// Start the game initially
+// Add Enter key to submit
+guessInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        handleGuess();
+    }
+});
+
+// Initialize game
 startGame();
+updateScore();

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Balloon Pop Game</title>
+<style>
+  body {
+    margin: 0;
+    background-color: rgba(90, 158, 247, 0.667);
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+  }
+  .exit- {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+  }
+  .btn {
+    padding: 10px 20px;
+    text-decoration: none;
+    color: white;
+    background-color: #007bff;
+    border-radius: 5px;
+    margin: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  h1 {
+    text-align: center;
+    margin-top: 10px;
+    color: #fff;
+  }
+  #score {
+    position: fixed;
+    top: 50px;
+    width: 100%;
+    text-align: center;
+    font-size: 24px;
+    color: #fff;
+    z-index: 10;
+  }
+  #topScore {
+    position: fixed;
+    top: 80px;
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+    color: #fff;
+    z-index: 10;
+  }
+  #timer {
+    position: fixed;
+    top: 110px;
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+    color: #fff;
+    z-index: 10;
+  }
+  #controls {
+    position: fixed;
+    top: 140px;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+  }
+  .balloon {
+    position: absolute;
+    bottom: -100px;
+    width: 50px;
+    height: 70px;
+    background-color: red;
+    border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+    cursor: pointer;
+    opacity: 0.8;
+    animation: floatUp 8s linear forwards;
+  }
+  /* Glowing effect for special balloons */
+  .glow {
+    box-shadow: 0 0 20px 10px darkblue; /* dark blue glow */
+  }
+  @keyframes floatUp {
+    from { transform: translateY(0); }
+    to { transform: translateY(-100vh); }
+  }
+</style>
+</head>
+<body>
+
+<div class="exit-">
+  <a href="../games.html" class="btn btn-primary btn-lg">Exit</a>
+</div>
+
+<h1>Balloon Pop Game</h1>
+
+<div id="score">Score: 0</div>
+<div id="topScore">Top Score: 0</div>
+<div id="timer">Time: 60</div>
+
+<div id="controls">
+  <button id="startBtn" class="btn">Start / Reset Game</button>
+</div>
+
+<script>
+  let score = 0;
+  let topScore = localStorage.getItem('topScore') || 0;
+  let timeLeft = 60; // longer timer: 60 seconds
+  let balloonsInterval;
+  let countdownInterval;
+  let scoreMultiplier = 1;
+  const scoreDisplay = document.getElementById('score');
+  const topScoreDisplay = document.getElementById('topScore');
+  const timerDisplay = document.getElementById('timer');
+  const startBtn = document.getElementById('startBtn');
+
+  topScoreDisplay.textContent = 'Top Score: ' + topScore;
+
+  // List of balloon colors for variety
+  const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'turquoise', 'gold', 'lime'];
+
+  function createBalloon() {
+    const balloon = document.createElement('div');
+    balloon.className = 'balloon';
+
+    // Random horizontal position
+    balloon.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+
+    // Random color from the list
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    balloon.style.backgroundColor = color;
+
+    // 10% chance to glow with dark blue glow, score x15
+    if (Math.random() < 0.10) {
+      balloon.classList.add('glow');
+      balloon.dataset.multiplier = 15;
+    } else {
+      balloon.dataset.multiplier = 1;
+    }
+
+    // Pop event
+    balloon.addEventListener('click', () => {
+      const multiplier = parseInt(balloon.dataset.multiplier);
+      score += multiplier * scoreMultiplier;
+      scoreDisplay.textContent = 'Score: ' + score;
+      balloon.remove();
+    });
+
+    document.body.appendChild(balloon);
+
+    // Remove balloon when animation ends
+    balloon.addEventListener('animationend', () => {
+      balloon.remove();
+    });
+  }
+
+  function startGame() {
+    // Reset score and timer
+    score = 0;
+    scoreDisplay.textContent = 'Score: ' + score;
+    timeLeft = 60; // reset to 60 seconds
+    timerDisplay.textContent = 'Time: ' + timeLeft;
+    scoreMultiplier = 1;
+
+    // Clear existing balloons and intervals if any
+    clearInterval(balloonsInterval);
+    clearInterval(countdownInterval);
+    // Remove existing balloons
+    document.querySelectorAll('.balloon').forEach(b => b.remove());
+
+    // Start generating balloons every 650ms
+    balloonsInterval = setInterval(createBalloon, 650);
+
+    // Start countdown
+    countdownInterval = setInterval(() => {
+      timeLeft--;
+      timerDisplay.textContent = 'Time: ' + timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(countdownInterval);
+        clearInterval(balloonsInterval);
+        alert('Time\'s up! Your score: ' + score);
+        if (score > topScore) {
+          localStorage.setItem('topScore', score);
+          topScore = score;
+          topScoreDisplay.textContent = 'Top Score: ' + topScore;
+        }
+      }
+    }, 1000);
+  }
+
+  startBtn.addEventListener('click', startGame);
+</script>
+
+</body>
+</html>

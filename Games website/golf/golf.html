@@ -1,266 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Touch Golf Game</title>
-    <style>
-  body {
-    margin: 0;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    background-color: #87CEEB;
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Golf Games</title>
+<style>
+  body { 
+    display: flex; flex-direction: column; align-items: center; 
+    background: #87CEEB; margin: 0; font-family: Arial, sans-serif; touch-action: none;
   }
-  #gameCanvas {
-    display: block;
-    width: 100%;
-    height: 100vh;
-    background-color: green;
-    touch-action: none; /* prevent default touch actions */
-  }
-  #ui {
-    position: fixed;
-    top: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-    z-index: 10;
-  }
-  button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  h1 {
-    text-align: center;
-    margin: 10px 0;
-  }
+  h1 { margin: 20px; color: #006400; }
+  canvas { border: 3px solid #006400; border-radius: 10px; max-width: 95vw; height: auto; }
+  .button-container { display: flex; gap: 10px; margin: 10px; }
+  button { padding: 10px 20px; font-size: 16px; cursor: pointer; border: none; border-radius: 5px; }
+  #restart { background-color: #1E90FF; color: white; }
+  #exit { background-color: #FF6347; color: white; }
+  #powerBar { width: 300px; height: 20px; border: 2px solid #006400; border-radius: 5px; margin: 10px; background: white; position: relative; }
+  #powerFill { height: 100%; width: 0; background: red; border-radius: 5px; }
+  #ballSelect { margin-bottom: 10px; }
 </style>
-  </head>
-  <body>
-    <h1>Touch Golf Game</h1>
-    <div id="ui"> <a href="../Games.html"><button id="exitBtn">Exit</button></a>
-      <button id="nextBtn">Next Level</button> <button id="restartBtn">Restart</button>
-    </div>
-    <canvas id="gameCanvas"></canvas>
-    <script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+</head>
+<body>
+<h1>Golf Games</h1>
 
-const exitBtn = document.getElementById('exitBtn');
-const nextBtn = document.getElementById('nextBtn');
-const restartBtn = document.getElementById('restartBtn');
+<select id="ballSelect">
+  <option value="white">White Ball</option>
+  <option value="red">Red Ball</option>
+  <option value="blue">Blue Ball</option>
+  <option value="yellow">Yellow Ball</option>
+</select>
 
-let level = 1;
-const maxLevel = 4;
+<canvas id="golfCanvas" width="700" height="400"></canvas>
 
-let gameActive = true;
+<div id="powerBar"><div id="powerFill"></div></div>
 
-// Resize canvas to fit window
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+<div class="button-container">
+  <button id="restart">Restart</button>
+  <a href="../games.html"><button id="exit">Exit</button></a>
+</div>
 
-// Game objects
-let ball = {
-  x: 100,
-  y: 500,
-  radius: 10,
-  color: 'white',
-  vx: 0,
-  vy: 0,
-  isMoving: false
-};
+<script>
+const canvas = document.getElementById("golfCanvas");
+const ctx = canvas.getContext("2d");
+const powerFill = document.getElementById("powerFill");
+const ballSelect = document.getElementById("ballSelect");
+const restartBtn = document.getElementById("restart");
 
-let hole = {
-  x: 700,
-  y: 100,
-  radius: 20,
-  color: 'black'
-};
+// --- Levels (now 5) ---
+const levels = [
+    { bg: "#3CB371", hole: { x: 600, y: 100, radius: 15 }, obstacles: [{x:200,y:150,width:20,height:150},{x:400,y:50,width:20,height:200}] },
+    { bg: "#228B22", hole: { x: 650, y: 300, radius: 15 }, obstacles: [{x:300,y:100,width:20,height:200},{x:500,y:150,width:20,height:150},{x:200,y:250,width:100,height:20}] },
+    { bg: "#2E8B57", hole: { x: 100, y: 50, radius: 15 }, obstacles: [{x:250,y:50,width:20,height:200},{x:450,y:200,width:20,height:150},{x:300,y:300,width:200,height:20}] },
+    { bg: "#6B8E23", hole: { x: 550, y: 200, radius: 15 }, obstacles: [{x:100,y:100,width:20,height:200},{x:300,y:250,width:150,height:20},{x:500,y:50,width:20,height:100}] },
+    { bg: "#556B2F", hole: { x: 650, y: 50, radius: 15 }, obstacles: [{x:200,y:100,width:20,height:250},{x:400,y:50,width:150,height:20},{x:500,y:150,width:20,height:150},{x:300,y:300,width:200,height:20}] }
+];
 
-let obstacle = {
-  x: 400,
-  y: 300,
-  width: 100,
-  height: 20,
-  color: 'brown',
-  visible: true
-};
+let currentLevel = 0;
+let strokes = 0;
+let dragging = false;
+let dragStart = { x: 0, y: 0 };
+let power = 0;
+const maxPower = 50;
+let ball = { x: 100, y: 350, radius: 10, vx: 0, vy: 0, color: 'white' };
 
-// Generate obstacle and hole positions
-function generateObstacle() {
-  obstacle.x = Math.random() * (canvas.width - obstacle.width);
-  obstacle.y = Math.random() * (canvas.height - obstacle.height);
-  obstacle.visible = true;
+// --- Input ---
+function getMousePos(e) {
+    const rect = canvas.getBoundingClientRect();
+    let clientX = e.clientX, clientY = e.clientY;
+    if(e.touches){ clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; }
+    return { x: clientX - rect.left, y: clientY - rect.top };
 }
 
-function generateHole() {
-  hole.x = Math.random() * (canvas.width - hole.radius * 2) + hole.radius;
-  hole.y = Math.random() * (canvas.height - hole.radius * 2) + hole.radius;
+function startDrag(e) {
+    const pos = getMousePos(e);
+    const dist = Math.hypot(pos.x - ball.x, pos.y - ball.y);
+    if(dist < ball.radius){ dragging = true; dragStart.x = pos.x; dragStart.y = pos.y; }
 }
 
-function resetGame() {
-  ball.x = 100;
-  ball.y = 500;
-  ball.vx = 0;
-  ball.vy = 0;
-  ball.isMoving = false;
-  generateHole();
-  generateObstacle();
+function endDrag(e) {
+    if(dragging){
+        const pos = getMousePos(e);
+        const dx = dragStart.x - pos.x;
+        const dy = dragStart.y - pos.y;
+        const dist = Math.min(Math.hypot(dx, dy), maxPower);
+        ball.vx = dx / maxPower * 10;
+        ball.vy = dy / maxPower * 10;
+        strokes++;
+        dragging = false;
+        power = 0;
+        powerFill.style.width = '0%';
+    }
 }
 
-// Button handlers
-nextBtn.onclick = () => {
-  if (level < maxLevel) {
-    level++;
-    resetGame();
-  } else {
-    alert("You've completed all levels!");
-  }
-};
-restartBtn.onclick = () => {
-  level = 1;
-  resetGame();
-};
+canvas.addEventListener('mousedown', startDrag);
+canvas.addEventListener('touchstart', startDrag);
+canvas.addEventListener('mouseup', endDrag);
+canvas.addEventListener('touchend', endDrag);
+canvas.addEventListener('mousemove', e => { if(dragging){ const pos=getMousePos(e); power=Math.min(Math.hypot(dragStart.x-pos.x,dragStart.y-pos.y),maxPower); powerFill.style.width=(power/maxPower*100)+'%'; } });
+canvas.addEventListener('touchmove', e => { if(dragging){ const pos=getMousePos(e); power=Math.min(Math.hypot(dragStart.x-pos.x,dragStart.y-pos.y),maxPower); powerFill.style.width=(power/maxPower*100)+'%'; e.preventDefault(); } });
 
-// Touch/swipe variables
-let touchStart = null;
-let touchEnd = null;
+// Ball color
+ballSelect.addEventListener('change', e=>{ ball.color=e.target.value; });
 
-// Handle touch start
-canvas.addEventListener('touchstart', (e) => {
-  if (ball.isMoving) return;
-  if (e.touches.length === 1) {
-    const touch = e.touches[0];
-    touchStart = {x: touch.clientX, y: touch.clientY};
-  }
+// Restart
+restartBtn.addEventListener('click', ()=>{
+    ball.x=100; ball.y=350; ball.vx=0; ball.vy=0; strokes=0; currentLevel=0; power=0; powerFill.style.width='0%';
 });
 
-// Handle touch end
-canvas.addEventListener('touchend', (e) => {
-  if (ball.isMoving || !touchStart) return;
-  if (e.changedTouches.length === 1) {
-    const touch = e.changedTouches[0];
-    touchEnd = {x: touch.clientX, y: touch.clientY};
-    // Calculate swipe vector
-    const dx = touchStart.x - touchEnd.x;
-    const dy = touchStart.y - touchEnd.y;
-    // Set velocity based on swipe
-    ball.vx = dx * 0.1;
-    ball.vy = dy * 0.1;
-    ball.isMoving = true;
-    touchStart = null;
-  }
-});
-
-// Optional: handle mouse for desktop testing
-canvas.addEventListener('mousedown', (e) => {
-  if (ball.isMoving) return;
-  touchStart = {x: e.clientX, y: e.clientY};
-});
-canvas.addEventListener('mouseup', (e) => {
-  if (ball.isMoving || !touchStart) return;
-  touchEnd = {x: e.clientX, y: e.clientY};
-  const dx = touchStart.x - touchEnd.x;
-  const dy = touchStart.y - touchEnd.y;
-  ball.vx = dx * 0.1;
-  ball.vy = dy * 0.1;
-  ball.isMoving = true;
-  touchStart = null;
-});
-
-// Main game loop
-function gameLoop() {
-  ctx.fillStyle = 'green';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Draw hole
-  ctx.beginPath();
-  ctx.arc(hole.x, hole.y, hole.radius, 0, Math.PI * 2);
-  ctx.fillStyle = hole.color;
-  ctx.fill();
-
-  // Draw obstacle
-  if (obstacle.visible) {
-    ctx.fillStyle = obstacle.color;
-    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-  }
-
-  // Draw ball
-  ctx.beginPath();
-  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-  ctx.fillStyle = ball.color;
-  ctx.fill();
-
-  // Update ball position
-  if (ball.isMoving) {
+// --- Game Logic ---
+function update(){
     ball.x += ball.vx;
     ball.y += ball.vy;
-    // Apply friction
-    ball.vx *= 0.98;
-    ball.vy *= 0.98;
+    ball.vx *= 0.95; ball.vy *= 0.95;
+    const level = levels[currentLevel];
 
-    // Stop if slow enough
-    if (Math.abs(ball.vx) < 0.1 && Math.abs(ball.vy) < 0.1) {
-      ball.vx = 0;
-      ball.vy = 0;
-      ball.isMoving = false;
-    }
+    // Walls
+    if(ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) ball.vx *= -1;
+    if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) ball.vy *= -1;
 
-    // Boundary collision
-    if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
-      ball.vx *= -1;
-    }
-    if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
-      ball.vy *= -1;
-    }
-  }
+    // Obstacles
+    level.obstacles.forEach(obs=>{
+        if(ball.x+ball.radius>obs.x && ball.x-ball.radius<obs.x+obs.width && ball.y+ball.radius>obs.y && ball.y-ball.radius<obs.y+obs.height){
+            if(ball.x<obs.x||ball.x>obs.x+obs.width) ball.vx*=-1;
+            if(ball.y<obs.y||ball.y>obs.y+obs.height) ball.vy*=-1;
+        }
+    });
 
-  // Check collision with hole
-  const dx = ball.x - hole.x;
-  const dy = ball.y - hole.y;
-  const dist = Math.sqrt(dx*dx + dy*dy);
-  if (dist < hole.radius) {
-    alert('Level Completed!');
-    if (level < maxLevel) {
-      level++;
-      resetGame();
-    } else {
-      alert('Game Finished! Congratulations!');
+    // Hole
+    const hole = level.hole;
+    if(Math.hypot(ball.x-hole.x, ball.y-hole.y)<ball.radius+hole.radius){
+        alert(`Level ${currentLevel+1} complete! Strokes: ${strokes}`);
+        currentLevel++;
+        if(currentLevel>=levels.length){ alert("🎉 You finished all levels! Game over."); currentLevel=0; }
+        ball.x=100; ball.y=350; ball.vx=0; ball.vy=0; strokes=0;
     }
-  }
-
-  // Check collision with obstacle
-  if (obstacle.visible) {
-    if (
-      ball.x + ball.radius > obstacle.x &&
-      ball.x - ball.radius < obstacle.x + obstacle.width &&
-      ball.y + ball.radius > obstacle.y &&
-      ball.y - ball.radius < obstacle.y + obstacle.height
-    ) {
-      // Bounce back
-      ball.vx *= -1;
-      ball.vy *= -1;
-      ball.x += ball.vx;
-      ball.y += ball.vy;
-    }
-  }
-
-  requestAnimationFrame(gameLoop);
 }
 
-// Initialize game
-resetGame();
-gameLoop();
+function drawArrow(){
+    if(dragging){
+        const dx = dragStart.x - ball.x; const dy = dragStart.y - ball.y;
+        const angle = Math.atan2(dy, dx); const length = power*3;
+        ctx.strokeStyle='yellow'; ctx.lineWidth=3;
+        ctx.beginPath(); ctx.moveTo(ball.x, ball.y); ctx.lineTo(ball.x+Math.cos(angle)*length, ball.y+Math.sin(angle)*length); ctx.stroke();
+        const headLen=10;
+        ctx.beginPath();
+        ctx.moveTo(ball.x+Math.cos(angle)*length, ball.y+Math.sin(angle)*length);
+        ctx.lineTo(ball.x+Math.cos(angle)*(length-headLen)-Math.sin(angle)*headLen, ball.y+Math.sin(angle)*(length-headLen)+Math.cos(angle)*headLen);
+        ctx.lineTo(ball.x+Math.cos(angle)*(length-headLen)+Math.sin(angle)*headLen, ball.y+Math.sin(angle)*(length-headLen)-Math.cos(angle)*headLen);
+        ctx.closePath(); ctx.fillStyle='yellow'; ctx.fill();
+    }
+}
 
+function draw(){
+    const level = levels[currentLevel];
+    ctx.fillStyle=level.bg; ctx.fillRect(0,0,canvas.width,canvas.height);
+    level.obstacles.forEach(obs=>{ ctx.fillStyle="#8B4513"; ctx.fillRect(obs.x, obs.y, obs.width, obs.height); });
+    ctx.beginPath(); ctx.arc(level.hole.x, level.hole.y, level.hole.radius, 0, Math.PI*2); ctx.fillStyle="black"; ctx.fill();
+    drawArrow();
+    ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2); ctx.fillStyle=ball.color; ctx.fill(); ctx.stroke();
+    ctx.fillStyle="white"; ctx.font="18px Arial";
+    ctx.fillText(`Level: ${currentLevel+1} / ${levels.length}`,10,20);
+    ctx.fillText(`Strokes: ${strokes}`,10,40);
+}
+
+function gameLoop(){ update(); draw(); requestAnimationFrame(gameLoop); }
+gameLoop();
 </script>
-  </body>
+</body>
 </html>

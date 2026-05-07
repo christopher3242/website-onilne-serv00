@@ -1,58 +1,72 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f3f4f6;
-    font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #bfd1f1;
+  font-family: Arial, sans-serif;
 }
 
 .stopwatch {
-    text-align: center;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 30px 20px;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 h1 {
-    font-size: 48px;
-    margin: 20px 0;
+  font-size: 2em;
+  margin-bottom: 10px;
 }
 
 h2 {
-    font-size: 36px;
-    margin: 20px 0;
+  font-size: 2.5em;
+  margin: 20px 0;
+  letter-spacing: 2px;
 }
 
 .controls {
-    display: flex;
-    justify-content: center; /* To center buttons except exit */
-    align-items: center;
-    margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 button {
-    padding: 10px 15px;
-    margin: 0 5px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007BFF;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  flex: 1 1 80px;
+  padding: 12px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 button:hover:not(:disabled) {
-    background-color: #0056b3;
+  background-color: #0056b3;
+  transform: scale(1.05);
 }
 
+/* Make 'Exit' button align right and larger for easy tap */
 #exitBtn {
-    margin-left: auto; /* Push 'Exit' to the right */
+  margin-left: auto;
+  min-width: 80px;
+  background-color: #dc3545;
+}
+
+#exitBtn:hover {
+  background-color: #a71d2a;
 }

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Texas Hold'em CASINO</title>
+<style>
+body { font-family: Arial; background:#0b6623; color:white; text-align:center; }
+.card { display:inline-block; border:1px solid #fff; padding:10px; margin:5px; background:#fff; color:#000; }
+button, input { padding:8px; margin:5px; }
+.player { margin:15px; }
+.log { background:#111; padding:10px; height:200px; overflow-y:auto; margin-top:20px; text-align:left; }
+.btn { padding:10px 20px; background:#444; color:#fff; border:none; cursor:pointer; margin-top:10px; }
+.btn:hover { background:#666; }
+</style>
+</head>
+<body>
+
+<h1>Texas Hold'em CASINO</h1>
+
+<div>
+<button onclick="quickStart()">Start Game ($1000) Player, CPU 2, CPU 3</button>
+</div>
+
+<div>
+Starting Chips: <input id="startChips" value="1000" size="5" />
+Small Blind: <input id="sb" value="10" size="3" />
+Big Blind: <input id="bb" value="20" size="3" />
+</div>
+
+<h2 id="phase"></h2>
+<div id="table"></div>
+<div id="players"></div>
+
+<div>
+<button onclick="action('check')">Check / Call</button>
+<button onclick="action('bet')">Bet / Raise</button>
+<button onclick="action('allin')">All In</button>
+<button onclick="action('fold')">Fold</button>
+<button onclick="nextPhase()">Next Phase</button>
+</div>
+
+<h3>Game Log</h3>
+<div id="log" class="log"></div>
+
+<a href="../games.html" style="text-decoration:none;">
+  <button class="btn">Exit</button>
+</a>
+
+<script>
+const suits=['♠','♥','♦','♣'];
+const values=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+const valMap={}; values.forEach((v,i)=>valMap[v]=i+2);
+
+let deck=[],players=[],table=[],pot=0;
+let phaseIndex=0;
+let sb=10,bb=20,startChips=1000;
+let currentBet=0;
+const phases=['Pre-Flop','Flop','Turn','River','Showdown'];
+
+function $(id){return document.getElementById(id)}
+function money(x){return '$'+x}
+function log(msg){$('log').innerHTML+=msg+'<br>'; $('log').scrollTop=$('log').scrollHeight}
+
+function createDeck(){deck=[]; for(let s of suits){for(let v of values){deck.push(v+s)}}}
+function shuffle(){deck.sort(()=>Math.random()-0.5)}
+function draw(){return deck.pop()}
+
+function initPlayers(){
+ players=[];
+ for(let i=0;i<3;i++){
+  players.push({
+    hand:[draw(),draw()],
+    chips:startChips,
+    folded:false,
+    bet:0,
+    type:i===0?'Player':'CPU '+(i)
+  });
+ }
+ postBlinds();
+}
+
+function postBlinds(){
+ players[1].chips-=sb; pot+=sb;
+ players[2].chips-=bb; pot+=bb;
+ currentBet=bb;
+ log('Blinds posted SB '+money(sb)+' BB '+money(bb));
+}
+
+function render(){
+ $('phase').textContent=phases[phaseIndex]+' | Pot '+money(pot)+' | Bet '+money(currentBet);
+ renderCards(table,'table');
+ const div=$('players'); div.innerHTML='';
+ players.forEach((p,i)=>{
+  const d=document.createElement('div'); d.className='player';
+  d.innerHTML=`<h3>${p.type} (${money(p.chips)}) ${p.folded?'FOLDED':''}</h3>`;
+  p.hand.forEach(c=>{
+   const el=document.createElement('div'); el.className='card';
+   el.textContent=(p.type!=='Player'&&phaseIndex<4)?'??':c;
+   d.appendChild(el);
+  });
+  div.appendChild(d);
+ });
+}
+
+function renderCards(cards,id){
+ const el=$(id); el.innerHTML='';
+ cards.forEach(c=>{
+  const d=document.createElement('div'); d.className='card'; d.textContent=c;
+  el.appendChild(d);
+ });
+}
+
+function action(type){
+ let p=players[0]; if(p.folded) return;
+ let toCall=currentBet-p.bet;
+
+ if(type==='check'){
+  if(toCall>0){
+   let pay=Math.min(toCall,p.chips);
+   p.chips-=pay; pot+=pay; p.bet+=pay;
+   log('Player calls '+money(pay));
+  } else log('Player checks');
+ }
+
+ if(type==='bet'){
+  let raise=100;
+  currentBet+=raise;
+  let total=currentBet;
+  p.chips-=total; pot+=total; p.bet+=total;
+  log('Player raises '+money(total));
+ }
+
+ if(type==='allin'){
+  pot+=p.chips;
+  log('Player ALL IN '+money(p.chips));
+  p.chips=0;
+ }
+
+ if(type==='fold'){
+  p.folded=true;
+  log('Player folds');
+ }
+
+ cpuTurn(); render();
+}
+
+function cpuTurn(){
+ players.forEach((p,i)=>{
+  if(p.type!=='Player' && !p.folded){
+   let strength=evaluate([...p.hand,...table]).rank;
+   let toCall=currentBet-p.bet;
+   let r=Math.random();
+
+   if(strength>=8){
+    if(r<0.5){
+     let bet=currentBet+50;
+     p.chips-=bet; pot+=bet; p.bet+=bet;
+     currentBet=bet;
+     log(p.type+' raises '+money(bet));
+    } else log(p.type+' checks');
+   }
+   else if(strength>=5){
+    if(toCall>0){
+     p.chips-=toCall; pot+=toCall; p.bet+=toCall;
+     log(p.type+' calls '+money(toCall));
+    } else log(p.type+' checks');
+   }
+   else{
+    if(r<0.2){
+     p.chips-=toCall; pot+=toCall; p.bet+=toCall;
+     log(p.type+' bluff calls '+money(toCall));
+    } else if(r<0.4){
+     p.folded=true;
+     log(p.type+' folds');
+    } else log(p.type+' checks');
+   }
+  }
+ });
+}
+
+function nextPhase(){
+ players.forEach(p=>p.bet=0);
+ currentBet=0;
+
+ if(phaseIndex===0){ table.push(draw(),draw(),draw()); log('Flop'); }
+ else if(phaseIndex===1){ table.push(draw()); log('Turn'); }
+ else if(phaseIndex===2){ table.push(draw()); log('River'); }
+ else if(phaseIndex===3){ showdown(); }
+ phaseIndex++; render();
+}
+
+function showdown(){
+ let best=-1,winner=0;
+ players.forEach((p,i)=>{
+  if(p.folded) return;
+  let score=evaluate([...p.hand,...table]);
+  log(p.type+': '+score.name);
+  if(score.rank>best){best=score.rank; winner=i;}
+ });
+ players[winner].chips+=pot;
+ log('🏆 '+players[winner].type+' wins '+money(pot));
+ pot=0;
+}
+
+function evaluate(cards){
+ let ranks=cards.map(c=>valMap[c.slice(0,-1)]).sort((a,b)=>b-a);
+ let suitsArr=cards.map(c=>c.slice(-1));
+
+ let counts={}; ranks.forEach(v=>counts[v]=(counts[v]||0)+1);
+ let groups=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+
+ let flush=suitsArr.some(s=>suitsArr.filter(x=>x===s).length>=5);
+ let unique=[...new Set(ranks)].sort((a,b)=>a-b);
+ let straight=false, high=0;
+
+ for(let i=0;i<unique.length-4;i++){
+  if(unique[i+4]-unique[i]===4){straight=true; high=unique[i+4];}
+ }
+
+ if(straight && flush && high===14) return {rank:10,name:'Royal Flush'};
+ if(straight && flush) return {rank:9,name:'Straight Flush'};
+ if(groups[0][1]==4) return {rank:8,name:'Four of a Kind'};
+ if(groups[0][1]==3 && groups[1]&&groups[1][1]>=2) return {rank:7,name:'Full House'};
+ if(flush) return {rank:6,name:'Flush'};
+ if(straight) return {rank:5,name:'Straight'};
+ if(groups[0][1]==3) return {rank:4,name:'Three of a Kind'};
+ if(groups[0][1]==2 && groups[1]&&groups[1][1]==2) return {rank:3,name:'Two Pair'};
+ if(groups[0][1]==2) return {rank:2,name:'Pair'};
+ return {rank:1,name:'High Card'};
+}
+
+function rebuy(){
+ players[0].chips+=1000;
+ log('Player rebuy +$1000');
+ render();
+}
+
+function quickStart(){
+ startChips=1000;
+ sb=10; bb=20;
+ $('startChips').value=1000;
+ $('sb').value=10;
+ $('bb').value=20;
+ start();
+}
+
+function start(){
+ startChips=parseInt($('startChips').value);
+ sb=parseInt($('sb').value);
+ bb=parseInt($('bb').value);
+
+ createDeck(); shuffle(); initPlayers();
+ table=[]; pot=0; phaseIndex=0;
+ $('log').innerHTML='';
+ render();
+}
+</script>
+
+</body>
+</html>

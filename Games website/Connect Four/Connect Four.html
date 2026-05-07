@@ -1,21 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect Four</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Connect Four</title>
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <h1>Connect Four</h1>
-    <div id="game-container">
-      <div id="board"></div>
-      <button id="restart">Restart Game</button> <a
-        href="../Games.html"><button id="exit">Exit</button></a>
-    </div>
-    <script src="script.js"></script>
-  </body>
+<h1>Connect Four</h1>
+
+<div id="game-settings">
+  <label>
+    Mode:
+    <select id="mode">
+      <option value="2p">Two Player</option>
+      <option value="ai_easy">Player vs AI (Easy)</option>
+      <option value="ai_normal">Player vs AI (Normal)</option>
+      <option value="ai_hard">Player vs AI (Hard)</option>
+    </select>
+  </label>
+
+  <label>
+    Player 1 Color:
+    <select id="p1color">
+      <option value="red">Red</option>
+      <option value="yellow">Yellow</option>
+      <option value="green">Green</option>
+      <option value="orange">Orange</option>
+      <option value="black">Black</option>
+      <option value="gray">Gray</option>
+      <option value="blue">Blue</option>
+    </select>
+  </label>
+
+  <label>
+    Player 2 Color:
+    <select id="p2color">
+      <option value="yellow">Yellow</option>
+      <option value="red">Red</option>
+      <option value="green">Green</option>
+      <option value="orange">Orange</option>
+      <option value="black">Black</option>
+      <option value="gray">Gray</option>
+      <option value="blue">Blue</option>
+    </select>
+  </label>
+</div>
+
+<div id="game-container">
+  <div id="board"></div>
+  <div class="buttons-container">
+    <button id="restart">Restart Game</button>
+    <a href="../Games.html"><button>Exit</button></a>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
 </html>

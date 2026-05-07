@@ -8,15 +8,12 @@ const exitButton = document.getElementById("exit");
 
 let countdownInterval = null;
 
-// Function to start countdown before user can make a choice
 function startCountdown() {
   let count = 3;
   countdownElement.textContent = count;
-  
-  // Enable choices after countdown
   choiceButtons.forEach(btn => btn.disabled = true);
-  resetButton.style.display = "none"; // Hide reset during countdown
-  
+  resetButton.style.display = "none";
+
   countdownInterval = setInterval(() => {
     count--;
     if (count > 0) {
@@ -24,40 +21,33 @@ function startCountdown() {
     } else {
       clearInterval(countdownInterval);
       countdownElement.textContent = "";
-      // Enable choice buttons
       choiceButtons.forEach(btn => btn.disabled = false);
     }
   }, 1000);
 }
 
-// Initialize game with countdown
 startCountdown();
 
-// Add event listeners to choice buttons
 choiceButtons.forEach(button => {
   button.addEventListener("click", () => {
     const userChoice = button.id;
     const computerChoice = getComputerChoice();
     const result = determineWinner(userChoice, computerChoice);
-    
     message.textContent = result.message;
     computerChoiceText.textContent = `Computer chose: ${computerChoice}`;
-    resetButton.style.display = "block"; // Show reset button
+    resetButton.style.display = "inline-block";
   });
 });
 
-// Function to get computer's choice randomly
 function getComputerChoice() {
   const randomIndex = Math.floor(Math.random() * choices.length);
   return choices[randomIndex];
 }
 
-// Function to determine the winner
 function determineWinner(userChoice, computerChoice) {
   if (userChoice === computerChoice) {
     return { message: "It's a tie!" };
-  } 
-  
+  }
   if (
     (userChoice === "rock" && computerChoice === "scissors") ||
     (userChoice === "paper" && computerChoice === "rock") ||
@@ -69,14 +59,12 @@ function determineWinner(userChoice, computerChoice) {
   }
 }
 
-// Reset the game when the "Play Again" button is clicked
 resetButton.addEventListener("click", () => {
   message.textContent = "";
   computerChoiceText.textContent = "";
   startCountdown();
 });
 
-// Exit button functionality
-exitButton.addEventListener("click", () => {
-  window.location.href = "file:///C:/Users/Christopher/Documents/GitHub/website-onilne/Games%20website/games%202.html";
+document.getElementById("exit").addEventListener("click", () => {
+  window.location.href = "../games.html";
 });

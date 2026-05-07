@@ -1,13 +1,17 @@
+/* Reset & Basic Styles */
 body {
   margin: 0;
+  padding-top: 70px;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 100vh;
+  background: #f0f0f0;
   transition: background 0.5s, color 0.5s;
 }
 
-/* Fixed theme buttons at top */
+/* Theme Buttons Fixed at Top */
 #themeButtons {
   position: fixed;
   top: 10px;
@@ -16,6 +20,7 @@ body {
   justify-content: center;
   gap: 10px;
   z-index: 999;
+  padding: 0 10px;
 }
 #themeButtons button {
   padding: 8px 12px;
@@ -31,29 +36,28 @@ body {
   background: #555;
 }
 
-/* Header with Exit button */
+/* Header styling */
 header {
   width: 100%;
   padding: 10px 20px;
-  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 60px;
   position: relative;
+  margin-top: 60px;
 }
-#exitBtn {
+.exit-link {
   position: absolute;
-  left: 20px;
+  right: 20px;
   background: #ff4d4d;
-  border: none;
+  color: #fff;
   padding: 8px 12px;
   border-radius: 5px;
-  cursor: pointer;
+  text-decoration: none;
   font-weight: bold;
-  color: #fff;
+  transition: background 0.3s;
 }
-#exitBtn:hover {
+.exit-link:hover {
   background: #ff1a1a;
 }
 h1 {
@@ -62,23 +66,27 @@ h1 {
   letter-spacing: 2px;
 }
 
-/* Centered calculator container */
-.container {
-  margin-top: 20px;
+/* Main container for calculator & history */
+.main-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
 }
-#calculator {
+
+/* Calculator styling */
+.calculator-container {
   background: rgba(255,255,255,0.9);
   border-radius: 12px;
   padding: 15px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  width: 100%;
-  max-width: 400px;
+  flex: 1 1 300px;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  margin: 10px;
 }
 #display {
   width: 100%;
@@ -91,7 +99,12 @@ h1 {
   background: #fff;
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
   margin-bottom: 15px;
+  font-family: 'Courier New', monospace;
+  font-size: 1.2em;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
 }
+
 /* Buttons grid */
 .buttons-grid {
   display: grid;
@@ -108,13 +121,51 @@ button {
   color: #fff;
   cursor: pointer;
   transition: background 0.3s;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 button:hover {
   background: #45a049;
 }
+button.equals {
+  background: #2196F3;
+}
+button.equals:hover {
+  background: #0b7dda;
+}
 
-/* Exit link styling */
-.exit-container {
+/* History Panel Styling */
+.history-container {
+  flex: 1 1 250px;
+  max-width: 300px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 12px;
+  padding: 10px;
+  margin: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+}
+#history {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 300px;
+  padding: 5px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+#history div {
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  background: #eee;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#history div:hover {
+  background: #ddd;
+}
+
+/* Fixed Exit Button */
+.exit-fixed {
   position: fixed;
   bottom: 10px;
   right: 10px;
@@ -131,4 +182,11 @@ button:hover {
 }
 .exit-link:hover {
   background: #222;
+}
+
+/* Responsive */
+@media(max-width: 600px){
+  #display {
+    font-size: 1.2em;
+  }
 }

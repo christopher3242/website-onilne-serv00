@@ -1,7 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,
@@ -9,7 +8,7 @@
     <title>QR Card</title>
     <style>
   body {
-    background-color: #0AB3A4; /* Light green background */
+    background-color: #24809c; /* Light green background */
     margin: 0;
     height: 100vh;
     display: flex;
@@ -19,11 +18,11 @@
   }
 
   .container {
-    background-color: #ffffff;
+    background-color: #fff;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    max-width: 600px;
+    max-width: 700px;
     width: 90%;
     text-align: center;
   }
@@ -47,6 +46,7 @@
     padding: 15px;
     font-size: 1em;
     text-align: center;
+    vertical-align: top;
   }
 
   th {
@@ -54,12 +54,19 @@
     font-weight: bold;
   }
 
+  img {
+    max-width: 220px; /* Smaller size for better fit on mobile */
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto 10px auto;
+  }
+
   .exit-button {
     display: inline-block;
-    background-color: #868f30; /* Button background */
+    background-color: #868f30;
     color: #000;
     padding: 12px 24px;
-    border: none;
     border-radius: 8px;
     font-size: 1.1em;
     cursor: pointer;
@@ -68,8 +75,25 @@
   }
 
   .exit-button:hover {
-    background-color: #414327; /* Darker on hover */
+    background-color: #414327;
     transform: scale(1.05);
+  }
+
+  @media(max-width: 480px) {
+    h1 {
+      font-size: 1.5em;
+    }
+    th, td {
+      padding: 10px;
+      font-size: 0.9em;
+    }
+    .exit-button {
+      padding: 10px 20px;
+      font-size: 1em;
+    }
+    img {
+      max-width: 80px;
+    }
   }
 </style>
   </head>
@@ -83,15 +107,26 @@
             <th>Uh Naw Hell bro no! 2026</th>
           </tr>
           <tr>
-            <td><img src="Wifi.png" alt="" width="272" height="272"><br>
+            <td> <a
+href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Qr%20Card/Wifi.png"
+                target="_blank"> <img
+src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Qr%20Card/Wifi.png"
+                  alt="Wi-Fi QR"> </a>
+              <div><br>
+              </div>
             </td>
-            <td><img src="files.png" alt="" width="225" height="254"><br>
+            <td> <a
+href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Qr%20Card/files.png"
+                target="_blank"> <img
+src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Qr%20Card/files.png"
+                  alt="Files" width="2024" height="2024" border="0"> </a>
+              <div><br>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
-      <a class="exit-button" href="../../your%20favorite.html"
-        target="_blank">Exit</a>
+      <a class="exit-button" href="../../your%20favorite.html">Exit</a>
     </div>
   </body>
 </html>

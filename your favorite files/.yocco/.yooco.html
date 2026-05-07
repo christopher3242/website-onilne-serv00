@@ -43,12 +43,17 @@
     z-index: 999;
   }
 
-  /* Make links larger for touch devices */
+  /* Make links larger for touch devices and improve touch target */
   @media(max-width: 768px) {
     a {
       font-size: 1.3rem;
       padding: 10px;
       display: inline-block;
+    }
+    /* Optional: enlarge button for better touch access */
+    .btn-lg {
+      padding: 15px 30px;
+      font-size: 1.4rem;
     }
   }
 </style>
@@ -61,7 +66,7 @@
   
   <!-- Links Table -->
   <div class="table-responsive mx-auto" style="max-width: 600px;">
-    <table class="table table-borderless table-hover bg-light bg-opacity-25 rounded">
+    <table class="table table-borderless table-hover bg-light bg-opacity-25 rounded mb-4">
       <tbody>
         <tr>
           <td><a href="https://ipod134.yooco.org/" target="_blank">https://ipod134.yooco.org/</a></td>

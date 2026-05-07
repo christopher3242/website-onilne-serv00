@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Safe Crack Game with Exit and Reset Buttons</title>
@@ -12,38 +11,59 @@
     color: #fff;
     text-align: center;
     padding: 50px;
+    margin: 0;
+  }
+  h1 {
+    font-size: 2em;
   }
   #safe {
-    font-size: 24px;
+    font-size: 2em;
     margin: 20px 0;
   }
   input[type="number"] {
-    font-size: 20px;
-    padding: 5px;
-    width: 100px;
+    font-size: 1.5em;
+    padding: 8px;
+    width: 150px;
+    max-width: 90%;
   }
   button {
-    font-size: 20px;
-    padding: 5px 10px;
+    font-size: 1.2em;
+    padding: 8px 16px;
     margin: 10px 5px;
+    cursor: pointer;
   }
   #message {
     margin-top: 20px;
-    font-size: 20px;
+    font-size: 1.2em;
     height: 30px;
   }
   #attemptsLeft {
     margin-top: 10px;
-    font-size: 18px;
+    font-size: 1em;
     height: 24px;
+  }
+  /* Responsive adjustments */
+  @media(max-width: 600px){
+    body {
+      padding: 20px;
+    }
+    button {
+      font-size: 1em;
+      padding: 6px 12px;
+    }
+    input[type="number"] {
+      font-size: 1.2em;
+      padding: 6px;
+      width: 120px;
+    }
   }
 </style>
 </head>
 <body>
 <h1>Safe Crack Game</h1>
-<p>Guess the 3-digit code to open the safe!</p>
+<p>Guess the 4-digit code to open the safe!</p>
 <div id="safe">
-  <input id="guess" min="0" max="999" type="number" />
+  <input id="guess" min="0" max="9999" type="number" placeholder="Enter 0 - 9999" />
 </div>
 <div>
   <button onclick="checkGuess()">Guess</button>
@@ -53,11 +73,13 @@
 </div>
 <div id="attemptsLeft">Attempts left: 3</div>
 <div id="message"></div>
+
 <script>
-  let code = Math.floor(Math.random() * 1000); // Random code
+  let code = Math.floor(Math.random() * 10000); // Random code from 0 to 9999
   let attempts = 0;
   const maxAttempts = 3;
   let gameActive = true;
+  let answerTimeout = null; // To manage answer hiding
 
   function updateAttemptsLeft() {
     const attemptsLeftDiv = document.getElementById('attemptsLeft');
@@ -66,12 +88,17 @@
   }
 
   function resetGame() {
-    code = Math.floor(Math.random() * 1000); // Generate new code
+    code = Math.floor(Math.random() * 10000);
     attempts = 0;
     gameActive = true;
     document.getElementById('guess').disabled = false;
-    document.getElementById('guess').value = ''; // Clear input
+    document.getElementById('guess').value = '';
     document.getElementById('message').textContent = '';
+    // Clear any existing answer display timeout
+    if (answerTimeout) {
+      clearTimeout(answerTimeout);
+      answerTimeout = null;
+    }
     updateAttemptsLeft();
   }
 
@@ -79,23 +106,23 @@
     if (!gameActive) return;
     const guessInput = document.getElementById('guess');
     const message = document.getElementById('message');
-    const guess = parseInt(guessInput.value);
+    const guessValue = guessInput.value.trim();
+    const guess = parseInt(guessValue, 10);
 
-    attempts++;
-
-    // Update attempts remaining display
-    updateAttemptsLeft();
-
-    if (isNaN(guess) || guess < 0 || guess > 999) {
-      message.textContent = 'Please enter a valid 3-digit number.';
+    if (isNaN(guess) || guess < 0 || guess > 9999) {
+      message.textContent = 'Please enter a valid number between 0 and 9999.';
       return;
     }
 
+    attempts++;
+    updateAttemptsLeft();
+
     if (guess === code) {
-      message.textContent = `Congratulations! You cracked the safe in ${attempts} attempts!`;
+      message.textContent = `🎉 Congratulations! You cracked the safe in ${attempts} attempts!`;
       gameActive = false;
+      document.getElementById('guess').disabled = true;
     } else if (attempts >= maxAttempts) {
-      message.innerHTML = `Game Over! You've reached ${attempts} attempts. The code was: ${String(code).padStart(3, '0')}`;
+      message.innerHTML = `💥 Game Over! Reached ${attempts} attempts.<br>The code was: ${String(code).padStart(4, '0')}`;
       gameActive = false;
       document.getElementById('guess').disabled = true;
     } else {
@@ -109,25 +136,28 @@
 
   function showAnswer() {
     const message = document.getElementById('message');
-    message.innerHTML = `The code is: ${String(code).padStart(3, '0')}`;
-    setTimeout(() => {
+    message.innerHTML = `The code is: ${String(code).padStart(4, '0')}`;
+    // Hide answer after 2 seconds
+    if (answerTimeout) {
+      clearTimeout(answerTimeout);
+    }
+    answerTimeout = setTimeout(() => {
       message.innerHTML = 'Answer hidden for suspense!';
     }, 2000);
   }
 
-  // Exit button: resets the game
   function exitGame() {
     resetGame();
   }
 
-  // Event listener for Enter key
+  // Allow pressing Enter to submit guess
   document.getElementById('guess').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       checkGuess();
     }
   });
 
-  // Initialize attempts left display on page load
+  // Initialize attempts display
   updateAttemptsLeft();
 </script>
 </body>

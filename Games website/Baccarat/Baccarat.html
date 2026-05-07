@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ultimate Baccarat Game</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+  }
+  #game {
+    max-width: 750px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .balance {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  #money-display {
+    font-weight: bold;
+    font-size: 1.2em;
+  }
+  #controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  select, input[type=number], button {
+    padding: 10px 15px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  select, input {
+    background-color: #fff;
+    color: #000;
+  }
+  button {
+    background-color: #4CAF50;
+    color: white;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background-color: #45a049;
+  }
+  #buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  #cards {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
+  }
+  .hand {
+    border: 2px solid #fff;
+    border-radius: 10px;
+    padding: 10px;
+    width: 45%;
+    background-color: rgba(255,255,255,0.2);
+  }
+  .hand h3 {
+    margin-top: 0;
+    text-align: center;
+  }
+  .cards {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  .card {
+    width: 50px;
+    height: 70px;
+    border: 2px solid #fff;
+    margin: 0 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4em;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #000;
+  }
+  #log {
+    background-color: rgba(0,0,0,0.3);
+    padding: 10px;
+    height: 250px;
+    overflow-y: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  #result {
+    font-size: 1.3em;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+  }
+  /* Exit button styles */
+  .exit-link {
+    display: inline-block;
+    text-decoration: none;
+    margin-top: 20px;
+  }
+  .exit-link .btn {
+    background-color: #d33;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.3s;
+  }
+  .exit-link .btn:hover {
+    background-color: #b22;
+  }
+</style>
+</head>
+<body>
+<h1>Ultimate Baccarat</h1>
+<div id="game">
+  <div class="balance">
+    Money: €<span id="balance">100.00</span> &nbsp; | &nbsp; Add money: 
+    <input type="number" id="addMoneyInput" min="1" max="10000" value="10" style="width:80px;"/>
+    <button onclick="addMoney()">Add</button>
+  </div>
+  <div id="controls">
+    <div>
+      Bet on:
+      <select id="betOn">
+        <option value="Player">Player</option>
+        <option value="Banker">Banker</option>
+        <option value="Tie">Tie</option>
+      </select>
+    </div>
+    <div>
+      Bet amount:
+      <input type="number" id="betAmount" min="0" max="10000" value="0" />
+    </div>
+  </div>
+  <div id="buttons">
+    <button onclick="playRound()">Deal</button>
+    <button onclick="allIn()">All In</button>
+    <button onclick="resetGame()">Clear</button>
+  </div>
+  <div id="cards">
+    <div class="hand" id="playerHand">
+      <h3>Player</h3>
+      <div class="cards" id="playerCards"></div>
+    </div>
+    <div class="hand" id="bankerHand">
+      <h3>Banker</h3>
+      <div class="cards" id="bankerCards"></div>
+    </div>
+  </div>
+  <div id="log"></div>
+  <div id="result"></div>
+  <!-- Exit button -->
+  <a href="../games.html" class="exit-link">
+    <button class="btn">Exit</button>
+  </a>
+</div>
+
+<script>
+let balance = 100;
+
+// Utility functions
+function createCardElement(value) {
+  const cardDiv = document.createElement('div');
+  cardDiv.className = 'card';
+  if (value > 10) {
+    if (value === 11) cardDiv.innerText = 'J';
+    else if (value === 12) cardDiv.innerText = 'Q';
+    else if (value === 13) cardDiv.innerText = 'K';
+  } else {
+    cardDiv.innerText = value;
+  }
+  return cardDiv;
+}
+
+function log(message) {
+  document.getElementById('log').innerHTML += message + '<br/>';
+  document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
+}
+
+function getCardValue(card) {
+  if (card > 10) return 10;
+  return card;
+}
+
+function getRandomCard() {
+  return Math.floor(Math.random() * 13) + 1;
+}
+
+function calculateScore(cards) {
+  const sum = cards.reduce((a, b) => a + getCardValue(b), 0);
+  return sum % 10;
+}
+
+function displayCards(elementId, cards) {
+  const container = document.getElementById(elementId);
+  container.innerHTML = '';
+  cards.forEach(c => {
+    container.appendChild(createCardElement(c));
+  });
+}
+
+function resetGame() {
+  balance = 100;
+  document.getElementById('balance').innerText = balance.toFixed(2);
+  document.getElementById('log').innerHTML = '';
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('playerCards').innerHTML = '';
+  document.getElementById('bankerCards').innerHTML = '';
+  document.getElementById('betAmount').value = '0';
+  document.getElementById('betOn').value = 'Player';
+}
+
+function addMoney() {
+  const amount = parseFloat(document.getElementById('addMoneyInput').value);
+  if (amount > 0) {
+    balance += amount;
+    document.getElementById('balance').innerText = balance.toFixed(2);
+  }
+}
+
+function allIn() {
+  document.getElementById('betAmount').value = balance.toFixed(2);
+  playRound();
+}
+
+function playRound() {
+  document.getElementById('log').innerHTML = '';
+  document.getElementById('result').innerHTML = '';
+  displayCards('playerCards', []);
+  displayCards('bankerCards', []);
+
+  const bet = parseFloat(document.getElementById('betAmount').value);
+  const betOn = document.getElementById('betOn').value;
+
+  if (bet <= 0) {
+    alert('Please enter a bet amount greater than 0.');
+    return;
+  }
+  if (bet > balance) {
+    alert('You do not have enough balance.');
+    return;
+  }
+
+  log(`Starting round. Balance: €${balance.toFixed(2)}`);
+  log(`Bet €${bet.toFixed(2)} on ${betOn}`);
+
+  // Deal initial cards
+  let playerCards = [getRandomCard(), getRandomCard()];
+  let bankerCards = [getRandomCard(), getRandomCard()];
+
+  displayCards('playerCards', playerCards);
+  displayCards('bankerCards', bankerCards);
+
+  let playerScore = calculateScore(playerCards);
+  let bankerScore = calculateScore(bankerCards);
+
+  log(`Player cards: ${playerCards.join(', ')} (Score: ${playerScore})`);
+  log(`Banker cards: ${bankerCards.join(', ')} (Score: ${bankerScore})`);
+
+  // Player draws if score < 6
+  if (playerScore < 6) {
+    const card = getRandomCard();
+    playerCards.push(card);
+    displayCards('playerCards', playerCards);
+    playerScore = calculateScore(playerCards);
+    log(`Player draws: ${card}. New score: ${playerScore}`);
+  } else {
+    log('Player stands.');
+  }
+
+  // Banker rules
+  let thirdPlayerCard = playerCards[2] || null;
+  let bankerDraws = false;
+  if (bankerScore < 3) bankerDraws = true;
+  else if (bankerScore === 3 && thirdPlayerCard !== 8) bankerDraws = true;
+  else if (bankerScore === 4 && thirdPlayerCard >= 2 && thirdPlayerCard <=7) bankerDraws = true;
+  else if (bankerScore === 5 && thirdPlayerCard >= 4 && thirdPlayerCard <=7) bankerDraws = true;
+  else if (bankerScore === 6 && (thirdPlayerCard === 6 || thirdPlayerCard === 7)) bankerDraws = true;
+
+  if (bankerDraws) {
+    const card = getRandomCard();
+    bankerCards.push(card);
+    displayCards('bankerCards', bankerCards);
+    bankerScore = calculateScore(bankerCards);
+    log(`Banker draws: ${card}. New score: ${bankerScore}`);
+  } else {
+    log('Banker stands.');
+  }
+
+  // Final scores
+  log(`Final scores - Player: ${playerScore}, Banker: ${bankerScore}`);
+  let winner;
+  if (playerScore > bankerScore) winner = 'Player';
+  else if (bankerScore > playerScore) winner = 'Banker';
+  else winner = 'Tie';
+
+  log(`Winner: ${winner}`);
+
+  // Payouts
+  let payout = 0;
+  if (winner === betOn) {
+    if (winner === 'Player') {
+      payout = bet * 2; // 1:1
+    } else if (winner === 'Banker') {
+      payout = bet * 1.95; // 5% commission
+    } else if (winner === 'Tie') {
+      payout = bet * 8; // 8:1
+    }
+    balance += payout;
+    document.getElementById('result').innerText = `You won €${payout.toFixed(2)}!`;
+  } else {
+    balance -= bet;
+    document.getElementById('result').innerText = `You lost €${bet.toFixed(2)}.`;
+  }
+  document.getElementById('balance').innerText = balance.toFixed(2);
+}
+</script>
+</body>
+</html>
