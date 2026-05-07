@@ -18,7 +18,7 @@ https://xxsexy.serv00.net/
 Beta website :- 
 https://beta-final.website-onilne-serv00.pages.dev
 
-
+[![Better Stack Badge](https://uptime.betterstack.com/status-badges/v3/monitor/2lc9p.svg)](https://uptime.betterstack.com/?utm_source=status_badge)
 
 
 
