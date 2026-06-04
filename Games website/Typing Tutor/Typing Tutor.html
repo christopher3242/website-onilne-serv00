@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Typing Tutor Game</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    text-align: center;
+    padding: 20px;
+  }
+  #game-container {
+    max-width: 700px;
+    margin: auto;
+  }
+  #phrase {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  #typed-display {
+    font-size: 20px;
+    margin-bottom: 10px;
+    min-height: 24px;
+  }
+  #inputArea {
+    font-size: 20px;
+    padding: 10px;
+    width: 80%;
+    max-width: 600px;
+  }
+  #time-display {
+    margin-top: 10px;
+    font-size: 18px;
+  }
+  #result {
+    margin-top: 10px;
+    font-size: 20px;
+  }
+  #top-times {
+    margin-top: 20px;
+    font-size: 18px;
+    text-align: left;
+  }
+  #controls {
+    margin-top: 20px;
+  }
+  button {
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+  }
+  #clear-times-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+  }
+  /* Responsive for mobile */
+  @media (max-width: 600px) {
+    #inputArea {
+      width: 90%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>Typing Tutor Game</h1>
+<div id="game-container" style="display:none;">
+  <div id="phrase">Type the following: <strong>the book diddy oil ball dirty</strong></div>
+  <div id="typed-display"></div>
+  <input type="text" id="inputArea" placeholder="Press Enter to start..." />
+  <div id="time-display">Time: 0.00 seconds</div>
+  <div id="result"></div>
+  <div id="top-times">
+    <h3>Top 3 Times</h3>
+    <ol id="times-list">
+      <li>No times yet</li>
+    </ol>
+  </div>
+</div>
+
+<div id="controls">
+  <button id="start-btn">Start</button>
+  <button id="clear-times-btn">Clear Top Times</button>
+  <a href="../Games.html"><button id="exit-btn">Exit</button></a>
+</div>
+
+<script>
+  const phrase = "the book diddy oil ball dirty";
+  const inputArea = document.getElementById('inputArea');
+  const resultDiv = document.getElementById('result');
+  const typedDisplay = document.getElementById('typed-display');
+  const timeDisplay = document.getElementById('time-display');
+  const gameContainer = document.getElementById('game-container');
+  const startBtn = document.getElementById('start-btn');
+  const clearBtn = document.getElementById('clear-times-btn');
+  const timesList = document.getElementById('times-list');
+
+  let startTime = 0;
+  let timerInterval = null;
+
+  let topTimes = [];
+
+  if (localStorage.getItem('topTimes')) {
+    topTimes = JSON.parse(localStorage.getItem('topTimes'));
+  }
+
+  function updateTopTimes() {
+    topTimes.sort((a, b) => a - b);
+    topTimes = topTimes.slice(0, 3);
+    localStorage.setItem('topTimes', JSON.stringify(topTimes));
+    renderTopTimes();
+  }
+
+  function renderTopTimes() {
+    timesList.innerHTML = "";
+    if (topTimes.length === 0) {
+      timesList.innerHTML = "<li>No times yet</li>";
+      return;
+    }
+    topTimes.forEach((t) => {
+      const li = document.createElement('li');
+      li.textContent = t.toFixed(2) + ' seconds';
+      timesList.appendChild(li);
+    });
+  }
+
+  function startGame() {
+    inputArea.value = "";
+    resultDiv.innerHTML = "";
+    typedDisplay.innerHTML = "";
+    timeDisplay.innerHTML = "Time: 0.00 seconds";
+    gameContainer.style.display = "block";
+    inputArea.disabled = false;
+    inputArea.focus();
+    startTime = performance.now();
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(updateTime, 50);
+  }
+
+  function updateTime() {
+    const currentTime = performance.now();
+    const elapsed = (currentTime - startTime) / 1000;
+    timeDisplay.textContent = `Time: ${elapsed.toFixed(2)} seconds`;
+  }
+
+  function endGame() {
+    clearInterval(timerInterval);
+    const endTime = performance.now();
+    const totalTime = (endTime - startTime) / 1000;
+    resultDiv.innerHTML = `Correct! You took ${totalTime.toFixed(2)} seconds.`;
+    inputArea.disabled = true;
+
+    if (topTimes.length < 3 || totalTime < Math.max(...topTimes)) {
+      topTimes.push(totalTime);
+      updateTopTimes();
+    }
+  }
+
+  function renderTypedDisplay() {
+    const typed = inputArea.value;
+    let html = "";
+    for (let i = 0; i < typed.length; i++) {
+      if (typed[i] === phrase[i]) {
+        html += `<span style="color:green;">${typed[i]}</span>`;
+      } else {
+        html += `<span style="color:red;">${typed[i]}</span>`;
+      }
+    }
+    typedDisplay.innerHTML = html;
+  }
+
+  // Trigger start on Enter key
+  inputArea.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      startGame();
+    }
+  });
+
+  // Real-time input check
+  inputArea.addEventListener('input', () => {
+    renderTypedDisplay();
+    const typed = inputArea.value.trim();
+    if (typed === phrase) {
+      endGame();
+    }
+  });
+
+  // Start button fallback
+  document.getElementById('start-btn').addEventListener('click', () => {
+    startGame();
+  });
+
+  // Clear top times button
+  document.getElementById('clear-times-btn').addEventListener('click', () => {
+    topTimes = [];
+    localStorage.removeItem('topTimes');
+    renderTopTimes();
+  });
+
+  // Initialize top times display
+  renderTopTimes();
+</script>
+
+</body>
+</html>

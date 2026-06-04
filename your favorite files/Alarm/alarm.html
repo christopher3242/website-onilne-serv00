@@ -15,6 +15,7 @@
     margin-right: auto;
     box-sizing: border-box;
     transition: background 0.5s ease;
+    color: var(--text-color, #222);
   }
   h1 {
     font-size: 2em;
@@ -83,6 +84,12 @@
     --button-hover: #cc527f;
     --text-color: #222;
   }
+  body.theme-mint {
+    --bg-color: #d0f0c0;
+    --button-bg: #3eb489;
+    --button-hover: #2c9e7d;
+    --text-color: #222;
+  }
 
   button {
     padding: 10px 20px;
@@ -104,7 +111,6 @@
   #alarmMsg {
     margin-top: 20px;
     font-size: 1.2em;
-    color: var(--text-color);
     display: none;
     text-align: center;
   }
@@ -164,6 +170,7 @@
     <option value="sky">Theme #5 (Sky Blue)</option>
     <option value="vanilla">Theme #6 (Vanilla)</option>
     <option value="rose">Theme #7 (Rose)</option>
+    <option value="mint">Theme #8 (Mint)</option>
   </select>
 </div>
 
@@ -187,9 +194,8 @@ const body = document.body;
 const formatSelect = document.getElementById('formatSelect');
 
 let alarmTime = null;
-let alarmTimeout = null;
 
-// Populate hour and minute selects
+// Populate time selectors
 function populateTimeSelectors() {
   hourSelect.innerHTML = '';
   minuteSelect.innerHTML = '';
@@ -234,7 +240,7 @@ function updateTime() {
   const now = new Date();
   let hours = now.getHours();
   const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
+  const seconds = now.getSeconds();
   let displayHours = hours;
   let ampm = '';
 
@@ -265,25 +271,28 @@ function checkAlarm() {
   const now = new Date();
   let currentHours = now.getHours();
   let currentMinutes = now.getMinutes();
-  let currentSeconds = now.getSeconds();
 
-  let alarmParts = alarmTime.split(' ');
-  let alarmHourMin = alarmParts[0].split(':');
-  let alarmHours = parseInt(alarmHourMin[0]);
-  const alarmMinutes = parseInt(alarmHourMin[1]);
-  const alarmAmPm = alarmParts[1];
+  if (!alarmTime) return;
 
   if (formatSelect.value === '12') {
-    // Convert current time to 12-hour format for comparison
-    let currentAmPm = currentHours >= 12 ? 'PM' : 'AM';
-    let current12Hour = currentHours % 12;
-    current12Hour = current12Hour ? current12Hour : 12; // 0 -> 12
-    if (current12Hour.toString().padStart(2,'0') + ' ' + currentAmPm === alarmTime) {
+    const [timePart, ampm] = alarmTime.split(' ');
+    const [alarmHourStr, alarmMinStr] = timePart.split(':');
+    let alarmHours = parseInt(alarmHourStr);
+    const alarmMinutes = parseInt(alarmMinStr);
+
+    // Convert to 24-hour for comparison
+    if (ampm === 'PM' && alarmHours !== 12) alarmHours += 12;
+    if (ampm === 'AM' && alarmHours === 12) alarmHours = 0;
+
+    if (currentHours === alarmHours && currentMinutes === alarmMinutes) {
       ringAlarm();
     }
   } else {
-    // 24-hour comparison
-    if (currentHours.toString().padStart(2,'0') + ':' + currentMinutes.toString().padStart(2,'0') === alarmTime) {
+    // 24-hour format
+    const [alarmHourStr, alarmMinStr] = alarmTime.split(':');
+    const alarmHours = parseInt(alarmHourStr);
+    const alarmMinutes = parseInt(alarmMinStr);
+    if (currentHours === alarmHours && currentMinutes === alarmMinutes) {
       ringAlarm();
     }
   }
@@ -292,37 +301,16 @@ function checkAlarm() {
 document.getElementById('setAlarmBtn').addEventListener('click', () => {
   const hour = hourSelect.value;
   const minute = minuteSelect.value;
-  const ampm = ampmSelect.value;
+  const ampm = document.getElementById('ampmSelect').value;
   const format = formatSelect.value;
-  
+
   if (format === '12') {
     alarmTime = `${hour}:${minute} ${ampm}`;
   } else {
     alarmTime = `${hour}:${minute}`;
   }
 
-  // Calculate timeout for alarm
-  const now = new Date();
-  let alarmHour = parseInt(hour);
-  const alarmMinute = parseInt(minute);
-
-  if (format === '12') {
-    if (ampm === 'PM' && alarmHour !== 12) alarmHour += 12;
-    if (ampm === 'AM' && alarmHour === 12) alarmHour = 0;
-  }
-
-  const alarmDate = new Date();
-  alarmDate.setHours(alarmHour);
-  alarmDate.setMinutes(alarmMinute);
-  alarmDate.setSeconds(0);
-
-  let diffMs = alarmDate - now;
-  if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000; // next day
-
-  const remainingMinutes = Math.floor(diffMs / 60000);
-  const remainingSeconds = Math.floor((diffMs % 60000) / 1000);
-
-  alert(`Alarm set for ${alarmTime}. Remaining: ${remainingMinutes} min ${remainingSeconds} sec.`);
+  alert(`Alarm set for ${alarmTime}.`);
 
   setAlarmBtn.disabled = true;
   stopAlarmBtn.disabled = false;
@@ -340,19 +328,25 @@ document.getElementById('exitBtn').addEventListener('click', () => {
 document.getElementById('themeSelect').addEventListener('change', () => {
   const theme = document.getElementById('themeSelect').value;
   document.body.className = '';
-  if (theme === 'green') document.body.classList.add('theme-green');
-  else if (theme === 'purple') document.body.classList.add('theme-purple');
-  else if (theme === 'orange') document.body.classList.add('theme-orange');
-  else if (theme === 'sky') document.body.classList.add('theme-sky');
-  else if (theme === 'vanilla') document.body.classList.add('theme-vanilla');
-  else if (theme === 'rose') document.body.classList.add('theme-rose');
-  else document.body.classList.add('theme-blue');
+  switch (theme) {
+    case 'green': document.body.classList.add('theme-green'); break;
+    case 'purple': document.body.classList.add('theme-purple'); break;
+    case 'orange': document.body.classList.add('theme-orange'); break;
+    case 'sky': document.body.classList.add('theme-sky'); break;
+    case 'vanilla': document.body.classList.add('theme-vanilla'); break;
+    case 'rose': document.body.classList.add('theme-rose'); break;
+    case 'mint': document.body.classList.add('theme-mint'); break;
+    default: document.body.classList.add('theme-blue');
+  }
 });
 
 // Alarm control functions
 function ringAlarm() {
   alarmMsg.style.display = 'block';
-  alarmSound.play();
+  alarmSound.currentTime = 0;
+  alarmSound.play().catch(() => {
+    alert('Audio playback failed. Please allow sound permissions.');
+  });
   alarmSound.loop = true;
   document.getElementById('stopAlarmBtn').disabled = false;
 }
