@@ -51,6 +51,7 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 15px;
+    margin-bottom: 20px;
   }
 
   .button {
@@ -62,12 +63,33 @@
     background-color: #007BFF;
     color: #fff;
     transition: background-color 0.3s, transform 0.2s;
-    touch-action: manipulation; /* Better responsiveness on touch devices */
+    touch-action: manipulation;
   }
 
   .button:hover {
     background-color: #0056b3;
     transform: translateY(-2px);
+  }
+
+  /* Extension selection container */
+  #extensionContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  #extensionContainer label {
+    font-weight: bold;
+    font-size: 1em;
+  }
+
+  #extensionContainer select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1em;
   }
 
   /* Responsive adjustments */
@@ -79,11 +101,42 @@
       padding: 10px 20px;
       font-size: 0.9em;
     }
+    #extensionContainer {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+
+  /* Animation for perspective flip (if needed) */
+  @keyframes perspectiveRightRetourn {
+    0% {
+      transform-origin: 100% 0;
+      transform: perspective(800px) rotateY(180deg);
+    }
+    100% {
+      transform-origin: 100% 0;
+      transform: perspective(800px) rotateY(0deg);
+    }
+  }
+
+  .perspectiveRightRetourn {
+    backface-visibility: visible !important;
+    animation-name: perspectiveRightRetourn;
   }
 </style>
 </head>
 <body>
 <h1>Photo Slideshow with Music</h1>
+
+<!-- Extension selection -->
+<div id="extensionContainer">
+  <label for="extensionSelect">Choose image extension:</label>
+  <select id="extensionSelect" name="extension">
+  <option value=".jpg">.jpg</option>
+  <option value=".jpeg">.jpeg</option>
+  <option value=".png" selected>.png</option>
+</select>
+</div>
 
 <!-- Carousel container -->
 <div id="carousel">
@@ -97,7 +150,7 @@
   <button class="button" id="prev">Back</button>
   <button class="button" id="next">Next</button>
   <button class="button" id="search">Search</button>
-  <a href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Porn3.mp3" download>
+  <a href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/dirty4.mp3" download>
     <button class="button">Download MP3</button>
   </a>
   <a href="../../your%20favorite.html">
@@ -107,43 +160,63 @@
 
 <!-- Audio player -->
 <audio id="audio" controls autoplay loop style="margin-top:20px; width:80%;">
-  <source src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/Porn3.mp3" type="audio/mpeg" />
+  <source src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/dirty4.mp3" type="audio/mpeg" />
   Your browser does not support the audio element.
 </audio>
 
 <script>
-  // Generate list of 3000 images dynamically
-  const images = [];
-  for (let i = 1; i <= 3000; i++) {
-    images.push(`image${i}.png`);
-  }
-
-  let currentIndex = 0;
+  const extensionSelect = document.getElementById('extensionSelect');
   const slidesContainer = document.getElementById('slides-container');
+
+  let images = [];
+  let currentIndex = 0;
+
+  // Function to generate images based on selected extension
+  function generateImages() {
+    const selectedExt = extensionSelect.value;
+    const imagesCount = 5000; // or set your desired number
+    const newImages = [];
+    for (let i = 1; i <= imagesCount; i++) {
+      newImages.push(`image${i}${selectedExt}`);
+    }
+    return newImages;
+  }
 
   // Populate images into the carousel
   function populateImages() {
+    // Clear existing images
+    slidesContainer.innerHTML = '';
+    // Generate new image list
+    images = generateImages();
+
     images.forEach(src => {
       const img = document.createElement('img');
       img.src = src;
       img.alt = 'Carousel Image';
-      // Optional: add loading attribute for better performance
       img.loading = 'lazy';
+      // Optional: add animation class if needed
+      // img.className = 'perspectiveRightRetourn';
       slidesContainer.appendChild(img);
     });
+    currentIndex = 0;
+    updateSlide();
   }
 
   // Update slide position
-function updateSlide() {
+  function updateSlide() {
     const offset = -currentIndex * 100; // percentage
     slidesContainer.style.transform = `translateX(${offset}%)`;
   }
 
-  // Initialize carousel
-populateImages();
-updateSlide();
+  // Event listener for extension change
+  extensionSelect.addEventListener('change', () => {
+    populateImages();
+  });
 
-// Manual controls with wrap-around logic
+  // Initialize slideshow
+populateImages();
+
+ // Manual controls
 document.getElementById('next').onclick = () => {
   currentIndex = (currentIndex + 1) % images.length;
   updateSlide();

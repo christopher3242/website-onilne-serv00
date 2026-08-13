@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Soundboard</title>
   <style>
     body {
@@ -11,6 +11,33 @@
       color: white;
       margin: 0;
       padding: 20px;
+    }
+
+    /* Exit button style */
+    .exit-link {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+    }
+
+    .exit-link button {
+      background-color: rgb(255, 94, 94);
+      color: white;
+      border: 2px solid white;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    .exit-link button:hover {
+      background-color: rgb(30, 30, 30);
+    }
+
+    h1 {
+      margin-top: 50px; /* so it doesn't overlap with fixed button */
     }
 
     .soundboard {
@@ -24,37 +51,19 @@
     iframe {
       border: none;
     }
-
-    #exitButton {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background-color: rgb(255, 94, 94);
-      color: white;
-      border: 2px solid white;
-      padding: 10px 15px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 8px;
-    }
-
-    #exitButton:hover {
-      background-color: rgb(30, 30, 30);
-    }
   </style>
 </head>
-
 <body>
 
-<button id="exitButton" onclick="window.location.href='your favorite.html'">
-  Exit
-</button>
+<!-- Exit Button -->
+<a href="../../your%20favorite.html" class="exit-link">
+  <button id="exitButton">Exit</button>
+</a>
 
 <h1>🔥 Meme Soundboard 🔊</h1>
 
 <div class="soundboard">
-
-  <!-- Original sounds -->
+  <!-- Your iframes go here -->
   <iframe src="https://www.myinstants.com/instant/ahh-pss-14686/embed/" width="110" height="200"></iframe>
   <iframe src="https://www.myinstants.com/instant/vine-boom-sound-70972/embed/" width="110" height="200"></iframe>
   <iframe src="https://www.myinstants.com/instant/an-idiot-sandwich/embed/" width="110" height="200"></iframe>
