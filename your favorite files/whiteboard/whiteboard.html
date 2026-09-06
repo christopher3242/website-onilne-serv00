@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>Smooth Touch Drawing Whiteboard</title>
-    <style>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Enhanced Drawing Whiteboard</title>
+<style>
   body {
     margin: 0;
     display: flex;
@@ -33,7 +30,8 @@
   }
   #toolbar input[type="color"],
   #toolbar input[type="number"],
-  #toolbar select {
+  #toolbar select,
+  #toolbar input[type="range"] {
     padding: 4px 8px;
     border-radius: 8px;
     border: 1px solid #ccc;
@@ -61,6 +59,7 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     touch-action: none;
     cursor: crosshair;
+    display: block;
   }
   .bottom-buttons {
     margin-top: 15px;
@@ -69,74 +68,93 @@
     flex-wrap: wrap;
   }
 </style>
-  </head>
-  <body>
-    <h2>Modern Touch &amp; PC Drawing Board</h2>
-    <div id="toolbar"> <label for="colorPicker">Color:</label> <input
-        id="colorPicker" value="#000000" type="color"> <label
-        for="brushSize">Size:</label>
-      <select id="brushSize">
-        <option value="3">Small</option>
-        <option value="5" selected="selected">Medium</option>
-        <option value="10">Large</option>
-        <option value="15">XL</option>
-      </select>
-      <label for="sizePicker">Custom Size:</label> <input
-        id="sizePicker" min="1" max="50" value="5" type="number">
-    </div>
-    <canvas id="whiteboard"></canvas>
-    <div class="bottom-buttons"> <button onclick="saveCanvas()">Save</button>
-      <button onclick="exportDrawing()">Export Data</button> <button
-        onclick="clearCanvas()">Clear</button> <input
-        accept="application/json" onchange="importData(event)"
-        type="file"> <a href="../../your%20favorite.html"><button
-          onclick="exit()">Exit</button></a> <button onclick="undo()">Undo</button>
-      <button onclick="redo()">Redo</button>
-    </div>
-    <script>
+</head>
+<body>
+<h2>Enhanced Touch & PC Drawing Board</h2>
+<div id="toolbar">
+  <label for="colorPicker">Color:</label>
+  <input id="colorPicker" value="#000000" type="color"/>
+  
+  <label for="brushSize">Size:</label>
+  <select id="brushSize">
+    <option value="3">Small</option>
+    <option value="5" selected>Medium</option>
+    <option value="10">Large</option>
+    <option value="15">XL</option>
+  </select>
+  
+  <label for="sizePicker">Custom Size:</label>
+  <input id="sizePicker" min="1" max="50" value="5" type="number"/>
+  
+  <label for="opacityRange">Opacity:</label>
+  <input type="range" id="opacityRange" min="0" max="1" step="0.01" value="1"/>
+  
+  <!-- Shape Mode Buttons -->
+  <button id="penBtn" onclick="setShapeMode('pen')">Pen</button>
+  <button id="eraseBtn" onclick="setShapeMode('erase')">Erase</button>
+  <button id="rectBtn" onclick="setShapeMode('rectangle')">Rectangle</button>
+  <button id="circleBtn" onclick="setShapeMode('circle')">Circle</button>
+</div>
+
+<canvas id="whiteboard"></canvas>
+
+<div class="bottom-buttons">
+  <button onclick="saveCanvas()">Save</button>
+  <button onclick="exportDrawing()">Export Data</button>
+  <button onclick="clearCanvas()">Clear</button>
+  <input accept="application/json" onchange="importData(event)" type="file"/>
+  <a href="../../your%20favorite.html"><button onclick="exit()">Exit</button></a>
+  <button onclick="undo()">Undo</button>
+  <button onclick="redo()">Redo</button>
+</div>
+
+<script>
 const canvas = document.getElementById('whiteboard');
 const ctx = canvas.getContext('2d');
 
 const colorPicker = document.getElementById('colorPicker');
 const brushSizeSelect = document.getElementById('brushSize');
 const sizePicker = document.getElementById('sizePicker');
+const opacityRange = document.getElementById('opacityRange');
 
 let currentColor = colorPicker.value;
 let currentSize = parseInt(brushSizeSelect.value);
+let currentOpacity = parseFloat(opacityRange.value);
+let shapeMode = 'pen';
 
 let isDrawing = false;
 let lastX = 0;
 let lastY = 0;
+let startX = 0;
+let startY = 0;
 
 let undoStack = [];
 let redoStack = [];
 const maxStackSize = 50;
 
-// Update current color and size
-colorPicker.addEventListener('change', () => {
-  currentColor = colorPicker.value;
-});
-brushSizeSelect.addEventListener('change', () => {
-  currentSize = parseInt(brushSizeSelect.value);
-});
-sizePicker.addEventListener('change', () => {
-  currentSize = parseInt(sizePicker.value);
-});
-
-// Resize canvas to fit window
+// Resize canvas
 function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
+  const rect = document.getElementById('whiteboard').getBoundingClientRect();
   canvas.width = rect.width;
   canvas.height = rect.height;
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
+// Event listeners for controls
+colorPicker.addEventListener('change', () => { currentColor = colorPicker.value; });
+brushSizeSelect.addEventListener('change', () => { currentSize = parseInt(brushSizeSelect.value); });
+sizePicker.addEventListener('change', () => { currentSize = parseInt(sizePicker.value); });
+opacityRange.addEventListener('input', () => { currentOpacity = parseFloat(opacityRange.value); });
+
+// Set shape mode
+function setShapeMode(mode) {
+  shapeMode = mode;
+}
+
 // Save state for undo
 function saveState() {
-  if (undoStack.length >= maxStackSize) {
-    undoStack.shift();
-  }
+  if (undoStack.length >= maxStackSize) undoStack.shift();
   undoStack.push(canvas.toDataURL());
   redoStack = [];
 }
@@ -150,7 +168,7 @@ function saveCanvas() {
   link.click();
 }
 
-// Export JSON data
+// Export JSON
 function exportDrawing() {
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const json = JSON.stringify({
@@ -201,7 +219,7 @@ function exit() {
   location.reload();
 }
 
-// Undo
+// Undo & Redo
 function undo() {
   if (undoStack.length === 0) return;
   redoStack.push(canvas.toDataURL());
@@ -214,7 +232,6 @@ function undo() {
   img.src = last;
 }
 
-// Redo
 function redo() {
   if (redoStack.length === 0) return;
   undoStack.push(canvas.toDataURL());
@@ -227,56 +244,87 @@ function redo() {
   img.src = last;
 }
 
-// Drawing with support for touch and mouse
-canvas.addEventListener('mousedown', startDrawing);
-canvas.addEventListener('touchstart', startDrawing);
+// Mouse and touch event handlers
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('touchstart', startDraw, {passive: false});
 canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('touchmove', draw);
-canvas.addEventListener('mouseup', endDrawing);
-canvas.addEventListener('touchend', endDrawing);
-canvas.addEventListener('mouseout', endDrawing);
+canvas.addEventListener('touchmove', draw, {passive: false});
+canvas.addEventListener('mouseup', endDraw);
+canvas.addEventListener('touchend', endDraw);
+canvas.addEventListener('mouseout', endDraw);
 
 function getPointerPosition(e) {
   if (e.touches && e.touches.length > 0) {
-    return { x: e.touches[0].clientX - canvas.getBoundingClientRect().left,
-             y: e.touches[0].clientY - canvas.getBoundingClientRect().top };
+    return {
+      x: e.touches[0].clientX - canvas.getBoundingClientRect().left,
+      y: e.touches[0].clientY - canvas.getBoundingClientRect().top
+    };
   } else {
     return { x: e.offsetX, y: e.offsetY };
   }
 }
 
-function startDrawing(e) {
+function startDraw(e) {
   saveState();
   isDrawing = true;
   const pos = getPointerPosition(e);
   lastX = pos.x;
   lastY = pos.y;
+
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   ctx.lineWidth = currentSize;
   ctx.strokeStyle = currentColor;
-  ctx.beginPath();
-  ctx.moveTo(lastX, lastY);
+  ctx.globalAlpha = currentOpacity;
+
+  if (shapeMode === 'pen') {
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+  }
   e.preventDefault();
 }
 
 function draw(e) {
   if (!isDrawing) return;
   const pos = getPointerPosition(e);
-  ctx.lineTo(pos.x, pos.y);
-  ctx.stroke();
-  lastX = pos.x;
-  lastY = pos.y;
-  e.preventDefault();
-}
+  ctx.globalAlpha = currentOpacity;
+  ctx.strokeStyle = (shapeMode === 'erase') ? '#FFFFFF' : currentColor;
+  ctx.lineWidth = currentSize;
 
-function endDrawing(e) {
-  if (isDrawing) {
-    ctx.closePath();
-    isDrawing = false;
+  if (shapeMode === 'pen' || shapeMode === 'erase') {
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    lastX = pos.x;
+    lastY = pos.y;
   }
   e.preventDefault();
 }
+
+function endDraw(e) {
+  if (!isDrawing) return;
+  if (shapeMode !== 'pen' && shapeMode !== 'erase') {
+    const pos = getPointerPosition(e);
+    ctx.globalAlpha = currentOpacity;
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = currentSize;
+    ctx.beginPath();
+
+    if (shapeMode === 'rectangle') {
+      ctx.strokeRect(
+        Math.min(startX, pos.x),
+        Math.min(startY, pos.y),
+        Math.abs(pos.x - startX),
+        Math.abs(pos.y - startY)
+      );
+    } else if (shapeMode === 'circle') {
+      const radius = Math.hypot(pos.x - startX, pos.y - startY);
+      ctx.arc(startX, startY, radius, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.closePath();
+  }
+  isDrawing = false;
+}
 </script>
-  </body>
+</body>
 </html>
