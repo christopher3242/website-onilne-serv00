@@ -1,304 +1,2744 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LED Sync Visualizer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LED Sync Visualizer - 30 Effects</title>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
+html,
 body {
   margin: 0;
-  background: black;
-  font-family: Arial;
-  color: white;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
+  background: #000;
+  font-family: Arial, sans-serif;
 }
 
-/* Header Title */
-h1 {
+#canvas {
   position: fixed;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-  font-size: 24px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #000;
+}
+
+#header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  padding: 13px;
+  background: rgba(20, 20, 20, 0.92);
+  color: #fff;
+  text-align: center;
+  font-size: 20px;
   font-weight: bold;
-  z-index: 11; /* above the UI panel */
-  color: white;
+  z-index: 20;
+  pointer-events: none;
 }
 
-/* Exit link container */
-.exit-container {
+#sidebar {
   position: fixed;
-  top: 10px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 8px 12px;
-  border-radius: 8px;
-  z-index: 11; /* above UI panel and title */
+  top: 60px;
+  left: 10px;
+  width: 290px;
+  max-height: calc(100vh - 75px);
+  padding: 15px;
+  overflow-y: auto;
+  background: rgba(20, 20, 20, 0.88);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 10px;
+  color: #fff;
+  z-index: 20;
+  backdrop-filter: blur(8px);
 }
 
-.exit-link {
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
+#sidebar::-webkit-scrollbar {
+  width: 7px;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 10px;
+}
+
+label {
+  display: block;
+  margin-top: 11px;
+  margin-bottom: 5px;
   font-weight: bold;
+  font-size: 13px;
 }
 
-#ui {
-  position: fixed;
-  top: 50px; /* below header and exit link */
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.6);
-  padding: 10px 15px;
-  border-radius: 8px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  z-index: 10;
+input[type="file"],
+select,
+button,
+input[type="range"] {
+  width: 100%;
 }
 
-button, select, input {
-  padding: 6px 10px;
-  border: none;
+input[type="file"],
+select,
+button {
+  min-height: 38px;
+  border: 0;
   border-radius: 5px;
+  padding: 8px;
   font-size: 14px;
+}
+
+input[type="file"],
+select {
+  background: #eee;
+  color: #111;
 }
 
 button {
-  background: #ff0066;
-  color: white;
+  margin-top: 6px;
+  background: #444;
+  color: #fff;
   cursor: pointer;
+  transition: .2s;
 }
 
-canvas {
-  width: 100vw;
-  height: 100vh;
-  display: block;
+button:hover {
+  background: #666;
+}
+
+button:active {
+  transform: scale(.98);
+}
+
+.control-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.value {
+  margin-top: 3px;
+  color: #0f0;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+#status {
+  margin-top: 12px;
+  padding: 9px;
+  border-radius: 5px;
+  background: rgba(0,0,0,.55);
+  color: #0f0;
+  font-size: 12px;
+  text-align: center;
+  min-height: 31px;
+}
+
+#liveValues {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-top: 8px;
+  font-family: monospace;
+  font-size: 11px;
+  color: #0f0;
+}
+
+#liveValues div {
+  background: rgba(0,0,0,.4);
+  padding: 6px;
+  border-radius: 4px;
+}
+
+#fpsCounter {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 5px 9px;
+  background: rgba(0,0,0,.65);
+  color: #0f0;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 13px;
+  z-index: 30;
+}
+
+.exit-container {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  z-index: 30;
+}
+
+.exit-link {
+  display: inline-block;
+  padding: 8px 13px;
+  border-radius: 5px;
+  background: rgba(255,0,0,.75);
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.exit-link:hover {
+  background: red;
+}
+
+@media (max-width: 600px) {
+  #sidebar {
+    width: 225px;
+    padding: 10px;
+  }
+
+  #header {
+    font-size: 17px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<h1>LED Sync Visualizer</h1>
-
-<div class="exit-container">
-  <a href="../../your%20favorite.html" class="exit-link">exit</a>
-</div>
-
-<div id="ui">
-  <input type="file" id="file" accept="audio/*" />
-  <button id="play">Play</button>
-  <button id="pause">Pause</button>
-  <button id="stop">Stop</button>
-  <button id="loop">Loop Off</button>
-  <button id="fullscreen">Fullscreen</button>
-  <select id="mode">
-    <option value="eq">EQ</option>
-    <option value="wave">Wave</option>
-    <option value="beat">Beat</option>
-    <option value="strobe">Strobe</option>
-    <option value="spiral">Spiral</option>
-    <option value="rain">Rain</option>
-    <option value="burst">Burst</option>
-  </select>
-</div>
-
 <canvas id="canvas"></canvas>
 
+<div id="header">
+  LED Sync Visualizer — 30 Effects
+</div>
+
+<div id="sidebar">
+
+  <label>Upload Audio</label>
+  <input type="file" id="fileInput" accept="audio/*">
+
+  <div class="control-row">
+    <button id="playBtn">▶ Play</button>
+    <button id="pauseBtn">Ⅱ Pause</button>
+  </div>
+
+  <div class="control-row">
+    <button id="stopBtn">■ Stop</button>
+    <button id="loopBtn">Loop: Off</button>
+  </div>
+
+  <div class="control-row">
+    <button id="fullscreenBtn">Fullscreen</button>
+    <button id="exitFullscreenBtn">Exit Fullscreen</button>
+  </div>
+
+  <label for="effectSelect">Effect</label>
+
+  <select id="effectSelect">
+    <option value="wave">01 — Wave Beat</option>
+    <option value="spiral">02 — Spiral</option>
+    <option value="rainbowWave">03 — Rainbow Wave</option>
+    <option value="colorPulse">04 — Color Pulse</option>
+    <option value="strobeFlash">05 — Strobe Flash</option>
+    <option value="hypnoticSpiral">06 — Hypnotic Spiral</option>
+    <option value="waterRipple">07 — Water Ripple</option>
+    <option value="lightning">08 — Lightning Strike</option>
+    <option value="fireFlame">09 — Fire Flame</option>
+    <option value="musicSpectrum">10 — Music Spectrum</option>
+    <option value="rotatingColors">11 — Rotating Colors</option>
+    <option value="colorExplosion">12 — Color Explosion</option>
+    <option value="flicker">13 — Flicker</option>
+    <option value="gradientRainbow">14 — Gradient Rainbow</option>
+    <option value="pulseWave">15 — Pulse Wave</option>
+    <option value="fireworks">16 — Fireworks</option>
+    <option value="colorTwirl">17 — Color Twirl</option>
+    <option value="chaseLights">18 — Chase Lights</option>
+    <option value="lightTunnel">19 — Light Tunnel</option>
+    <option value="waveSpiral">20 — Wave Spiral</option>
+    <option value="rainbowSpiral">21 — Rainbow Spiral</option>
+    <option value="meteorBurst">22 — Meteor Burst</option>
+    <option value="starlight">23 — Starlight</option>
+    <option value="discoBall">24 — Disco Ball</option>
+    <option value="lavaFlow">25 — Lava Flow</option>
+    <option value="pixelFlicker">26 — Pixel Flicker</option>
+    <option value="liquidGlow">27 — Liquid Glow</option>
+    <option value="laserBeam">28 — Laser Beam</option>
+    <option value="auroraFlash">29 — Aurora Flash</option>
+    <option value="neonPulse">30 — Neon Pulse</option>
+  </select>
+
+  <label for="beatSensitivityRange">
+    Beat Sensitivity
+  </label>
+
+  <input
+    type="range"
+    id="beatSensitivityRange"
+    min="1"
+    max="100"
+    value="50"
+  >
+
+  <div class="value">
+    Sensitivity: <span id="beatSensitivityValue">50</span>
+  </div>
+
+  <label for="volumeRange">
+    Volume
+  </label>
+
+  <input
+    type="range"
+    id="volumeRange"
+    min="0"
+    max="100"
+    value="50"
+  >
+
+  <div class="value">
+    Volume: <span id="volumeValue">50</span>%
+  </div>
+
+  <div id="status">
+    Select an audio file
+  </div>
+
+  <div id="liveValues">
+    <div>
+      Beat<br>
+      <b id="beatValue">0%</b>
+    </div>
+
+    <div>
+      Volume<br>
+      <b id="volumeDisplay">50%</b>
+    </div>
+  </div>
+
+</div>
+
+<div class="exit-container">
+  <a href="../../your%20favorite.html" class="exit-link">
+    Exit
+  </a>
+</div>
+
+<div id="fpsCounter">
+  FPS: 0
+</div>
+
 <script>
+"use strict";
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+let width = window.innerWidth;
+let height = window.innerHeight;
+let dpr = 1;
+
 function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  width = window.innerWidth;
+  height = window.innerHeight;
+
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  canvas.width = Math.floor(width * dpr);
+  canvas.height = Math.floor(height * dpr);
+
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px";
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
 window.addEventListener("resize", resize);
 resize();
 
-let audio = new Audio();
-let audioCtx;
-let analyser;
-let source;
-let dataArray;
-let bufferLength;
-let animationId;
+/* =========================================================
+   DOM
+========================================================= */
 
-const fileInput = document.getElementById("file");
+const fileInput = document.getElementById("fileInput");
+const playBtn = document.getElementById("playBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+const stopBtn = document.getElementById("stopBtn");
+const loopBtn = document.getElementById("loopBtn");
 
-fileInput.onchange = e => {
-  const file = e.target.files[0];
-  if (file) {
-    audio.src = URL.createObjectURL(file);
-  }
-};
+const fullscreenBtn =
+  document.getElementById("fullscreenBtn");
 
-function setupAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    source = audioCtx.createMediaElementSource(audio);
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 256;
-    bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-  }
+const exitFullscreenBtn =
+  document.getElementById("exitFullscreenBtn");
+
+const effectSelect =
+  document.getElementById("effectSelect");
+
+const sensitivityRange =
+  document.getElementById("beatSensitivityRange");
+
+const sensitivityValue =
+  document.getElementById("beatSensitivityValue");
+
+const volumeRange =
+  document.getElementById("volumeRange");
+
+const volumeValue =
+  document.getElementById("volumeValue");
+
+const statusDisplay =
+  document.getElementById("status");
+
+const beatValue =
+  document.getElementById("beatValue");
+
+const volumeDisplay =
+  document.getElementById("volumeDisplay");
+
+const fpsDisplay =
+  document.getElementById("fpsCounter");
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+let audioCtx = null;
+let analyser = null;
+let gainNode = null;
+let buffer = null;
+let sourceNode = null;
+
+let isPlaying = false;
+let loopMode = false;
+
+let volumeLevel = .5;
+let beatSensitivity = 50;
+
+const fftSize = 1024;
+
+let frequencyData =
+  new Uint8Array(fftSize / 2);
+
+let waveformData =
+  new Uint8Array(fftSize);
+
+/* =========================================================
+   VISUAL STATE
+========================================================= */
+
+let currentEffect = "wave";
+
+let time = 0;
+let hue = 0;
+let beatEnergy = 0;
+let smoothBass = 0;
+let smoothMid = 0;
+let smoothTreble = 0;
+
+let particles = [];
+let stars = [];
+let sparks = [];
+let ripples = [];
+let meteors = [];
+
+let lastBeat = 0;
+
+let animationId = null;
+
+let fpsFrames = 0;
+let fpsTime = performance.now();
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function setStatus(text) {
+  statusDisplay.textContent = text;
 }
 
-document.getElementById("play").onclick = () => {
-  setupAudio();
-  audio.play();
-  animate();
-};
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
 
-document.getElementById("pause").onclick = () => {
-  audio.pause();
-  cancelAnimationFrame(animationId);
-};
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
 
-document.getElementById("stop").onclick = () => {
-  audio.pause();
-  audio.currentTime = 0;
-  cancelAnimationFrame(animationId);
-  clear();
-};
+function rand(min, max) {
+  return Math.random() * (max - min) + min;
+}
 
-let loop = false;
+function hsl(h, s = 100, l = 50, a = 1) {
+  return `hsla(${h},${s}%,${l}%,${a})`;
+}
 
-document.getElementById("loop").onclick = () => {
-  loop = !loop;
-  audio.loop = loop;
-  document.getElementById("loop").innerText = loop ? "Loop On" : "Loop Off";
-};
+function map(v, a, b, c, d) {
+  return c + (v - a) * (d - c) / (b - a);
+}
 
-document.getElementById("fullscreen").onclick = () => {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen();
+function center() {
+  return {
+    x: width / 2,
+    y: height / 2
+  };
+}
+
+function clearScreen(alpha = 1) {
+  if (alpha >= 1) {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, width, height);
   } else {
-    document.exitFullscreen();
+    ctx.fillStyle = `rgba(0,0,0,${alpha})`;
+    ctx.fillRect(0, 0, width, height);
+  }
+}
+
+/* =========================================================
+   AUDIO SETUP
+========================================================= */
+
+async function initAudio(arrayBuffer) {
+
+  if (audioCtx) {
+    try {
+      await audioCtx.close();
+    } catch (e) {}
+  }
+
+  audioCtx =
+    new (window.AudioContext ||
+         window.webkitAudioContext)();
+
+  buffer =
+    await audioCtx.decodeAudioData(arrayBuffer);
+
+  analyser = audioCtx.createAnalyser();
+
+  analyser.fftSize = fftSize;
+  analyser.smoothingTimeConstant = .78;
+
+  gainNode =
+    audioCtx.createGain();
+
+  gainNode.gain.value =
+    volumeLevel;
+
+  frequencyData =
+    new Uint8Array(analyser.frequencyBinCount);
+
+  waveformData =
+    new Uint8Array(analyser.fftSize);
+
+  setStatus("Ready to Play");
+}
+
+function createSource() {
+
+  if (!audioCtx || !buffer) {
+    return null;
+  }
+
+  if (sourceNode) {
+    try {
+      sourceNode.stop();
+    } catch (e) {}
+
+    try {
+      sourceNode.disconnect();
+    } catch (e) {}
+  }
+
+  sourceNode =
+    audioCtx.createBufferSource();
+
+  sourceNode.buffer = buffer;
+  sourceNode.loop = loopMode;
+
+  sourceNode.connect(gainNode);
+  gainNode.connect(analyser);
+  analyser.connect(audioCtx.destination);
+
+  sourceNode.onended = () => {
+
+    if (!loopMode) {
+      isPlaying = false;
+      setStatus("Finished");
+    }
+  };
+
+  return sourceNode;
+}
+
+/* =========================================================
+   PLAYBACK
+========================================================= */
+
+async function playAudio() {
+
+  if (!buffer || !audioCtx) {
+    setStatus("Upload an audio file first");
+    return;
+  }
+
+  if (isPlaying) {
+    return;
+  }
+
+  if (audioCtx.state === "suspended") {
+    await audioCtx.resume();
+  }
+
+  createSource();
+
+  sourceNode.start(0);
+
+  isPlaying = true;
+
+  setStatus("Playing");
+
+  if (!animationId) {
+    animationId =
+      requestAnimationFrame(draw);
+  }
+}
+
+async function pauseAudio() {
+
+  if (!audioCtx || !isPlaying) {
+    return;
+  }
+
+  await audioCtx.suspend();
+
+  isPlaying = false;
+
+  setStatus("Paused");
+}
+
+function stopAudio() {
+
+  if (sourceNode) {
+    try {
+      sourceNode.stop();
+    } catch (e) {}
+
+    try {
+      sourceNode.disconnect();
+    } catch (e) {}
+  }
+
+  sourceNode = null;
+  isPlaying = false;
+
+  beatEnergy = 0;
+
+  clearScreen();
+
+  setStatus("Stopped");
+}
+
+/* =========================================================
+   UI
+========================================================= */
+
+fileInput.addEventListener("change", async () => {
+
+  const file = fileInput.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  setStatus("Loading audio...");
+
+  try {
+
+    const arrayBuffer =
+      await file.arrayBuffer();
+
+    await initAudio(arrayBuffer);
+
+    setStatus("Loaded: " + file.name);
+
+  } catch (error) {
+
+    console.error(error);
+
+    setStatus("Error loading audio");
+  }
+});
+
+playBtn.onclick = playAudio;
+pauseBtn.onclick = pauseAudio;
+stopBtn.onclick = stopAudio;
+
+loopBtn.onclick = () => {
+
+  loopMode = !loopMode;
+
+  loopBtn.textContent =
+    "Loop: " + (loopMode ? "On" : "Off");
+
+  if (sourceNode) {
+    sourceNode.loop = loopMode;
   }
 };
 
-const modeSelect = document.getElementById("mode");
+fullscreenBtn.onclick = async () => {
 
-function clear() {
-  ctx.fillStyle = "black";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-function animate() {
-  animationId = requestAnimationFrame(animate);
-  analyser.getByteFrequencyData(dataArray);
-  clear();
-
-  switch (modeSelect.value) {
-    case "eq":
-      drawEQ();
-      break;
-    case "wave":
-      drawWave();
-      break;
-    case "beat":
-      drawBeat();
-      break;
-    case "strobe":
-      drawStrobe();
-      break;
-    case "spiral":
-      drawSpiral();
-      break;
-    case "rain":
-      drawRain();
-      break;
-    case "burst":
-      drawBurst();
-      break;
+  try {
+    await document.documentElement.requestFullscreen();
+  } catch (e) {
+    console.error(e);
   }
-}
+};
 
-function drawEQ() {
-  let barWidth = (canvas.width / bufferLength) * 2;
-  let x = 0;
-  for (let i = 0; i < bufferLength; i++) {
-    let barHeight = dataArray[i];
-    ctx.fillStyle = `hsl(${i * 3}, 100%, 50%)`;
-    ctx.fillRect(x, canvas.height - barHeight * 2, barWidth, barHeight * 2);
-    x += barWidth + 1;
-  }
-}
+exitFullscreenBtn.onclick = async () => {
 
-function drawWave() {
-  ctx.beginPath();
-  let slice = canvas.width / bufferLength;
-  for (let i = 0; i < bufferLength; i++) {
-    let v = dataArray[i] / 255;
-    let y = v * canvas.height;
-    if (i === 0) {
-      ctx.moveTo(0, y);
-    } else {
-      ctx.lineTo(i * slice, y);
+  if (document.fullscreenElement) {
+
+    try {
+      await document.exitFullscreen();
+    } catch (e) {
+      console.error(e);
     }
   }
-  ctx.strokeStyle = "cyan";
-  ctx.lineWidth = 2;
-  ctx.stroke();
+};
+
+effectSelect.onchange = () => {
+
+  currentEffect =
+    effectSelect.value;
+
+  resetEffectState();
+};
+
+sensitivityRange.oninput = () => {
+
+  beatSensitivity =
+    Number(sensitivityRange.value);
+
+  sensitivityValue.textContent =
+    beatSensitivity;
+};
+
+volumeRange.oninput = () => {
+
+  volumeLevel =
+    Number(volumeRange.value) / 100;
+
+  volumeValue.textContent =
+    volumeRange.value;
+
+  volumeDisplay.textContent =
+    volumeRange.value + "%";
+
+  if (gainNode) {
+    gainNode.gain.value =
+      volumeLevel;
+  }
+};
+
+/* =========================================================
+   AUDIO ANALYSIS
+========================================================= */
+
+function analyzeAudio() {
+
+  if (!analyser) {
+    return {
+      bass: 0,
+      mid: 0,
+      treble: 0,
+      average: 0,
+      beat: 0
+    };
+  }
+
+  analyser.getByteFrequencyData(
+    frequencyData
+  );
+
+  analyser.getByteTimeDomainData(
+    waveformData
+  );
+
+  let bass = 0;
+  let mid = 0;
+  let treble = 0;
+  let total = 0;
+
+  const n =
+    frequencyData.length;
+
+  for (let i = 0; i < n; i++) {
+
+    const v =
+      frequencyData[i] / 255;
+
+    total += v;
+
+    if (i < n * .12) {
+      bass += v;
+    } else if (i < n * .5) {
+      mid += v;
+    } else {
+      treble += v;
+    }
+  }
+
+  bass /= n * .12;
+  mid /= n * .38;
+  treble /= n * .5;
+
+  const average =
+    total / n;
+
+  smoothBass =
+    lerp(smoothBass, bass, .25);
+
+  smoothMid =
+    lerp(smoothMid, mid, .2);
+
+  smoothTreble =
+    lerp(smoothTreble, treble, .2);
+
+  const threshold =
+    map(
+      beatSensitivity,
+      1,
+      100,
+      .95,
+      .12
+    );
+
+  if (
+    bass > threshold &&
+    bass > lastBeat + .04
+  ) {
+
+    beatEnergy =
+      clamp(
+        bass * 1.3,
+        0,
+        1
+      );
+
+    spawnBeatParticles(
+      Math.floor(
+        4 + beatEnergy * 18
+      )
+    );
+
+  } else {
+
+    beatEnergy *= .91;
+  }
+
+  lastBeat =
+    lerp(lastBeat, bass, .08);
+
+  beatValue.textContent =
+    Math.round(beatEnergy * 100) + "%";
+
+  return {
+    bass: smoothBass,
+    mid: smoothMid,
+    treble: smoothTreble,
+    average,
+    beat: beatEnergy
+  };
 }
 
-function drawBeat() {
-  let avg = dataArray.reduce((a, b) => a + b) / bufferLength;
-  ctx.fillStyle = `rgba(255, 0, 150, ${avg / 255})`;
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+function spawnBeatParticles(count) {
+
+  const c = center();
+
+  for (let i = 0; i < count; i++) {
+
+    const angle =
+      Math.random() * Math.PI * 2;
+
+    const speed =
+      rand(1, 7);
+
+    particles.push({
+      x: c.x,
+      y: c.y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1,
+      size: rand(1, 5),
+      hue: hue + rand(-30, 30)
+    });
+  }
+
+  if (particles.length > 900) {
+    particles.splice(
+      0,
+      particles.length - 900
+    );
+  }
+}
+
+function updateParticles() {
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+
+    const p = particles[i];
+
+    p.x += p.vx;
+    p.y += p.vy;
+
+    p.vx *= .985;
+    p.vy *= .985;
+
+    p.life -= .018;
+
+    if (p.life <= 0) {
+      particles.splice(i, 1);
+    }
+  }
+}
+
+function drawParticles(mult = 1) {
+
+  for (const p of particles) {
+
+    ctx.beginPath();
+
+    ctx.fillStyle =
+      hsl(
+        p.hue,
+        100,
+        60,
+        p.life
+      );
+
+    ctx.arc(
+      p.x,
+      p.y,
+      p.size * mult,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+  }
+}
+
+/* =========================================================
+   EFFECT RESET
+========================================================= */
+
+function resetEffectState() {
+
+  particles = [];
+  sparks = [];
+  ripples = [];
+  meteors = [];
+
+  stars = [];
+
+  for (let i = 0; i < 180; i++) {
+
+    stars.push({
+      x: Math.random(),
+      y: Math.random(),
+      size: rand(.5, 2.5),
+      phase: rand(0, Math.PI * 2)
+    });
+  }
+}
+
+resetEffectState();
+
+/* =========================================================
+   01 — WAVE BEAT
+========================================================= */
+
+function effectWave(a) {
+
+  clearScreen(.18);
+
+  const c = center();
+
   ctx.beginPath();
-  ctx.arc(canvas.width / 2, canvas.height / 2, avg * 2, 0, Math.PI * 2);
-  ctx.fill();
+
+  for (let x = 0; x <= width; x += 5) {
+
+    const n = x / width;
+
+    const wave =
+      Math.sin(
+        n * Math.PI * 12 +
+        time * 4
+      ) *
+      (20 + a.bass * 100);
+
+    const y =
+      c.y +
+      wave;
+
+    if (x === 0)
+      ctx.moveTo(x, y);
+    else
+      ctx.lineTo(x, y);
+  }
+
+  ctx.strokeStyle =
+    hsl(hue, 100, 60);
+
+  ctx.lineWidth =
+    2 + a.beat * 5;
+
+  ctx.shadowBlur = 25;
+  ctx.shadowColor =
+    hsl(hue, 100, 60);
+
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
 }
 
-function drawStrobe() {
-  let avg = dataArray.reduce((a, b) => a + b) / bufferLength;
-  if (avg > 140) {
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+/* =========================================================
+   02 — SPIRAL
+========================================================= */
+
+function effectSpiral(a) {
+
+  clearScreen(.15);
+
+  const c = center();
+
+  ctx.save();
+  ctx.translate(c.x, c.y);
+  ctx.rotate(time * .35);
+
+  ctx.beginPath();
+
+  for (let r = 5; r < Math.max(width, height); r += 3) {
+
+    const angle =
+      r * .025 +
+      time +
+      a.bass * 2;
+
+    const x =
+      Math.cos(angle) *
+      r * .45;
+
+    const y =
+      Math.sin(angle) *
+      r * .45;
+
+    if (r === 5)
+      ctx.moveTo(x, y);
+    else
+      ctx.lineTo(x, y);
+  }
+
+  ctx.strokeStyle =
+    hsl(hue, 100, 60);
+
+  ctx.lineWidth =
+    2 + a.beat * 4;
+
+  ctx.shadowBlur = 20;
+  ctx.shadowColor =
+    hsl(hue, 100, 60);
+
+  ctx.stroke();
+
+  ctx.restore();
+
+  ctx.shadowBlur = 0;
+}
+
+/* =========================================================
+   03 — RAINBOW WAVE
+========================================================= */
+
+function effectRainbowWave(a) {
+
+  clearScreen(.12);
+
+  for (let y = 0; y < height; y += 4) {
+
+    const wave =
+      Math.sin(
+        y * .018 +
+        time * 3
+      );
+
+    const x =
+      width / 2 +
+      wave * width * .35;
+
+    const h =
+      (hue + y * .5) % 360;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      x - 100,
+      y
+    );
+
+    ctx.lineTo(
+      x + 100,
+      y
+    );
+
+    ctx.strokeStyle =
+      hsl(
+        h,
+        100,
+        50,
+        .65
+      );
+
+    ctx.lineWidth =
+      3 + a.bass * 8;
+
+    ctx.stroke();
   }
 }
 
-function drawSpiral() {
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
-  for (let i = 0; i < bufferLength; i++) {
-    let angle = i * 0.3;
-    let radius = dataArray[i] * 2;
-    let x = cx + Math.cos(angle) * radius;
-    let y = cy + Math.sin(angle) * radius;
-    ctx.fillStyle = `hsl(${i * 4}, 100%, 50%)`;
-    ctx.fillRect(x, y, 4, 4);
+/* =========================================================
+   04 — COLOR PULSE
+========================================================= */
+
+function effectColorPulse(a) {
+
+  clearScreen(.1);
+
+  const c = center();
+
+  const radius =
+    Math.min(width, height) *
+    (.15 + a.beat * .45);
+
+  const gradient =
+    ctx.createRadialGradient(
+      c.x,
+      c.y,
+      0,
+      c.x,
+      c.y,
+      radius * 1.5
+    );
+
+  gradient.addColorStop(
+    0,
+    hsl(hue, 100, 70, .95)
+  );
+
+  gradient.addColorStop(
+    .35,
+    hsl(hue + 40, 100, 50, .5)
+  );
+
+  gradient.addColorStop(
+    1,
+    "rgba(0,0,0,0)"
+  );
+
+  ctx.fillStyle = gradient;
+
+  ctx.fillRect(
+    0,
+    0,
+    width,
+    height
+  );
+}
+
+/* =========================================================
+   05 — STROBE FLASH
+========================================================= */
+
+function effectStrobeFlash(a) {
+
+  clearScreen(.25);
+
+  const flash =
+    a.beat > .65;
+
+  if (flash) {
+
+    ctx.fillStyle =
+      hsl(
+        hue,
+        100,
+        65,
+        .3 + a.beat * .55
+      );
+
+    ctx.fillRect(
+      0,
+      0,
+      width,
+      height
+    );
+  }
+
+  drawParticles(1.5);
+}
+
+/* =========================================================
+   06 — HYPNOTIC SPIRAL
+========================================================= */
+
+function effectHypnoticSpiral(a) {
+
+  clearScreen(.1);
+
+  const c = center();
+
+  ctx.save();
+  ctx.translate(c.x, c.y);
+
+  for (
+    let ring = 0;
+    ring < 18;
+    ring++
+  ) {
+
+    ctx.beginPath();
+
+    const r =
+      ring * 28 +
+      Math.sin(time * 2 + ring) * 12;
+
+    for (
+      let i = 0;
+      i < 100;
+      i++
+    ) {
+
+      const angle =
+        i * .16 +
+        time * (ring % 2 ? .8 : -.8);
+
+      const rr =
+        r +
+        Math.sin(
+          angle * 4 +
+          time
+        ) * 12;
+
+      const x =
+        Math.cos(angle) * rr;
+
+      const y =
+        Math.sin(angle) * rr;
+
+      if (i === 0)
+        ctx.moveTo(x, y);
+      else
+        ctx.lineTo(x, y);
+    }
+
+    ctx.strokeStyle =
+      hsl(
+        hue + ring * 18,
+        100,
+        50,
+        .6
+      );
+
+    ctx.lineWidth =
+      2 + a.beat * 2;
+
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+/* =========================================================
+   07 — WATER RIPPLE
+========================================================= */
+
+function effectWaterRipple(a) {
+
+  clearScreen(.16);
+
+  const c = center();
+
+  if (a.beat > .65) {
+
+    ripples.push({
+      r: 10,
+      alpha: 1,
+      hue: hue
+    });
+  }
+
+  for (let i = ripples.length - 1; i >= 0; i--) {
+
+    const r = ripples[i];
+
+    r.r += 4 + a.bass * 5;
+    r.alpha -= .012;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      c.x,
+      c.y,
+      r.r,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.strokeStyle =
+      hsl(
+        r.hue,
+        100,
+        60,
+        r.alpha
+      );
+
+    ctx.lineWidth = 2;
+
+    ctx.stroke();
+
+    if (r.alpha <= 0) {
+      ripples.splice(i, 1);
+    }
   }
 }
 
-function drawRain() {
-  for (let i = 0; i < bufferLength; i++) {
-    let x = i * (canvas.width / bufferLength);
-    let y = (dataArray[i] * 4) % canvas.height;
-    ctx.fillStyle = "lime";
-    ctx.fillRect(x, y, 3, 15);
+/* =========================================================
+   08 — LIGHTNING
+========================================================= */
+
+function effectLightning(a) {
+
+  clearScreen(.2);
+
+  if (a.beat > .7) {
+
+    const startX =
+      rand(0, width);
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      startX,
+      0
+    );
+
+    let x = startX;
+
+    for (
+      let y = 0;
+      y < height;
+      y += rand(15, 45)
+    ) {
+
+      x += rand(-70, 70);
+
+      ctx.lineTo(
+        x,
+        y
+      );
+    }
+
+    ctx.strokeStyle =
+      "#fff";
+
+    ctx.lineWidth =
+      2 + a.beat * 5;
+
+    ctx.shadowBlur = 30;
+    ctx.shadowColor =
+      hsl(hue, 100, 70);
+
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
   }
 }
 
-function drawBurst() {
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
-  for (let i = 0; i < bufferLength; i++) {
-    let angle = (i / bufferLength) * Math.PI * 2;
-    let radius = dataArray[i] * 2;
-    let x = cx + Math.cos(angle) * radius;
-    let y = cy + Math.sin(angle) * radius;
-    ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 60%)`;
-    ctx.fillRect(x, y, 5, 5);
+/* =========================================================
+   09 — FIRE FLAME
+========================================================= */
+
+function effectFireFlame(a) {
+
+  clearScreen(.12);
+
+  const c = center();
+
+  for (let i = 0; i < 160; i++) {
+
+    const x =
+      c.x +
+      rand(-width * .35, width * .35);
+
+    const y =
+      height -
+      Math.random() *
+      height *
+      (.35 + a.bass * .55);
+
+    const size =
+      rand(2, 15) *
+      (1 + a.beat);
+
+    const h =
+      rand(0, 55);
+
+    ctx.beginPath();
+
+    ctx.fillStyle =
+      hsl(
+        h,
+        100,
+        50 + rand(0, 30),
+        .45
+      );
+
+    ctx.arc(
+      x,
+      y,
+      size,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
   }
 }
+
+/* =========================================================
+   10 — MUSIC SPECTRUM
+========================================================= */
+
+function effectMusicSpectrum(a) {
+
+  clearScreen(.15);
+
+  const bars = 64;
+  const barWidth =
+    width / bars;
+
+  for (let i = 0; i < bars; i++) {
+
+    const index =
+      Math.floor(
+        i / bars *
+        frequencyData.length
+      );
+
+    const value =
+      frequencyData[index] / 255;
+
+    const barHeight =
+      value *
+      height *
+      .75;
+
+    ctx.fillStyle =
+      hsl(
+        hue + i * 5,
+        100,
+        50,
+        .85
+      );
+
+    ctx.fillRect(
+      i * barWidth,
+      height - barHeight,
+      barWidth - 2,
+      barHeight
+    );
+  }
+}
+
+/* =========================================================
+   11 — ROTATING COLORS
+========================================================= */
+
+function effectRotatingColors(a) {
+
+  clearScreen(.13);
+
+  const c = center();
+
+  const count = 24;
+
+  for (let i = 0; i < count; i++) {
+
+    const angle =
+      time +
+      i * Math.PI * 2 / count;
+
+    const radius =
+      Math.min(width, height) *
+      (.15 + a.bass * .35);
+
+    const x =
+      c.x +
+      Math.cos(angle) * radius;
+
+    const y =
+      c.y +
+      Math.sin(angle) * radius;
+
+    ctx.beginPath();
+
+    ctx.fillStyle =
+      hsl(
+        hue + i * 15,
+        100,
+        55
+      );
+
+    ctx.arc(
+      x,
+      y,
+      10 + a.beat * 15,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+  }
+}
+
+/* =========================================================
+   12 — COLOR EXPLOSION
+========================================================= */
+
+function effectColorExplosion(a) {
+
+  clearScreen(.16);
+
+  updateParticles();
+
+  drawParticles(
+    1 + a.beat * 2
+  );
+
+  if (a.beat > .65) {
+    spawnBeatParticles(40);
+  }
+}
+
+/* =========================================================
+   13 — FLICKER
+========================================================= */
+
+function effectFlicker(a) {
+
+  clearScreen(.3);
+
+  const intensity =
+    .25 +
+    a.average * .8 +
+    Math.random() * .3;
+
+  ctx.fillStyle =
+    hsl(
+      hue,
+      100,
+      50,
+      clamp(intensity, 0, .9)
+    );
+
+  ctx.fillRect(
+    0,
+    0,
+    width,
+    height
+  );
+}
+
+/* =========================================================
+   14 — GRADIENT RAINBOW
+========================================================= */
+
+function effectGradientRainbow(a) {
+
+  const gradient =
+    ctx.createLinearGradient(
+      0,
+      0,
+      width,
+      height
+    );
+
+  for (let i = 0; i <= 1; i += .1) {
+
+    gradient.addColorStop(
+      i,
+      hsl(
+        hue + i * 360,
+        100,
+        50,
+        .7
+      )
+    );
+  }
+
+  ctx.fillStyle =
+    gradient;
+
+  ctx.globalAlpha =
+    .12 + a.beat * .3;
+
+  ctx.fillRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+  ctx.globalAlpha = 1;
+}
+
+/* =========================================================
+   15 — PULSE WAVE
+========================================================= */
+
+function effectPulseWave(a) {
+
+  clearScreen(.15);
+
+  const c = center();
+
+  for (
+    let ring = 0;
+    ring < 12;
+    ring++
+  ) {
+
+    const radius =
+      ((time * 120 +
+        ring * 60) %
+        Math.max(width, height));
+
+    ctx.beginPath();
+
+    ctx.arc(
+      c.x,
+      c.y,
+      radius,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.strokeStyle =
+      hsl(
+        hue + ring * 20,
+        100,
+        55,
+        1 - radius /
+          Math.max(width, height)
+      );
+
+    ctx.lineWidth =
+      2 + a.beat * 4;
+
+    ctx.stroke();
+  }
+}
+
+/* =========================================================
+   16 — FIREWORKS
+========================================================= */
+
+function effectFireworks(a) {
+
+  clearScreen(.12);
+
+  updateParticles();
+  drawParticles(1.3);
+
+  if (a.beat > .7) {
+
+    for (let i = 0; i < 45; i++) {
+
+      const angle =
+        Math.random() *
+        Math.PI * 2;
+
+      const speed =
+        rand(2, 9);
+
+      particles.push({
+        x: rand(width * .15, width * .85),
+        y: rand(height * .15, height * .7),
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 1,
+        size: rand(1, 4),
+        hue: hue + rand(-50, 50)
+      });
+    }
+  }
+}
+
+/* =========================================================
+   17 — COLOR TWIRL
+========================================================= */
+
+function effectColorTwirl(a) {
+
+  clearScreen(.12);
+
+  const c = center();
+
+  ctx.save();
+  ctx.translate(c.x, c.y);
+
+  for (
+    let i = 0;
+    i < 40;
+    i++
+  ) {
+
+    const angle =
+      time * 1.5 +
+      i * .3;
+
+    const radius =
+      i * 10 +
+      a.beat * 100;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      Math.cos(angle) * radius,
+      Math.sin(angle) * radius,
+      8 + a.bass * 10,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fillStyle =
+      hsl(
+        hue + i * 10,
+        100,
+        55,
+        .7
+      );
+
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+/* =========================================================
+   18 — CHASE LIGHTS
+========================================================= */
+
+function effectChaseLights(a) {
+
+  clearScreen(.2);
+
+  const count = 80;
+
+  for (let i = 0; i < count; i++) {
+
+    const position =
+      (i +
+       Math.floor(time * 20)) %
+      count;
+
+    const x =
+      position / count * width;
+
+    const intensity =
+      Math.max(
+        0,
+        1 -
+        Math.abs(
+          i -
+          ((time * 20) % count)
+        ) / 10
+      );
+
+    ctx.fillStyle =
+      hsl(
+        hue + i * 4,
+        100,
+        55,
+        intensity
+      );
+
+    ctx.fillRect(
+      x,
+      height * .45,
+      width / count - 2,
+      20 + a.beat * 30
+    );
+  }
+}
+
+/* =========================================================
+   19 — LIGHT TUNNEL
+========================================================= */
+
+function effectLightTunnel(a) {
+
+  clearScreen(.16);
+
+  const c = center();
+
+  ctx.save();
+  ctx.translate(c.x, c.y);
+
+  for (
+    let i = 0;
+    i < 24;
+    i++
+  ) {
+
+    const z =
+      ((i / 24 +
+        time * .35) % 1);
+
+    const size =
+      20 +
+      z *
+      Math.max(width, height);
+
+    ctx.strokeStyle =
+      hsl(
+        hue + i * 15,
+        100,
+        55,
+        1 - z
+      );
+
+    ctx.lineWidth =
+      2 + a.beat * 3;
+
+    ctx.strokeRect(
+      -size / 2,
+      -size / 2,
+      size,
+      size
+    );
+  }
+
+  ctx.restore();
+}
+
+/* =========================================================
+   20 — WAVE SPIRAL
+========================================================= */
+
+function effectWaveSpiral(a) {
+
+  clearScreen(.12);
+
+  const c = center();
+
+  ctx.save();
+  ctx.translate(c.x, c.y);
+
+  ctx.beginPath();
+
+  for (
+    let r = 0;
+    r < Math.max(width, height);
+    r += 2
+  ) {
+
+    const angle =
+      r * .025 +
+      time;
+
+    const wave =
+      Math.sin(
+        r * .05 +
+        time * 5
+      ) *
+      (10 + a.bass * 40);
+
+    const radius =
+      r * .25 +
+      wave;
+
+    const x =
+      Math.cos(angle) * radius;
+
+    const y =
+      Math.sin(angle) * radius;
+
+    if (r === 0)
+      ctx.moveTo(x, y);
+    else
+      ctx.lineTo(x, y);
+  }
+
+  ctx.strokeStyle =
+    hsl(
+      hue,
+      100,
+      60
+    );
+
+  ctx.lineWidth = 3;
+
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+/* =========================================================
+   21 — RAINBOW SPIRAL
+========================================================= */
+
+function effectRainbowSpiral(a) {
+
+  clearScreen(.13);
+
+  const c = center();
+
+  ctx.save();
+  ctx.translate(c.x, c.y);
+
+  for (
+    let line = 0;
+    line < 7;
+    line++
+  ) {
+
+    ctx.beginPath();
+
+    for (
+      let r = 5;
+      r < Math.max(width, height);
+      r += 3
+    ) {
+
+      const angle =
+        r * .018 +
+        time +
+        line * .7;
+
+      const rr =
+        r * .22;
+
+      const x =
+        Math.cos(angle) * rr;
+
+      const y =
+        Math.sin(angle) * rr;
+
+      if (r === 5)
+        ctx.moveTo(x, y);
+      else
+        ctx.lineTo(x, y);
+    }
+
+    ctx.strokeStyle =
+      hsl(
+        hue + line * 45,
+        100,
+        55,
+        .75
+      );
+
+    ctx.lineWidth =
+      2 + a.beat * 2;
+
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+/* =========================================================
+   22 — METEOR BURST
+========================================================= */
+
+function effectMeteorBurst(a) {
+
+  clearScreen(.15);
+
+  const c = center();
+
+  if (a.beat > .7) {
+
+    for (let i = 0; i < 8; i++) {
+
+      const angle =
+        Math.random() *
+        Math.PI * 2;
+
+      meteors.push({
+        x: c.x,
+        y: c.y,
+        vx: Math.cos(angle) * rand(3, 10),
+        vy: Math.sin(angle) * rand(3, 10),
+        life: 1,
+        hue: hue + rand(-30, 30)
+      });
+    }
+  }
+
+  for (
+    let i = meteors.length - 1;
+    i >= 0;
+    i--
+  ) {
+
+    const m = meteors[i];
+
+    m.x += m.vx;
+    m.y += m.vy;
+    m.life -= .012;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      m.x,
+      m.y
+    );
+
+    ctx.lineTo(
+      m.x - m.vx * 8,
+      m.y - m.vy * 8
+    );
+
+    ctx.strokeStyle =
+      hsl(
+        m.hue,
+        100,
+        60,
+        m.life
+      );
+
+    ctx.lineWidth = 3;
+
+    ctx.stroke();
+
+    if (m.life <= 0) {
+      meteors.splice(i, 1);
+    }
+  }
+}
+
+/* =========================================================
+   23 — STARLIGHT
+========================================================= */
+
+function effectStarlight(a) {
+
+  clearScreen(.08);
+
+  for (const s of stars) {
+
+    const twinkle =
+      .3 +
+      .7 *
+      (
+        .5 +
+        .5 *
+        Math.sin(
+          time * 3 +
+          s.phase
+        )
+      );
+
+    const size =
+      s.size *
+      (
+        1 +
+        a.beat * 2
+      );
+
+    ctx.beginPath();
+
+    ctx.fillStyle =
+      hsl(
+        hue + 180,
+        80,
+        80,
+        twinkle
+      );
+
+    ctx.arc(
+      s.x * width,
+      s.y * height,
+      size,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+  }
+}
+
+/* =========================================================
+   24 — DISCO BALL
+========================================================= */
+
+function effectDiscoBall(a) {
+
+  clearScreen(.14);
+
+  const c = center();
+
+  const radius =
+    Math.min(width, height) *
+    (.2 + a.beat * .12);
+
+  ctx.beginPath();
+
+  ctx.arc(
+    c.x,
+    c.y,
+    radius,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.clip();
+
+  const tile = 20;
+
+  for (
+    let x = c.x - radius;
+    x < c.x + radius;
+    x += tile
+  ) {
+
+    for (
+      let y = c.y - radius;
+      y < c.y + radius;
+      y += tile
+    ) {
+
+      ctx.fillStyle =
+        hsl(
+          hue +
+          x * .3 +
+          y * .2,
+          100,
+          55,
+          .8
+        );
+
+      ctx.fillRect(
+        x,
+        y,
+        tile - 2,
+        tile - 2
+      );
+    }
+  }
+
+  ctx.restore();
+}
+
+/* =========================================================
+   25 — LAVA FLOW
+========================================================= */
+
+function effectLavaFlow(a) {
+
+  clearScreen(.1);
+
+  for (
+    let x = 0;
+    x < width;
+    x += 8
+  ) {
+
+    const wave =
+      Math.sin(
+        x * .01 +
+        time
+      ) *
+      80;
+
+    const wave2 =
+      Math.sin(
+        x * .025 -
+        time * 1.4
+      ) *
+      40;
+
+    const top =
+      height * .55 +
+      wave +
+      wave2 -
+      a.bass * 200;
+
+    const gradient =
+      ctx.createLinearGradient(
+        0,
+        top,
+        0,
+        height
+      );
+
+    gradient.addColorStop(
+      0,
+      hsl(
+        hue,
+        100,
+        55,
+        .7
+      )
+    );
+
+    gradient.addColorStop(
+      1,
+      hsl(
+        hue - 35,
+        100,
+        20,
+        .1
+      )
+    );
+
+    ctx.fillStyle =
+      gradient;
+
+    ctx.fillRect(
+      x,
+      top,
+      10,
+      height - top
+    );
+  }
+}
+
+/* =========================================================
+   26 — PIXEL FLICKER
+========================================================= */
+
+function effectPixelFlicker(a) {
+
+  clearScreen(.25);
+
+  const size = 18;
+
+  for (
+    let x = 0;
+    x < width;
+    x += size
+  ) {
+
+    for (
+      let y = 0;
+      y < height;
+      y += size
+    ) {
+
+      if (
+        Math.random() <
+        .02 + a.beat * .12
+      ) {
+
+        ctx.fillStyle =
+          hsl(
+            hue +
+            x * .2 +
+            y * .1,
+            100,
+            50 + rand(0, 30),
+            rand(.2, .9)
+          );
+
+        ctx.fillRect(
+          x,
+          y,
+          size - 1,
+          size - 1
+        );
+      }
+    }
+  }
+}
+
+/* =========================================================
+   27 — LIQUID GLOW
+========================================================= */
+
+function effectLiquidGlow(a) {
+
+  clearScreen(.08);
+
+  for (let i = 0; i < 8; i++) {
+
+    const x =
+      width *
+      (
+        .5 +
+        .4 *
+        Math.sin(
+          time * (.3 + i * .07) +
+          i
+        )
+      );
+
+    const y =
+      height *
+      (
+        .5 +
+        .4 *
+        Math.cos(
+          time * (.25 + i * .06) +
+          i
+        )
+      );
+
+    const radius =
+      80 +
+      a.bass * 180;
+
+    const gradient =
+      ctx.createRadialGradient(
+        x,
+        y,
+        0,
+        x,
+        y,
+        radius
+      );
+
+    gradient.addColorStop(
+      0,
+      hsl(
+        hue + i * 45,
+        100,
+        60,
+        .35
+      )
+    );
+
+    gradient.addColorStop(
+      1,
+      "rgba(0,0,0,0)"
+    );
+
+    ctx.fillStyle =
+      gradient;
+
+    ctx.fillRect(
+      0,
+      0,
+      width,
+      height
+    );
+  }
+}
+
+/* =========================================================
+   28 — LASER BEAM
+========================================================= */
+
+function effectLaserBeam(a) {
+
+  clearScreen(.12);
+
+  const c = center();
+
+  for (let i = 0; i < 6; i++) {
+
+    const angle =
+      time * .8 +
+      i * Math.PI / 3;
+
+    const length =
+      Math.max(width, height);
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      c.x,
+      c.y
+    );
+
+    ctx.lineTo(
+      c.x +
+      Math.cos(angle) * length,
+      c.y +
+      Math.sin(angle) * length
+    );
+
+    ctx.strokeStyle =
+      hsl(
+        hue + i * 40,
+        100,
+        60,
+        .55
+      );
+
+    ctx.lineWidth =
+      2 + a.beat * 8;
+
+    ctx.shadowBlur = 25;
+    ctx.shadowColor =
+      hsl(
+        hue + i * 40,
+        100,
+        60
+      );
+
+    ctx.stroke();
+  }
+
+  ctx.shadowBlur = 0;
+}
+
+/* =========================================================
+   29 — AURORA FLASH
+========================================================= */
+
+function effectAuroraFlash(a) {
+
+  clearScreen(.08);
+
+  for (
+    let x = 0;
+    x < width;
+    x += 5
+  ) {
+
+    const wave =
+      Math.sin(
+        x * .006 +
+        time
+      ) *
+      100;
+
+    const wave2 =
+      Math.sin(
+        x * .013 -
+        time * .7
+      ) *
+      60;
+
+    const top =
+      height * .35 +
+      wave +
+      wave2;
+
+    const gradient =
+      ctx.createLinearGradient(
+        0,
+        top,
+        0,
+        height
+      );
+
+    gradient.addColorStop(
+      0,
+      hsl(
+        hue + x * .15,
+        100,
+        60,
+        .35
+      )
+    );
+
+    gradient.addColorStop(
+      1,
+      "rgba(0,0,0,0)"
+    );
+
+    ctx.fillStyle =
+      gradient;
+
+    ctx.fillRect(
+      x,
+      top,
+      7,
+      height - top
+    );
+  }
+
+  if (a.beat > .7) {
+
+    ctx.fillStyle =
+      hsl(
+        hue + 100,
+        100,
+        70,
+        .12
+      );
+
+    ctx.fillRect(
+      0,
+      0,
+      width,
+      height
+    );
+  }
+}
+
+/* =========================================================
+   30 — NEON PULSE
+========================================================= */
+
+function effectNeonPulse(a) {
+
+  clearScreen(.13);
+
+  const c = center();
+
+  const radius =
+    Math.min(width, height) *
+    (.15 + a.beat * .25);
+
+  ctx.save();
+
+  ctx.translate(
+    c.x,
+    c.y
+  );
+
+  ctx.rotate(
+    time * .4
+  );
+
+  ctx.shadowBlur =
+    30 + a.beat * 30;
+
+  ctx.shadowColor =
+    hsl(
+      hue,
+      100,
+      60
+    );
+
+  for (let i = 0; i < 8; i++) {
+
+    const r =
+      radius +
+      i * 35;
+
+    ctx.beginPath();
+
+    ctx.rect(
+      -r,
+      -r,
+      r * 2,
+      r * 2
+    );
+
+    ctx.strokeStyle =
+      hsl(
+        hue + i * 35,
+        100,
+        60,
+        .8
+      );
+
+    ctx.lineWidth =
+      3 + a.beat * 3;
+
+    ctx.stroke();
+  }
+
+  ctx.restore();
+
+  ctx.shadowBlur = 0;
+}
+
+/* =========================================================
+   EFFECT DISPATCHER
+========================================================= */
+
+function drawEffect(name, a) {
+
+  switch (name) {
+
+    case "wave":
+      effectWave(a);
+      break;
+
+    case "spiral":
+      effectSpiral(a);
+      break;
+
+    case "rainbowWave":
+      effectRainbowWave(a);
+      break;
+
+    case "colorPulse":
+      effectColorPulse(a);
+      break;
+
+    case "strobeFlash":
+      effectStrobeFlash(a);
+      break;
+
+    case "hypnoticSpiral":
+      effectHypnoticSpiral(a);
+      break;
+
+    case "waterRipple":
+      effectWaterRipple(a);
+      break;
+
+    case "lightning":
+      effectLightning(a);
+      break;
+
+    case "fireFlame":
+      effectFireFlame(a);
+      break;
+
+    case "musicSpectrum":
+      effectMusicSpectrum(a);
+      break;
+
+    case "rotatingColors":
+      effectRotatingColors(a);
+      break;
+
+    case "colorExplosion":
+      effectColorExplosion(a);
+      break;
+
+    case "flicker":
+      effectFlicker(a);
+      break;
+
+    case "gradientRainbow":
+      effectGradientRainbow(a);
+      break;
+
+    case "pulseWave":
+      effectPulseWave(a);
+      break;
+
+    case "fireworks":
+      effectFireworks(a);
+      break;
+
+    case "colorTwirl":
+      effectColorTwirl(a);
+      break;
+
+    case "chaseLights":
+      effectChaseLights(a);
+      break;
+
+    case "lightTunnel":
+      effectLightTunnel(a);
+      break;
+
+    case "waveSpiral":
+      effectWaveSpiral(a);
+      break;
+
+    case "rainbowSpiral":
+      effectRainbowSpiral(a);
+      break;
+
+    case "meteorBurst":
+      effectMeteorBurst(a);
+      break;
+
+    case "starlight":
+      effectStarlight(a);
+      break;
+
+    case "discoBall":
+      effectDiscoBall(a);
+      break;
+
+    case "lavaFlow":
+      effectLavaFlow(a);
+      break;
+
+    case "pixelFlicker":
+      effectPixelFlicker(a);
+      break;
+
+    case "liquidGlow":
+      effectLiquidGlow(a);
+      break;
+
+    case "laserBeam":
+      effectLaserBeam(a);
+      break;
+
+    case "auroraFlash":
+      effectAuroraFlash(a);
+      break;
+
+    case "neonPulse":
+      effectNeonPulse(a);
+      break;
+
+    default:
+      effectWave(a);
+  }
+}
+
+/* =========================================================
+   MAIN DRAW LOOP
+========================================================= */
+
+function draw(now) {
+
+  animationId =
+    requestAnimationFrame(draw);
+
+  fpsFrames++;
+
+  if (
+    now - fpsTime >= 1000
+  ) {
+
+    fpsDisplay.textContent =
+      "FPS: " + fpsFrames;
+
+    fpsFrames = 0;
+    fpsTime = now;
+  }
+
+  time += .016;
+  hue += .7;
+
+  if (hue >= 360) {
+    hue -= 360;
+  }
+
+  if (!analyser || !isPlaying) {
+    return;
+  }
+
+  const audio =
+    analyzeAudio();
+
+  drawEffect(
+    currentEffect,
+    audio
+  );
+}
+
+/* =========================================================
+   START ANIMATION
+========================================================= */
+
+animationId =
+  requestAnimationFrame(draw);
+
 </script>
 
 </body>

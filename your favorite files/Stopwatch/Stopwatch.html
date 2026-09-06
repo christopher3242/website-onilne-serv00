@@ -1,22 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Simple Stopwatch</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Simple Stopwatch</title>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #bfd1f1;
+    font-family: Arial, sans-serif;
+  }
+
+  .stopwatch {
+    width: 90%;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 30px 20px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-size: 2.5em;
+    margin: 20px 0;
+    letter-spacing: 2px;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  button {
+    flex: 1 1 80px;
+    padding: 12px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  button:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+
+  /* Style for Exit button to align right and larger */
+  #exitBtn {
+    margin-left: auto;
+    min-width: 80px;
+    background-color: #dc3545;
+  }
+
+  #exitBtn:hover {
+    background-color: #a71d2a;
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 600px) {
+    body {
+      padding: 10px;
+    }
+    h1 {
+      font-size: 1.8em;
+    }
+    h2 {
+      font-size: 2em;
+    }
+    button {
+      width: 100%;
+    }
+  }
+</style>
 </head>
 <body>
-  <div class="stopwatch">
-    <h1>My Stopwatch</h1>
-    <h2 id="display">00:00:00</h2>
-    <div class="controls">
-      <button id="startBtn">Start</button>
-      <button id="stopBtn" disabled>Stop</button>
-      <button id="resetBtn" disabled>Reset</button>
-      <a href="../../your%20favorite.html"><button id="exitBtn">Exit</button></a>
-    </div>
+<div class="stopwatch">
+  <h1>My Stopwatch</h1>
+  <h2 id="display">00:00:00</h2>
+  <div class="controls">
+    <button id="startBtn">Start</button>
+    <button id="stopBtn" disabled>Stop</button>
+    <button id="resetBtn" disabled>Reset</button>
+    <a href="../../your%20favorite.html" style="margin-left:auto; display:inline-block;">
+      <button id="exitBtn">Exit</button>
+    </a>
   </div>
-  <script src="script.js"></script>
+</div>
+
+<script>
+  let startTime;
+  let updatedTime;
+  let difference = 0;
+  let tInterval;
+  let running = false;
+
+  const display = document.getElementById("display");
+  const startBtn = document.getElementById("startBtn");
+  const stopBtn = document.getElementById("stopBtn");
+  const resetBtn = document.getElementById("resetBtn");
+
+  function startTimer() {
+    if (!running) {
+      startTime = new Date().getTime() - difference;
+      tInterval = setInterval(updateDisplay, 1000);
+      running = true;
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+      resetBtn.disabled = true;
+    }
+  }
+
+  function stopTimer() {
+    clearInterval(tInterval);
+    running = false;
+    difference = new Date().getTime() - startTime;
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    resetBtn.disabled = false;
+  }
+
+  function resetTimer() {
+    clearInterval(tInterval);
+    running = false;
+    difference = 0;
+    display.innerHTML = "00:00:00";
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    resetBtn.disabled = true;
+  }
+
+  function updateDisplay() {
+    updatedTime = new Date().getTime();
+    difference = updatedTime - startTime;
+
+    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+    display.innerHTML =
+      (hours < 10 ? "0" + hours : hours) + ":" +
+      (minutes < 10 ? "0" + minutes : minutes) + ":" +
+      (seconds < 10 ? "0" + seconds : seconds);
+  }
+
+  // Event listeners
+  startBtn.addEventListener("click", startTimer);
+  stopBtn.addEventListener("click", stopTimer);
+  resetBtn.addEventListener("click", resetTimer);
+</script>
 </body>
 </html>

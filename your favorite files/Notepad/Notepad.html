@@ -9,8 +9,8 @@
     margin: 0;
     height: 100vh;
     display: flex;
-    justify-content: center; /* Horizontal centering */
-    align-items: center;    /* Vertical centering */
+    justify-content: center; /* Horizontal center */
+    align-items: center;    /* Vertical center */
     background-color: #d3d3d3; /* Light gray background */
     font-family: Arial, sans-serif;
   }
@@ -18,7 +18,7 @@
     width: 90%;
     max-width: 800px;
     padding: 20px;
-    background-color: #fff;
+    background: #fff;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     box-sizing: border-box;
     display: flex;
@@ -28,6 +28,7 @@
     text-align: center;
     margin-bottom: 10px;
   }
+  /* Background color selector */
   label, select {
     margin-bottom: 10px;
     display: block;
@@ -40,6 +41,9 @@
     resize: none;
     margin-bottom: 10px;
     border: 1px solid #ccc;
+    font-family: monospace;
+    font-size: 14px;
+    background-color: #ffffff;
   }
   /* Drag and Drop area styling */
   #dropArea {
@@ -49,11 +53,14 @@
     text-align: center;
     color: #555;
     margin-bottom: 10px;
+    cursor: grab;
+    transition: background-color 0.2s, border-color 0.2s;
   }
   #dropArea.dragover {
     border-color: #333;
     background-color: #f0f0f0;
   }
+  /* Buttons container */
   .buttons {
     display: flex;
     justify-content: space-around;
@@ -63,16 +70,17 @@
     padding: 8px 16px;
     font-size: 14px;
     cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background-color: #4CAF50;
+    color: #fff;
+    transition: background-color 0.2s;
   }
-  /* Style for the Exit link/button */
-  a.exit-link {
-    text-decoration: none;
+  button:hover {
+    background-color: #45a049;
   }
   a.exit-link button {
     background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 4px;
   }
   a.exit-link button:hover {
     background-color: #d32f2f;
@@ -120,26 +128,13 @@
     <option value="#bc8f8f">Rosy Brown</option>
     <option value="#ffa07a">Light Salmon</option>
     <option value="#20b2aa">Light Sea Green</option>
-    <!-- Additional colors -->
+    <!-- Additional colors for variety -->
     <option value="#ffe4b2">Light Orange</option>
     <option value="#b0e0e6">Powder Blue</option>
     <option value="#ffe4e0">Pinkish</option>
-    <option value="#e0ffff">Light Cyan</option>
     <option value="#f5f5f5">White Smoke</option>
-    <option value="#ffe4e1">Light Pink</option>
     <option value="#d2b48c">Tan</option>
-    <option value="#faf0e6">Linen</option>
-    <option value="#ffe4c4">Bisque</option>
     <option value="#c0c0c0">Silver</option>
-    <option value="#ffe4e0">Misty Rose</option>
-    <option value="#f0ffff">Azure</option>
-    <option value="#ffe4b5">Peach Puff</option>
-    <option value="#e6e6fa">Lavender</option>
-    <option value="#ffe4e1">Pink</option>
-    <option value="#d3ffd3">Light Green</option>
-    <option value="#f0f8ff">Alice Blue</option>
-    <option value="#ffe4e0">Pink</option>
-    <option value="#f0ffff">Azure</option>
   </select>
 
   <!-- Drag and Drop area -->
@@ -153,10 +148,7 @@
     <button onclick="saveText()">Save</button>
     <button onclick="loadText()">Load</button>
     <button onclick="clearText()">Clear</button>
-    <!-- Exit button linking to your page -->
-    <a href="../../your%20favorite.html" class="exit-link">
-      <button>Exit</button>
-    </a>
+    <a href="../../your%20favorite.html" class="exit-link"><button>Exit</button></a>
   </div>
 
   <!-- Hidden file input for loading files -->
@@ -194,12 +186,12 @@
   // When a file is selected, load its content
   fileInput.addEventListener('change', () => {
     const file = fileInput.files[0];
-    if (file) {
+    if (file && file.name.endsWith('.txt')) {
       const reader = new FileReader();
-      reader.onload = function (e) {
-        notepad.value = e.target.result;
-      };
+      reader.onload = e => { notepad.value = e.target.result; };
       reader.readAsText(file);
+    } else {
+      alert('Please select a .txt file.');
     }
   });
 
@@ -208,7 +200,7 @@
     notepad.value = '';
   }
 
-  // Drag and Drop functionality
+  // Drag & Drop handlers
   dropArea.addEventListener('dragover', (e) => {
     e.preventDefault();
     dropArea.classList.add('dragover');
@@ -224,9 +216,7 @@
       const file = files[0];
       if (file.name.endsWith('.txt')) {
         const reader = new FileReader();
-        reader.onload = function (event) {
-          notepad.value = event.target.result;
-        };
+        reader.onload = e => { notepad.value = e.target.result; };
         reader.readAsText(file);
       } else {
         alert('Please drop a .txt file.');

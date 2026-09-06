@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Weather Widget List</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #E0F7F5;
+    padding: 20px;
+    margin: 0;
+    text-align: center;
+  }
+  h2 {
+    margin-bottom: 15px;
+    color: #333;
+  }
+  #select-container {
+    margin-bottom: 15px;
+  }
+  #locationSelect {
+    padding: 8px 12px;
+    font-size: 1em;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  #widget-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  .widget-box {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: none; /* Hidden by default, shown via JS */
+    max-width: 350px;
+    width: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .widget-box:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+  }
+  #controls {
+    margin-top: 15px;
+  }
+  button {
+    margin: 4px 8px;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .btn-refresh { background-color: #007bff; color: #fff; }
+  .btn-toggle { background-color: #6c757d; color: #fff; }
+  /* Exit button fixed at bottom */
+  #exit-btn {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 10px 20px;
+    background-color: #E0F7F5;
+    color: #3EB489;
+    border: 2px solid #3EB489;
+    border-radius: 4px;
+    font-weight: bold;
+    text-decoration: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  #exit-btn:hover {
+    background-color: #B2DFDB;
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+
+<h2>Weather Widget List</h2>
+
+<div id="select-container">
+  <label for="locationSelect" style="font-size:1.1em; margin-right:10px;">Choose a location:</label>
+  <select id="locationSelect">
+    <option value="" selected>--Select a location--</option>
+    <option value="newyork">New York</option>
+    <option value="valletta">Valletta</option>
+    <option value="iran">Iran</option>
+    <option value="dubai">Dubai</option>
+    <option value="japan">Japan</option>
+    <option value="iceland">Iceland</option>
+    <option value="london">London</option>
+    <option value="frenchguyana">French Guiana</option>
+    <option value="italy">Italy</option>
+    <option value="paris">Paris</option>
+    <option value="greenland">Greenland</option>
+    <option value="alaska">Alaska</option>
+    <option value="frankfurt">Frankfurt</option>
+    <option value="antarctic">Polish Antarctic Station</option>
+    <option value="ukraine">Ukraine</option>
+    <option value="poland">Poland</option>
+    <option value="israel">Israel</option>
+    <option value="indonesia">Indonesia</option>
+  </select>
+</div>
+
+<div id="controls">
+  <button class="btn-refresh" onclick="refreshWeather()">Refresh All</button>
+  <button class="btn-toggle" onclick="toggleWidgets()">Show/Hide All</button>
+</div>
+
+<div id="widget-container">
+  <!-- Widgets loaded dynamically -->
+  <div id="widget-newyork" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/40d71n74d01/new-york/"
+       data-label_1="NEW YORK" data-label_2="WEATHER" data-theme="original">NEW YORK WEATHER</a>
+  </div>
+  <div id="widget-valletta" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/35d9014d51/valletta/"
+       data-label_1="VALLETA" data-label_2="WEATHER" data-theme="original">VALLETA WEATHER</a>
+  </div>
+  <div id="widget-iran" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/32d4353d69/iran/"
+       data-label_1="IRAN" data-label_2="WEATHER" data-theme="original">IRAN WEATHER</a>
+  </div>
+  <div id="widget-dubai" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/25d2055d27/dubai/"
+       data-label_1="DUBAI" data-label_2="WEATHER" data-theme="original">DUBAI WEATHER</a>
+  </div>
+  <div id="widget-japan" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/36d20138d25/japan/"
+       data-label_1="JAPAN" data-label_2="WEATHER" data-theme="original">JAPAN WEATHER</a>
+  </div>
+  <div id="widget-iceland" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/64d96n19d02/iceland/"
+       data-label_1="ICELAND" data-label_2="WEATHER" data-theme="original">ICELAND WEATHER</a>
+  </div>
+  <div id="widget-london" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/51d51n0d13/london/"
+       data-label_1="LONDON" data-label_2="WEATHER" data-theme="original">LONDON WEATHER</a>
+  </div>
+  <div id="widget-frenchguyana" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/3d93n53d13/french-guiana/"
+       data-label_1="FRENCH GUIANA" data-label_2="WEATHER" data-theme="original">FRENCH GUIANA WEATHER</a>
+  </div>
+  <div id="widget-italy" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/41d8712d57/italy/"
+       data-label_1="ITALY" data-label_2="WEATHER" data-theme="original">ITALY WEATHER</a>
+  </div>
+  <div id="widget-paris" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/48d86d35/paris/"
+       data-label_1="PARIS" data-label_2="WEATHER" data-theme="original">PARIS WEATHER</a>
+  </div>
+  <div id="widget-greenland" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/71d71n42d60/greenland/"
+       data-label_1="GREENLAND" data-label_2="WEATHER" data-theme="original">GREENLAND WEATHER</a>
+  </div>
+  <div id="widget-alaska" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/64d20n149d49/alaska/"
+       data-label_1="ALASKA" data-label_2="WEATHER" data-theme="original">ALASKA WEATHER</a>
+  </div>
+  <div id="widget-frankfurt" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/50d118d68/frankfurt/"
+       data-label_1="FRANKFURT" data-label_2="WEATHER" data-theme="original">FRANKFURT WEATHER</a>
+  </div>
+  <div id="widget-antarctic" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/n62d16n58d47/arctowski-station/"
+       data-label_1="HENRYK ARCTOWSKI POLAR" data-label_2="STATION" data-theme="original">HENRYK ARCTOWSKI POLAR WEATHER</a>
+  </div>
+  <div id="widget-ukraine" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/48d3831d17/ukraine/"
+       data-label_1="UKRAINE" data-label_2="WEATHER" data-theme="original">UKRAINE WEATHER</a>
+  </div>
+  <div id="widget-poland" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/51d9219d15/poland/"
+       data-label_1="POLAND" data-label_2="WEATHER" data-theme="original">POLAND WEATHER</a>
+  </div>
+  <div id="widget-israel" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/31d0534d85/israel/"
+       data-label_1="ISRAEL" data-label_2="WEATHER" data-theme="original">ISRAEL WEATHER</a>
+  </div>
+  <div id="widget-indonesia" class="widget-box">
+    <a class="weatherwidget-io" href="https://forecast7.com/en/n0d79113d92/indonesia/"
+       data-label_1="INDONESIA" data-label_2="WEATHER" data-theme="original">INDONESIA WEATHER</a>
+  </div>
+</div>
+
+<!-- Load the weather widget script once -->
+<script>
+(function(d,s,id){
+  var js,fjs=d.getElementsByTagName(s)[0];
+  if(!d.getElementById(id)){
+    js=d.createElement(s);
+    js.id=id;
+    js.src='https://weatherwidget.io/js/widget.min.js';
+    fjs.parentNode.insertBefore(js,fjs);
+  }
+})(document,'script','weatherwidget-io-js');
+</script>
+
+<script>
+const widgets = {
+  newyork: document.getElementById('widget-newyork'),
+  valletta: document.getElementById('widget-valletta'),
+  iran: document.getElementById('widget-iran'),
+  dubai: document.getElementById('widget-dubai'),
+  japan: document.getElementById('widget-japan'),
+  iceland: document.getElementById('widget-iceland'),
+  london: document.getElementById('widget-london'),
+  frenchguyana: document.getElementById('widget-frenchguyana'),
+  italy: document.getElementById('widget-italy'),
+  paris: document.getElementById('widget-paris'),
+  Greenland: document.getElementById('widget-greenland'),
+  alaska: document.getElementById('widget-alaska'),
+  frankfurt: document.getElementById('widget-frankfurt'),
+  antarctic: document.getElementById('widget-antarctic'),
+  ukraine: document.getElementById('widget-ukraine'),
+  poland: document.getElementById('widget-poland'),
+  israel: document.getElementById('widget-israel'),
+  indonesia: document.getElementById('widget-indonesia')
+};
+
+// Show/hide all widgets
+let allVisible = false;
+function toggleWidgets() {
+  allVisible = !allVisible;
+  Object.values(widgets).forEach(w => {
+    w.style.display = allVisible ? 'block' : 'none';
+  });
+}
+
+// Refresh all widgets by reloading iframes
+function refreshWeather() {
+  Object.values(widgets).forEach(w => {
+    const iframe = w.querySelector('iframe');
+    if (iframe) {
+      iframe.src = iframe.src; // Reload iframe to refresh data
+    }
+  });
+  alert('Weather data refreshed!');
+}
+
+// Automatic refresh every 10 minutes (600,000 ms)
+setInterval(refreshWeather, 600000);
+
+// Search filtering
+const searchInput = document.createElement('input');
+searchInput.type = 'text';
+searchInput.placeholder = 'Search location...';
+searchInput.style.margin = '10px 0';
+searchInput.style.padding = '8px';
+searchInput.style.borderRadius = '4px';
+searchInput.style.border = '1px solid #ccc';
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase();
+  Object.entries(widgets).forEach(([key, widget]) => {
+    const label = widget.querySelector('.weatherwidget-io').getAttribute('data-label_1').toLowerCase();
+    widget.style.display = label.includes(query) ? 'block' : 'none';
+  });
+});
+document.body.insertBefore(searchInput, document.getElementById('widget-container'));
+
+// Show first widget by default or none
+Object.values(widgets).forEach(w => w.style.display = 'none');
+
+// Dropdown menu for selection
+const select = document.createElement('select');
+select.id = 'locationSelect';
+select.innerHTML = `<option value="">--Select a location--</option>
+  <option value="newyork">New York</option>
+  <option value="valletta">Valletta</option>
+  <option value="iran">Iran</option>
+  <option value="dubai">Dubai</option>
+  <option value="japan">Japan</option>
+  <option value="iceland">Iceland</option>
+  <option value="london">London</option>
+  <option value="frenchguyana">French Guiana</option>
+  <option value="italy">Italy</option>
+  <option value="paris">Paris</option>
+  <option value="greenland">Greenland</option>
+  <option value="alaska">Alaska</option>
+  <option value="frankfurt">Frankfurt</option>
+  <option value="antarctic">Polish Antarctic Station</option>
+  <option value="ukraine">Ukraine</option>
+  <option value="poland">Poland</option>
+  <option value="israel">Israel</option>
+  <option value="indonesia">Indonesia</option>`;
+select.style.margin = '10px 0';
+select.onchange = () => {
+  Object.values(widgets).forEach(w => (w.style.display = 'none'));
+  const val = select.value;
+  if (widgets[val]) {
+    widgets[val].style.display = 'block';
+  }
+};
+document.body.insertBefore(select, document.getElementById('widget-container'));
+
+// Fixed Exit button
+const exitLink = document.createElement('a');
+exitLink.href = "../../your%20favorite.html";
+exitLink.className = "exit-link";
+exitLink.id = "exit-btn";
+exitLink.innerText = "Exit";
+document.body.appendChild(exitLink);
+</script>
+</body>
+</html>

@@ -3,70 +3,139 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Print, Exit & Time Format Toggle Buttons</title>
+<title>Print, Exit & Time Format Toggle</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
     text-align: center;
-    margin-top: 50px;
+    margin: 50px auto;
+    max-width: 800px;
+    padding: 20px;
   }
-  button {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 10px;
-    cursor: pointer;
-    border: none;
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 5px;
+
+  h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #222;
   }
-  button:hover {
-    background-color: #45a049;
+
+  h2 {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: #555;
   }
+
   #time {
     font-weight: bold;
+    font-size: 1.5em;
+    margin-bottom: 30px;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  /* Button styles */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    margin: 10px;
+    font-size: 1em;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  .btn:hover {
+    background-color: #3e8e41;
+    transform: translateY(-2px);
+  }
+
+  /* Specific button colors */
+  #printButton {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  #exitButton {
+    background-color: #f44336;
+    color: white;
+  }
+
+  #toggleFormatButton {
+    background-color: #2196F3;
+    color: white;
+  }
+
+  /* Icon styles (optional) */
+  .icon {
+    margin-right: 8px;
+  }
+
+  footer {
+    margin-top: 40px;
+    font-size: 0.9em;
+    color: #777;
   }
 </style>
 </head>
 <body>
-<h1>Printing Testing</h1>
-<!-- Static label for time -->
-<p>Time: <span id="time"></span></p>
+
+<h1>Printing & Time Format Demo</h1>
+
 <h2>
-  Hello,My name xxxsexy , You can do it and Testing will make you ( :O )<br>
+  Hello, my name is <em>xxxsexy</em>! You can do it, and testing will make you stronger! 😊
 </h2>
 
+<!-- Current Time Display -->
+<div id="time" aria-live="polite">Loading current time...</div>
+
 <!-- Buttons -->
-<button id="printButton">Print</button>
-<button id="exitButton" onclick="window.location.href='../../your%20favorite.html'">Exit</button>
-<button id="toggleFormatButton">Switch to 24-hour</button>
+<div>
+  <button id="printButton" class="btn" aria-label="Print the page">
+    <span class="icon">🖨️</span>Print
+  </button>
+  <button id="exitButton" class="btn" aria-label="Exit to favorite page" onclick="window.location.href='../../your%20favorite.html'">
+    <span class="icon">🚪</span>Exit
+  </button>
+  <button id="toggleFormatButton" class="btn" aria-label="Switch time format">
+    <span class="icon">🕒</span>Switch to 24-hour
+  </button>
+</div>
+
+<!-- Footer -->
+<footer>
+  &copy; 2026 Your Company. All rights reserved.
+</footer>
 
 <script>
   let is24HourFormat = false;
 
+  // Function to update the time display
   function updateTime() {
     const now = new Date();
-    let options = {
+    const options = {
       hour: 'numeric',
       minute: 'numeric',
       second: 'numeric',
+      hour12: !is24HourFormat
     };
-    if (is24HourFormat) {
-      options.hour12 = false;
-    } else {
-      options.hour12 = true;
-    }
-    document.getElementById('time').textContent = 'Current time: ' + now.toLocaleString(undefined, options);
+    const formattedTime = now.toLocaleString(undefined, options);
+    document.getElementById('time').textContent = 'Current time: ' + formattedTime;
   }
 
-  // Initialize time display
+  // Initialize time display and update every second
   updateTime();
-
-  // Update time every second
   setInterval(updateTime, 1000);
 
-  // Toggle time format button
+  // Toggle time format between 12-hour and 24-hour
   document.getElementById('toggleFormatButton').addEventListener('click', function() {
     is24HourFormat = !is24HourFormat;
     this.textContent = is24HourFormat ? 'Switch to 12-hour' : 'Switch to 24-hour';
@@ -74,18 +143,19 @@
   });
 
   // Print button event
-  document.getElementById('printButton').addEventListener('click', function() {
-    // Hide buttons before printing
-    document.querySelectorAll('button').forEach(btn => btn.style.display = 'none');
+  document.getElementById('printButton').addEventListener('click', () => {
+    // Hide buttons temporarily before printing
+    document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
 
-    // Trigger print dialog
+    // Trigger print
     window.print();
 
-    // Show buttons again after print
+    // Show buttons again after printing
     setTimeout(() => {
-      document.querySelectorAll('button').forEach(btn => btn.style.display = 'inline-block');
-    }, 1000);
+      document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'inline-block');
+    }, 500);
   });
 </script>
+
 </body>
 </html>

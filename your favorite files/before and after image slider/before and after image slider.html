@@ -35,21 +35,24 @@
     cursor: pointer;
     font-weight: bold;
     z-index: 1001;
+    font-size: 14px;
   }
   #exit:hover {
     background-color: #ff1c1c;
   }
 
-  /* Container for slider, offset for fixed header */
+  /* Slider container, offset for fixed header */
   .slider-container {
     position: relative;
     width: 90%;
     max-width: 800px;
     height: 500px;
-    margin: 100px auto 50px auto; /* margin-top to offset header */
+    margin: 100px auto 50px auto;
     border: 2px solid #ccc;
     border-radius: 8px;
     overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background-color: #fff;
   }
 
   .image-wrapper {
@@ -58,6 +61,7 @@
     height: 100%;
   }
 
+  /* Images styling */
   .image-wrapper img {
     position: absolute;
     top: 0;
@@ -65,7 +69,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
   }
 
   /* Overlay clip for the 'after' image */
@@ -85,26 +88,45 @@
     cursor: ew-resize;
     z-index: 10;
     transform: translateX(-50%);
+    transition: background-color 0.2s;
   }
 
-  /* Style for the handle circle */
+  /* Handle circle for better UX */
   .handle {
     position: absolute;
     top: 50%;
-    left: 0;
+    left: 50%;
     transform: translate(-50%, -50%);
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     background: #fff;
-    border: 2px solid #333;
+    border: 3px solid #333;
     border-radius: 50%;
     cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: box-shadow 0.2s, transform 0.2s;
   }
 
-  /* Style for header text */
+  .handle:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transform: scale(1.1);
+  }
+
+  /* Header text style */
   h1 {
     margin: 0;
     font-size: 24px;
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 600px) {
+    .slider-container {
+      height: 350px;
+    }
+    .handle {
+      width: 20px;
+      height: 20px;
+    }
   }
 </style>
 </head>
@@ -126,8 +148,7 @@
     <img src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Before%20and%20After%20Slider/before.jpg" alt="After Image" class="after-image" id="afterImage" />
   </div>
   <div class="slider" id="sliderHandle"></div>
-  <!-- Optional handle circle for better UX -->
-  <div class="handle" id="handleCircle"></div>
+  <div class="handle" id="handleCircle" tabindex="0" aria-label="Drag slider"></div>
 </div>
 
 <script>
@@ -138,19 +159,17 @@
 
   let isDragging = false;
 
+  // Function to update clip based on X coordinate
   const updateClip = (x) => {
     const rect = slider.getBoundingClientRect();
     let offsetX = x - rect.left;
-    // Clamp within slider bounds
     offsetX = Math.max(0, Math.min(offsetX, rect.width));
+    const clipPercent = (offsetX / rect.width) * 100;
 
-    // Calculate clip percentage
-    const clipPercentage = (offsetX / rect.width) * 100;
+    // Update clip-path for 'after' image
+    afterImage.style.clipPath = `inset(0 ${100 - clipPercent}% 0 0)`;
 
-    // Update clip-path for after-image
-    afterImage.style.clipPath = `inset(0 ${100 - clipPercentage}% 0 0)`;
-
-    // Move handle and circle
+    // Position handle and circle
     handle.style.left = `${offsetX}px`;
     handleCircle.style.left = `${offsetX}px`;
   };
@@ -175,12 +194,12 @@
     }
   });
 
-  // Optional: allow clicking anywhere within slider container to move handle
+  // Clicking anywhere within slider moves handle
   slider.addEventListener('click', (e) => {
     updateClip(e.clientX);
   });
 
-  // Initialize position on window load
+  // Initialize handle position on window load
   window.addEventListener('load', () => {
     const rect = slider.getBoundingClientRect();
     updateClip(rect.left + rect.width / 2);

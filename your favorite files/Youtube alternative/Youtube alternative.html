@@ -1,121 +1,154 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Youtube Alternative</title>
-    <style>
-      body {
-        background-color: #0d47a1; /* Darker blue background */
-        font-family: 'Arial Rounded MT', Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-      }
-      .container {
-        text-align: center;
-        padding: 20px;
-        border-radius: 15px;
-        background-color: #2e9de7cc; /* semi-transparent white */
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        max-width: 600px;
-        width: 90%;
-      }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Youtube Alternative</title>
+  <style>
+    /* Reset some default styles for consistency */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #124592; /* Darker blue background */
+      font-family: 'Arial Rounded MT', Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: rgba(14, 26, 34, 0.8); /* semi-transparent blue */
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      max-width: 700px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      font-family: 'Arial Rounded MT', Arial, sans-serif;
+      font-weight: bold;
+      text-decoration: underline;
+      margin-bottom: 25px;
+      color: #2950ff; /* Light blue for contrast */
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 15px;
+      margin-bottom: 40px;
+    }
+
+    td {
+      padding: 15px;
+      background-color: #0d7c9b; /* Blue shade for table cells */
+      border-radius: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+      word-wrap: break-word;
+    }
+
+    td:hover {
+      background-color: #31276b; /* Slightly darker on hover */
+      transform: translateY(-2px);
+    }
+
+    a {
+      display: inline-block;
+      padding: 8px 12px;
+      color: #142430;
+      text-decoration: none;
+      font-size: 1.1em;
+      transition: color 0.3s, text-decoration 0.3s;
+    }
+
+    a:hover {
+      color: #a6d4fa;
+      text-decoration: underline;
+    }
+
+    /* Style for the Exit button */
+    .exit-link {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #19324e; /* Dark blue */
+      color: #fff;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1.2em;
+      text-decoration: none;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .exit-link:hover {
+      background-color: #0d47a1; /* Even darker blue on hover */
+      transform: translateY(-2px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
       h1 {
         font-size: 2em;
-        text-decoration: underline;
-        font-weight: bold;
-        font-family: 'Arial Rounded MT', Arial, sans-serif;
-        margin-bottom: 20px;
-        color: #2c5c83; /* Light blue for contrast */
-      }
-      table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 10px;
-        margin-bottom: 30px;
-      }
-      td {
-        padding: 10px;
-        background-color: #4050ac; /* Blue shade for table cells */
-        border-radius: 8px;
-        transition: background-color 0.3s;
-        word-wrap: break-word;
-      }
-      td:hover {
-        background-color: #274d6b; /* Slightly darker on hover */
-      }
-      a {
-        text-decoration: none;
-        color: #57b9ff; /* Very light blue for links */
-      }
-      a:hover {
-        text-decoration: underline;
-        color: rgb(101, 182, 248); /* lighter blue on hover */
       }
       .exit-link {
-        display: inline-block;
-        margin-top: 30px;
         padding: 10px 20px;
-        background-color: #1565c0; /* Dark blue */
-        color: #fff;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: background-color 0.3s;
+        font-size: 1em;
       }
-      .exit-link:hover {
-        background-color: #0d47a1; /* Even darker blue on hover */
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1><u><b>Youtube Alternative</b></u></h1>
-      <table>
-        <tbody>
-          <tr align="center">
-            <td valign="top">
-              <a href="https://rumble.com/user/christopher4213?e9s=src_v1_cbl" >
-                https://rumble.com/user/christopher4213?e9s=src_v1_cbl
-              </a>
-            </td>
-          </tr>
-          <tr align="center">
-            <td valign="top">
-              <a href="https://odysee.com/@christopher:35?view=content" >
-                https://odysee.com/@christopher:35?view=content
-              </a>
-            </td>
-          </tr>
-          <tr align="center">
-            <td valign="top">
-              <a href="https://www.bitchute.com/channel/BE4L50eHjh1A" >
-                https://www.bitchute.com/channel/BE4L50eHjh1A for chris
-              </a>
-            </td>
-          </tr>
-          <tr align="center">
-            <td valign="top">
-              <a href="https://www.bitchute.com/channel/nM02fVOsIkPr" >
-                https://www.bitchute.com/channel/nM02fVOsIkPr for xxsexy
-              </a>
-            </td>
-          </tr>
-          <!-- Added Dailymotion link -->
-          <tr align="center">
-            <td valign="top">
-              <a href="https://www.dailymotion.com/user/chris.pjf350" >
-                https://www.dailymotion.com/user/chris.pjf350
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <a class="exit-link" href="../../your%20favorite.html">Exit</a>
-    </div>
-  </body>
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><b><u>Youtube Alternative</u></b></h1>
+    <table>
+      <tbody>
+        <tr align="center">
+          <td valign="top">
+            <a href="https://rumble.com/user/christopher4213?e9s=src_v1_cbl" target="_blank" rel="noopener noreferrer">
+              https://rumble.com/user/christopher4213?e9s=src_v1_cbl
+            </a>
+          </td>
+        </tr>
+        <tr align="center">
+          <td valign="top">
+            <a href="https://odysee.com/@christopher:35?view=content" target="_blank" rel="noopener noreferrer">
+              https://odysee.com/@christopher:35?view=content
+            </a>
+          </td>
+        </tr>
+        <tr align="center">
+          <td valign="top">
+            <a href="https://www.bitchute.com/channel/BE4L50eHjh1A" target="_blank" rel="noopener noreferrer">
+              https://www.bitchute.com/channel/BE4L50eHjh1A for chris
+            </a>
+          </td>
+        </tr>
+        <tr align="center">
+          <td valign="top">
+            <a href="https://www.bitchute.com/channel/nM02fVOsIkPr" target="_blank" rel="noopener noreferrer">
+              https://www.bitchute.com/channel/nM02fVOsIkPr for xxsexy
+            </a>
+          </td>
+        </tr>
+        <!-- Added Dailymotion link -->
+        <tr align="center">
+          <td valign="top">
+            <a href="https://www.dailymotion.com/user/chris.pjf350" target="_blank" rel="noopener noreferrer">
+              https://www.dailymotion.com/user/chris.pjf350
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <a class="exit-link" href="../../your%20favorite.html" target="_blank" rel="noopener noreferrer">Exit</a>
+  </div>
+</body>
 </html>

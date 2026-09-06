@@ -2,15 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Bookmarks</title>
 <style>
+  /* Reset some default styles */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background-color: #f0f4f8;
     color: #333;
     margin: 20px;
     line-height: 1.6;
+    padding: 0 10px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   /* Centered header */
@@ -33,10 +42,13 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     transition: background-color 0.3s, transform 0.2s;
     z-index: 1000;
+    text-decoration: none;
   }
-  .exit-button:hover {
+  .exit-button:hover,
+  .exit-button:focus {
     background-color: #e65c50;
     transform: translateY(-2px);
+    outline: none;
   }
 
   /* Section headers with toggle buttons */
@@ -44,11 +56,11 @@
     display: flex;
     align-items: center;
     margin-top: 30px;
+    justify-content: space-between;
   }
 
   /* Toggle button styles */
   .toggle-button {
-    margin-left: 12px;
     padding: 6px 12px;
     font-size: 12px;
     cursor: pointer;
@@ -59,25 +71,27 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: background-color 0.3s, transform 0.2s;
   }
-  .toggle-button:hover {
+  .toggle-button:hover,
+  .toggle-button:focus {
     background-color: #357ab8;
     transform: translateY(-1px);
+    outline: none;
   }
 
   /* Content boxes for sections */
-  #pcContent, #mobileInstructions, #tvInstructions {
+  .section-content {
     margin-left: 20px;
     margin-top: 10px;
     padding: 15px;
     background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease;
+    transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease, margin 0.5s ease;
     overflow: hidden;
     max-height: 500px;
     opacity: 1;
   }
-  #pcContent.hidden, #mobileInstructions.hidden, #tvInstructions.hidden {
+  .section-content.hidden {
     max-height: 0;
     opacity: 0;
     padding: 0;
@@ -99,6 +113,23 @@
   li {
     margin-bottom: 10px;
   }
+
+  /* Responsive adjustments */
+  @media(max-width: 600px){
+    body {
+      margin: 10px;
+    }
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .section-header h3 {
+      margin-bottom: 8px;
+    }
+    .section-header button {
+      align-self: flex-end;
+    }
+  }
 </style>
 <script>
   function toggleVisibility(id, button) {
@@ -106,45 +137,49 @@
     if (section.classList.contains('hidden')) {
       section.classList.remove('hidden');
       button.textContent = "Hide";
+      section.setAttribute('aria-hidden', 'false');
     } else {
       section.classList.add('hidden');
       button.textContent = "Show";
+      section.setAttribute('aria-hidden', 'true');
     }
   }
 </script>
 </head>
 <body>
 <!-- Exit Button -->
-<a href="../../your%20favorite.html"><button class="exit-button" onclick="window.close()">Exit</button></a>
+<a href="../../your%20favorite.html" class="exit-button" aria-label="Exit" title="Exit">
+  Exit
+</a>
 
 <div class="center">
   <h2>Bookmarks</h2>
+  <p>How to save Bookmarks with xxsexy.serv00 to your folder.</p>
 </div>
-<p>How to save Bookmarks with xxsexy.serv00 to my (your) folder.</p>
 
 <!-- PC Section with Toggle Button -->
-<div class="section-header">
-  <h3>PC:</h3>
-  <button class="toggle-button" onclick="toggleVisibility('pcContent', this)">Show</button>
+<div class="section-header" role="region" aria-labelledby="pcHeader">
+  <h3 id="pcHeader">PC:</h3>
+  <button class="toggle-button" aria-controls="pcContent" aria-expanded="false" onclick="toggleVisibility('pcContent', this)">Show</button>
 </div>
-<div id="pcContent" class="hidden">
+<div id="pcContent" class="section-content hidden" aria-hidden="true">
   <ul>
-    <li><strong>Google:</strong> - Search on xxsexy.serv00.net and add to the "name" folder with a "done" button.</li>
-    <li><strong>Microsoft Edge:</strong> - Search on xxsexy.serv00.net and add favorites to the "name" folder with a "done" button.</li>
-    <li><strong>Firefox:</strong> - Click favorites or bookmarks list & right-click in the "name" folder with a "done" button.</li>
-    <li><strong>DuckDuckGo:</strong> - Bookmarked websites accessible via the bookmarks bar or new tab page.</li>
-    <li><strong>Opera:</strong> - Organize and customize visual bookmarks in Opera.</li>
+    <li><strong>Google:</strong> Search on xxsexy.serv00.net and add to the "name" folder with a "done" button.</li>
+    <li><strong>Microsoft Edge:</strong> Search on xxsexy.serv00.net and add favorites to the "name" folder with a "done" button.</li>
+    <li><strong>Firefox:</strong> Click favorites or bookmarks list & right-click in the "name" folder with a "done" button.</li>
+    <li><strong>DuckDuckGo:</strong> Bookmarked websites accessible via the bookmarks bar or new tab page.</li>
+    <li><strong>Opera:</strong> Organize and customize visual bookmarks in Opera.</li>
   </ul>
 </div>
 
 <!-- Mobile Section -->
 <h3>Mobile:</h3>
 <p>"Add to home screen" to xxsexy.serv00.net</p>
-<div class="section-header">
-  <h3>Android &amp; iPhone:</h3>
-  <button class="toggle-button" onclick="toggleVisibility('mobileInstructions', this)">Show</button>
+<div class="section-header" role="region" aria-labelledby="mobileHeader">
+  <h3 id="mobileHeader">Android &amp; iPhone:</h3>
+  <button class="toggle-button" aria-controls="mobileInstructions" aria-expanded="false" onclick="toggleVisibility('mobileInstructions', this)">Show</button>
 </div>
-<div id="mobileInstructions" class="hidden">
+<div id="mobileInstructions" class="section-content hidden" aria-hidden="true">
   <ul>
     <li>Android: Go to xxsexy.serv00.net and add to home screen.</li>
     <li>iPhone: Tap Share in the bottom toolbar, then "Add to Home Screen". Enter a name and tap Add.</li>
@@ -154,11 +189,11 @@
 <!-- TV Section -->
 <h3>TV:</h3>
 <p>How to save Bookmarks on TV with xxsexy.serv00 to stay updated.</p>
-<div class="section-header">
-  <h3>TV:</h3>
-  <button class="toggle-button" onclick="toggleVisibility('tvInstructions', this)">Show</button>
+<div class="section-header" role="region" aria-labelledby="tvHeader">
+  <h3 id="tvHeader">TV:</h3>
+  <button class="toggle-button" aria-controls="tvInstructions" aria-expanded="false" onclick="toggleVisibility('tvInstructions', this)">Show</button>
 </div>
-<div id="tvInstructions" class="hidden">
+<div id="tvInstructions" class="section-content hidden" aria-hidden="true">
   <ul>
     <li>First, add xxsexy.serv00 to your TV bookmarks to stay always updated.</li>
     <li>Bookmark the page on your TV browser and keep it updated for latest content.</li>

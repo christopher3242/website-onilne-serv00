@@ -4,72 +4,341 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Calculator with Themes & History</title>
-  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Base styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* Theme styles */
+    body.theme1 {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --button-bg: #e0e0e0;
+      --button-hover: #d0d0d0;
+      --display-bg: #ffffff;
+      --history-bg: #f0f0f0;
+    }
+    body.theme2 {
+      --bg-color: #2c3e50;
+      --text-color: #ecf0f1;
+      --button-bg: #34495e;
+      --button-hover: #3b5998;
+      --display-bg: #34495e;
+      --history-bg: #2c3e50;
+    }
+    body.theme3 {
+      --bg-color: #1e1e1e;
+      --text-color: #ffffff;
+      --button-bg: #444444;
+      --button-hover: #555555;
+      --display-bg: #333333;
+      --history-bg: #222222;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    /* Theme buttons styling */
+    #themeButtons {
+      margin-bottom: 15px;
+    }
+
+    #themeButtons button {
+      margin-right: 10px;
+      padding: 8px 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background-color: var(--button-bg);
+      color: var(--text-color);
+      transition: background 0.2s;
+    }
+
+    #themeButtons button.active,
+    #themeButtons button:hover {
+      background-color: var(--button-hover);
+    }
+
+    /* Header styling */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .exit-link {
+      text-decoration: none;
+      font-weight: bold;
+      color: inherit;
+      font-size: 1.1em;
+    }
+
+    /* Main layout */
+    .main-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    /* Calculator styling */
+    .calculator-container {
+      flex: 1 1 300px;
+      max-width: 400px;
+      background-color: var(--display-bg);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    #display {
+      width: 100%;
+      height: 50px;
+      font-size: 1.5em;
+      padding: 10px;
+      margin-bottom: 10px;
+      text-align: right;
+      border: 1px solid #999;
+      border-radius: 4px;
+      background-color: var(--display-bg);
+      color: var(--text-color);
+    }
+
+    /* Buttons grid */
+    .buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .buttons-grid button {
+      padding: 15px;
+      font-size: 1em;
+      border: none;
+      border-radius: 4px;
+      background-color: var(--button-bg);
+      color: var(--text-color);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .buttons-grid button:hover {
+      background-color: var(--button-hover);
+    }
+
+    /* Equal button style */
+    .equals {
+      background-color: #4CAF50;
+      color: #fff;
+    }
+
+    /* History styling */
+    .history-container {
+      flex: 1 1 200px;
+      max-width: 300px;
+      background-color: var(--history-bg);
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    #history {
+      flex: 1;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+
+    #history div {
+      padding: 5px 0;
+      border-bottom: 1px solid #ccc;
+    }
+
+    /* Responsive adjustments */
+    @media(max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+    }
+
+    /* Additional styles for buttons */
+    #clear,
+    #backspace {
+      background-color: #e74c3c;
+      color: #fff;
+    }
+    #clear:hover,
+    #backspace:hover {
+      background-color: #c0392b;
+    }
+
+  </style>
 </head>
-<body>
+<body class="theme1">
   <!-- Theme Buttons -->
   <div id="themeButtons">
-    <button onclick="setTheme(1)">Theme 1</button>
-    <button onclick="setTheme(2)">Theme 2</button>
-    <button onclick="setTheme(3)">Theme 3</button>
+    <button data-theme="1" class="active">Theme 1</button>
+    <button data-theme="2">Theme 2</button>
+    <button data-theme="3">Theme 3</button>
   </div>
 
-  <!-- Header with Exit Link -->
+  <!-- Header -->
   <header>
     <a href="../../your%20favorite.html" class="exit-link">Exit</a>
     <h1>Calculator</h1>
   </header>
 
-  <!-- Main container: Calculator + History -->
+  <!-- Main layout -->
   <div class="main-container">
     <!-- Calculator -->
     <div class="calculator-container">
       <input id="display" readonly placeholder="0" />
       <div class="buttons-grid">
-        <!-- Numeric & Functions -->
-        <button onclick="appendToDisplay('7')">7</button>
-        <button onclick="appendToDisplay('8')">8</button>
-        <button onclick="appendToDisplay('9')">9</button>
-        <button onclick="appendToDisplay('/')">/</button>
+        <!-- Numeric buttons -->
+        <button data-value="7">7</button>
+        <button data-value="8">8</button>
+        <button data-value="9">9</button>
+        <button data-value="/">/</button>
 
-        <button onclick="appendToDisplay('4')">4</button>
-        <button onclick="appendToDisplay('5')">5</button>
-        <button onclick="appendToDisplay('6')">6</button>
-        <button onclick="appendToDisplay('*')">*</button>
+        <button data-value="4">4</button>
+        <button data-value="5">5</button>
+        <button data-value="6">6</button>
+        <button data-value="*">*</button>
 
-        <button onclick="appendToDisplay('1')">1</button>
-        <button onclick="appendToDisplay('2')">2</button>
-        <button onclick="appendToDisplay('3')">3</button>
-        <button onclick="appendToDisplay('-')">-</button>
+        <button data-value="1">1</button>
+        <button data-value="2">2</button>
+        <button data-value="3">3</button>
+        <button data-value="-">-</button>
 
-        <button onclick="appendToDisplay('0')">0</button>
-        <button onclick="addDecimal()">.</button>
-        <button onclick="calculateResult()" class="equals">=</button>
-        <button onclick="appendToDisplay('+')">+</button>
+        <button data-value="0">0</button>
+        <button data-value="." id="decimal">.</button>
+        <button id="equals" class="equals" data-value="=">=</button>
+        <button data-value="+">+</button>
 
         <!-- Extra functions -->
-        <button onclick="clearDisplay()">C</button>
-        <button onclick="backspace()">⌫</button>
-        <button onclick="appendTrigFunction('cos')">cos(</button>
-        <button onclick="appendTrigFunction('sin')">sin(</button>
-        <button onclick="appendTrigFunction('tan')">tan(</button>
-        <button onclick="appendToDisplay('log(')">log(</button>
-        <button onclick="appendToDisplay('log2(')">log₂(</button>
-        <button onclick="appendToDisplay('log10(')">log₁₀(</button>
-        <button onclick="appendToDisplay('sqrt(')">√</button>
-        <button onclick="appendToDisplay('exp(')">exp(</button>
-        <button onclick="appendToDisplay('^(')">^</button>
-        <button onclick="appendToDisplay('^2')">x²</button>
-        <button onclick="appendToDisplay('^0.5')">√</button>
+        <button id="clear">C</button>
+        <button id="backspace">⌫</button>
+        <button data-trig="cos">cos(</button>
+        <button data-trig="sin">sin(</button>
+        <button data-trig="tan">tan(</button>
+        <button data-value="log(">log(</button>
+        <button data-value="log2(">log₂(</button>
+        <button data-value="log10(">log₁₀(</button>
+        <button data-value="sqrt(">√</button>
+        <button data-value="exp(">exp(</button>
+        <button data-value="^(">^</button>
+        <button data-value="^2">x²</button>
+        <button data-value="^0.5">√</button>
       </div>
     </div>
-
-    <!-- History Panel -->
+    <!-- History -->
     <div class="history-container">
       <h3>History</h3>
       <div id="history"></div>
     </div>
   </div>
-  <script src="script.js"></script>
+
+  <!-- Scripts -->
+  <script>
+    // Theme switching
+    const themeButtons = document.querySelectorAll('#themeButtons button');
+    themeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.body.className = `theme${btn.dataset.theme}`;
+        themeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Display and history
+    const display = document.getElementById('display');
+    const historyDiv = document.getElementById('history');
+
+    // Load history from localStorage
+    let historyArray = JSON.parse(localStorage.getItem('calcHistory')) || [];
+    updateHistory();
+
+    function updateHistory() {
+      historyDiv.innerHTML = '';
+      for (const item of historyArray.slice(-20).reverse()) {
+        const div = document.createElement('div');
+        div.textContent = item;
+        historyDiv.appendChild(div);
+      }
+    }
+
+    // Clear display
+    document.getElementById('clear').addEventListener('click', () => {
+      display.value = '';
+    });
+
+    // Backspace
+    document.getElementById('backspace').addEventListener('click', () => {
+      display.value = display.value.slice(0, -1);
+    });
+
+    // Button clicks
+    document.querySelector('.buttons-grid').addEventListener('click', (e) => {
+      if (e.target.tagName !== 'BUTTON') return;
+      const value = e.target.dataset.value;
+      const trig = e.target.dataset.trig;
+
+      if (value !== undefined) {
+        if (value === '=') {
+          evaluate();
+        } else {
+          appendToDisplay(value);
+        }
+      } else if (trig !== undefined) {
+        appendTrigFunction(trig);
+      }
+    });
+
+    // Append to display
+    function appendToDisplay(val) {
+      display.value += val;
+    }
+
+    // Append trig functions
+    function appendTrigFunction(func) {
+      display.value += func + '(';
+    }
+
+    // Evaluate expression safely
+    function evaluate() {
+      try {
+        let expression = display.value;
+
+        // Replace custom functions with Math equivalents
+        expression = expression.replace(/cos\(/g, 'Math.cos(');
+        expression = expression.replace(/sin\(/g, 'Math.sin(');
+        expression = expression.replace(/tan\(/g, 'Math.tan(');
+        expression = expression.replace(/log\(/g, 'Math.log(');
+        expression = expression.replace(/log2\(/g, 'Math.log2(');
+        expression = expression.replace(/log10\(/g, 'Math.log10(');
+        expression = expression.replace(/\^/g, '**');
+
+        // Evaluate
+        const result = eval(expression);
+        display.value = result;
+        addHistory(`${expression} = ${result}`);
+      } catch {
+        display.value = 'Error';
+      }
+    }
+
+    // Add to history
+    function addHistory(entry) {
+      historyArray.push(entry);
+      localStorage.setItem('calcHistory', JSON.stringify(historyArray));
+      updateHistory();
+    }
+  </script>
 </body>
 </html>

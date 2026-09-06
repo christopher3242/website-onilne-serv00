@@ -15,7 +15,7 @@
     background-color: #a8a8a8;
   }
   .container {
-    background-color: #fff;
+    background: #fff;
     padding: 20px;
     margin-top: 50px;
     border-radius: 8px;
@@ -34,7 +34,7 @@
     border: 1px solid #ccc;
     resize: none;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: monospace;
     font-size: 14px;
   }
   .controls {
@@ -49,7 +49,6 @@
     font-size: 14px;
     cursor: pointer;
   }
-  /* Drag & Drop area styles */
   #dropZone {
     margin-top: 15px;
     padding: 20px;
@@ -60,6 +59,7 @@
     font-size: 14px;
     cursor: pointer;
     background-color: #f9f9f9;
+    transition: background-color 0.2s, border-color 0.2s;
   }
   #dropZone.hover {
     border-color: #333;
@@ -72,11 +72,11 @@
   <h2>Notes</h2>
   <!-- Textarea for notes -->
   <textarea id="notes" placeholder="Write your notes here..."></textarea>
-  <!-- Background color list -->
+  <!-- Background color selector -->
   <div style="margin-top:10px;">
     <label for="bgColor">Background Color:</label>
     <select id="bgColor">
-      <option value="" selected="selected">Select color</option>
+      <option value="" selected>Select color</option>
       <option value="#ffffff">White</option>
       <option value="#f8d7da">Light Red</option>
       <option value="#d4edda">Light Green</option>
@@ -106,10 +106,7 @@
       <option value="#8b4513">Saddle Brown</option>
       <option value="#483d8b">Dark Slate Blue</option>
       <option value="#696969">Dim Gray</option>
-      <option value="#4b0082">Dark Indigo</option>
-      <option value="#1c1c1c">Very Dark Gray</option>
-      <option value="#2c2c2c">Dark Charcoal</option>
-      <option value="#3a3a3a">Dark Gray</option>
+      <!-- Add more if desired -->
     </select>
   </div>
   <!-- Buttons: Clear, Save, Exit -->
@@ -120,108 +117,93 @@
   </div>
   <!-- Drag & Drop area -->
   <div id="dropZone">Drag & Drop a .txt file here to load notes</div>
-  <!-- File load input -->
-  <div style="margin-top:10px;">
-    <input type="file" id="loadFile" accept=".txt" />
-    <button onclick="loadNotes()">Load File</button>
+  <!-- Load file input -->
+  <div style="margin-top:10px; text-align:center;">
+    <input type="file" id="loadFile" accept=".txt" style="display:none" />
+    <button onclick="document.getElementById('loadFile').click()">Load File</button>
   </div>
 </div>
 <script>
-  const bgColors = [
-    "#ffffff", "#f8d7da", "#d4edda", "#d1ecf1", "#fff3cd",
-    "#ffe4e1", "#e0ffff", "#f0e68c", "#dda0dd", "#ffe4b5",
-    "#d2b48c", "#add8e6", "#90ee90", "#ffb6c1", "#fa8072",
-    "#f5f5dc", "#e6e6fa", "#bcf5bc", "#ffd700", "#2f4f4f"
-  ];
+  const notes = document.getElementById('notes');
+  const bgSelect = document.getElementById('bgColor');
+  const loadInput = document.getElementById('loadFile');
+  const dropZone = document.getElementById('dropZone');
 
-  // Load saved notes if any
-  window.onload = function() {
+  // Initialize background color from local storage or default
+  window.onload = () => {
     const savedNotes = localStorage.getItem('notes');
     if (savedNotes) {
-      document.getElementById('notes').value = savedNotes;
+      notes.value = savedNotes;
     }
     const savedColor = localStorage.getItem('bgColor');
     if (savedColor) {
-      document.getElementById('notes').style.backgroundColor = savedColor;
-      document.getElementById('bgColor').value = savedColor;
+      notes.style.backgroundColor = savedColor;
+      bgSelect.value = savedColor;
     } else {
-      const randomColor = bgColors[Math.floor(Math.random() * bgColors.length)];
-      document.getElementById('notes').style.backgroundColor = randomColor;
-      document.getElementById('bgColor').value = randomColor;
+      // Optional: random or default color
+      notes.style.backgroundColor = '';
     }
-  }
+  };
 
   // Change background color
-  document.getElementById('bgColor').addEventListener('change', function() {
-    document.getElementById('notes').style.backgroundColor = this.value;
-    localStorage.setItem('bgColor', this.value);
+  bgSelect.addEventListener('change', () => {
+    const color = bgSelect.value;
+    notes.style.backgroundColor = color;
+    localStorage.setItem('bgColor', color);
   });
 
   // Clear notes
   function clearNotes() {
-    document.getElementById('notes').value = '';
+    notes.value = '';
   }
 
   // Save notes
   function saveNotes() {
-    localStorage.setItem('notes', document.getElementById('notes').value);
+    localStorage.setItem('notes', notes.value);
     alert('Notes saved!');
   }
 
   // Load notes from file
   function loadNotes() {
-    const fileInput = document.getElementById('loadFile');
-    const file = fileInput.files[0];
-    if (file) {
+    const file = loadInput.files[0];
+    if (file && file.name.endsWith('.txt')) {
       const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('notes').value = e.target.result;
-        localStorage.setItem('notes', e.target.result);
+      reader.onload = e => {
+        notes.value = e.target.result;
+        localStorage.setItem('notes', notes.value);
       };
       reader.readAsText(file);
     } else {
-      alert('Please select a file to load.');
+      alert('Please select a valid .txt file.');
     }
   }
 
-  // Drag & Drop functionality
-  const dropZone = document.getElementById('dropZone');
-
-  dropZone.addEventListener('dragover', function(e) {
+  // Drag & Drop
+  dropZone.addEventListener('dragover', e => {
     e.preventDefault();
-    e.stopPropagation();
     dropZone.classList.add('hover');
   });
-
-  dropZone.addEventListener('dragleave', function(e) {
+  dropZone.addEventListener('dragleave', e => {
     e.preventDefault();
-    e.stopPropagation();
     dropZone.classList.remove('hover');
   });
-
-  dropZone.addEventListener('drop', function(e) {
+  dropZone.addEventListener('drop', e => {
     e.preventDefault();
-    e.stopPropagation();
     dropZone.classList.remove('hover');
-
     const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      const file = files[0];
-      if (file.name.endsWith('.txt')) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById('notes').value = e.target.result;
-          localStorage.setItem('notes', e.target.result);
-        };
-        reader.readAsText(file);
-      } else {
-        alert('Please drop a .txt file.');
-      }
+    if (files.length && files[0].name.endsWith('.txt')) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        notes.value = e.target.result;
+        localStorage.setItem('notes', notes.value);
+      };
+      reader.readAsText(files[0]);
+    } else {
+      alert('Please drop a .txt file.');
     }
   });
-
-  // Optional: clicking the drop zone opens file dialog
-  dropZone.addEventListener('click', function() {
+  // Clicking drop zone opens file dialog
+  dropZone.addEventListener('click', () => {
     document.getElementById('loadFile').click();
   });
 </script>

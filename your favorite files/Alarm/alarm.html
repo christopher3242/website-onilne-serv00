@@ -5,28 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Alarm Clock with Multiple Themes</title>
 <style>
+  /* Reset and base styles */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     background: var(--bg-color, #f9f9f9);
     margin: 0;
     padding: 20px;
     max-width: 400px;
     margin-left: auto;
     margin-right: auto;
-    box-sizing: border-box;
-    transition: background 0.5s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    transition: background 0.5s ease, color 0.5s ease;
     color: var(--text-color, #222);
   }
+
   h1 {
     font-size: 2em;
     text-align: center;
     margin-bottom: 10px;
+    color: var(--text-color, #222);
   }
+
+  /* Clock display */
   .clock {
     font-size: 3em;
     text-align: center;
     margin: 10px 0 20px 0;
+    font-weight: bold;
   }
+
+  /* Container styles */
   .buttons-container {
     display: flex;
     flex-wrap: wrap;
@@ -34,19 +47,86 @@
     gap: 10px;
     margin-bottom: 20px;
   }
+
+  /* Select elements */
   select {
     padding: 10px;
     font-size: 1em;
     border: 1px solid #ccc;
     border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
   }
-  /* Themes */
-  :root {
+
+  /* Theme switcher styles */
+  .theme-switcher {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  label {
+    margin-right: 10px;
+    color: var(--text-color, #222);
+  }
+
+  /* Buttons */
+  button {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--button-bg, #4A90E2);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background-color: var(--button-hover, #357ABD);
+    transform: scale(1.02);
+  }
+
+  #setAlarmBtn:disabled {
+    background: #bbb;
+    cursor: not-allowed;
+  }
+
+  #alarmMsg {
+    margin-top: 20px;
+    font-size: 1.2em;
+    display: none;
+    text-align: center;
+    color: var(--text-color, #222);
+  }
+
+  /* Alarm stop button */
+  #stopAlarmBtn {
+    margin-top: 10px;
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 500px){
+    body {
+      padding: 10px;
+    }
+    h1 {
+      font-size: 1.5em;
+    }
+    .clock {
+      font-size: 2.5em;
+    }
+    select, button {
+      width: 100%;
+    }
+  }
+
+  /* Theme definitions */
+  body.theme-blue {
     --bg-color: #a1ecff;
     --button-bg: #4A90E2;
     --button-hover: #357ABD;
     --text-color: #222;
-    --disabled-bg: #c0c0c0;
   }
   body.theme-green {
     --bg-color: #e0f7e9;
@@ -89,40 +169,6 @@
     --button-bg: #3eb489;
     --button-hover: #2c9e7d;
     --text-color: #222;
-  }
-
-  button {
-    padding: 10px 20px;
-    font-size: 1em;
-    border: none;
-    border-radius: 4px;
-    background-color: var(--button-bg);
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  button:hover {
-    background-color: var(--button-hover);
-  }
-  #setAlarmBtn:disabled {
-    background: var(--disabled-bg);
-    cursor: not-allowed;
-  }
-  #alarmMsg {
-    margin-top: 20px;
-    font-size: 1.2em;
-    display: none;
-    text-align: center;
-  }
-  /* Theme switcher styles */
-  .theme-switcher {
-    margin-top: 10px;
-    text-align: center;
-  }
-  label {
-    font-weight: bold;
-    margin-right: 10px;
-    color: var(--text-color);
   }
 </style>
 </head>

@@ -3,103 +3,154 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>yooco</title>
+<title>Yooco Links</title>
 <!-- Bootstrap CSS CDN -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 <style>
   body {
     background-color: rgb(76, 165, 192);
     font-family: "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: white;
+    color: #fff;
     padding: 20px;
   }
 
+  /* Header styling */
   h1 {
     font-size: 2rem;
     text-align: center;
     margin-bottom: 30px;
+    font-weight: bold;
   }
 
+  /* Underlined bold header */
   h1 u {
     text-decoration: underline;
   }
 
-  /* Style for the links in table */
+  /* Links styling */
   a {
-    color: #000099;
+    color: #003366;
     text-decoration: none;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    padding: 8px 12px;
+    display: inline-block;
+    transition: color 0.3s, text-decoration 0.3s;
   }
 
   a:hover {
     text-decoration: underline;
+    color: #0055cc;
   }
 
-  /* Fixed Exit button style */
-  .exit-fixed {
+  /* Container for the table */
+  .table-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* Table styling with semi-transparent background and rounded corners */
+  .link-table {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  /* Responsive touch targets for links on smaller screens */
+  @media(max-width: 768px) {
+    a {
+      font-size: 1.4rem;
+      padding: 12px 16px;
+    }
+    /* Enlarged fixed button for touch devices */
+    .btn-fixed {
+      padding: 15px 30px;
+      font-size: 1.4rem;
+    }
+  }
+
+  /* Fixed Exit Button styling */
+  .btn-fixed {
     position: fixed;
     bottom: 20px;
     right: 20px;
     z-index: 999;
-  }
-
-  /* Make links larger for touch devices and improve touch target */
-  @media(max-width: 768px) {
-    a {
-      font-size: 1.3rem;
-      padding: 10px;
-      display: inline-block;
-    }
-    /* Optional: enlarge button for better touch access */
-    .btn-lg {
-      padding: 15px 30px;
-      font-size: 1.4rem;
-    }
+    border-radius: 50px;
   }
 </style>
 </head>
 <body>
 
 <div class="container text-center">
-  <!-- Header -->
-  <h1><u><b>Check out this HTML be use it yooco</b></u></h1>
+  <!-- Main Header -->
+  <h1><u><b>Check out these Yooco links</b></u></h1>
   
   <!-- Links Table -->
-  <div class="table-responsive mx-auto" style="max-width: 600px;">
-    <table class="table table-borderless table-hover bg-light bg-opacity-25 rounded mb-4">
-      <tbody>
-        <tr>
-          <td><a href="https://ipod134.yooco.org/" target="_blank">https://ipod134.yooco.org/</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://dvdplayer.yooco.org/" target="_blank">https://dvdplayer.yooco.org/</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://sexyxxx.yooco.org/" target="_blank">https://sexyxxx.yooco.org/</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://christophercam08.yooco.org/" target="_blank">https://christophercam08.yooco.org/</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://fullmoviecinmea.yooco.org/" target="_blank">https://fullmoviecinmea.yooco.org/</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://ipod126.yooco.org/" target="_blank">https://ipod126.yooco.org/</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://christophergaming.yooco.org/" target="_blank">https://christophergaming.yooco.org/</a></td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="table-container my-4">
+    <div class="table-link rounded bg-light bg-opacity-25 shadow">
+      <table class="table table-hover mb-0">
+        <tbody>
+          <tr>
+            <td class="text-center py-3">
+              <a href="https://ipod134.yooco.org/" target="_blank" rel="noopener noreferrer">
+                https://ipod134.yooco.org/
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-center py-3">
+              <a href="https://dvdplayer.yooco.org/" target="_blank" rel="noopener noreferrer">
+                https://dvdplayer.yooco.org/
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-center py-3">
+              <a href="https://sexyxxx.yooco.org/" target="_blank" rel="noopener noreferrer">
+                https://sexyxxx.yooco.org/
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-center py-3">
+              <a href="https://christophercam08.yooco.org/" target="_blank" rel="noopener noreferrer">
+                https://christophercam08.yooco.org/
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-center py-3">
+              <a href="https://fullmoviecinmea.yooco.org/" target="_blank" rel="noopener noreferrer">
+                https://fullmoviecinmea.yooco.org/
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-center py-3">
+              <a href="https://ipod126.yooco.org/" target="_blank" rel="noopener noreferrer">
+                https://ipod126.yooco.org/
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-center py-3">
+              <a href="https://christophergaming.yooco.org/" target="_blank" rel="noopener noreferrer">
+                https://christophergaming.yooco.org/
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
 <!-- Fixed Exit Button -->
-<div class="exit-fixed">
-  <a href="../../your%20favorite.html" class="btn btn-primary btn-lg">Exit</a>
-</div>
+<a href="../../your%20favorite.html" class="btn btn-primary btn-lg btn-fixed" aria-label="Exit to main page">
+  Exit
+</a>
 
-<!-- Bootstrap JS (optional, for interactive components) -->
+<!-- Bootstrap JS (optional) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

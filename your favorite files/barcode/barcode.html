@@ -1,106 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Barcode</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #87c3ff;
-      margin: 0;
-      padding: 40px 20px;
-    }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background-color: #c6fafc;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      padding: 30px;
-      border-radius: 12px;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Barcode</title>
+<style>
+  /* Reset some default styles */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #87c3ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .container {
+    max-width: 800px;
+    width: 100%;
+    background-color: #c6fafc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  h1 {
+    font-size: 2.8em;
+    color: #000;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .website-name {
+    font-size: 1.6em;
+    color: #33cc00;
+    margin-bottom: 30px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+  }
+
+  td {
+    padding: 20px;
+    text-align: center;
+  }
+
+  .barcode-image {
+    width: 100%;
+    max-width: 341px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .barcode-image:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transform: scale(1.02);
+  }
+
+  /* Stylish Exit Button */
+  .exit-button {
+    display: inline-block;
+    width: 100%;
+    max-width: 200px;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+  }
+
+  .exit-button:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 600px) {
     h1 {
-      text-align: center;
-      font-size: 2.8em;
-      color: #222;
-      margin-bottom: 10px;
+      font-size: 2em;
     }
     .website-name {
-      text-align: center;
-      font-size: 1.6em;
-      color: #33cc00;
-      margin-bottom: 30px;
-      font-weight: 600;
+      font-size: 1.4em;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 40px;
-    }
-    td {
-      padding: 20px;
-      text-align: center;
-    }
-    .barcode-image {
-      width: 341px;
-      max-width: 100%;
-      height: auto;
-      display: block;
-      margin: 0 auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-radius: 8px;
-    }
-    /* Stylish Exit Button */
     .exit-button {
-      display: inline-block;
-      width: 150px;
-      padding: 12px 25px;
-      font-size: 1.1em;
-      background-color: #4CAF50;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      text-decoration: none;
-      text-align: center;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      margin: 0 auto;
-      display: block;
+      width: 100%;
+      font-size: 1em;
+      padding: 10px;
     }
-    .exit-button:hover {
-      background-color: #45a049;
-      transform: translateY(-2px);
-    }
-    /* Responsive adjustments */
-    @media(max-width: 600px) {
-      h1 {
-        font-size: 2em;
-      }
-      .website-name {
-        font-size: 1.4em;
-      }
-      .exit-button {
-        width: 100%;
-        font-size: 1em;
-        padding: 10px;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1><font color="#000000">Barcode</font></h1>
-    <div class="website-name">xxsexy.serv00.net</div>
-    <table>
-      <tbody>
-        <tr>
-          <td valign="top">
-            <img src="Picture1.png" alt="Barcode" class="barcode-image" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <a href="../../your%20favorite.html" class="exit-button" id="exit-button">Exit</a>
-  </div>
+<div class="container">
+  <h1>Barcode</h1>
+  <div class="website-name">xxsexy.serv00.net</div>
+  <table>
+    <tbody>
+      <tr>
+        <td valign="top">
+          <img src="Picture1.png" alt="Barcode" class="barcode-image" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <a href="../../your%20favorite.html" class="exit-button" id="exit-button">Exit</a>
+</div>
 </body>
 </html>

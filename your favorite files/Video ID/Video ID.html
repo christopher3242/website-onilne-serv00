@@ -1,55 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Video List with Counter</title>
   <style>
+    /* Reset some default styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       background-color: #78c0d6; /* Light blue background */
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      box-sizing: border-box;
-      scroll-behavior: smooth;
+      padding: 20px;
+      line-height: 1.6;
     }
 
     h1 {
       text-align: center;
+      font-family: 'Arial Rounded MT', 'Arial', sans-serif;
       font-size: 2.5em;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      color: #222;
     }
 
-    /* Table styling */
+    p {
+      text-align: center;
+      font-size: 1.2em;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    /* Table styles for responsiveness and aesthetics */
     table {
       width: 100%;
       max-width: 1046px;
-      margin: 0 auto 20px auto;
+      margin: 0 auto 30px auto;
       border-collapse: collapse;
-      background-color: #ffffff;
+      background: #fff;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: box-shadow 0.3s;
+    }
+
+    table:hover {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
 
     td {
-      padding: 12px 20px;
+      padding: 15px 20px;
       border: 1px solid #a8a8a8;
       text-align: center;
       font-size: 1em;
     }
 
-    /* Container for the download button at bottom left with full space around */
-    .bottom-left-container {
+    /* Container for the download button at bottom center */
+    .download-section {
       display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      padding: 20px;
-      margin-top: auto;
+      justify-content: center;
+      margin-bottom: 40px;
     }
 
     /* Style for the download button */
@@ -66,7 +82,6 @@
       transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
     }
 
-    /* Hover and focus effects for the button */
     .download-button:hover,
     .download-button:focus {
       background-color: #4061ce;
@@ -75,22 +90,22 @@
       outline: none;
     }
 
-    /* Additional styling for exit link container */
+    /* Exit link styling at bottom right */
     .exit-container {
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-      padding: 10px 20px;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10;
     }
 
-    /* Style for the exit link */
     .exit-link {
-      text-decoration: none;
       background-color: #4759ff;
       color: #fff;
-      padding: 10px 20px;
+      padding: 12px 24px;
       border-radius: 5px;
       font-weight: bold;
+      text-decoration: none;
+      font-size: 1em;
       transition: background-color 0.3s, transform 0.2s;
     }
 
@@ -100,16 +115,38 @@
       transform: scale(1.05);
       outline: none;
     }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2em;
+      }
+
+      p {
+        font-size: 1em;
+      }
+
+      .download-button {
+        padding: 12px 24px;
+        font-size: 1em;
+      }
+
+      .exit-link {
+        padding: 10px 20px;
+        font-size: 0.9em;
+      }
+    }
   </style>
 </head>
 <body>
-  <br>
-  <div align="center">
-    <h1 style="font-family: 'Arial Rounded MT'; font-size: 2.5em;">xxxsexy serv00 = Video ID</h1>
-    <p style="font-size: 1.2em;">I will download PDF Only or view</p>
-  </div>
+  <!-- Header Section -->
+  <header style="text-align: center;">
+    <h1>xxxsexy serv00 = Video ID</h1>
+    <p>I will download PDF only or view</p>
+  </header>
+
   <!-- Download PDF Button -->
-  <div class="download-container" style="text-align: center; margin-top: 30px;">
+  <section class="download-section">
     <a
       href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Video%20ID/videos%20list.pdf"
       class="download-button"
@@ -119,10 +156,27 @@
     >
       Download PDF
     </a>
-  </div>
-  <!-- Exit link at the bottom right -->
+  </section>
+
+  <!-- Video List Table (Optional placeholder if needed) -->
+  <!--
+  <section style="max-width: 1046px; margin: 0 auto;">
+    <table>
+      <tr>
+        <td>Video 1</td>
+        <td>Details</td>
+      </tr>
+      <tr>
+        <td>Video 2</td>
+        <td>Details</td>
+      </tr>
+    </table>
+  </section>
+  -->
+
+  <!-- Exit link fixed at bottom right for easy access -->
   <div class="exit-container">
-    <a href="../../your%20favorite.html" class="exit-link">exit</a>
+    <a href="../../your%20favorite.html" class="exit-link" aria-label="Exit to main page">exit</a>
   </div>
 </body>
 </html>

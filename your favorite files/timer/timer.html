@@ -3,37 +3,285 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Countdown Timer</title>
-<link rel="stylesheet" href="styles.css" />
+<title>Enhanced Countdown Timer</title>
+<style>
+  /* Reset and base styles */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  /* Container styles */
+  .container {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    max-width: 500px;
+    width: 90%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  /* Title */
+  h1 {
+    margin-bottom: 25px;
+    font-size: 28px;
+    color: #333;
+  }
+
+  /* Timer display styles */
+  #countdownDisplay {
+    font-size: 64px;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  /* Labels for total time */
+  #totalTimeDisplay {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #555;
+  }
+
+  /* Inputs styling */
+  .inputs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  input[type=number] {
+    width: 70px;
+    padding: 12px;
+    font-size: 18px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  input[type=number]:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+  /* Buttons container */
+  .buttons {
+    margin-top: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  /* Buttons styles */
+  button {
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    transition: background-color 0.3s;
+    min-width: 120px;
+  }
+
+  button:hover:enabled {
+    background-color: #0056b3;
+  }
+
+  button:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+  }
+
+  /* Status message */
+  #message {
+    margin-top: 30px;
+    font-size: 22px;
+    color: #d33;
+    font-weight: bold;
+    display: none;
+  }
+</style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Countdown Timer</h1>
-  <div class="timer">
-    <div id="countdownDisplay">
-      <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
-    </div>
-    <div id="totalTimeDisplay" class="total-time">Total: 00:00:00</div>
+  <h1>Enhanced Countdown Timer</h1>
+  <div id="countdownDisplay">
+    <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
   </div>
-  <div class="input-container">
-    <input id="inputHours" type="number" placeholder="Hours" min="0" />
-    <input id="inputMinutes" type="number" placeholder="Minutes" min="0" max="59" />
-    <input id="inputSeconds" type="number" placeholder="Seconds" min="0" max="59" />
+  <div id="totalTimeDisplay">Total: 00:00:00</div>
+  
+  <div class="inputs">
+    <input type="number" id="inputHours" placeholder="Hours" min="0" max="999" />
+    <input type="number" id="inputMinutes" placeholder="Minutes" min="0" max="59" />
+    <input type="number" id="inputSeconds" placeholder="Seconds" min="0" max="59" />
   </div>
+  
   <div class="buttons">
-    <button id="startButton">Start</button>
-    <button id="pauseButton" class="hidden">Pause</button>
-    <button id="stopButton" class="hidden">Stop</button>
-    <button id="exitButton">Exit</button>
+    <button id="startBtn">Start</button>
+    <button id="pauseBtn" disabled>Pause</button>
+    <button id="resumeBtn" disabled>Resume</button>
+    <button id="stopBtn" disabled>Stop</button>
+    <button id="exitBtn">Exit</button>
   </div>
-  <div id="message" class="message hidden">Time's Up!</div>
+  
+  <div id="message">Time's Up!</div>
 </div>
 
-<!-- Audio alert for countdown end, looping -->
-<audio id="alarmSound" src="https://cdn.uppbeat.io/audio-files/8a0ead3ea7dbf25377a13251625e6d3d/b5551c3ef74a67f30264be5fe84ab0a4/bd1cf5b358146e6209d3b7db3295c6d1/STREAMING-digital-timer-beeping-epic-stock-media-1-00-08.mp3" preload="auto" loop></audio>
+<!-- Alarm sound -->
+<audio id="alarm" src="https://cdn.uppbeat.io/audio-files/8a0ead3ea7dbf25377a13251625e6d3d/b5551c3ef74a67f30264be5fe84ab0a4/bd1cf5b358146e6209d3b7db3295c6d1/STREAMING-digital-timer-beeping-epic-stock-media-1-00-08.mp3" preload="auto" loop></audio>
 
-<script src="script.js"></script>
+<script>
+  // Variables
+  let timerInterval = null;
+  let totalSeconds = 0;
+  let remainingSeconds = 0;
+  const hoursEl = document.getElementById('hours');
+  const minutesEl = document.getElementById('minutes');
+  const secondsEl = document.getElementById('seconds');
+  const totalTimeEl = document.getElementById('totalTimeDisplay');
+
+  const inputHours = document.getElementById('inputHours');
+  const inputMinutes = document.getElementById('inputMinutes');
+  const inputSeconds = document.getElementById('inputSeconds');
+
+  const startBtn = document.getElementById('startBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const resumeBtn = document.getElementById('resumeBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const exitBtn = document.getElementById('exitBtn');
+  const message = document.getElementById('message');
+  const alarm = document.getElementById('alarm');
+
+  // Utility functions
+  function updateTotalDisplay(seconds) {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    totalTimeEl.textContent = `Total: ${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+  }
+
+  function pad(num) {
+    return String(num).padStart(2, '0');
+  }
+
+  function updateCountdownDisplay(seconds) {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    hoursEl.textContent = pad(hrs);
+    minutesEl.textContent = pad(mins);
+    secondsEl.textContent = pad(secs);
+  }
+
+  function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      if (remainingSeconds <= 0) {
+        clearInterval(timerInterval);
+        document.getElementById('message').style.display = 'block';
+        alarm.play();
+        // Update buttons
+        pauseBtn.disabled = true;
+        resumeBtn.disabled = true;
+        stopBtn.disabled = false;
+        return;
+      }
+      remainingSeconds--;
+      updateCountdownDisplay(remainingSeconds);
+    }, 1000);
+  }
+
+  // Event Listeners
+  startBtn.onclick = () => {
+    const hrs = parseInt(inputHours.value) || 0;
+    const mins = parseInt(inputMinutes.value) || 0;
+    const secs = parseInt(inputSeconds.value) || 0;
+
+    if (hrs < 0 || mins < 0 || secs < 0 || mins > 59 || secs > 59) {
+      alert('Please enter valid time values.');
+      return;
+    }
+
+    totalSeconds = hrs * 3600 + mins * 60 + secs;
+    if (totalSeconds <= 0) {
+      alert('Please enter a time greater than zero.');
+      return;
+    }
+
+    remainingSeconds = totalSeconds;
+    updateCountdownDisplay(remainingSeconds);
+    updateTotalDisplay(totalSeconds);
+    // Disable inputs
+    inputHours.disabled = true;
+    inputMinutes.disabled = true;
+    inputSeconds.disabled = true;
+
+    // Start timer
+    startTimer();
+
+    // Update buttons
+    startBtn.disabled = true;
+    pauseBtn.disabled = false;
+    resumeBtn.disabled = true;
+    stopBtn.disabled = false;
+    document.getElementById('message').style.display = 'none';
+  };
+
+  pauseBtn.onclick = () => {
+    clearInterval(timerInterval);
+    pauseBtn.disabled = true;
+    resumeBtn.disabled = false;
+  };
+
+  resumeBtn.onclick = () => {
+    startTimer();
+    pauseBtn.disabled = false;
+    resumeBtn.disabled = true;
+  };
+
+  stopBtn.onclick = () => {
+    clearInterval(timerInterval);
+    remainingSeconds = 0;
+    updateCountdownDisplay(0);
+    document.getElementById('message').style.display = 'none';
+
+    // Enable inputs
+    inputHours.disabled = false;
+    inputMinutes.disabled = false;
+    inputSeconds.disabled = false;
+
+    // Reset button states
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+    resumeBtn.disabled = true;
+    stopBtn.disabled = true;
+
+    // Stop alarm if playing
+    alarm.pause();
+    alarm.currentTime = 0;
+  };
+
+  exitBtn.onclick = () => {
+    window.location.href = "../../your%20favorite.html"; // change as needed
+  };
+
+  // Initialize display
+  updateCountdownDisplay(0);
+  updateTotalDisplay(0);
+</script>
 
 </body>
 </html>

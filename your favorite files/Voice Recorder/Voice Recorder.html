@@ -7,7 +7,7 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    background-color: #121212; /* Dark theme background */
+    background-color: #121212;
     color: #fff;
     margin: 0;
     padding: 20px;
@@ -21,8 +21,25 @@
   }
 
   #duration {
-    font-size: 1.2em;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  #progressContainer {
+    width: 80%;
+    background-color: #333;
+    border-radius: 4px;
+    height: 10px;
     margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  #progressBar {
+    height: 100%;
+    width: 0%;
+    background-color: #00ffff;
+    transition: width 0.3s;
   }
 
   /* Buttons styling */
@@ -33,7 +50,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    background-color: #007bff; /* Bootstrap primary blue */
+    background-color: #007bff;
     color: #fff;
     transition: background-color 0.3s;
   }
@@ -51,12 +68,12 @@
   #visualizer {
     width: 80%;
     height: 150px;
-    background-color: #222; /* Darker for contrast */
+    background-color: #222;
     border-radius: 8px;
     margin: 20px 0;
   }
 
-  /* Audio playback control */
+  /* Audio playback */
   #audioPlayback {
     width: 80%;
     margin-top: 20px;
@@ -83,11 +100,24 @@
   .exit- a:hover {
     background-color: #555;
   }
+
+  /* Recording indicator */
+  #recordingIndicator {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #ff0000;
+    display: none;
+  }
 </style>
 </head>
 <body>
 <h1>Fixed Duration Voice Recorder with Visualizer</h1>
 <div id="duration">00:00:00</div>
+
+<!-- Progress Bar -->
+<div id="progressContainer">
+  <div id="progressBar"></div>
+</div>
 
 <!-- Visualizer Canvas -->
 <canvas id="visualizer"></canvas>
@@ -97,7 +127,11 @@
   <button id="startBtn">Start Recording</button>
   <button id="pauseBtn" disabled>Pause Recording</button>
   <button id="stopBtn" disabled>Stop Recording</button>
+  <button id="resetBtn" disabled>Reset</button>
 </div>
+
+<!-- Recording Indicator -->
+<div id="recordingIndicator">Recording...</div>
 
 <!-- Audio Playback -->
 <audio id="audioPlayback" controls></audio>
@@ -108,6 +142,8 @@
 </div>
 
 <script>
+const MAX_DURATION = 30; // seconds, set your fixed duration here
+
 let mediaRecorder;
 let chunks = [];
 let audioContext;
@@ -122,10 +158,13 @@ let isPaused = false;
 const startBtn = document.getElementById('startBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const stopBtn = document.getElementById('stopBtn');
+const resetBtn = document.getElementById('resetBtn');
 const audioPlayback = document.getElementById('audioPlayback');
 const canvas = document.getElementById('visualizer');
 const ctx = canvas.getContext('2d');
 const durationDisplay = document.getElementById('duration');
+const progressBar = document.getElementById('progressBar');
+const recordingIndicator = document.getElementById('recordingIndicator');
 
 canvas.width = window.innerWidth * 0.8;
 canvas.height = 150;
@@ -140,6 +179,9 @@ function updateDuration() {
   const minutes = Math.floor((durationSeconds % 3600) / 60).toString().padStart(2, '0');
   const seconds = (durationSeconds % 60).toString().padStart(2, '0');
   durationDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+  // Update progress bar
+  const progressPercent = (durationSeconds / MAX_DURATION) * 100;
+  progressBar.style.width = progressPercent + '%';
 }
 
 // Timer control
@@ -148,14 +190,17 @@ function startTimer() {
     if (!isPaused) {
       durationSeconds++;
       updateDuration();
+      if (durationSeconds >= MAX_DURATION) {
+        stopRecording();
+        alert('Maximum recording duration reached.');
+      }
     }
   }, 1000);
 }
 
 function stopTimer() {
   clearInterval(timerInterval);
-  durationSeconds = 0;
-  updateDuration();
+  // Keep duration for display
 }
 
 // Drawing visualizer
@@ -196,86 +241,111 @@ function draw() {
   animationId = requestAnimationFrame(draw);
 }
 
-const startBtnClick = async () => {
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      
-      // Initialize MediaRecorder
-      mediaRecorder = new MediaRecorder(stream);
-      
-      mediaRecorder.ondataavailable = (e) => {
-        chunks.push(e.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { 'type': 'audio/webm; codecs=opus' });
-        chunks = [];
-        const url = URL.createObjectURL(blob);
-        audioPlayback.src = url;
-      };
-
-      // Setup Web Audio API for visualizer
-      if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      }
-
-      source = audioContext.createMediaStreamSource(stream);
-      analyser = audioContext.createAnalyser();
-      source.connect(analyser);
-
-      // Start visualizer
-      draw();
-
-      // Start recording and timer
-      mediaRecorder.start();
-      startBtn.disabled = true;
-      pauseBtn.disabled = false;
-      stopBtn.disabled = false;
-      pauseBtn.textContent = 'Pause Recording';
-
-      isPaused = false;
-      startTimer();
-
-    } catch (err) {
-      alert('Microphone permission denied or error: ' + err);
+async function initMedia() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
-  } else {
-    alert('Media Devices API not supported in this browser.');
+    source = audioContext.createMediaStreamSource(stream);
+    analyser = audioContext.createAnalyser();
+    source.connect(analyser);
+    draw();
+
+    // Setup MediaRecorder
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = (e) => {
+      chunks.push(e.data);
+    };
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(chunks, { type: 'audio/webm; codecs=opus' });
+      chunks = [];
+      const url = URL.createObjectURL(blob);
+      audioPlayback.src = url;
+    };
+  } catch (err) {
+    alert('Microphone permission denied or error: ' + err);
   }
-};
+}
+
+async function startRecording() {
+  if (!mediaRecorder) {
+    await initMedia();
+  }
+  mediaRecorder.start();
+  startBtn.disabled = true;
+  pauseBtn.disabled = false;
+  stopBtn.disabled = false;
+  resetBtn.disabled = true;
+  recordingIndicator.style.display = 'block';
+
+  // Reset timer
+  durationSeconds = 0;
+  updateDuration();
+
+  // Start timer
+  isPaused = false;
+  startTimer();
+}
+
+function stopRecording() {
+  if (mediaRecorder && (mediaRecorder.state === 'recording' || mediaRecorder.state === 'paused')) {
+    mediaRecorder.stop();
+  }
+  // Stop visualizer
+  cancelAnimationFrame(animationId);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Stop timer
+  clearInterval(timerInterval);
+  durationSeconds = 0;
+  progressBar.style.width = '0%';
+
+  startBtn.disabled = false;
+  pauseBtn.disabled = true;
+  stopBtn.disabled = true;
+  resetBtn.disabled = false;
+  recordingIndicator.style.display = 'none';
+}
+
+function resetRecorder() {
+  // Reset everything
+  audioPlayback.src = '';
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  durationSeconds = 0;
+  updateDuration();
+  progressBar.style.width = '0%';
+  startBtn.disabled = false;
+  pauseBtn.disabled = true;
+  stopBtn.disabled = true;
+  resetBtn.disabled = true;
+  recordingIndicator.style.display = 'none';
+}
 
 pauseBtn.onclick = () => {
-  if (mediaRecorder && mediaRecorder.state === 'recording') {
-    mediaRecorder.pause();
-    pauseBtn.textContent = 'Resume Recording';
-    isPaused = true;
-  } else if (mediaRecorder && mediaRecorder.state === 'paused') {
-    mediaRecorder.resume();
-    pauseBtn.textContent = 'Pause Recording';
-    isPaused = false;
+  if (mediaRecorder) {
+    if (mediaRecorder.state === 'recording') {
+      mediaRecorder.pause();
+      pauseBtn.textContent = 'Resume Recording';
+      isPaused = true;
+    } else if (mediaRecorder.state === 'paused') {
+      mediaRecorder.resume();
+      pauseBtn.textContent = 'Pause Recording';
+      isPaused = false;
+    }
   }
 };
 
 stopBtn.onclick = () => {
-  if (mediaRecorder && (mediaRecorder.state === 'recording' || mediaRecorder.state === 'paused')) {
-    mediaRecorder.stop();
-    startBtn.disabled = false;
-    pauseBtn.disabled = true;
-    stopBtn.disabled = true;
-
-    // Stop visualizer and timer
-    cancelAnimationFrame(animationId);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    stopTimer();
-
-    // Reset pause state
-    isPaused = false;
-    pauseBtn.textContent = 'Pause Recording';
-  }
+  stopRecording();
 };
 
-startBtn.onclick = startBtnClick;
+startBtn.onclick = () => {
+  startRecording();
+};
+
+resetBtn.onclick = () => {
+  resetRecorder();
+};
 </script>
 </body>
 </html>

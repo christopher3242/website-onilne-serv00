@@ -1,70 +1,130 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
-    <meta charset="UTF-8">
-    <title>Welcome in Wix</title>
-    <style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Welcome in Wix</title>
+<style>
   body {
-    background-color: #add8e6; /* Light blue */
-    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    font-family: 'Arial', sans-serif;
     margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
   }
-  .center {
-    text-align: center;
+
+  .container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    max-width: 500px;
+    width: 100%;
   }
+
   h2 {
     font-size: 2em;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
     text-decoration: underline;
-    font-weight: bold;
   }
+
   table {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+    border-collapse: separate;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
+
   th, td {
-    padding: 10px;
-    border: 1px solid #000;
+    padding: 12px;
+    border: 1px solid #ddd;
   }
-  a {
-    color: #0000EE;
-    text-decoration: none;
-  }
-  a:hover {
-    text-decoration: underline;
-  }
-  .exit-link {
-    display: inline-block;
-    margin-top: 20px;
+
+  th {
+    background-color: #4CAF50;
+    color: #fff;
     font-size: 1.2em;
+    text-align: left;
+  }
+
+  td {
+    background-color: #fff;
+  }
+
+  a {
+    color: #007BFF;
+    text-decoration: none;
+    transition: color 0.3s, transform 0.2s;
+  }
+
+  a:hover {
+    color: #0056b3;
+    transform: translateY(-2px);
+  }
+
+  .exit-link {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+  }
+
+  .exit-link a {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 1.1em;
     font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s, box-shadow 0.2s;
+  }
+
+  .exit-link a:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 600px) {
+    body {
+      padding: 10px;
+    }
+    h2 {
+      font-size: 1.8em;
+    }
+    .exit-link a {
+      padding: 10px 20px;
+      font-size: 1em;
+    }
   }
 </style>
-  </head>
-  <body>
-    <div class="center">
-      <h2>Welcome in Wix</h2>
-      <table>
-        <tbody>
-          <tr>
-            <td><strong>Website:</strong></td>
-            <td><a
-                href="https://christophercamille.wixsite.com/chrisbook"
-                target="_blank">
-                https://christophercamille.wixsite.com/chrisbook </a></td>
-          </tr>
-          <tr>
-            <td><strong>Spaces Invite Code:</strong></td>
-            <td> 4SXWWN = chrisbook<br>
-              <br>
-              HPZCKY = xxsexy </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="exit-link"> <a href="../../your%20favorite.html">Exit</a>
-      </div>
-    </div>
-  </body>
+</head>
+<body>
+<div class="container">
+  <h2>Welcome in Wix</h2>
+  <table>
+    <tbody>
+      <tr>
+        <td><strong>Website:</strong></td>
+        <td><a href="https://christophercamille.wixsite.com/chrisbook" target="_blank">https://christophercamille.wixsite.com/chrisbook</a></td>
+      </tr>
+      <tr>
+        <td><strong>Spaces Invite Code:</strong></td>
+        <td>
+          <strong>4SXWWN</strong> = chrisbook<br><br>
+          <strong>HPZCKY</strong> = xxsexy
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="exit-link">
+    <a href="../../your%20favorite.html">Exit</a>
+  </div>
+</div>
+</body>
 </html>

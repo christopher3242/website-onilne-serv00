@@ -1,24 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,
       initial-scale=1.0">
-    <title>Your Favorite</title>
+    <title>Favorite Projects</title>
     <style>
-/* Define CSS variables for colors */
+/* Accessible utility class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+</style>
+    <style>
 :root {
-  --body-bg-color: #7fb0d8; /* softer blue background */
-  --table-bg-color: #6d95c9e6;
-  --text-color: #000000;
-  --link-color: #1851ce; /* blue for links */
-  --hover-shadow-color: #00000033;
-  --news-btn-bg-color: #ffb24d; /* bright red for the news button */
-  --news-btn-hover-bg: #cc6d00; /* darker red on hover */
-  --border-color: #333; /* for subtle borders */
-  --card-shadow: #0000005b;
+  --body-bg-color: #2b90c7;
+  --grid-gap: 20px;
+  --card-bg-color: #7294b4; /* Light blue */
+  --text-color: #0c0c0c;
+  --link-color: #202225;
+  --link-hover-color: #0b2a54;
+  --hover-shadow-color: #0f172a33;
+  --news-btn-bg-color: #b8860b;
+  --news-btn-hover-bg: #8b6508;
+  --news-btn-text-color: #ffffff;
+  --border-color: #1e3a5f;
+  --card-shadow: #1e3a5f35;
+  --search-bg-color: #ffffff;
+  --search-border-color: #94a3b8;
+  --search-focus-border-color: #1d4ed8;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -26,14 +49,29 @@ body {
   margin: 0;
   font-family: 'Arial', sans-serif;
   min-height: 100vh;
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 40px;
 }
 
-/* Heading styling */
+.page-header {
+  width: min(100% - 32px, 1000px);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  color: var(--text-color);
+}
+
+.page-header p {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
 h2 {
   font-size: 2em;
   text-decoration: underline;
@@ -43,65 +81,106 @@ h2 {
   color: #000000;
 }
 
-/* Table styling */
-table {
-  width: 95%;
-  max-width: 1200px;
-  border-collapse: separate;
-  border-spacing: 10px;
-  background-color: transparent;
-  box-shadow: 0 4px 8px var(--card-shadow);
-  border-radius: 8px;
+/* Search Bar Styles */
+.search-container {
+  width: min(100% - 32px, 600px);
+  margin: 0 auto 8px;
+  display: flex;
+  justify-content: center;
 }
 
-/* Cells styling */
-th, td {
-  background-color: var(--table-bg-color);
-  border: 2px solid var(--border-color);
-  padding: 15px;
-  border-radius: 8px;
-  transition: box-shadow 0.3s, background-color 0.3s;
+.search-status {
+  min-height: 1.5em;
+  margin: 0 auto 20px;
   text-align: center;
+  color: var(--text-color);
 }
 
-/* Hover effect for cells */
-td:hover {
-  box-shadow: 0 0 15px var(--hover-shadow-color);
-  background-color: #7caffdf2;
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  background-color: var(--search-bg-color);
+  color: var(--text-color);
+  border: 2px solid var(--search-border-color);
+  border-radius: 25px;
+  font-size: 1em;
+  outline: none;
+  transition: border-color 0.3s;
 }
 
-/* Link styles */
-a {
+.search-input:focus {
+  border-color: var(--search-focus-border-color);
+  box-shadow: 0 0 8px rgba(24, 81, 206, 0.5);
+}
+
+/* Container for cards */
+.container {
+  width: min(100% - 32px, 1200px);
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 24px);
+  align-items: stretch;
+}
+
+/* Card styles */
+.card {
+  min-height: 92px;
+  background-color: var(--card-bg-color);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  transition: box-shadow 0.3s, background-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 8px var(--card-shadow);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.card a {
+  width: 100%;
+  min-height: 64px;
+  display: grid;
+  place-items: center;
+  padding: 12px 8px;
   text-decoration: none;
   color: var(--link-color);
   font-weight: 600;
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 2px;
+  line-height: 1.3;
+  border-radius: 8px;
   transition: background-color 0.2s, color 0.2s;
 }
 
-a:hover {
-  background-color: rgba(0, 0, 0, 0);
-  color: #0056b3;
+.card a:hover,
+.card a:focus-visible {
+  outline: 3px solid #f59e0b; /* Bright orange outline for focus */
+  outline-offset: 4px; /* Slight offset for better visibility */
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.3); /* Optional: glow effect */
 }
 
-/* News button styling */
+.card[hidden] {
+  display: none;
+}
+
+/* News link styles */
 .news-link {
   position: fixed;
   top: 10px;
   right: 10px;
   background-color: var(--news-btn-bg-color);
-  padding: 6px 20px;
+  padding: 8px 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px var(--hover-shadow-color);
-  font-size: 1.1em;
+  font-size: 1.2em;
   transition: background-color 0.3s, transform 0.2s;
   z-index: 999;
 }
 
 .news-link a {
-  color: #fff;
+  color: var(--news-btn-text-color);
   font-weight: bold;
   text-decoration: none;
 }
@@ -111,432 +190,239 @@ a:hover {
   transform: scale(1.05);
 }
 
-/* Responsive adjustments for smaller screens */
-@media(max-width: 600px) {
+/* Responsive adjustments */
+@media (max-width: 1000px) {
+  .container {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    padding-top: 24px;
+  }
+
+  .container {
+    width: min(100% - 24px, 420px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .card {
+    min-height: 82px;
+    padding: 8px;
+  }
+
+  .card a {
+    min-height: 62px;
+    font-size: 0.95rem;
+  }
+
   h2 {
     font-size: 1.5em;
   }
+
   .news-link {
     font-size: 1.2em;
     padding: 8px 16px;
-  }
-  table {
-    font-size: 0.8em;
   }
 }
 </style>
   </head>
   <body>
-    <div style="width: 100%; max-width: 1200px; padding: 0 20px;">
-      <h2><u><b>Which is your favorite server?</b></u></h2>
-      <!-- Data table -->
-      <table role="presentation">
-        <tbody>
-          <tr>
-            <td><a
-                href="your%20favorite%20files/Analog%20Clock/Analog%20Clock.html">Analog
-
-
-
-
-
-
-
-
-
-                Clock</a></td>
-            <td><a
-href="your%20favorite%20files/Analog%20clock%20and%20Digital%20clock/Analog%20&amp;%20Digital%20Clock.html">Analog
-
-
-
-
-
-
-
-
-
-                &amp; Digital Clock</a></td>
-            <td><a
-                href="your%20favorite%20files/world%20clock/world%20clock.html">World
-
-
-
-
-
-
-
-
-
-                Clock</a></td>
-            <td><a
-                href="your%20favorite%20files/digital%20clock/digital%20clock.html">Digital
-
-
-
-
-
-
-
-
-
-                Clock</a></td>
-            <td><a
+    <header class="page-header">
+      <h1>Which is your favorite project?</h1>
+      <p>Choose a project below or search the collection.</p>
+    </header>
+    <main>
+      <section aria-labelledby="projects-heading">
+        <h2 id="projects-heading" class="sr-only">Available projects</h2>
+        <form class="search-container" role="search" onsubmit="return
+          false;"> <label class="sr-only" for="searchInput">Search
+            projects</label> <input class="search-input"
+            id="searchInput" placeholder="Search projects..."
+            autocomplete="off" aria-controls="projectContainer"
+            aria-describedby="searchStatus" type="search"> </form>
+        <p id="searchStatus" class="search-status" role="status"
+          aria-live="polite"></p>
+        <div class="container" id="projectContainer" role="list"
+          aria-label="Project collection">
+          <div class="card"><a
+              href="your%20favorite%20files/Analog%20Clock/Analog%20Clock.html">Analog
+              Clock</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/world%20clock/world%20clock.html">World
+              Clock</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/digital%20clock/digital%20clock.html">Digital
+              Clock</a></div>
+          <div class="card"><a
 href="your%20favorite%20files/free%20web%20hosting/free%20web%20hosting.html">Free
-
-
-
-
-
-
-
-
-
-                Web Hosting</a></td>
-          </tr>
-          <tr>
-            <td><a href="your%20favorite%20files/Wix/Wix.html">Wix</a></td>
-            <td><a href="your%20favorite%20files/blogger/blogger.html">Blogger</a></td>
-            <td><a
-                href="your%20favorite%20files/Supermarket/Supermarket.html">Supermarket</a></td>
-            <td><a
-                href="your%20favorite%20files/Chat%20message/Chat%20message.html">Chat
-
-
-
-
-
-
-
-
-
-                Message</a></td>
-            <td><a
-                href="your%20favorite%20files/Download%20Link/download%20link.html">Download
-
-
-
-
-
-
-
-
-
-                Link</a></td>
-          </tr>
-          <tr>
-            <td><a
-                href="your%20favorite%20files/Family%20photo/Family%20Photo.html">Family
-
-
-
-
-
-
-
-
-
-                Photo</a></td>
-            <td><a
+              Web Hosting</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Wix/Wix.html">Wix</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/blogger/blogger.html">Blogger</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Supermarket/Supermarket.html">Supermarket</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Chat%20message/Chat%20message.html">Chat
+              Message</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Download%20Link/download%20link.html">Download
+              Link</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Family%20photo/Family%20Photo.html">Family
+              Photo</a></div>
+          <div class="card"><a
 href="your%20favorite%20files/photo%20sildeshow%20and%20music/photo%20sildeshow%20and%20music.html">Photo
-
-
-
-
-
-
-
-
-
-                Slideshow &amp; Music</a></td>
-            <td><a
-                href="your%20favorite%20files/Stopwatch/Stopwatch.html">Stopwatch</a></td>
-            <td><a href="your%20favorite%20files/timer/timer.html">Timer</a></td>
-            <td><a href="your%20favorite%20files/Flipbook/Flipbook.html">Flipbook</a></td>
-          </tr>
-          <tr>
-            <td><a
-                href="your%20favorite%20files/Calculator/calculator.html">Calculator</a></td>
-            <td><a href="your%20favorite%20files/Calendar/Calendar.html">Calendar</a></td>
-            <td><a href="your%20favorite%20files/Notes/Notes.html">Notes</a></td>
-            <td><a href="your%20favorite%20files/Notepad/Notepad.html">Notepad</a></td>
-            <td><a
-                href="your%20favorite%20files/Discord%20Severs/Discord%20Severs.html">Discord
-
-
-
-
-
-
-
-
-
-                Servers</a></td>
-          </tr>
-          <tr>
-            <td><a href="Games%20website/Games.html">Games</a></td>
-            <td><a
-                href="your%20favorite%20files/Info%20Page/Info%20Page.html">Info
-
-
-
-
-
-
-
-                Page<br>
-              </a></td>
-            <td><a
-                href="your%20favorite%20files/Qr%20Card/Qr%20card.html">QR
-
-
-
-
-
-
-
-
-
-                Card</a></td>
-            <td><a
-                href="your%20favorite%20files/Music%20Player/Music%20Player.html">Music
-
-
-
-
-
-
-
-
-
-                Player</a></td>
-            <td><a href="your%20favorite%20files/Spotify/Spotify.html">Spotify</a></td>
-          </tr>
-          <tr>
-            <td><a href="your%20favorite%20files/.yocco/.yooco.html">Yooco</a></td>
-            <td><a
-                href="your%20favorite%20files/Video%20ID/Video%20ID.html">Video
-
-
-
-
-
-
-
-
-
-                ID</a></td>
-            <td><a href="your%20favorite%20files/Video/Video.html">Video</a></td>
-            <td><a
+              Slideshow &amp; Music</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Stopwatch/Stopwatch.html">Stopwatch</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/timer/timer.html">Timer</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Flipbook/Flipbook.html">Flipbook</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Calculator/calculator.html">Calculator</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Calendar/Calendar.html">Calendar</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Notes/Notes.html">Notes</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Notepad/Notepad.html">Notepad</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Discord%20Severs/Discord%20Severs.html">Discord
+              Servers</a></div>
+          <div class="card"><a href="Games%20website/Games.html">Games</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Info%20Page/Info%20Page.html">Info
+              Page</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Qr%20Card/Qr%20card.html">QR
+              Card</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Music%20Player/Music%20Player.html">Music
+              Player</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Spotify/Spotify.html">Spotify</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/.yocco/.yooco.html">Yooco</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Video%20ID/Video%20ID.html">Video
+              ID</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Video/Video.html">Video</a></div>
+          <div class="card"><a
 href="your%20favorite%20files/My%20Video%20Player/My%20Video%20Player.html">My
-
-
-
-
-
-
-
-
-
-                Video Player<br>
-              </a></td>
-            <td><a
+              Video Player</a></div>
+          <div class="card"><a
 href="your%20favorite%20files/Youtube%20alternative/Youtube%20alternative.html">YouTube
-
-
-
-
-
-
-
-
-
-                Alternative</a></td>
-          </tr>
-          <tr>
-            <td><a href="your%20favorite%20files/Print/Print.html">Print</a></td>
-            <td><a href="your%20favorite%20files/ISO/ISO.html">ISO</a></td>
-            <td><a href="your%20favorite%20files/Ping/ping.html">Ping</a></td>
-            <td><a
-                href="your%20favorite%20files/Bookmarks/Bookmarks.html">Bookmarks</a></td>
-            <td><a
-                href="your%20favorite%20files/Android%20apk/Android%20APK.html">Android
-
-
-
-
-
-
-
-
-
-                APK<br>
-              </a></td>
-          </tr>
-          <tr>
-            <td><a
-                href="your%20favorite%20files/Soundcloud/Soundcloud.html">Soundcloud</a></td>
-            <td><a href="your%20favorite%20files/Alarm/alarm.html">Alarm</a></td>
-            <td><a
-                href="your%20favorite%20files/whiteboard/whiteboard.html">Whiteboard</a></td>
-            <td><a
+              Alternative</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Print/Print.html">Print</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/ISO/ISO.html"> Dvd ISO</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Ping/ping.html">Ping</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Bookmarks/Bookmarks.html">Bookmarks</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Android%20apk/Android%20APK.html">Android
+              APK</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Soundcloud/Soundcloud.html">Soundcloud</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Alarm/alarm.html">Alarm</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/whiteboard/whiteboard.html">Whiteboard</a></div>
+          <div class="card"><a
 href="your%20favorite%20files/Revolutionary%20hosting/Revolutionary%20hosting.html">Revolutionary
-
-
-
-
-
-
-
-
-
-                Hosting</a></td>
-            <td><a href="your%20favorite%20files/barcode/barcode.html">Barcode</a></td>
-          </tr>
-          <tr>
-            <td><a href="your%20favorite%20files/Poll/poll.html">Poll</a></td>
-            <td><a href="your%20favorite%20files/Radio/Radio.html">Radio</a></td>
-            <td><a
+              Hosting</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/barcode/barcode.html">Barcode</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Poll/poll.html">Poll</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Radio/Radio.html">Radio</a></div>
+          <div class="card"><a
 href="your%20favorite%20files/before%20and%20after%20image%20slider/before%20and%20after%20image%20slider.html">Before
-
-
-
-
-
-
-
-
-
-                &amp; After Slider</a></td>
-            <td><a
-                href="your%20favorite%20files/TV%20Video/video%20tv.html">TV
-
-
-
-
-
-
-
-
-
-                Video</a></td>
-            <td><a
-                href="your%20favorite%20files/LED%20Rave%20Sync/LED%20Rave%20Sync.html">LED
-
-
-
-
-
-
-
-
-
-                Rave Sync</a></td>
-          </tr>
-          <tr>
-            <td valign="top"><a
+              &amp; After Slider</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/TV%20Video/video%20tv.html">TV
+              Video</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/LED%20Rave%20Sync/LED%20Rave%20Sync.html">LED
+              Rave Sync</a></div>
+          <div class="card"><a
 href="your%20favorite%20files/Website%20Beta%20Serv00/Website%20Beta%20Serv00.html">Website
-
-
-
-
-
-
-
-
-
-                Beta Serv00</a></td>
-            <td valign="top"><a
-                href="your%20favorite%20files/Rating%20System/Rating%20System.html">Rating
-
-
-
-
-
-
-
-
-
-                System</a><br>
-            </td>
-            <td valign="top"><a
-                href="your%20favorite%20files/Birthday/Birthday.html">Birthday</a><br>
-            </td>
-            <td valign="top"><a
-                href="your%20favorite%20files/Android%20Test/Andorid%20Test.html">Android
-
-
-
-
-
-
-
-                Test</a></td>
-            <td valign="top"><a
-                href="your%20favorite%20files/Shopping%20List/Shopping%20List.html">Shopping
-
-
-
-
-
-
-
-                List</a></td>
-          </tr>
-          <tr>
-            <td valign="top"><a
+              Beta Serv00</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Rating%20System/Rating%20System.html">Rating
+              System</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Birthday/Birthday.html">Birthday</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Android%20Test/Andorid%20Test.html">Android
+              Test</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Shopping%20List/Shopping%20List.html">Shopping
+              List</a></div>
+          <div class="card"><a
 href="your%20favorite%20files/Soundboard%20Button/Soundboard%20Button.html">Soundboard
+              Button</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/status/status.html">Status</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Webcam/Webcam.html">Webcam</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/MIDI/MIDI.html">MIDI</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Voice%20Recorder/Voice%20Recorder.html">Voice
+              Recorder</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/Weather/Weather.html">Weather</a></div>
+          <div class="card"><a
+              href="your%20favorite%20files/files%20archive/Files%20Archive.html">
+              Files Archive</a></div>
+        </div>
+      </section>
+    </main>
+    <nav class="news-link" aria-label="Site navigation"> <a
+        href="News.html">News</a>
+    </nav>
+    <script>
+const searchInput = document.getElementById('searchInput');
+const projectContainer = document.getElementById('projectContainer');
+const searchStatus = document.getElementById('searchStatus');
+const cards = [...projectContainer.querySelectorAll('.card')];
 
+cards.forEach(card => card.setAttribute('role', 'listitem'));
 
+function filterProjects() {
+  const query = searchInput.value.trim().toLowerCase();
+  let visibleCount = 0;
 
+  cards.forEach(card => {
+    const projectName = card.querySelector('a').textContent.toLowerCase();
+    const isMatch = projectName.includes(query);
+    card.hidden = !isMatch;
+    if (isMatch) visibleCount += 1;
+  });
 
+  searchStatus.textContent = query
+    ? `${visibleCount} project${visibleCount === 1 ? '' : 's'} found.`
+    : `${visibleCount} projects available.`;
+}
 
-
-                Button</a></td>
-            <td valign="top"><a
-                href="your%20favorite%20files/status/status.html">Status</a></td>
-            <td valign="top"><a
-                href="your%20favorite%20files/Webcam/Webcam.html">Webcam</a></td>
-            <td valign="top"><a
-                href="your%20favorite%20files/MIDI/MIDI.html">MIDI</a></td>
-            <td valign="top"><a
-                href="your%20favorite%20files/Voice%20Recorder/Voice%20Recorder.html">Voice
-
-                Recorder</a></td>
-          </tr>
-          <tr>
-            <td valign="top"><a
-                href="your%20favorite%20files/Weather/Weather.html">Weather</a></td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-          </tr>
-          <tr>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-          </tr>
-          <tr>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-          </tr>
-          <tr>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-            <td valign="top">Coming soon</td>
-          </tr>
-        </tbody>
-      </table>
-      <!-- Fixed News Button -->
-      <div class="news-link"><a href="News.html" moz-do-not-send="true">News</a></div>
-    </div>
+searchInput.addEventListener('input', filterProjects);
+filterProjects();
+</script>
   </body>
 </html>

@@ -1,109 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Welcome xxxsexy</title>
 <!-- Favicon with base64 data URI -->
-<link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA/3WRAG3P/AC1/G0AADp9AJH8YgAAfTQAaxxLAGJq/AD/9HUA/MhtAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB3d3AAAAAAAHMzd3d3cAAAcjNmZmZwAAByI4iIhnAAAHIjVYiGcAAAciNVVVZ3AAByI1mZmVcAAHIjWREZFwAAciNZFBkXAAByI1kRGRcAAHIjVVVVdwAAeqqmZmZwAAAHqqqqpnAAAAB3d3d3AAAAAAAAAAAAD//wAA4P8AAOADAADgAwAA4AMAAOADAADgAQAA4AEAAOABAADgAQAA4AEAAOABAADgAwAA8AMAAPgHAAD//wAA" rel="icon" type="image/x-icon">
-<!-- Include Animate.css -->
+<link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA/3sAAOX/AABmAP8A/4QAAAD/VQD/AG8AAN3/AP8AUQCu/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIiIhEMzAAAAiIRERVMAAACIRERVEwAAAIhERVETAAAAiERVUSMAAACESVVSIwAAAIRJVmIjAAAAhEmWYiMAAACEeZZiIwAAAIh2ZmIjAAAAd3MzMzMAAAAAAAAAAAAAAAAAAAAAAAD//wAA//8AAP//AADADwAAwA8AAMAPAADADwAAwA8AAMAPAADADwAAwA8AAMAPAADADwAAwA8AAP//AAD//wAA" rel="icon" type="image/x-icon" />
+<!-- Animate.css -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-    }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #000;
+  }
 
-    /* Fullscreen Overlay */
-    .overlay {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh; /* Full height of the viewport */
-        background: linear-gradient(200deg,rgb(68, 18, 31) 0%, rgb(47, 19, 66)100%);
-        position: fixed; /* Cover entire viewport */
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 999;
-        color: white;
-        text-align: center;
-    }
+  /* SVG Shadow Shape */
+  #shadow-shape {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 400px;
+    z-index: 0;
+    opacity: 0.5;
+  }
 
-    .loading-message {
-        padding: 20px;
-        background-color: rgba(129, 37, 148, 0.966);
-        border-radius: 10px;
-        box-shadow: 0 0 25px rgba(241, 56, 102, 0.91);
-        max-width: 400px;
-        width: 80%;
-    }
+  /* Fullscreen overlay */
+  .overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background: linear-gradient(90deg, rgb(78, 32, 75) 0%, rgb(121, 75, 20) 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 2vh;
+    box-sizing: border-box;
+    z-index: 999;
+  }
 
-    @keyframes slideUp {
-        from {
-            transform: translateY(50px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
+  /* Message box styles */
+  .loading-message {
+    width: 90%;
+    max-width: 500px;
+    --p: 40px;
+    clip-path: polygon(var(--p) 0,100% 0,calc(100% - var(--p)) 100%,0 100%);
+    aspect-ratio: 5/2;
+    background-color: rgba(83, 15, 133, 0.966);
+    border-radius: 10px;
+    box-shadow: 0 4 30px rgba(255, 54, 211, 0.91);
+    padding: 3vh 3vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+  }
 
-    .button {
-        margin-top: 20px;
-        padding: 15px 25px;
-        background-color: #be3278;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background-color 0.3s, transform 0.3s;
-    }
+  /* Text styles */
+  .loading-message h1 {
+    margin: 0 0 1vh 0;
+    font-size: 2rem;
+    color: #fff;
+  }
+  .loading-message p {
+    margin: 0 0 2vh 0;
+    font-size: 1rem;
+    color: #fff;
+  }
 
-    .button:hover {
-        background-color: #771d4a;
-        transform: scale(1.05);
-    }
+  /* Button styles */
+  .button {
+    padding: 1.5vh 3vw;
+    min-width: 150px;
+    background-color: #c040f3;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    outline: none;
+  }
+  .button:focus {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+  }
+  .button:hover {
+    background-color: #2d1038;
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  }
 
-    /* Progress Bar Container */
-    .progress-container {
-        width: 100%;
-        background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        margin-top: 20px;
-        height: 20px;
-        overflow: hidden;
-    }
+  /* Progress bar styles */
+  .progress-container {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    margin-top: 3vh;
+    height: 2vh;
+    overflow: hidden;
+    display: none;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #ff85f5;
+    transition: width 0.05s linear;
+    border-radius: 10px 0 0 10px;
+  }
 
-    /* Progress Bar Fill */
-    .progress-bar {
-        height: 100%;
-        width: 0%;
-        background-color: #340e4e;
-        transition: width 0.05s linear;
-    }
+  /* Loading text during progress */
+  #loading-text {
+    margin-top: 4vh;
+    font-size: 1rem;
+    color: #fff;
+    display: none;
+  }
 
-    /* Loading message during progress */
-    #loading-text {
-        margin-top: 10px;
-        font-size: 1rem;
-        display: none;
-    }
+  /* Responsiveness */
+  @media(max-width: 400px){
+    .loading-message h1 { font-size: 1.5rem; }
+    .button { padding: 1.2vh 2vw; font-size: 0.9rem; }
+  }
 </style>
 </head>
 <body>
+
+<!-- Overlay Content -->
 <div class="overlay" id="overlay">
   <div class="loading-message animate__animated animate__jackInTheBox" id="message-box">
-    <h1>Welcome xxxsexy</h1>
-    <p>Do you want a link? Of course! Choose what you want. We're open today, available 24/7.</p>
-    <a href="your%20favorite.html" id="link">
-      <button class="button" id="clickButton">Click me</button>
-    </a>
-    <!-- Progress bar and loading text -->
-    <div class="progress-container" id="progressContainer" style="display:none;">
+    <h1>Welcome!</h1>
+    <p>Would you like a link? Of course! Choose whatever you'd like. We are open today and available 24/7.</p>
+    <button class="button" id="holdButton">Click and Hold</button>
+    <div class="progress-container" id="progressContainer">
       <div class="progress-bar" id="progressBar"></div>
     </div>
     <div id="loading-text">Loading, please wait...</div>
@@ -111,38 +146,82 @@
 </div>
 
 <script>
-  const button = document.getElementById('clickButton');
+  const holdButton = document.getElementById('holdButton');
   const progressBar = document.getElementById('progressBar');
   const progressContainer = document.getElementById('progressContainer');
   const loadingText = document.getElementById('loading-text');
 
-  button.addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent default to control timing
+  let progressInterval = null;
+  const holdDuration = 3000; // 3 seconds
 
-    // Show progress bar and loading text
+  function startLoading() {
+    if (progressInterval) return;
+    progressBar.style.width = '0%';
     progressContainer.style.display = 'block';
     loadingText.style.display = 'block';
 
-    // Reset progress bar
-    progressBar.style.width = '0%';
+    const startTime = Date.now();
 
-    let progress = 0;
-    const duration = 6000; // 5 seconds
-    const intervalTime = 60; // update every 50ms
-    const totalSteps = duration / intervalTime;
-    let currentStep = 0;
+    progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / holdDuration, 1);
+      progressBar.style.width = (progress * 100) + '%';
 
-    const interval = setInterval(() => {
-      currentStep++;
-      progress = (currentStep / totalSteps) * 100;
-      progressBar.style.width = progress + '%';
-
-      if (currentStep >= totalSteps) {
-        clearInterval(interval);
-        // After loading completes, redirect to the link
-        window.location.href = 'your%20favorite.html';
+      if (progress >= 1) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+        window.location.href = 'your favorite.html'; // Change URL here
+        resetLoading();
       }
-    }, intervalTime);
+    }, 100);
+  }
+
+  function cancelLoading() {
+    if (progressInterval) {
+      clearInterval(progressInterval);
+      progressInterval = null;
+    }
+    resetLoading();
+  }
+
+  function resetLoading() {
+    progressBar.style.width = '0%';
+    progressContainer.style.display = 'none';
+    loadingText.style.display = 'none';
+  }
+
+  // Pointer events work consistently for mouse, touch, and stylus input.
+  holdButton.addEventListener('pointerdown', (event) => {
+    if (event.button !== undefined && event.button !== 0) return;
+    event.preventDefault();
+    holdButton.setPointerCapture?.(event.pointerId);
+    startLoading();
+  });
+
+  function finishPointer(event) {
+    event.preventDefault();
+    if (holdButton.hasPointerCapture?.(event.pointerId)) {
+      holdButton.releasePointerCapture(event.pointerId);
+    }
+    cancelLoading();
+  }
+
+  holdButton.addEventListener('pointerup', finishPointer);
+  holdButton.addEventListener('pointercancel', finishPointer);
+  holdButton.addEventListener('lostpointercapture', cancelLoading);
+
+  // Support holding the button with the keyboard as well.
+  holdButton.addEventListener('keydown', (event) => {
+    if ((event.key === ' ' || event.key === 'Enter') && !event.repeat) {
+      event.preventDefault();
+      startLoading();
+    }
+  });
+  holdButton.addEventListener('keyup', (event) => {
+    if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault();
+      cancelLoading();
+    }
   });
 </script>
 </body>

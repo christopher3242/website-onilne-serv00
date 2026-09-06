@@ -9,7 +9,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: start;
+      justify-content: flex-start;
       min-height: 100vh;
       margin: 0;
       font-family: Arial, sans-serif;
@@ -17,9 +17,17 @@
       padding: 20px;
     }
 
-    #exitButton {
+    /* Styled link as button */
+    #exitLink {
+      width: 100%;
+      max-width: 200px;
+      text-decoration: none;
       margin-bottom: 20px;
-      padding: 10px 20px;
+    }
+
+    #exitButton {
+      width: 100%;
+      padding: 12px;
       font-size: 16px;
       cursor: pointer;
       background-color: #1db954; /* Spotify green */
@@ -27,7 +35,7 @@
       border: none;
       border-radius: 40px;
       transition: background-color 0.3s;
-      text-decoration: none; /* Remove default link underline if any */
+      font-weight: bold;
     }
 
     #exitButton:hover {
@@ -37,33 +45,46 @@
     h1 {
       margin-bottom: 20px;
       text-align: center;
+      font-size: 2em;
+      color: #333;
     }
 
-    /* Responsive iframe styling */
+    /* Responsive iframe styling with shadow for better visual */
     iframe {
       width: 90%;
       max-width: 1000px;
       height: 500px;
       border: none;
       border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: box-shadow 0.3s;
+    }
+
+    iframe:hover {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     }
 
     @media (max-width: 400px) {
       iframe {
         height: 300px;
       }
-      #exitButton {
-        width: 100%;
-        box-sizing: border-box;
+      #exitLink {
+        max-width: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <a href="../../your%20favorite.html" id="exitLink"><button id="exitButton">Exit</button></a>
+  <a href="../../your%20favorite.html" id="exitLink" aria-label="Exit to main page">
+    <button id="exitButton">Exit</button>
+  </a>
   <h1>My Spotify Playlist</h1>
   <iframe
     src="https://open.spotify.com/embed/playlist/3LFosqFZ17J0kNQvVul3NU"
-    allowtransparency="true" allow="encrypted-media"></iframe>
+    allowtransparency="true"
+    allow="encrypted-media"
+    title="Spotify Playlist Embed"
+    loading="lazy"
+  ></iframe>
 </body>
 </html>

@@ -1,102 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Android APK </title>
-  <style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Download Android APK</title>
+<style>
+  /* Reset box-sizing for consistency */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  /* Title styling */
+  .title {
+    text-align: center;
+    font-size: 2em;
+    margin-top: 50px;
+    margin-bottom: 30px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  /* Download section styling */
+  .download-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 50px;
+  }
+
+  /* Download button styling */
+  .download-button {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    color: #fff;
+    background-color: #54993f;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .download-button:hover,
+  .download-button:focus {
+    background-color: #538843;
+    transform: scale(1.05);
+    outline: none;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  }
+
+  /* Exit button container */
+  .exit-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 50px;
+  }
+
+  /* Exit button styling */
+  .exit-button {
+    padding: 12px 25px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #f44336;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+    font-weight: bold;
+  }
+
+  .exit-button:hover,
+  .exit-button:focus {
+    background-color: #da190b;
+    transform: scale(1.05);
+    outline: none;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  }
+
+  /* Responsive styles */
+  @media(max-width: 600px) {
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f0f0f0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      padding: 10px;
     }
     .title {
-      text-align: center;
-      font-size: 2em;
-      margin-top: 50px;
-      margin-bottom: 30px;
-    }
-    .download-section {
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      font-size: 1.5em;
+      margin-top: 30px;
+      margin-bottom: 20px;
     }
     .download-button {
-      padding: 15px 30px;
-      font-size: 1.2em;
-      color: #fff;
-      background-color: #54993f;
-      border: none;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: background-color 0.3s, transform 0.2s;
-      cursor: pointer;
-    }
-    .download-button:hover {
-      background-color: #538843;
-      transform: scale(1.05);
-    }
-    .exit-container {
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 50px;
-      padding-right: 50px;
+      font-size: 1em;
+      padding: 12px 24px;
     }
     .exit-button {
-      padding: 12px 25px;
-      font-size: 1em;
-      color: #fff;
-      background-color: #f44336;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.2s;
+      font-size: 0.9em;
+      padding: 10px 20px;
     }
-    .exit-button:hover {
-      background-color: #da190b;
-      transform: scale(1.05);
+    .exit-container {
+      padding-right: 20px;
     }
-    @media (max-width: 600px) {
-      .title {
-        font-size: 1.5em;
-      }
-      .download-button {
-        font-size: 1em;
-        padding: 12px 24px;
-      }
-      .exit-button {
-        font-size: 0.9em;
-        padding: 10px 20px;
-      }
-      .exit-container {
-        padding-right: 20px;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="title">Android APK </div>
-  
-  <!-- Download APK Button -->
-  <div class="download-section">
+
+  <!-- Page Title -->
+  <div class="title" id="page-title">Download Android APK</div>
+
+  <!-- Download Button -->
+  <div class="download-section" role="region" aria-labelledby="page-title">
     <a
       href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Android%20APK/Android%20apk%20(xxxsexy).zip"
       class="download-button"
       download
+      aria-label="Download Android APK (xxxsexy)"
     >
-      Download Android Apk (xxxsexy)
+      Download Android APK (xxxsexy)
     </a>
   </div>
-  
+
   <!-- Exit Button -->
-  <div class="exit-container">
-    <a href="../../your%20favorite.html">
+  <div class="exit-container" role="region" aria-labelledby="page-title">
+    <a href="../../your%20favorite.html" aria-label="Exit to your favorite page">
       <button class="exit-button">Exit</button>
     </a>
   </div>
+
 </body>
 </html>

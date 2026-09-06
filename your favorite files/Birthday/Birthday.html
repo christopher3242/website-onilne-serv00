@@ -1,114 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Happy Birthday!</title>
-  <style>
-    body {
-      background-color: #f9e79f;
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-      padding: 50px;
-    }
-    h1 {
-      color: #e74c3c;
-      font-size: 50px;
-    }
-    p {
-      font-size: 24px;
-      color: #34495e;
-    }
-    #countdown {
-      font-size: 28px;
-      margin: 20px 0;
-      color: #2c3e50;
-    }
-    #celebrate-button,
-    #exit-button {
-      padding: 15px 30px;
-      font-size: 20px;
-      color: white;
-      background-color: #2980b9;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 20px;
-      transition: background-color 0.3s ease;
-    }
-    #celebrate-button:hover,
-    #exit-button:hover {
-      background-color: #3498db;
-    }
-    img {
-      width: 300px;
-      height: auto;
-      margin: 20px 0;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Happy Birthday!</title>
+<style>
+  body {
+    background: linear-gradient(135deg, #f9e79f, #f7dc6f);
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    padding: 40px 20px;
+    margin: 0;
+  }
+
+  h1 {
+    color: #e74c3c;
+    font-size: 3em;
+    margin-bottom: 10px;
+  }
+
+  img {
+    width: 250px;
+    max-width: 80%;
+    height: auto;
+    margin: 20px 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  p {
+    font-size: 1.2em;
+    color: #34495e;
+    margin: 10px 0;
+  }
+
+  #current-date {
+    font-weight: bold;
+  }
+
+  #countdown {
+    font-size: 1.5em;
+    margin: 20px 0;
+    color: #2c3e50;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  #celebrate-button,
+  #exit-button {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    color: white;
+    background-color: #2980b9;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 15px;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  #celebrate-button:hover,
+  #exit-button:hover {
+    background-color: #3498db;
+    transform: scale(1.05);
+  }
+
+  /* Optional: Confetti animation overlay */
+  #confetti {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+  }
+</style>
 </head>
 <body>
-  <h1>Happy Birthday!</h1>
-  <img src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/birthday/birthdaycake" alt="Birthday Cake" />
-  <p>Wishing you all the joy and happiness on your special day!</p>
-  <p id="current-date"></p>
-  
-  <!-- Countdown Timer -->
-  <div id="countdown">
-    Countdown to your special day: <span id="timer"></span>
-  </div>
-  
-  <button id="celebrate-button" onclick="playSound()">🎉 Celebrate! 🎉</button>
-  <a href="../../your%20favorite.html" moz-do-not-send="true">
-    <button id="exit-button" onclick="exitPage()">❌ Exit</button>
-  </a>
-  
-  <audio id="birthday-audio" src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/birthday/happy-birthday-258264.mp3"></audio>
-  
-  <script>
-    // Display current date
-    const currentDate = new Date();
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('current-date').innerText = currentDate.toLocaleDateString(undefined, options);
 
-    // Set target date for countdown (e.g., next birthday or any date)
-    // Format: 'YYYY-MM-DD'
-    const targetDateStr = '2026-12-06'; // Change this to your desired date
-    const targetDate = new Date(targetDateStr + 'T00:00:00');
+<h1>🎉 Happy Birthday! 🎉</h1>
+<img src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/birthday/birthdaycake" alt="Birthday Cake" />
 
-    // Update countdown every second
-    const timerSpan = document.getElementById('timer');
-    function updateCountdown() {
-      const now = new Date();
-      const diff = targetDate - now;
+<p>Wishing you all the joy and happiness on your special day!</p>
+<p id="current-date"></p>
 
-      if (diff <= 0) {
-        timerSpan.innerText = "It's time!";
-        clearInterval(countdownInterval);
-        return;
+<div id="countdown">
+  Countdown to your special day: <span id="timer">Loading...</span>
+</div>
+
+<button id="celebrate-button" onclick="playSound()">🎉 Celebrate! 🎉</button>
+<a href="../../your%20favorite.html" style="text-decoration: none;">
+  <button id="exit-button" onclick="exitPage()">❌ Exit</button>
+</a>
+
+<!-- Optional Confetti Canvas -->
+<canvas id="confetti"></canvas>
+
+<!-- Audio -->
+<audio id="birthday-audio" src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/birthday/happy-birthday-258264.mp3"></audio>
+
+<script>
+  // Display current date
+  const currentDate = new Date();
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('current-date').innerText = currentDate.toLocaleDateString(undefined, options);
+
+  // Set target date for countdown (change as needed)
+  const targetDateStr = '2026-12-06'; // Change to your birthday or desired date
+  const targetDate = new Date(targetDateStr + 'T00:00:00');
+
+  const timerSpan = document.getElementById('timer');
+
+  // Countdown function
+  function updateCountdown() {
+    const now = new Date();
+    const diff = targetDate - now;
+
+    if (diff <= 0) {
+      timerSpan.innerText = "It's time!";
+      clearInterval(countdownInterval);
+      showCelebration();
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    timerSpan.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  const countdownInterval = setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  // Play birthday sound
+  function playSound() {
+    const audio = document.getElementById('birthday-audio');
+    audio.play();
+  }
+
+  // Exit page function
+  function exitPage() {
+    // You can customize this, e.g., close window or redirect
+    window.location.href = '../../your%20favorite.html';
+  }
+
+  // Celebration effect - show confetti
+  function showCelebration() {
+    alert("🎉 Happy Birthday! 🎉");
+    launchConfetti();
+  }
+
+  // Confetti animation
+  const canvas = document.getElementById('confetti');
+  const ctx = canvas.getContext('2d');
+  let confettiParticles = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function createConfetti() {
+    for (let i = 0; i < 100; i++) {
+      confettiParticles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight - window.innerHeight,
+        size: Math.random() * 8 + 2,
+        color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+        speed: Math.random() * 4 + 1,
+        tilt: Math.random() * 360,
+        tiltSpeed: Math.random() * 0.5 + 0.2
+      });
+    }
+  }
+
+  function drawConfetti() {
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    for (let c of confettiParticles) {
+      ctx.fillStyle = c.color;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+      ctx.fill();
+
+      c.y += c.speed;
+      c.tilt += c.tiltSpeed;
+      c.x += Math.sin(c.tilt) * 2;
+
+      if (c.y > window.innerHeight) {
+        c.y = -c.size;
+        c.x = Math.random() * window.innerWidth;
       }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
-
-      timerSpan.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
+    requestAnimationFrame(drawConfetti);
+  }
 
-    const countdownInterval = setInterval(updateCountdown, 1000);
-    updateCountdown(); // initial call
+  function launchConfetti() {
+    createConfetti();
+    drawConfetti();
+  }
 
-    function playSound() {
-      const audio = document.getElementById('birthday-audio');
-      audio.play();
-    }
-
-    function exitPage() {
-      // Placeholder for exit logic if needed
-      // Currently, the button will just follow the link
-    }
-  </script>
+</script>
 </body>
 </html>

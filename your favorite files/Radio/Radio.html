@@ -16,7 +16,7 @@
   }
 
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
@@ -27,23 +27,24 @@
   }
 
   .container {
-    max-width: 900px;
+    max-width: 950px;
     width: 100%;
     text-align: center;
   }
 
   h1 {
     margin-bottom: 10px;
+    font-size: 2.8em;
   }
 
   /* Theme toggle button style */
   #themeToggle {
     display: block;
-    margin: 10px auto;
-    padding: 10px 20px;
+    margin: 10px auto 20px auto;
+    padding: 12px 24px;
     background-color: var(--button-bg);
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
@@ -58,7 +59,7 @@
     display: flex;
     justify-content: center;
     margin: 10px 0;
-    gap: 10px;
+    gap: 15px;
   }
 
   .nav-buttons button {
@@ -84,17 +85,20 @@
     justify-content: center;
     margin-top: 20px;
   }
+
   .station {
     background: var(--station-bg);
-    padding: 10px 20px;
+    padding: 12px 20px;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
     min-width: 250px;
     text-align: center;
   }
+
   .station:hover {
     background: var(--station-hover);
+    transform: scale(1.02);
   }
 
   /* Player controls container */
@@ -103,11 +107,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 15px;
+  }
+
+  #stationInfo {
+    font-size: 1.2em;
+    font-weight: bold;
   }
 
   /* Buttons styling */
   .buttons {
-    margin: 10px 0;
     display: flex;
     gap: 15px;
     align-items: center;
@@ -121,13 +130,15 @@
     background-color: var(--button-bg);
     color: white;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
   }
 
   button:hover {
     background-color: var(--button-hover);
+    transform: scale(1.03);
   }
 
+  /* Volume slider */
   input[type=range] {
     width: 200px;
   }
@@ -152,7 +163,7 @@
 
   /* Themes: Gray, Black, Green */
   body.gray-theme {
-    --bg-color: #d3d3d3; /* Light gray background */
+    --bg-color: #d3d3d3;
     --text-color: #222;   
     --button-bg: #888;
     --button-hover: #555;
@@ -170,50 +181,62 @@
   }
 
   body.green-theme {
-    --bg-color: #006400; /* Dark Green */
+    --bg-color: #006400;
     --text-color: #f0f0f0;
-    --button-bg: #228b22; /* Forest Green */
+    --button-bg: #228b22;
     --button-hover: #006400;
     --station-bg: #006400;
     --station-hover: #228b22;
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 600px) {
+    h1 {
+      font-size: 2em;
+    }
+    #volumeRange {
+      width: 150px;
+    }
   }
 </style>
 </head>
 <body>
 
 <div class="container">
-<h1>Malta Radio Stations</h1>
-<button id="themeToggle">Switch to Gray Theme</button>
+  <h1>Malta Radio Stations</h1>
+  <button id="themeToggle">Switch to Gray Theme</button>
 
-<!-- Navigation Buttons -->
-<div class="nav-buttons">
-  <button id="prevBtn">&lt;</button>
-  <button id="nextBtn">&gt;</button>
-</div>
-
-<!-- Station list -->
-<div class="station-list" id="stationList"></div>
-
-<!-- Player controls -->
-<div id="playerControls" style="display:none;">
-  <h2 id="stationName"></h2>
-  <audio id="audioPlayer" controls></audio>
-  
-  <div class="buttons">
-    <button id="playPause" title="Play/Pause">⏯️</button>
+  <!-- Navigation Buttons -->
+  <div class="nav-buttons">
+    <button id="prevBtn" aria-label="Previous Station">&lt;</button>
+    <button id="nextBtn" aria-label="Next Station">&gt;</button>
   </div>
-  
-  <!-- Volume slider -->
-  <div>
-    <label for="volumeRange">Volume:</label>
-    <input type="range" id="volumeRange" min="1" max="100" value="50" />
-  </div>
-</div>
 
-<!-- Exit button container -->
-<div class="exit-container">
-  <a href="../../your%20favorite.html" class="exit-link">Exit</a>
-</div>
+  <!-- Station list -->
+  <div class="station-list" id="stationList"></div>
+
+  <!-- Player controls -->
+  <div id="playerControls" style="display:none;">
+    <div id="stationInfo">
+      <span id="stationName"></span>
+    </div>
+    <audio id="audioPlayer" controls></audio>
+    
+    <div class="buttons">
+      <button id="playPause" title="Play/Pause">⏯️</button>
+    </div>
+    
+    <!-- Volume control -->
+    <div>
+      <label for="volumeRange">Volume:</label>
+      <input type="range" id="volumeRange" min="1" max="100" value="50" />
+    </div>
+  </div>
+
+  <!-- Exit button container -->
+  <div class="exit-container">
+    <a href="../../your%20favorite.html" class="exit-link">Exit</a>
+  </div>
 </div>
 
 <script>
@@ -235,7 +258,6 @@ const stations = [
   { name: "Japan City Pop", genre: "Retro Tokyo", url: "https://play.streamafrica.net/japancitypop" },
   { name: "Phonk", genre: "/w bro", url: "https://stream.laut.fm/phonk" }
 ];
-
 
 const stationListDiv = document.getElementById('stationList');
 const playerContainer = document.getElementById('playerControls');
@@ -259,9 +281,7 @@ stations.forEach((station, index) => {
   const div = document.createElement('div');
   div.className = 'station';
   div.innerHTML = `<strong>${station.name}</strong><br><em>${station.genre}</em>`;
-  div.onclick = () => {
-    loadStation(index);
-  };
+  div.onclick = () => loadStation(index);
   stationListDiv.appendChild(div);
 });
 
@@ -270,7 +290,7 @@ function loadStation(index) {
   currentStationIndex = index;
   const station = stations[index];
   currentStation = station;
-  stationNameElem.textContent = station.name;
+  document.getElementById('stationName').textContent = station.name;
   audioPlayer.src = station.url;
   playerContainer.style.display = 'flex';
   isPlaying = false;
@@ -312,7 +332,7 @@ document.getElementById('themeToggle').onclick = () => {
   document.getElementById('themeToggle').textContent = `Switch to ${themeNames[(currentThemeIndex + 1) % themes.length]} Theme`;
 };
 
-// Initial load first station
+// Load first station on page load
 loadStation(currentStationIndex);
 
 // Navigation buttons
@@ -325,5 +345,6 @@ nextBtn.onclick = () => {
   loadStation(newIndex);
 };
 </script>
+
 </body>
 </html>

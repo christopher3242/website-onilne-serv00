@@ -3,80 +3,106 @@
 <head>
 <meta charset="UTF-8" />
 <title>MIDI Mix Studio Pro</title>
-
 <style>
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
   text-align: center;
-  touch-action: manipulation;
   user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
-h1 { margin: 10px; }
+h1 {
+  margin: 10px 0;
+  font-size: 2em;
+  color: #222;
+}
 
 .ui {
-  background: white;
-  padding: 10px;
+  background: #fff;
+  padding: 15px;
   margin: 10px auto;
-  width: 92%;
+  max-width: 950px;
   border-radius: 10px;
-  box-shadow: 0 2px 8px #ccc;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-button {
+button, a.btn {
   margin: 4px;
-  padding: 10px;
-  cursor: pointer;
-}
-
-a.btn.btn-primary.btn-lg {
-  display: inline-block;
   padding: 10px 20px;
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
-  background-color: #007bff;
-  border-radius: 5px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
   text-decoration: none;
+  display: inline-block;
+  font-weight: bold;
+}
+a.btn {
+  color: #fff;
+}
+button:hover, a.btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
 }
 
-input[type=range] {
-  width: 140px;
-}
+/* Different button styles */
+.btn-primary { background-color: #007bff; }
+.btn-primary:hover { background-color: #0056b3; }
+.btn-success { background-color: #28a745; }
+.btn-success:hover { background-color: #218838; }
+.btn-danger { background-color: #dc3545; }
+.btn-danger:hover { background-color: #a71d2a; }
+.btn-secondary { background-color: #6c757d; }
+.btn-secondary:hover { background-color: #5a6268; }
 
+/* Layout for keys */
 .layout {
   display: flex;
   justify-content: center;
   gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 20px;
 }
 
+/* Keyboard styling */
 .keyboard {
   position: relative;
   display: flex;
+  align-items: flex-end;
 }
-
 .white {
   width: 50px;
   height: 200px;
-  background: white;
+  background: #fff;
   border: 1px solid #333;
+  border-radius: 4px;
+  margin: 0 2px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2em;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-
 .black {
   width: 35px;
   height: 120px;
-  background: black;
-  color: white;
+  background: #000;
   position: absolute;
-  z-index: 2;
+  top: 0;
+  border-radius: 3px;
   cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9em;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
-
 .b1 { left: 35px; }
 .b2 { left: 85px; }
 .b3 { left: 185px; }
@@ -84,17 +110,19 @@ input[type=range] {
 .b5 { left: 285px; }
 
 .panel {
-  width: 260px;
-  background: white;
-  padding: 10px;
+  background: #fff;
+  padding: 15px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  margin-top: 20px;
+  width: 260px;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .drums {
-  margin-top: 15px;
+  margin-top: 20px;
 }
-
 .pad {
   width: 70px;
   height: 70px;
@@ -104,270 +132,462 @@ input[type=range] {
   line-height: 70px;
   font-weight: bold;
   cursor: pointer;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  font-size: 1em;
+  text-align: center;
 }
 
-.eq {
-  margin-top: 10px;
+/* Slider styles */
+input[type=range] {
+  width: 140px;
+  vertical-align: middle;
+  margin-left: 10px;
 }
+
+/* Overlay for MIDI import/export preview */
+#overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+  padding: 20px;
+}
+#overlay img {
+  max-width: 90%;
+  max-height: 80%;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+#overlay button {
+  margin: 8px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+}
+#downloadBtn { background-color: #28a745; color: #fff; }
+#downloadBtn:hover { background-color: #218838; }
+#closeBtn { background-color: #dc3545; color: #fff; }
+#closeBtn:hover { background-color: #a71d2a; }
 </style>
 </head>
-
 <body>
 
 <h1>MIDI Mix Studio Pro 🎛</h1>
 
 <div class="ui">
+  <!-- Instrument selection -->
+  <div>
+    <button onclick="setInstrument('piano')">🎹 Piano</button>
+    <button onclick="setInstrument('trumpet')">🎺 Trumpet</button>
+    <button onclick="setInstrument('guitar')">🎸 Guitar</button>
+    <button onclick="setInstrument('brass')">🎷 Brass</button>
+    <button onclick="setInstrument('reed')">🎶 Reed</button>
+    <button onclick="setInstrument('pipe')">🪈 Pipe</button>
+    <button onclick="setInstrument('beat')">🥁 Beat</button>
+  </div>
 
-<!-- Instruments -->
-<button onclick="setInstrument('piano')">🎹 Piano</button>
-<button onclick="setInstrument('trumpet')">🎺 Trumpet</button>
-<button onclick="setInstrument('guitar')">🎸 Guitar</button>
-<button onclick="setInstrument('brass')">🎷 Brass</button>
-<button onclick="setInstrument('reed')">🎶 Reed</button>
-<button onclick="setInstrument('pipe')">🪈 Pipe</button>
-<button onclick="setInstrument('beat')">🥁 Beat</button>
+  <!-- Volume control -->
+  <div style="margin-top:10px;">
+    Volume:
+    <input type="range" min="0" max="1" step="0.01" value="1" oninput="volume=this.value" />
+  </div>
 
-<br>
+  <!-- EQ Mixer -->
+  <div class="eq" style="margin-top:10px;">
+    <h4>EQ Mixer</h4>
+    Low
+    <input type="range" min="0" max="2" step="0.01" value="1" oninput="eq.low=this.value" />
+    Mid
+    <input type="range" min="0" max="2" step="0.01" value="1" oninput="eq.mid=this.value" />
+    High
+    <input type="range" min="0" max="2" step="0.01" value="1" oninput="eq.high=this.value" />
+  </div>
 
-Volume:
-<input type="range" min="0" max="1" step="0.01" value="1"
-oninput="volume=this.value" />
+  <!-- Recording controls -->
+  <div style="margin-top:10px;">
+    <button onclick="startRecording()">Record</button>
+    <button onclick="stopRecording()">Stop</button>
+    <button onclick="playRecording()">Playback</button>
+    <button onclick="downloadMIDI()">Export MIDI</button>
+    <input type="file" id="midiFile" accept=".mid,.midi" style="display:none" />
+    <button onclick="document.getElementById('midiFile').click()">Import MIDI</button>
+  </div>
 
-<!-- EQ MIXER -->
-<div class="eq">
-<h4>EQ Mixer</h4>
-Low <input type="range" min="0" max="2" step="0.01" value="1" oninput="eq.low=this.value">
-Mid <input type="range" min="0" max="2" step="0.01" value="1" oninput="eq.mid=this.value">
-High <input type="range" min="0" max="2" step="0.01" value="1" oninput="eq.high=this.value">
+  <!-- Exit button -->
+  <a href="../../your%20favorite.html" class="btn btn-primary btn-lg">Exit</a>
 </div>
-
-<br>
-
-<!-- Controls -->
-<button onclick="startRecording()">Record</button>
-<button onclick="stopRecording()">Stop</button>
-<button onclick="playRecording()">Playback</button>
-<button onclick="downloadMIDI()">Export MIDI</button>
-
-<!-- Import MIDI -->
-<input type="file" id="midiFile" accept=".mid,.midi" hidden>
-<button onclick="document.getElementById('midiFile').click()">Import MIDI</button>
-
-<a href="../../your%20favorite.html" class="btn btn-primary btn-lg">Exit</a>
-
-</div>
-
-<div class="layout">
 
 <!-- Keyboard -->
-<div class="keyboard">
-
-  <div class="white" onclick="playNote(261.63,'C',60)">C</div>
-  <div class="white" onclick="playNote(293.66,'D',62)">D</div>
-  <div class="white" onclick="playNote(329.63,'E',64)">E</div>
-  <div class="white" onclick="playNote(349.23,'F',65)">F</div>
-  <div class="white" onclick="playNote(392.00,'G',67)">G</div>
-  <div class="white" onclick="playNote(440.00,'A',69)">A</div>
-  <div class="white" onclick="playNote(493.88,'B',71)">B</div>
-
-  <div class="black b1" onclick="playNote(277.18,'C#',61)">C#</div>
-  <div class="black b2" onclick="playNote(311.13,'D#',63)">D#</div>
-  <div class="black b3" onclick="playNote(369.99,'F#',66)">F#</div>
-  <div class="black b4" onclick="playNote(415.30,'G#',68)">G#</div>
-  <div class="black b5" onclick="playNote(466.16,'A#',70)">A#</div>
-
+<div class="layout" style="margin-top:20px;">
+  <div class="keyboard">
+    <!-- White keys -->
+    <div class="white" onclick="playNote(261.63,'C',60)">C</div>
+    <div class="white" onclick="playNote(293.66,'D',62)">D</div>
+    <div class="white" onclick="playNote(329.63,'E',64)">E</div>
+    <div class="white" onclick="playNote(349.23,'F',65)">F</div>
+    <div class="white" onclick="playNote(392.00,'G',67)">G</div>
+    <div class="white" onclick="playNote(440.00,'A',69)">A</div>
+    <div class="white" onclick="playNote(493.88,'B',71)">B</div>
+    <!-- Black keys -->
+    <div class="black b1" onclick="playNote(277.18,'C#',61)">C#</div>
+    <div class="black b2" onclick="playNote(311.13,'D#',63)">D#</div>
+    <div class="black b3" onclick="playNote(369.99,'F#',66)">F#</div>
+    <div class="black b4" onclick="playNote(415.30,'G#',68)">G#</div>
+    <div class="black b5" onclick="playNote(466.16,'A#',70)">A#</div>
+  </div>
 </div>
 
-</div>
-
-<!-- DRUMS -->
-<div class="drums">
+<!-- Drums -->
+<div class="drums" style="margin-top:20px;">
   <h3>Drums</h3>
   <div class="pad" onclick="drum(120,'Kick')">Kick</div>
   <div class="pad" onclick="drum(220,'Snare')">Snare</div>
   <div class="pad" onclick="drum(320,'Hat')">Hat</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/midi-parser-js"></script>
+<!-- Overlay for MIDI preview -->
+<div id="overlay" role="dialog" aria-modal="true">
+  <img id="previewImg" src="" alt="MIDI Preview" />
+  <div>
+    <button id="downloadBtn">Download PNG</button>
+    <button id="closeBtn">Close</button>
+  </div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/midi-parser-js"></script>
 <script>
 const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-/* controls */
+// Controls state
 let instrument = "piano";
 let volume = 1;
-
-/* EQ */
-let eq = {low:1, mid:1, high:1};
-
-/* recording */
+let eq = { low: 1, mid: 1, high: 1 };
+let midiEvents = [];
 let recording = false;
 let startTime = 0;
-let midiEvents = [];
+let currentStream = null;
+let currentTrack = null;
+let torchOn = false;
 
-/* unlock audio */
-document.addEventListener("touchstart", ()=> {
-  if(ctx.state==="suspended") ctx.resume();
-},{once:true});
+/* Unlock AudioContext on touch */
+document.addEventListener("touchstart", () => {
+  if (ctx.state === "suspended") ctx.resume();
+}, { once: true });
 
-/* instrument model */
-function setInstrument(i){ instrument = i; }
+// Set instrument
+function setInstrument(i) { instrument = i; }
 
-/* EQ filter */
-function applyEQ(gainNode){
-  const freq = ctx.createBiquadFilter();
-  freq.type = "peaking";
-  freq.frequency.value = 1000;
-  freq.gain.value = (eq.mid - 1) * 10;
-
-  gainNode.connect(freq);
-  freq.connect(ctx.destination);
+// EQ application
+function applyEQ(gainNode) {
+  const filter = ctx.createBiquadFilter();
+  filter.type = "peaking";
+  filter.frequency.value = 1000;
+  filter.gain.value = (eq.mid - 1) * 10;
+  gainNode.connect(filter);
+  filter.connect(ctx.destination);
 }
 
-/* synth engine */
-function playNote(freq, name, midi){
-
+// Play note
+function playNote(freq, name, midi) {
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
 
   osc.frequency.value = freq;
-
-  if(instrument==="piano") osc.type="sine";
-  if(instrument==="trumpet") osc.type="sawtooth";
-  if(instrument==="guitar") osc.type="triangle";
-  if(instrument==="brass") osc.type="sawtooth";
-  if(instrument==="reed") osc.type="square";
-  if(instrument==="pipe") osc.type="sine";
-  if(instrument==="beat") osc.type="square";
+  osc.type =
+    instrument === "piano" ? "sine" :
+    instrument === "trumpet" ? "sawtooth" :
+    instrument === "guitar" ? "triangle" :
+    instrument === "brass" ? "sawtooth" :
+    instrument === "reed" ? "square" :
+    instrument === "pipe" ? "sine" :
+    "square";
 
   gain.gain.value = volume;
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+1);
-
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
   osc.connect(gain);
-
   applyEQ(gain);
-
   osc.start();
-  osc.stop(ctx.currentTime+1);
+  osc.stop(ctx.currentTime + 1);
 
-  if(recording){
-    let t = Date.now()-startTime;
-    midiEvents.push({type:"on",note:midi,time:t});
-    midiEvents.push({type:"off",note:midi,time:t+300});
+  if (recording) {
+    const t = Date.now() - startTime;
+    midiEvents.push({ type: "on", note: midi, time: t });
+    midiEvents.push({ type: "off", note: midi, time: t + 300 });
   }
 }
 
-/* drums */
-function drum(freq,name){
-  const osc=ctx.createOscillator();
-  const gain=ctx.createGain();
+// Drum sound
+function drum(freq, name) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
 
-  osc.frequency.value=freq;
-  osc.type="square";
-
-  gain.gain.value=volume;
-  gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.2);
-
+  osc.frequency.value = freq;
+  osc.type = "square";
+  gain.gain.value = volume;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
   osc.connect(gain);
   gain.connect(ctx.destination);
-
   osc.start();
-  osc.stop(ctx.currentTime+0.2);
+  osc.stop(ctx.currentTime + 0.2);
 }
 
-/* recording */
-function startRecording(){
-  midiEvents=[];
-  recording=true;
-  startTime=Date.now();
+// Start recording
+function startRecording() {
+  midiEvents = [];
+  recording = true;
+  startTime = Date.now();
 }
 
-function stopRecording(){
-  recording=false;
+// Stop recording
+function stopRecording() {
+  recording = false;
 }
 
-/* playback */
-function playRecording(){
-  let start=midiEvents[0]?.time||0;
-
-  midiEvents.forEach(e=>{
-    setTimeout(()=>{
-      if(e.type==="on"){
-        playNote(440,"MIDI",e.note);
+// Playback recorded MIDI
+function playRecording() {
+  if (midiEvents.length === 0) return;
+  const startTime = Date.now();
+  midiEvents.forEach(e => {
+    const delay = e.time - midiEvents[0].time;
+    setTimeout(() => {
+      if (e.type === "on") {
+        playNote(440, "MIDI", e.note);
       }
-    },e.time-start);
+    }, delay);
   });
 }
 
-/* MIDI export */
-function downloadMIDI(){
-
-  let data=[];
-
-  midiEvents.forEach(e=>{
-    data.push(e.type==="on"?0x90:0x80);
+// Export MIDI file
+function downloadMIDI() {
+  const data = [];
+  midiEvents.forEach(e => {
+    data.push(e.type === "on" ? 0x90 : 0x80);
     data.push(e.note);
     data.push(64);
   });
-
-  const header=[
-    0x4d,0x54,0x68,0x64,
-    0x00,0x00,0x00,0x06,
-    0x00,0x01,0x00,0x01,0x00,0x60
+  const header = [
+    0x4d, 0x54, 0x68, 0x64,
+    0x00, 0x00, 0x00, 0x06,
+    0x00, 0x01, 0x00, 0x01,
+    0x00, 0x60
   ];
-
-  const track=[
-    0x4d,0x54,0x72,0x6b,
-    0x00,0x00,0x00,data.length,
+  const track = [
+    0x4d, 0x54, 0x72, 0x6b,
+    0x00, 0x00, 0x00, data.length,
     ...data,
-    0x00,0xff,0x2f,0x00
+    0x00, 0xff, 0x2f, 0x00
   ];
-
-  const midi=new Uint8Array([...header,...track]);
-
-  const blob=new Blob([midi],{type:"audio/midi"});
-  const url=URL.createObjectURL(blob);
-
-  const a=document.createElement("a");
-  a.href=url;
-  a.download="mix.mid";
+  const midiFile = new Uint8Array([...header, ...track]);
+  const blob = new Blob([midiFile], { type: "audio/midi" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "mix.mid";
   a.click();
 }
 
-/* MIDI IMPORT */
-document.getElementById("midiFile").addEventListener("change", function(e){
-
+// Import MIDI
+document.getElementById("midiFile").addEventListener("change", function(e) {
   const file = e.target.files[0];
-  if(!file) return;
-
+  if (!file) return;
   const reader = new FileReader();
-
-  reader.onload = function(evt){
-
-    const midi = MidiParser.parse(evt.target.result);
-    midiEvents = [];
-
-    midi.track.forEach(track=>{
-      let time = 0;
-
-      track.event.forEach(ev=>{
-        time += ev.deltaTime || 0;
-
-        if(ev.type === 9){
-          midiEvents.push({type:"on", note:ev.data[0], time: time*10});
-        }
-        if(ev.type === 8){
-          midiEvents.push({type:"off", note:ev.data[0], time: time*10});
-        }
+  reader.onload = function(evt) {
+    try {
+      const midiData = MidiParser.parse(evt.target.result);
+      midiEvents = [];
+      midiData.track.forEach(track => {
+        let time = 0;
+        track.event.forEach(ev => {
+          time += ev.deltaTime || 0;
+          if (ev.type === 9) {
+            midiEvents.push({ type: "on", note: ev.data[0], time: time * 10 });
+          } else if (ev.type === 8) {
+            midiEvents.push({ type: "off", note: ev.data[0], time: time * 10 });
+          }
+        });
       });
-    });
-
-    alert("MIDI Imported!");
+      alert("MIDI Imported!");
+    } catch (err) {
+      alert("Error parsing MIDI: " + err.message);
+    }
   };
-
   reader.readAsArrayBuffer(file);
 });
-</script>
 
+// Keyboard notes
+function playNote(freq, name, midi) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.frequency.value = freq;
+  osc.type =
+    instrument === "piano" ? "sine" :
+    instrument === "trumpet" ? "sawtooth" :
+    instrument === "guitar" ? "triangle" :
+    instrument === "brass" ? "sawtooth" :
+    instrument === "reed" ? "square" :
+    instrument === "pipe" ? "sine" : "square";
+  gain.gain.value = volume;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
+  osc.connect(gain);
+  applyEQ(gain);
+  osc.start();
+  osc.stop(ctx.currentTime + 1);
+  if (recording) {
+    midiEvents.push({ type: "on", note: midi, time: Date.now() - startTime });
+    midiEvents.push({ type: "off", note: midi, time: Date.now() - startTime + 300 });
+  }
+}
+
+// Drums
+function drum(freq, name) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.frequency.value = freq;
+  osc.type = "square";
+  gain.gain.value = volume;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.2);
+}
+
+// Helper: set instrument
+function setInstrument(i) {
+  instrument = i;
+}
+
+// Helper: toggle EQ
+function applyEQ(gainNode) {
+  const filter = ctx.createBiquadFilter();
+  filter.type = "peaking";
+  filter.frequency.value = 1000;
+  filter.gain.value = (eq.mid - 1) * 10;
+  gainNode.connect(filter);
+  filter.connect(ctx.destination);
+}
+
+// Event handlers for controls
+function startRecording() {
+  midiEvents = [];
+  recording = true;
+  startTime = Date.now();
+}
+function stopRecording() { recording = false; }
+function playRecording() {
+  if (midiEvents.length === 0) return;
+  const firstTime = midiEvents[0].time;
+  midiEvents.forEach(e => {
+    const delay = e.time - firstTime;
+    setTimeout(() => {
+      if (e.type === "on") {
+        playNote(440, "MIDI", e.note);
+      }
+    }, delay);
+  });
+}
+function downloadMIDI() {
+  const data = [];
+  midiEvents.forEach(e => {
+    data.push(e.type === "on" ? 0x90 : 0x80);
+    data.push(e.note);
+    data.push(64);
+  });
+  const header = [
+    0x4d, 0x54, 0x68, 0x64,
+    0x00, 0x00, 0x00, 0x06,
+    0x00, 0x01, 0x00, 0x01,
+    0x00, 0x60
+  ];
+  const track = [
+    0x4d, 0x54, 0x72, 0x6b,
+    0x00, 0x00, 0x00, data.length,
+    ...data,
+    0x00, 0xff, 0x2f, 0x00
+  ];
+  const midiBlob = new Uint8Array([...header, ...track]);
+  const url = URL.createObjectURL(new Blob([midiBlob], { type: "audio/midi" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "mix.mid";
+  a.click();
+}
+
+// Load MIDI file
+document.getElementById("midiFile").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const midiData = MidiParser.parse(reader.result);
+      midiEvents = [];
+      midiData.track.forEach(track => {
+        let time = 0;
+        track.event.forEach(ev => {
+          time += ev.deltaTime || 0;
+          if (ev.type === 9) {
+            midiEvents.push({ type: "on", note: ev.data[0], time: time * 10 });
+          } else if (ev.type === 8) {
+            midiEvents.push({ type: "off", note: ev.data[0], time: time * 10 });
+          }
+        });
+      });
+      alert("MIDI imported successfully");
+    } catch (err) {
+      alert("Error parsing MIDI: " + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+// Keyboard note playing
+function playNote(freq, name, midi) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.frequency.value = freq;
+  osc.type =
+    instrument === "piano" ? "sine" :
+    instrument === "trumpet" ? "sawtooth" :
+    instrument === "guitar" ? "triangle" :
+    instrument === "brass" ? "sawtooth" :
+    instrument === "reed" ? "square" :
+    instrument === "pipe" ? "sine" : "square";
+  gain.gain.value = volume;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
+  osc.connect(gain);
+  applyEQ(gain);
+  osc.start();
+  osc.stop(ctx.currentTime + 1);
+  if (recording) {
+    midiEvents.push({ type: "on", note: midi, time: Date.now() - startTime });
+    midiEvents.push({ type: "off", note: midi, time: Date.now() - startTime + 300 });
+  }
+}
+
+// Drums
+function drum(freq, name) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.frequency.value = freq;
+  osc.type = "square";
+  gain.gain.value = volume;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.2);
+}
+
+// UI controls
+// (Already wired to functions above)
+</script>
 </body>
 </html>
