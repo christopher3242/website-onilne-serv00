@@ -6,31 +6,135 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Games Menu</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      color-scheme: dark;
+      --page-bg: #020617;
+      --panel-bg: rgba(15, 23, 42, 0.78);
+      --card-bg: rgba(30, 41, 59, 0.88);
+      --border: rgba(148, 163, 184, 0.2);
+      --accent: #38bdf8;
+      --muted: #94a3b8;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background: #0f172a;
+      background:
+        radial-gradient(circle at 50% -10%, #1d4ed8 0, transparent 38%),
+        radial-gradient(circle at 0 100%, #164e63 0, transparent 30%),
+        var(--page-bg);
+      min-height: 100vh;
       margin: 0;
-      padding: 20px;
+      padding: clamp(24px, 5vw, 56px) 16px;
       color: #f1f5f9;
     }
 
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, rgba(255,255,255,.03), transparent 35%);
+    }
+
     h1 {
+      margin: 0;
       text-align: center;
-      color: #38bdf8;
+      color: #e0f2fe;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      letter-spacing: -0.04em;
+      text-shadow: 0 0 28px rgba(56, 189, 248, 0.38);
+    }
+
+    h1::after {
+      content: "";
+      display: block;
+      width: 72px;
+      height: 4px;
+      margin: 14px auto 0;
+      border-radius: 99px;
+      background: var(--accent);
+      box-shadow: 0 0 18px var(--accent);
     }
 
     /* Centered paragraph styling */
     p.centered {
       width: 100%;
       text-align: center;
-      font-size: 1.2em;
-      margin: 20px 0;
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      margin: 18px auto 30px;
     }
 
-    .navigation {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
+    .search-container {
+      max-width: 720px;
+      margin: 0 auto 34px;
+      padding: clamp(18px, 4vw, 26px);
+      text-align: left;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(14px);
+    }
+
+    .search-container label {
+      display: block;
+      margin-bottom: 10px;
+      color: #e2e8f0;
+      font-size: 0.95rem;
+      font-weight: bold;
+    }
+
+    .search-container label::before {
+      content: "⌕";
+      margin-right: 8px;
+      color: var(--accent);
+      font-size: 1.2rem;
+    }
+
+    #gameSearch {
+      width: 100%;
+      min-height: 54px;
+      padding: 15px 18px;
+      border: 1px solid #475569;
+      border-radius: 14px;
+      background: rgba(2, 6, 23, 0.72);
+      color: #f1f5f9;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    #gameSearch:hover {
+      background: rgba(2, 6, 23, 0.9);
+    }
+
+    #gameSearch::placeholder {
+      color: #94a3b8;
+    }
+
+    #gameSearch:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    #searchStatus {
+      min-height: 22px;
+      margin: 12px 2px 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .search-container:has(#gameSearch:focus) {
+      border-color: rgba(56, 189, 248, 0.55);
+    }
+
+    .game-hidden {
+      display: none !important;
     }
 
     button {
@@ -46,46 +150,96 @@
       background: #1d4ed8;
     }
 
-    .pages {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* Individual page styles, hidden by default */
-    #page1,
-    #page2,
-    #page3,
-    #page4 {
-      display: none;
-    }
-
     .links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 235px), 1fr));
+      gap: 16px;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .links a {
+      position: relative;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 260px;
+      align-items: center;
+      justify-content: center;
+      min-height: 68px;
+      padding: 16px 18px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+      font-weight: bold;
+      line-height: 1.3;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .links a::before {
+      content: "▶";
+      position: absolute;
+      left: 12px;
+      color: var(--accent);
+      font-size: 0.7rem;
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 24px 12px;
+      }
+
+      .links {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .links a {
+        min-height: 62px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
     }
 
     a {
       text-decoration: none;
-      background: #1e293b;
+      background: var(--card-bg);
       padding: 12px;
       border-radius: 10px;
       color: #f1f5f9;
       text-align: center;
-      transition: 0.2s;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
     }
 
     a:hover {
-      background: #334155;
-      transform: scale(1.05);
+      background: #263a55;
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 28px rgba(56, 189, 248, 0.18);
+    }
+
+    .links a:hover::before,
+    .links a:focus-visible::before {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    #gameSearch:focus-visible {
+      outline: 3px solid #facc15;
+      outline-offset: 3px;
     }
 
     .exit-container {
       text-align: center;
-      margin-top: 30px;
+      margin-top: 38px;
     }
 
     .exit-link {
@@ -104,17 +258,15 @@
 <body>
   <h1>Games Menu</h1>
   <!-- Centered full-width paragraph -->
-  <p class="centered">"It's time to play, explore, and have fun!"</p>
+  <p class="centered">" It's time to play, explore, and have fun. "</p>
   
-  <div class="navigation">
-    <button onclick="goBack()">&lt; Back</button>
-    <button onclick="goNext()">Next &gt;</button>
+  <div class="search-container">
+    <label for="gameSearch">Search games</label>
+    <input id="gameSearch" type="search" placeholder="Search by game name..." autocomplete="off" />
+    <p id="searchStatus" aria-live="polite"></p>
   </div>
-  
-  <!-- PAGE 1 -->
-  <div class="pages" id="page1">
-    <h2>Page 1</h2>
-    <div class="links">
+
+  <div class="links" id="gameList">
       <a href="break%20brick%20games/break%20brick%20games.html">Break Brick Games</a>
       <a href="Color%20Guessing%20Game/Color%20Guessing%20Game.html">Color Guessing Game</a>
       <a href="Connect%20Four/Connect%20Four.html">Connect Four</a>
@@ -122,13 +274,6 @@
       <a href="Dart/dart.html">Dart</a>
       <a href="Emoji%20Guess/Emoji%20guess.html">Emoji Guess</a>
       <a href="European%20roulette/European%20roulette.html">European Roulette</a>
-    </div>
-  </div>
-  
-  <!-- PAGE 2 -->
-  <div class="pages" id="page2">
-    <h2>Page 2</h2>
-    <div class="links">
       <a href="Football%20Penalty/Football%20Penalty.html">Football Penalty</a>
       <a href="golf/golf.html">Golf</a>
       <a href="Guess%20The%20Number/Guess%20The%20Number.html">Guess The Number</a>
@@ -141,13 +286,6 @@
       <a href="Quiz%20Game/quiz%20games.html">Quiz Game</a>
       <a href="Rock%20Paper%20Scissors/Rock%20Paper%20Scissors.html">Rock Paper Scissors</a>
       <a href="Safe%20Crack%20games/Safe%20Crack%20games%20.html">Safe Crack Games</a>
-    </div>
-  </div>
-  
-  <!-- PAGE 3 -->
-  <div class="pages" id="page3">
-    <h2>Page 3</h2>
-    <div class="links">
       <a href="Slot%20Machine/Slot%20machine.html">Slot Machine</a>
       <a href="Snake%20games/snake%20game.html">Snake Games</a>
       <a href="Tic-Tac-Toe%20Challenge/tictactoe.html">Tic-Tac-Toe</a>
@@ -156,49 +294,65 @@
       <a href="Baccarat/Baccarat.html">Baccarat</a>
       <a href="Flag%20Quiz/Flag%20Quiz.html">Flag Quiz</a>
       <a href="Texas%20Hold'em/Texas%20Hold'em.html">Texas Hold'em</a>
-      <a href= "Balloon Pop/Balloon Pop.html">Balloon Pop</a>
-    </div>
-  </div>
-  
-  <!-- PAGE 4 -->
-  <div class="pages" id="page4">
-    <h2>Page 4</h2>
-    <div class="links">
+      <a href="Balloon%20Pop/Balloon%20Pop.html">Balloon Pop</a>
       <a href="Fruit Ninja/Fruit Ninja.html">Fruit Ninja</a>
       <a href="Typing Tutor/Typing Tutor.html">Typing Tutor</a>
-    </div>
   </div>
-      
+
   <div class="exit-container">
     <a href="../your%20favorite.html" class="exit-link">Exit</a>
   </div>
   
   <script>
-    let currentPage = 1;
-    const totalPages = 4;
+    const gameList = document.getElementById("gameList");
+    const games = Array.from(gameList.querySelectorAll(":scope > a"));
+    const searchInput = document.getElementById("gameSearch");
+    const searchStatus = document.getElementById("searchStatus");
 
-    function showPage(page) {
-      for (let i = 1; i <= totalPages; i++) {
-        document.getElementById("page" + i).style.display = "none";
-      }
-      document.getElementById("page" + page).style.display = "flex";
+    function normalizeText(text) {
+      return text
+        .toLocaleLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim()
+        .replace(/\s+/g, " ");
     }
 
-    function goNext() {
-      if (currentPage < totalPages) {
-        currentPage++;
-        showPage(currentPage);
+    function renderGames() {
+      const query = normalizeText(searchInput.value);
+      const searchWords = query ? query.split(" ") : [];
+      let visibleGames = 0;
+
+      games.forEach((game) => {
+        const gameName = normalizeText(game.textContent);
+        const matches = searchWords.length === 0 || searchWords.every((word) => gameName.includes(word));
+
+        game.classList.toggle("game-hidden", !matches);
+        game.setAttribute("aria-hidden", String(!matches));
+        game.tabIndex = matches ? 0 : -1;
+        if (matches) visibleGames++;
+      });
+
+      if (!query) {
+        searchStatus.textContent = `${games.length} games available`;
+      } else if (visibleGames === 0) {
+        searchStatus.textContent = "No games found. Try another name.";
+      } else {
+        searchStatus.textContent = `${visibleGames} game${visibleGames === 1 ? "" : "s"} found`;
       }
     }
 
-    function goBack() {
-      if (currentPage > 1) {
-        currentPage--;
-        showPage(currentPage);
-      }
-    }
+    searchInput.addEventListener("input", renderGames);
 
-    showPage(currentPage);
+    searchInput.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && searchInput.value) {
+        searchInput.value = "";
+        renderGames();
+      }
+    });
+
+    renderGames();
   </script>
 </body>
 </html>

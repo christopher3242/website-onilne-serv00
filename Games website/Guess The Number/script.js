@@ -1,77 +1,164 @@
-let targetNumber;
-let rangeSelector = document.getElementById('range');
-let guessInput = document.getElementById('guess');
-let submitButton = document.getElementById('submit');
-let resetButton = document.getElementById('reset');
-let answerButton = document.getElementById('answer');
-let messageDisplay = document.getElementById('message');
-let answerDisplay = document.getElementById('answerDisplay');
-let scoreSpan = document.getElementById('score');
+// JavaScript code
 
+const rangeSelect = document.getElementById('range');
+const difficultySelect = document.getElementById('difficulty');
+const guessInput = document.getElementById('guess');
+const submitBtn = document.getElementById('submit');
+const resetBtn = document.getElementById('reset');
+const showAnswerBtn = document.getElementById('showAnswer');
+const messageDiv = document.getElementById('message');
+const answerDiv = document.getElementById('answerDisplay');
+const scoreSpan = document.getElementById('score');
+const highScoreSpan = document.getElementById('highScore');
+const comboSpan = document.getElementById('combo');
+const timeLeftSpan = document.getElementById('timeLeft');
+const timerDiv = document.querySelector('.timer');
+
+let targetNumber = 0;
+let maxRange = parseInt(rangeSelect.value);
 let score = 0;
+let highScore = localStorage.getItem('highScore') || 0;
+let combo = 0;
+let countdown = null;
+let timeRemaining = 60;
+let gameActive = true;
 
-// Function to start a new game
-function startGame() {
-    const range = parseInt(rangeSelector.value);
-    targetNumber = Math.floor(Math.random() * range) + 1;
-    messageDisplay.textContent = 'Guess a number between 1 and ' + range;
+// Initialize game
+function initGame() {
+    maxRange = parseInt(rangeSelect.value);
+    targetNumber = Math.floor(Math.random() * maxRange) + 1;
+    messageDiv.textContent = `Guess a number between 1 and ${maxRange}`;
     guessInput.value = '';
-    answerDisplay.style.display = 'none';
+    answerDiv.style.display = 'none';
+    answerDiv.textContent = '';
+    resetTimer();
+    startTimer();
+    gameActive = true;
+    removePulseAnimation();
 }
 
-// Update score display
-function updateScore() {
-    document.getElementById('score').textContent = score;
+function updateScores() {
+    scoreSpan.textContent = score;
+    highScoreSpan.textContent = highScore;
+    comboSpan.textContent = combo;
 }
 
-// Event listener for range change
-rangeSelector.addEventListener('change', startGame);
+function resetTimer() {
+    clearInterval(countdown);
+    switch (difficultySelect.value) {
+        case 'easy':
+            timeRemaining = 60;
+            break;
+        case 'medium':
+            timeRemaining = 30;
+            break;
+        case 'hard':
+            timeRemaining = 15;
+            break;
+        default:
+            timeRemaining = 60;
+    }
+    timeLeftSpan.textContent = timeRemaining;
+}
 
-// Submit guess
+function startTimer() {
+    countdown = setInterval(() => {
+        if (timeRemaining > 0) {
+            timeRemaining--;
+            timeLeftSpan.textContent = timeRemaining;
+            if (timeRemaining <= 5) {
+                addPulseAnimation();
+            }
+        } else {
+            clearInterval(countdown);
+            gameActive = false;
+            showMessage('⏰ Time\'s up! You lost this round.');
+            // Reset combo on timeout
+            combo = 0;
+            updateScores();
+        }
+    }, 1000);
+}
+
+function addPulseAnimation() {
+    timerDiv.classList.add('animate-pulse');
+}
+function removePulseAnimation() {
+    timerDiv.classList.remove('animate-pulse');
+}
+
 function handleGuess() {
-    const range = parseInt(rangeSelector.value);
+    if (!gameActive) {
+        showMessage('Game over! Reset to play again.');
+        return;
+    }
     const guess = parseInt(guessInput.value);
-
     if (isNaN(guess)) {
-        messageDisplay.textContent = 'Please enter a valid number.';
+        showMessage('Please enter a valid number.');
+        return;
+    }
+    if (guess < 1 || guess > maxRange) {
+        showMessage(`Guess out of range! Enter between 1 and ${maxRange}.`);
         return;
     }
 
-    if (guess < 1 || guess > range) {
-        messageDisplay.textContent = 'Your guess is out of range. Try again!';
-        return;
-    }
-
-    if (guess > targetNumber) {
-        messageDisplay.textContent = 'Too high! Try again.';
-    } else if (guess < targetNumber) {
-        messageDisplay.textContent = 'Too low! Try again.';
+    if (guess === targetNumber) {
+        showMessage('🎉 Correct! You guessed the number!');
+        // Increase combo
+        combo += 1;
+        // Increase score exponentially based on combo
+        score += 10 * combo;
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem('highScore', highScore);
+        }
+        updateScores();
+        clearInterval(countdown);
+        gameActive = false;
+        removePulseAnimation();
+        setTimeout(initGame, 2000);
     } else {
-        messageDisplay.textContent = 'Congratulations! You guessed the number!';
-        score += 10;
-        updateScore();
-        setTimeout(startGame, 2000);
+        showMessage('Too high! Try again.');
+        // Reset combo on wrong guess
+        combo = 0;
+        updateScores();
     }
 }
 
-// Event listeners
-submitButton.addEventListener('click', handleGuess);
-resetButton.addEventListener('click', startGame);
-answerButton.addEventListener('click', () => {
-    answerDisplay.textContent = 'The answer is: ' + targetNumber;
-    answerDisplay.style.display = 'block';
-    setTimeout(() => {
-        answerDisplay.style.display = 'none';
-    }, 2000);
-});
+function showMessage(msg) {
+    messageDiv.textContent = msg;
+}
 
-// Add Enter key to submit
+function revealAnswer() {
+    answerDiv.textContent = 'The answer is: ' + targetNumber;
+    answerDiv.style.display = 'block';
+    setTimeout(() => {
+        answerDiv.style.display = 'none';
+    }, 3000);
+}
+
+rangeSelect.addEventListener('change', () => {
+    clearInterval(countdown);
+    initGame();
+});
+difficultySelect.addEventListener('change', () => {
+    clearInterval(countdown);
+    if (gameActive) startTimer();
+});
+submitBtn.addEventListener('click', handleGuess);
+resetBtn.addEventListener('click', () => {
+    clearInterval(countdown);
+    initGame();
+});
+showAnswerBtn.addEventListener('click', revealAnswer);
 guessInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         handleGuess();
     }
 });
 
-// Initialize game
-startGame();
-updateScore();
+// Start game on load
+window.onload = () => {
+    initGame();
+    updateScores();
+};

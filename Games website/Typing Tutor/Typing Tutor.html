@@ -57,7 +57,7 @@
     color: white;
     border: none;
   }
-  /* Responsive for mobile */
+  /* Responsive styles */
   @media (max-width: 600px) {
     #inputArea {
       width: 90%;
@@ -69,7 +69,10 @@
 
 <h1>Typing Tutor Game</h1>
 <div id="game-container" style="display:none;">
-  <div id="phrase">Type the following: <strong>the book diddy oil ball dirty</strong></div>
+  <div id="phrase-container">
+    <div id="phrase">Type the following: <strong id="current-phrase"></strong></div>
+    <button id="change-phrase-btn">Change Phrase</button>
+  </div>
   <div id="typed-display"></div>
   <input type="text" id="inputArea" placeholder="Press Enter to start..." />
   <div id="time-display">Time: 0.00 seconds</div>
@@ -89,7 +92,18 @@
 </div>
 
 <script>
-  const phrase = "the book diddy oil ball dirty";
+  // Define multiple phrases for random selection
+  const phrases = [
+    "the book diddy oil ball dirty",
+    "quick brown fox jumps over the lazy dog",
+    "coding is fun and challenging",
+    "practice makes perfect",
+    "stay focused and keep typing"
+  ];
+
+  // Initialize variables
+  let currentPhrase = "";
+  const phraseDisplay = document.getElementById('current-phrase');
   const inputArea = document.getElementById('inputArea');
   const resultDiv = document.getElementById('result');
   const typedDisplay = document.getElementById('typed-display');
@@ -98,16 +112,18 @@
   const startBtn = document.getElementById('start-btn');
   const clearBtn = document.getElementById('clear-times-btn');
   const timesList = document.getElementById('times-list');
+  const changePhraseBtn = document.getElementById('change-phrase-btn');
 
   let startTime = 0;
   let timerInterval = null;
-
   let topTimes = [];
 
+  // Load top times from localStorage
   if (localStorage.getItem('topTimes')) {
     topTimes = JSON.parse(localStorage.getItem('topTimes'));
   }
 
+  // Function to update top times in localStorage and display
   function updateTopTimes() {
     topTimes.sort((a, b) => a - b);
     topTimes = topTimes.slice(0, 3);
@@ -128,7 +144,16 @@
     });
   }
 
+  // Function to randomly pick a phrase
+  function pickRandomPhrase() {
+    const randomIndex = Math.floor(Math.random() * phrases.length);
+    currentPhrase = phrases[randomIndex];
+    phrase.innerHTML = `Type the following: <strong>${currentPhrase}</strong>`;
+  }
+
+  // Start game
   function startGame() {
+    pickRandomPhrase();
     inputArea.value = "";
     resultDiv.innerHTML = "";
     typedDisplay.innerHTML = "";
@@ -142,13 +167,15 @@
     timerInterval = setInterval(updateTime, 50);
   }
 
+  // Update timer display
   function updateTime() {
     const currentTime = performance.now();
     const elapsed = (currentTime - startTime) / 1000;
     timeDisplay.textContent = `Time: ${elapsed.toFixed(2)} seconds`;
   }
 
-  function endGame() {
+  // End game
+ function endGame() {
     clearInterval(timerInterval);
     const endTime = performance.now();
     const totalTime = (endTime - startTime) / 1000;
@@ -161,11 +188,12 @@
     }
   }
 
+  // Render typed characters with color feedback
   function renderTypedDisplay() {
     const typed = inputArea.value;
     let html = "";
     for (let i = 0; i < typed.length; i++) {
-      if (typed[i] === phrase[i]) {
+      if (typed[i] === currentPhrase[i]) {
         html += `<span style="color:green;">${typed[i]}</span>`;
       } else {
         html += `<span style="color:red;">${typed[i]}</span>`;
@@ -174,7 +202,7 @@
     typedDisplay.innerHTML = html;
   }
 
-  // Trigger start on Enter key
+  // Event: Start game on Enter key
   inputArea.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -186,25 +214,37 @@
   inputArea.addEventListener('input', () => {
     renderTypedDisplay();
     const typed = inputArea.value.trim();
-    if (typed === phrase) {
+    if (typed === currentPhrase) {
       endGame();
     }
   });
 
-  // Start button fallback
-  document.getElementById('start-btn').addEventListener('click', () => {
-    startGame();
-  });
+  // Start button
+startBtn.addEventListener('click', () => {
+  startGame();
+});
 
-  // Clear top times button
-  document.getElementById('clear-times-btn').addEventListener('click', () => {
-    topTimes = [];
-    localStorage.removeItem('topTimes');
-    renderTopTimes();
-  });
-
-  // Initialize top times display
+// Clear top times
+clearBtn.addEventListener('click', () => {
+  topTimes = [];
+  localStorage.removeItem('topTimes');
   renderTopTimes();
+});
+
+// Change phrase button
+document.getElementById('change-phrase-btn').addEventListener('click', () => {
+  pickRandomPhrase();
+  // Reset display when phrase changes
+  inputArea.value = "";
+  resultDiv.innerHTML = "";
+  typedDisplay.innerHTML = "";
+  timeDisplay.innerHTML = "Time: 0.00 seconds";
+});
+
+// Initialize display
+renderTopTimes();
+pickRandomPhrase();
+
 </script>
 
 </body>

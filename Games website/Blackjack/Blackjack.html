@@ -2,323 +2,136 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Blackjack Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#071d18" />
+  <title>Blackjack</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #7a7a7a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-
-    .game-area {
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
-      background-color: #e0e0e0;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    }
-
-    h1 {
-      margin-top: 0;
-    }
-
-    .rectangle {
-      width: 100%;
-      background-color: #161f4e;
-      border-radius: 5px;
-      color: white;
-      padding: 15px;
-      box-sizing: border-box;
-      margin: 20px 0;
-      text-align: left;
-    }
-
-    .rectangle p {
-      margin: 10px 0;
-      word-wrap: break-word;
-    }
-
-    .button-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    button {
-      flex: 1 1 45%;
-      padding: 10px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    #start-game {
-      background-color: #4caf50;
-      color: white;
-    }
-
-    #hit {
-      background-color: #2196F3;
-      color: white;
-    }
-
-    #stand {
-      background-color: #FF9800;
-      color: white;
-    }
-
-    #double {
-      background-color: #9c27b0;
-      color: white;
-    }
-
-    #split {
-      background-color: #00bcd4;
-      color: white;
-    }
-
-    #exit-game {
-      background-color: #f44336;
-      color: white;
-    }
-
-    button:hover:enabled {
-      opacity: 0.8;
-    }
-
-    /* Responsive typography */
-    @media (max-width: 500px) {
-      h1 {
-        font-size: 1.5em;
-      }
-      button {
-        font-size: 14px;
-      }
-    }
+    :root { --felt:#0b5b43; --felt-dark:#063c2d; --gold:#f7c948; --text:#f6f7f5; --muted:#b7d0c7; --red:#e05252; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:radial-gradient(circle at 50% 0,#164c3d,#071d18 70%); display:flex; justify-content:center; padding:clamp(12px,3vw,34px); }
+    .game { width:min(100%,900px); }
+    header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px; }
+    h1 { margin:0; color:var(--gold); letter-spacing:.04em; font-size:clamp(1.65rem,5vw,2.5rem); }
+    .settings { display:flex; align-items:center; gap:9px; color:var(--muted); font-size:.9rem; }
+    .wallet { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .balance { color:var(--gold); font-weight:800; white-space:nowrap; }
+    #add-money { min-height:36px; padding:7px 12px; background:#159eab; font-size:.88rem; }
+    .bet-settings { display:flex; align-items:center; justify-content:center; gap:9px; flex-wrap:wrap; margin:18px 0 0; color:var(--muted); font-weight:600; }
+    #bet-amount { width:112px; min-height:42px; padding:8px 10px; border:2px solid #bc9342; border-radius:8px; background:#ffffffee; color:#17201d; font:inherit; font-weight:800; }
+    #all-in { min-height:42px; padding:8px 14px; background:#bd3d75; }
+    .bet-note { width:100%; margin:0; text-align:center; font-size:.78rem; color:var(--muted); }
+    input[type=range] { width:105px; accent-color:var(--gold); cursor:pointer; }
+    .table { background:linear-gradient(145deg,var(--felt),var(--felt-dark)); border:2px solid #bc9342; border-radius:22px; padding:clamp(16px,4vw,34px); box-shadow:0 18px 45px #0008, inset 0 0 0 7px #ffffff0b; }
+    .area { min-height:135px; text-align:center; }
+    .label { color:var(--muted); margin:0 0 9px; font-size:.9rem; text-transform:uppercase; letter-spacing:.1em; }
+    .cards { display:flex; justify-content:center; flex-wrap:wrap; gap:9px; min-height:83px; }
+    .card { width:58px; height:80px; background:#fff; color:#17201d; border-radius:8px; padding:8px 5px; font-weight:800; font-size:1.12rem; box-shadow:0 3px 5px #0007; display:flex; flex-direction:column; justify-content:space-between; text-align:left; animation:deal .22s ease-out; }
+    .card.red { color:#c72e3b; }
+    .card.back { color:#fff; background:repeating-linear-gradient(45deg,#172d68,#172d68 5px,#243f83 5px,#243f83 10px); border:3px solid #fff; align-items:center; justify-content:center; font-size:1.8rem; text-align:center; }
+    .card .bottom { align-self:flex-end; transform:rotate(180deg); }
+    .score { margin:8px 0 0; font-size:1.15rem; font-weight:700; color:var(--gold); }
+    .divider { border:0; border-top:1px solid #ffffff35; margin:13px 0 20px; }
+    .hands { display:flex; justify-content:center; gap:18px; flex-wrap:wrap; }
+    .hand.active { outline:2px solid var(--gold); outline-offset:7px; border-radius:10px; }
+    .hand .cards { min-height:83px; }
+    .status { min-height:27px; text-align:center; color:#fff; font-weight:600; margin:16px 0 4px; }
+    .controls { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:20px; }
+    button, .exit { min-height:48px; border:0; border-radius:9px; color:#fff; font-size:1rem; font-weight:700; cursor:pointer; transition:transform .12s,filter .12s; touch-action:manipulation; }
+    button:hover:not(:disabled), .exit:hover { filter:brightness(1.12); transform:translateY(-1px); }
+    button:active:not(:disabled), .exit:active { transform:scale(.97); }
+    button:disabled { opacity:.4; cursor:not-allowed; }
+    #new-game { background:#279b63; } #hit { background:#287fe1; } #stand { background:#d98b25; } #double { background:#984bd0; } #split { background:#159eab; }
+    .exit { display:flex; align-items:center; justify-content:center; margin-top:10px; background:var(--red); text-decoration:none; }
+    .help { text-align:center; color:var(--muted); font-size:.82rem; margin:14px 0 0; }
+    @keyframes deal { from { opacity:0; transform:translateY(-15px) rotate(-4deg); } to { opacity:1; transform:none; } }
+    @media (max-width:620px) { body { padding:10px; align-items:flex-start; } header { align-items:flex-start; } .settings { flex-direction:column; align-items:flex-end; gap:2px; } .table { border-radius:16px; padding:18px 11px; } .controls { grid-template-columns:repeat(2,1fr); } #new-game { grid-column:span 2; } .card { width:50px; height:70px; font-size:1rem; } .area { min-height:125px; } }
+    @media (max-width:370px) { .card { width:44px; height:64px; font-size:.88rem; } .cards { gap:5px; } }
   </style>
 </head>
 <body>
-<div class="game-area">
-  <h1>Blackjack Game</h1>
-  <div class="rectangle">
-    <p id="player-hand">Player's Hand: </p>
-    <p id="player-score">Score: 0</p>
-    <p id="dealer-hand">Dealer's Hand: </p>
-    <p id="dealer-score">Score: 0</p>
-  </div>
-  <div class="button-container">
-    <button id="start-game">Start Game</button>
-    <button id="hit" disabled>Hit</button>
-    <button id="stand" disabled>Stand</button>
-    <button id="double" disabled>Double Down</button>
-    <button id="split" disabled>Split</button>
-    <a href="../games.html" style="text-decoration: none;">
-      <button id="exit-game">Exit Game</button>
-    </a>
-  </div>
-</div>
-
+  <main class="game">
+    <header>
+      <h1>♠ Blackjack</h1>
+      <div class="wallet">
+        <span class="balance" id="balance">💶 €100</span>
+        <button id="add-money" type="button">+ €150</button>
+        <label class="settings" for="volume">🔊 Volume <span id="volume-value">70%</span><input id="volume" type="range" min="0" max="100" value="70" aria-label="Sound volume"></label>
+      </div>
+    </header>
+    <section class="table" aria-live="polite">
+      <section class="area">
+        <p class="label">Dealer</p><div id="dealer-cards" class="cards"></div><p id="dealer-score" class="score">Score: —</p>
+      </section>
+      <hr class="divider">
+      <section class="area">
+        <p class="label">Player</p><div id="player-hands" class="hands"></div>
+      </section>
+      <p id="status" class="status">Press New Game to deal the cards.</p>
+      <div class="bet-settings">
+        <label for="bet-amount">Bet €</label>
+        <input id="bet-amount" type="number" min="1" max="999000" step="1" value="50" inputmode="numeric" aria-label="Custom bet from 1 to 999000 euros">
+        <button id="all-in" type="button">All In</button>
+        <p class="bet-note">Choose a wager from €1 to €999,000, or choose All In, before starting.</p>
+      </div>
+      <nav class="controls" aria-label="Game controls">
+        <button id="new-game">New Game - €50</button><button id="hit" disabled>Hit</button><button id="stand" disabled>Stand</button><button id="double" disabled>Double</button><button id="split" disabled>Split</button>
+      </nav>
+      <a class="exit" href="../games.html">Exit Game</a>
+    </section>
+    <p class="help">Blackjack pays 3:2 • Dealer stands on 17 • Works with keyboard and touch</p>
+  </main>
 <script>
-  let deck = [];
-  let playerHand = [];
-  let dealerHand = [];
-  let playerScore = 0;
-  let dealerScore = 0;
-  let isGameActive = false;
-  let canSplit = false;
-  let splitHands = [];
-  let activeHandIndex = 0;
-
-  const suits = ['♥', '♦', '♣', '♠'];
-  const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-
-  function createDeck() {
-    deck = [];
-    for (let suit of suits) {
-      for (let value of values) {
-        deck.push(`${value}${suit}`);
-      }
-    }
-    shuffle(deck);
+  'use strict';
+  const suits=['♥','♦','♣','♠'], ranks=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  let deck=[], hands=[], bets=[], active=0, dealer=[], playing=false, dealerHidden=true, audioContext, volume=.7, money=100, selectedBet=50;
+  const $=id=>document.getElementById(id);
+  const value=card=>{const r=card.slice(0,-1); return r==='A'?11:['K','Q','J'].includes(r)?10:Number(r);};
+  const rank=card=>card.slice(0,-1), suit=card=>card.slice(-1);
+  function makeDeck(){ deck=[]; suits.forEach(s=>ranks.forEach(r=>deck.push(r+s))); for(let i=deck.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];} }
+  function score(hand){let total=hand.reduce((n,c)=>n+value(c),0), aces=hand.filter(c=>rank(c)==='A').length; while(total>21&&aces--) total-=10; return total;}
+  function scoreText(hand){const s=score(hand); return s>21?'Bust':s;}
+  function cardHTML(card,back=false){if(back)return '<div class="card back" aria-label="Hidden card">★</div>'; const red=['♥','♦'].includes(suit(card)); return `<div class="card ${red?'red':''}"><span>${rank(card)}${suit(card)}</span><span class="bottom">${rank(card)}${suit(card)}</span></div>`;}
+  function render(){
+    $('dealer-cards').innerHTML=(dealerHidden?dealer.map((c,i)=>i===1?cardHTML(c,true):cardHTML(c)).join(''):dealer.map(c=>cardHTML(c)).join(''));
+    $('dealer-score').textContent='Score: '+(dealerHidden?(dealer[0]?score([dealer[0]])+' + ?':'—'):scoreText(dealer));
+    $('player-hands').innerHTML=hands.map((h,i)=>`<div class="hand ${i===active&&playing?'active':''}"><div class="cards">${h.map(cardHTML).join('')}</div><p class="score">${hands.length>1?'Hand '+(i+1)+' · ':''}Bet: €${bets[i]||0} · Score: ${scoreText(h)}</p></div>`).join('');
+    const currentHand=hands[active]||[];
+    $('hit').disabled=!playing; $('stand').disabled=!playing; $('double').disabled=!playing||currentHand.length!==2; $('split').disabled=!playing||hands.length!==1||hands[0].length!==2||rank(hands[0][0])!==rank(hands[0][1]);
   }
-
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
+  function sound(type){
+    if(!volume)return;
+    audioContext??=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioContext.state==='suspended')audioContext.resume();
+    const notes=type==='win'?[660,880]:type==='lose'?[170,120]:type==='money'?[520,760]:[420];
+    notes.forEach((frequency,index)=>{
+      const o=audioContext.createOscillator(), g=audioContext.createGain(), start=audioContext.currentTime+index*.1;
+      o.type=type==='money'?'triangle':'sine'; o.frequency.value=frequency;
+      g.gain.setValueAtTime(.045*volume,start); g.gain.exponentialRampToValueAtTime(.001,start+.14);
+      o.connect(g).connect(audioContext.destination); o.start(start); o.stop(start+.14);
+    });
   }
-
-  function dealCard() {
-    return deck.pop();
-  }
-
-  function startGame() {
-    createDeck();
-    playerHand = [dealCard(), dealCard()];
-    dealerHand = [dealCard(), dealCard()];
-    playerScore = calculateScore(playerHand);
-    dealerScore = calculateScore(dealerHand);
-    isGameActive = true;
-    canSplit = false;
-    splitHands = [];
-    activeHandIndex = 0;
-
-    document.getElementById('hit').disabled = false;
-    document.getElementById('stand').disabled = false;
-    document.getElementById('double').disabled = false;
-    document.getElementById('split').disabled = true; // Only if possible
-
-    updateDisplay();
-
-    // Check for split possibility
-    if (playerHand.length === 2) {
-      const val1 = playerHand[0].slice(0, -1);
-      const val2 = playerHand[1].slice(0, -1);
-      if (val1 === val2) {
-        canSplit = true;
-        document.getElementById('split').disabled = false;
-      }
-    }
-  }
-
-  function calculateScore(hand) {
-    let score = 0;
-    let aceCount = 0;
-    for (let card of hand) {
-      const cardValue = card.slice(0, -1);
-      if (values.includes(cardValue)) {
-        if (cardValue === 'A') {
-          aceCount++;
-          score += 11;
-        } else if (['K', 'Q', 'J'].includes(cardValue)) {
-          score += 10;
-        } else {
-          score += parseInt(cardValue);
-        }
-      }
-    }
-    while (score > 21 && aceCount > 0) {
-      score -= 10;
-      aceCount--;
-    }
-    return score;
-  }
-
-  function updateDisplay() {
-    // Display current hand (active or split)
-    const currentHand = playerHand;
-    document.getElementById('player-hand').innerText = `Player's Hand: ${currentHand.join(', ')}`;
-    document.getElementById('player-score').innerText = `Score: ${calculateScore(currentHand)}`;
-
-    // Dealer's hand
-    document.getElementById('dealer-hand').innerText = `Dealer's Hand: ${dealerHand.join(', ')}`;
-    document.getElementById('dealer-score').innerText = `Score: ${calculateScore(dealerHand)}`;
-  }
-
-  function handleEndTurn() {
-    // Dealer's turn
-    while (dealerScore < 17) {
-      dealerHand.push(dealCard());
-      dealerScore = calculateScore(dealerHand);
-    }
-    isGameActive = false;
-    document.getElementById('hit').disabled = true;
-    document.getElementById('stand').disabled = true;
-    document.getElementById('double').disabled = true;
-    document.getElementById('split').disabled = true;
-    updateDisplay();
-    determineWinner();
-  }
-
-  function determineWinner() {
-    if (dealerScore > 21) {
-      alert("Dealer busts! You win!");
-    } else if (playerScore > dealerScore) {
-      alert("You win!");
-    } else if (playerScore < dealerScore) {
-      alert("Dealer wins.");
-    } else {
-      alert("It's a tie!");
-    }
-  }
-
-  function hit() {
-    if (!isGameActive) return;
-    playerHand.push(dealCard());
-    playerScore = calculateScore(playerHand);
-    updateDisplay();
-    if (playerScore > 21) {
-      alert("Bust! You lose.");
-      isGameActive = false;
-      disableButtons();
-    }
-  }
-
-  function stand() {
-    if (!isGameActive) return;
-    handleEndTurn();
-  }
-
-  function doubleDown() {
-    if (!isGameActive) return;
-    // Double the bet (not implemented, just logic)
-    playerHand.push(dealCard());
-    playerScore = calculateScore(playerHand);
-    updateDisplay();
-    handleEndTurn();
-  }
-
-  function split() {
-    if (!canSplit || !isGameActive) return;
-    // Create two hands
-    const firstCard = playerHand[0];
-    const secondCard = playerHand[1];
-    playerHand = [firstCard];
-    splitHands = [[secondCard]];
-
-    // Deal one additional card to each
-    playerHand.push(dealCard());
-    splitHands[0].push(dealCard());
-
-    // For simplicity, just handle first hand
-    // You could implement full split logic with switching between hands
-    alert("Split! Now playing first hand.");
-    playerScore = calculateScore(playerHand);
-    updateDisplay();
-
-    // Disable split after one split for simplicity
-    document.getElementById('split').disabled = true;
-  }
-
-  function disableButtons() {
-    document.getElementById('hit').disabled = true;
-    document.getElementById('stand').disabled = true;
-    document.getElementById('double').disabled = true;
-    document.getElementById('split').disabled = true;
-  }
-
-  document.getElementById('start-game').addEventListener('click', startGame);
-  document.getElementById('hit').addEventListener('click', hit);
-  document.getElementById('stand').addEventListener('click', stand);
-  document.getElementById('double').addEventListener('click', doubleDown);
-  document.getElementById('split').addEventListener('click', split);
+  function updateBalance(){ $('balance').textContent='💶 €'+money.toFixed(2); }
+  function addMoney(){money+=150; updateBalance(); updateBetUI(); $('status').textContent='€150 added to your balance.'; sound('money');}
+  function getBet(){const amount=Math.floor(Number($('bet-amount').value)); return Math.min(999000,Math.max(1,Number.isFinite(amount)?amount:1));}
+  function updateBetUI(){selectedBet=getBet(); $('bet-amount').value=selectedBet; $('new-game').textContent='New Game - €'+selectedBet; $('all-in').disabled=money<1;}
+  function allIn(){if(playing||money<1)return; selectedBet=money; $('bet-amount').value=selectedBet; $('new-game').textContent='New Game - €'+selectedBet; sound('money');}
+  function deal(){return deck.pop();}
+  function newGame(){if(playing)return; selectedBet=getBet(); if(money<selectedBet){$('status').textContent='You need €'+selectedBet+' to start a new game.'; sound('lose'); return;} money-=selectedBet; bets=[selectedBet]; updateBalance(); makeDeck(); hands=[[deal(),deal()]]; dealer=[deal(),deal()]; active=0; playing=true; dealerHidden=true; $('status').textContent='€'+selectedBet+' wager placed. Your move — choose Hit, Stand, Double, or Split.'; sound('deal'); render(); if(score(hands[0])===21) finishHand();}
+  function hit(){if(!playing)return; hands[active].push(deal()); sound('card'); render(); if(score(hands[active])>=21) nextHand();}
+  function nextHand(){if(score(hands[active])>21){$('status').textContent='That hand busts.';} if(active<hands.length-1){active++; $('status').textContent='Play hand '+(active+1)+'.'; render();}else finishHand();}
+  function stand(){if(playing)nextHand();}
+  function doubleDown(){if(!playing||hands[active].length!==2)return; if(money<bets[active]){$('status').textContent='Not enough money to double this hand.'; sound('lose'); return;} money-=bets[active]; bets[active]*=2; updateBalance(); hands[active].push(deal()); sound('card'); render(); nextHand();}
+  function split(){if(!playing||hands.length!==1||hands[0].length!==2||rank(hands[0][0])!==rank(hands[0][1]))return; const splitBet=bets[0]; if(money<splitBet){$('status').textContent='Not enough money to split this hand.'; sound('lose'); return;} money-=splitBet; const [a,b]=hands[0]; hands=[[a,deal()],[b,deal()]]; bets=[splitBet,splitBet]; active=0; updateBalance(); $('status').textContent='Split! Two €'+splitBet+' hands created. Play hand 1.'; sound('deal'); render();}
+  function finishHand(){playing=false; dealerHidden=false; while(score(dealer)<17)dealer.push(deal()); const dealerScore=score(dealer); let winnings=0, results=hands.map((h,i)=>{const playerScore=score(h), bet=bets[i]; if(playerScore>21)return'lose'; if(playerScore===21&&h.length===2&&!(dealerScore===21&&dealer.length===2)){winnings+=bet*2.5; return'blackjack';} if(dealerScore>21||playerScore>dealerScore){winnings+=bet*2; return'win';} if(playerScore===dealerScore){winnings+=bet; return'tie';} return'lose';}); money+=winnings; updateBalance(); render(); const wins=results.filter(x=>x==='win'||x==='blackjack').length, losses=results.filter(x=>x==='lose').length, ties=results.filter(x=>x==='tie').length; const net=winnings-bets.reduce((sum,bet)=>sum+bet,0); let message=net>0?`You win €${net.toFixed(2)}!`:net<0?`You lose €${Math.abs(net).toFixed(2)}.`:'Push — you get your bet back.'; if(results.includes('blackjack'))message=`Blackjack! You win €${net.toFixed(2)}.`; $('status').textContent=message+(hands.length>1?` (${wins} won, ${losses} lost, ${ties} tied)`:''); sound(net>0?'win':'lose');}
+  $('new-game').onclick=newGame; $('hit').onclick=hit; $('stand').onclick=stand; $('double').onclick=doubleDown; $('split').onclick=split;
+  $('add-money').onclick=addMoney; $('all-in').onclick=allIn;
+  $('bet-amount').oninput=updateBetUI;
+  $('bet-amount').onchange=updateBetUI;
+  $('volume').oninput=e=>{volume=e.target.value/100;$('volume-value').textContent=e.target.value+'%'; if(volume)sound('card');};
+  updateBalance();
+  updateBetUI();
+  document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='h')hit();if(e.key.toLowerCase()==='s')stand();if(e.key.toLowerCase()==='d')doubleDown();if(e.key.toLowerCase()==='n')newGame();});
+  render();
 </script>
 </body>
 </html>

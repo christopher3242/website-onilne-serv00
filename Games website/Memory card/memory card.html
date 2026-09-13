@@ -1,264 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Memory Card Game</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-      background-color: #f0f0f0;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-    }
-
-    #score-display {
-      font-size: 20px;
-      margin-bottom: 20px;
-    }
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Memory Card Game with Combo Score & Extension Selector</title>
+<style>
+  :root {
+    --teal: #0c645d;
+    --teal-dark: #084942;
+    --blue: #007bff;
+    --background: #f0f0f0;
+    --text: #173b3b;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 24px 16px;
+    font-family: Arial, sans-serif;
+    color: var(--text);
+    text-align: center;
+    background: linear-gradient(135deg, #e8f7f5, var(--background));
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+  }
+  #score-display {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  /* Extension selector container style */
+  #extensionContainer {
+    margin-bottom: 15px;
+  }
+  #extensionSelect {
+    margin-left: 8px;
+    padding: 4px 8px;
+  }
+  .game-board {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(58px, 80px));
+    justify-content: center;
+    gap: 12px;
+    max-width: 520px;
+    margin: 0 auto 24px;
+  }
+  .card {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    perspective: 1000px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card:focus-visible {
+    outline: 3px solid #ff9800;
+    outline-offset: 3px;
+  }
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.55s;
+    transform-style: preserve-3d;
+  }
+  /* Flip effect for flipped or matched cards */
+  .card.flipped .card-inner,
+  .card.matched .card-inner {
+    transform: rotateY(180deg);
+  }
+  /* Card faces styling */
+  .card-front,
+  .card-back {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    backface-visibility: hidden;
+    box-shadow: 2px 3px 7px rgba(0, 0, 0, 0.18);
+  }
+  .card-front {
+    background-color: #0c645d;
+    color: white;
+    font-size: 1.8rem;
+  }
+  /* Add question mark before front face */
+  .card-front::before {
+    content: "?";
+    opacity: 0.8;
+  }
+  /* Back face with image */
+  .card-back {
+    background-color: #70ffec;
+    font-size: clamp(1.8rem, 7vw, 2.8rem);
+    transform: rotateY(180deg);
+    overflow: hidden;
+  }
+  .card-back img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* When matched, change style */
+  .card.matched {
+    cursor: default;
+  }
+  .card.matched .card-back {
+    background-color: #06ff2b;
+  }
+  /* Buttons container style */
+  .buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  button,
+  .exit-link {
+    padding: 10px 18px;
+    border: 0;
+    border-radius: 6px;
+    color: white;
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: var(--blue);
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  button:hover,
+  .exit-link:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+  }
+  button:focus-visible,
+  .exit-link:focus-visible {
+    outline: 3px solid #ff9800;
+    outline-offset: 2px;
+  }
+  #win-message {
+    display: none;
+    margin-top: 22px;
+    color: #197a30;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  #win-message.visible {
+    display: block;
+  }
+  @media (max-width: 420px) {
     .game-board {
-      display: grid;
-      grid-template-columns: repeat(5, 100px);
-      grid-gap: 10px;
-      justify-content: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
+      gap: 8px;
     }
-
-    .card {
-      width: 100px;
-      height: 150px;
-      background-color: #0c645d;
-      cursor: pointer;
-      position: relative;
-      border-radius: 8px;
-      box-shadow: 2px 2px 6px rgba(53, 208, 255, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.3s;
+    button,
+    .exit-link {
+      padding: 9px 12px;
+      font-size: 0.9rem;
     }
-
-    .card img {
-      width: 80%;
-      height: auto;
-      display: none;
-      border-radius: 4px;
-    }
-
-    .card.flipped img {
-      display: block;
-    }
-
-    .card.matched {
-      opacity: 0.5;
-      cursor: default;
-    }
-
-    .buttons-container {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      background-color: #007bff;
-      color: white;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    #win-message {
-      display: none;
-      font-size: 24px;
-      margin-top: 20px;
-      color: green;
-    }
-
-    @media (max-width: 600px) {
-      .game-board {
-        grid-template-columns: repeat(4, 80px);
-      }
-      .card {
-        width: 80px;
-        height: 120px;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
+<main>
   <h1>Memory Card Game</h1>
-  <div id="score-display">Score: 0</div>
-  <div id="game-board" class="game-board"></div>
-  <div class="buttons-container">
-    <button id="show-answer">Show Answer</button>
-    <button id="reset-button">Restart Game</button>
-    <a href="../games.html"><button id="exit-button">Exit Game</button></a>
+  <!-- Extension selection -->
+  <div id="extensionContainer">
+    <label for="extensionSelect">Choose image extension:</label>
+    <select id="extensionSelect" name="extension">
+      <option value=".jpg">.jpg</option>
+      <option value=".jpeg">.jpeg</option>
+      <option value=".png" selected>.png</option>
+    </select>
   </div>
-  <div id="win-message">Congratulations! You won!</div>
+  <div id="score-display" aria-live="polite">Score: 0 | Moves: 0</div>
+  <div id="game-board" class="game-board" aria-label="Memory card game board"></div>
+  <div class="buttons-container">
+    <button id="show-answer" type="button">Show Answer</button>
+    <button id="reset-button" type="button">Restart Game</button>
+    <a class="exit-link" href="../games.html">Exit Game</a>
+  </div>
+  <div id="win-message" role="status" aria-live="polite">Congratulations! You won!</div>
+</main>
+<script>
+  const gameBoard = document.getElementById('game-board');
+  const resetButton = document.getElementById('reset-button');
+  const showAnswerButton = document.getElementById('show-answer');
+  const scoreDisplay = document.getElementById('score-display');
+  const winMessage = document.getElementById('win-message');
+  const extensionSelect = document.getElementById('extensionSelect');
 
-  <script>
-    const gameBoard = document.getElementById('game-board');
-    const resetButton = document.getElementById('reset-button');
-    const showAnswerButton = document.getElementById('show-answer');
-    const scoreDisplay = document.getElementById('score-display');
-    const winMessage = document.getElementById('win-message');
+  // Default placeholder images; will update based on extension
+  const baseImageNames = [
+    'image1',
+    'image2',
+    'image3',
+    'image4',
+    'image5',
+    'image6',
+    'image7',
+    'image8',
+    'image9',
+    'image10'
+  ];
 
- 
-    // Placeholder images (replace with your actual image URLs)
-    const cardValues = [
-      'image1.png',
-  'image2.png',
-  'image3.png',
-  'image4.png',
-  'image5.png',
-  'image6.png',
-  'image7.png',
-  'image8.png',
-  'image9.png',
-  'image10.png',
-    ];
+  let cards = [];
+  let firstCard = null;
+  let secondCard = null;
+  let score = 0;
+  let moves = 0;
+  let matchedPairs = 0;
+  let boardLocked = false;
+  let answerTimer;
+  let mismatchTimer;
+  let comboMultiplier = 1; // For score multipliers
 
-    let cardsArray = [...cardValues, ...cardValues]; // create pairs
-    let totalPairs = cardValues.length;
-    let matchedPairsCount = 0;
+  // Function to get image URLs based on extension
+  function getImageURLs(extension) {
+    return baseImageNames.map(name => `${name}${extension}`);
+  }
 
-    let firstCard = null;
-    let secondCard = null;
-    let lockBoard = false;
-    let score = 0;
+  let currentImageURLs = getImageURLs('.png');
 
-    // Shuffle array
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+  function shuffle(items) {
+    for (let i = items.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [items[i], items[j]] = [items[j], items[i]];
+    }
+    return items;
+  }
+
+  function updateScore() {
+    scoreDisplay.textContent = `Score: ${score} | Moves: ${moves}`;
+  }
+
+  function createCard(value, index) {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.dataset.value = value;
+    card.dataset.index = index;
+    card.setAttribute('aria-label', 'Hidden memory card');
+
+    card.innerHTML = `
+      <span class="card-inner" aria-hidden="true">
+        <span class="card-front"></span>
+        <span class="card-back">
+          <img src="${value}" alt="" loading="lazy" />
+        </span>
+      </span>
+    `;
+    card.addEventListener('click', () => flipCard(card));
+    return card;
+  }
+
+  function flipCard(card) {
+    if (boardLocked || card === firstCard || card.classList.contains('matched')) return;
+
+    card.classList.add('flipped');
+    card.setAttribute('aria-label', `Memory card ${card.dataset.value}`);
+
+    if (!firstCard) {
+      firstCard = card;
+      return;
+    }
+
+    secondCard = card;
+    boardLocked = true;
+    // Increase combo multiplier for consecutive correct matches
+    // But only after a match, reset on mismatch
+    moves++;
+    checkMatch();
+  }
+
+  function checkMatch() {
+    const isMatch = firstCard.dataset.value === secondCard.dataset.value;
+
+    if (isMatch) {
+      // Correct match
+      firstCard.classList.add('matched');
+      secondCard.classList.add('matched');
+      firstCard.disabled = true;
+      secondCard.disabled = true;
+      
+      // Increase score with combo multiplier, e.g., 10 points * multiplier
+      score += 10 * comboMultiplier;
+      comboMultiplier++; // Increase multiplier for consecutive matches
+      matchedPairs++;
+      resetSelection();
+      updateScore();
+
+      if (matchedPairs === baseImageNames.length) {
+        winMessage.classList.add('visible');
       }
+    } else {
+      // Mismatch
+      // Reset combo multiplier
+      comboMultiplier = 1;
+      mismatchTimer = setTimeout(() => {
+        firstCard.classList.remove('flipped');
+        secondCard.classList.remove('flipped');
+        firstCard.setAttribute('aria-label', 'Hidden memory card');
+        secondCard.setAttribute('aria-label', 'Hidden memory card');
+        resetSelection();
+      }, 800);
     }
+  }
 
-    // Create card element
-    function createCardElement(value) {
-      const card = document.createElement('div');
-      card.classList.add('card');
-      card.dataset.value = value;
+  function resetSelection() {
+    firstCard = null;
+    secondCard = null;
+    boardLocked = false;
+  }
 
-      const img = document.createElement('img');
-      img.src = value;
-      img.alt = 'Memory Card Image';
+  function setupGame() {
+    clearTimeout(answerTimer);
+    clearTimeout(mismatchTimer);
+    // Get current images based on selected extension
+    currentImageURLs = getImageURLs(extensionSelect.value);
+    // Generate full deck with pairs
+    const deck = [...currentImageURLs, ...currentImageURLs];
+    shuffle(deck);
+    // Reset game state
+    score = 0;
+    moves = 0;
+    matchedPairs = 0;
+    comboMultiplier = 1;
+    resetSelection();
+    winMessage.classList.remove('visible');
+    // Create cards
+    gameBoard.replaceChildren(...deck.map((url, i) => createCard(url, i)));
+    updateScore();
+  }
 
-      card.appendChild(img);
-      card.addEventListener('click', flipCard);
-      gameBoard.appendChild(card);
-    }
+  function showAnswer() {
+    if (boardLocked) return;
+    const cardsToFlip = [...gameBoard.querySelectorAll('.card:not(.matched)')];
+    cardsToFlip.forEach(card => card.classList.add('flipped'));
+    boardLocked = true;
+    answerTimer = setTimeout(() => {
+      cardsToFlip.forEach(card => card.classList.remove('flipped'));
+      boardLocked = false;
+    }, 1800);
+  }
 
-    // Flip card handler
-    function flipCard() {
-      if (lockBoard || this === firstCard || this.classList.contains('matched')) return;
+  // Event listeners
+  document.getElementById('reset-button').addEventListener('click', setupGame);
+  document.getElementById('show-answer').addEventListener('click', showAnswer);
+  extensionSelect.addEventListener('change', setupGame);
 
-      this.classList.add('flipped');
+  // Initialize game
+  setupGame();
 
-      if (!firstCard) {
-        firstCard = this;
-      } else {
-        secondCard = this;
-        lockBoard = true;
-
-        checkForMatch();
-      }
-    }
-
-    // Check for match
-    function checkForMatch() {
-      if (firstCard.dataset.value === secondCard.dataset.value) {
-        // Match found
-        firstCard.classList.add('matched');
-        secondCard.classList.add('matched');
-
-        updateScore(1);
-        matchedPairsCount++;
-        resetBoard();
-
-        if (matchedPairsCount === totalPairs) {
-          displayWinMessage();
-        }
-      } else {
-        // Wait 2 seconds before flipping back
-        setTimeout(() => {
-          firstCard.classList.remove('flipped');
-          secondCard.classList.remove('flipped');
-          resetBoard();
-        }, 2000);
-      }
-    }
-
-    // Update score
-    function updateScore(points) {
-      score += points;
-      scoreDisplay.textContent = `Score: ${score}`;
-    }
-
-    // Reset selection
-    function resetBoard() {
-      [firstCard, secondCard] = [null, null];
-      lockBoard = false;
-    }
-
-    // Setup game
-    function setupGame() {
-      score = 0;
-      scoreDisplay.textContent = `Score: ${score}`;
-      matchedPairsCount = 0;
-      winMessage.style.display = 'none';
-
-      // Shuffle and create cards
-      shuffle(cardsArray);
-      gameBoard.innerHTML = '';
-      cardsArray.forEach(createCardElement);
-    }
-
-    // Show answer: reveal all cards temporarily
-    function showAnswer() {
-      document.querySelectorAll('.card').forEach(card => {
-        if (!card.classList.contains('matched')) {
-          card.classList.add('flipped');
-        }
-      });
-      // Hide after 2 seconds
-      setTimeout(() => {
-        document.querySelectorAll('.card').forEach(card => {
-          if (!card.classList.contains('matched')) {
-            card.classList.remove('flipped');
-          }
-        });
-      }, 2000);
-    }
-
-    // Display win message
-    function displayWinMessage() {
-      winMessage.style.display = 'block';
-    }
-
-    // Event listeners
-    resetButton.addEventListener('click', setupGame);
-    showAnswerButton.addEventListener('click', showAnswer);
-
-    // Initialize game
-    setupGame();
-  </script>
+</script>
 </body>
 </html>

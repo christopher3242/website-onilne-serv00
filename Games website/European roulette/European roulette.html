@@ -1,219 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>European Roulette Game</title>
-<style>
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #1e1e1e;
-  color: #fff;
-  margin: 0;
-  padding: 20px;
-  text-align: center;
-}
-h1 { font-size: 2em; margin-bottom: 10px; }
-#balance { font-size: 1.2em; margin-bottom: 20px; }
-#bet-section {
-  max-width: 400px; margin: 0 auto 20px auto; text-align: left;
-  background: #2b2b2b; padding: 15px; border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
-}
-#bet-section label { display: inline-block; width: 120px; }
-#bet-section input[type="number"], #bet-section select {
-  width: 80px; padding: 5px; margin-bottom: 10px; border-radius: 5px;
-  border: none; text-align: center;
-}
-#number-bet-container { margin-top: 10px; }
-.buttons-container { margin-bottom: 20px; }
-.buttons-container button {
-  margin: 5px; padding: 10px 20px; font-size: 1em; cursor: pointer;
-  border: none; border-radius: 8px; background: #ff6600; color: #fff;
-  transition: transform 0.2s, background 0.2s;
-}
-.buttons-container button:hover {
-  background: #ff8533; transform: scale(1.05);
-}
-#wheel-container { margin: 30px auto; width: 350px; height: 350px; position: relative; }
-#wheel {
-  width: 100%; height: 100%; border-radius: 50%; border: 10px solid #444;
-  box-sizing: border-box; transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-}
-#pointer {
-  position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-  width: 30px; height: 30px; background-color: yellow;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%); z-index: 10;
-  animation: bounce 1s infinite alternate;
-}
-@keyframes bounce {
-  0% { transform: translateX(-50%) translateY(0); }
-  100% { transform: translateX(-50%) translateY(-5px); }
-}
-#result { margin-top: 15px; font-size: 1.1em; }
-@media(max-width: 500px) {
-  #wheel-container { width: 90%; height: auto; }
-  #bet-section label { width: 100%; margin-bottom: 5px; }
-  #bet-section input, #bet-section select { width: 100%; margin-bottom: 10px; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>European Roulette</title>
+  <style>
+    :root {
+      --bg: #071714;
+      --panel: #102b25;
+      --panel-light: #173a31;
+      --gold: #f5c451;
+      --gold-light: #ffe39a;
+      --red: #d84040;
+      --green: #159447;
+      --text: #f8faf8;
+      --muted: #a9c0b8;
+      --border: rgba(255,255,255,.12);
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+      background: radial-gradient(circle at 50% -20%, #245c48 0, var(--bg) 48%);
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; touch-action: manipulation; }
+    input, select { font-size: 16px; }
+    .app { width: min(1180px, 94%); margin: auto; padding: 28px 0 40px; }
+    header { display: flex; justify-content: space-between; gap: 20px; align-items: center; margin-bottom: 24px; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark { display: grid; place-items: center; width: 48px; height: 48px; border: 3px solid var(--gold); border-radius: 50%; color: var(--gold); font-size: 25px; box-shadow: 0 0 18px #f5c45144; }
+    h1 { margin: 0; font: 800 clamp(1.5rem, 3vw, 2.25rem)/1.1 Georgia, serif; letter-spacing: .02em; }
+    .subtitle { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+    .balance { padding: 10px 18px; border: 1px solid var(--border); border-radius: 12px; background: #0b211c; text-align: right; }
+    .balance small { display: block; color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; }
+    .balance strong { color: var(--gold-light); font-size: 1.35rem; }
+    .layout { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(320px, 430px); gap: 24px; align-items: start; }
+    .card { background: linear-gradient(145deg, #14362e, var(--panel)); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 18px 50px #0005; }
+    .wheel-card { padding: clamp(18px, 4vw, 34px); text-align: center; }
+    .wheel-wrap { position: relative; width: min(70vw, 430px); aspect-ratio: 1; margin: 8px auto 22px; }
+    #wheel { width: 100%; height: 100%; border: 12px solid #d0a338; border-radius: 50%; box-shadow: 0 0 0 7px #654c1d, 0 12px 28px #0009, inset 0 0 18px #000; transition: transform 4.2s cubic-bezier(.12,.72,.12,1); }
+    .pointer { position: absolute; z-index: 2; left: 50%; top: -9px; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 29px solid var(--gold-light); filter: drop-shadow(0 2px 3px #000); }
+    .status { min-height: 29px; color: var(--gold-light); font-weight: 700; }
+    .status.muted { color: var(--muted); font-weight: 500; }
+    .controls { padding: 22px; }
+    .section-title { display: flex; justify-content: space-between; align-items: center; margin: 0 0 15px; font-size: 1rem; }
+    .section-title span { color: var(--muted); font-size: .78rem; font-weight: 400; }
+    .field { margin-bottom: 15px; }
+    label { display: block; color: var(--muted); margin-bottom: 7px; font-size: .84rem; }
+    input, select { width: 100%; border: 1px solid #376357; border-radius: 9px; padding: 11px 12px; color: var(--text); background: #09221c; outline: none; }
+    input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px #f5c45122; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: -3px 0 17px; }
+    .chip { border: 1px solid #52796c; color: var(--gold-light); background: #153c31; padding: 6px 11px; border-radius: 20px; font-size: .78rem; }
+    .chip:hover { border-color: var(--gold); background: #205342; }
+    .number-field { transition: opacity .2s; }
+    .number-field.hidden { display: none; }
+    .volume-control { margin-top: 17px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: #0b211c; }
+    .volume-label { display: flex; justify-content: space-between; align-items: center; margin: 0 0 8px; color: var(--muted); font-size: .84rem; }
+    .volume-label strong { color: var(--gold-light); }
+    #volume { width: 100%; min-height: 28px; accent-color: var(--gold); cursor: pointer; }
+    .volume-help { display: block; margin-top: 6px; color: #78958b; font-size: .72rem; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+    .primary, .secondary { border: 0; border-radius: 10px; padding: 13px; font-weight: 800; }
+    .primary { color: #211808; background: linear-gradient(135deg, #ffe49a, #d99c20); box-shadow: 0 5px 15px #d99c2033; }
+    .primary:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+    .secondary { color: var(--text); background: #245247; border: 1px solid #417366; }
+    button:disabled { cursor: not-allowed; opacity: .5; }
+    .history-card { grid-column: 1 / -1; padding: 20px 22px; }
+    .history { display: flex; gap: 10px; flex-wrap: wrap; min-height: 38px; }
+    .history-item { display: flex; align-items: center; gap: 7px; padding: 6px 11px 6px 7px; border-radius: 22px; background: #0b211c; color: var(--muted); font-size: .82rem; }
+    .number-ball { display: inline-grid; place-items: center; width: 25px; height: 25px; border-radius: 50%; color: white; font-size: .75rem; font-weight: 800; }
+    .ball-red { background: var(--red); } .ball-black { background: #111; border: 1px solid #53625e; } .ball-green { background: var(--green); }
+    .empty { color: var(--muted); font-size: .88rem; }
+    .help { color: var(--muted); font-size: .76rem; line-height: 1.5; margin: 16px 0 0; }
+    @media (max-width: 700px) {
+      .app { width: min(100% - 24px, 520px); padding: 18px 0 calc(28px + env(safe-area-inset-bottom)); }
+      header { align-items: flex-start; flex-direction: column; gap: 14px; margin-bottom: 16px; }
+      .brand { gap: 10px; }
+      .brand-mark { width: 42px; height: 42px; font-size: 21px; }
+      .subtitle { font-size: .78rem; }
+      .balance { align-self: stretch; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+      .layout { grid-template-columns: 1fr; gap: 15px; }
+      .history-card { grid-column: auto; }
+      .wheel-card { padding: 18px 12px 20px; }
+      .wheel-wrap { width: min(82vw, 350px); margin-bottom: 18px; }
+      #wheel { border-width: 9px; }
+      .controls { padding: 18px 15px; }
+      .input-row { grid-template-columns: 1fr; gap: 0; }
+      .chips { gap: 7px; }
+      .chip { min-height: 42px; padding: 8px 12px; }
+      .actions { grid-template-columns: 1fr; }
+      .primary, .secondary { min-height: 48px; }
+      .history-card { padding: 17px 15px; }
+      .history { gap: 7px; }
+    }
+    @media (min-width: 701px) and (max-width: 950px) {
+      .layout { grid-template-columns: minmax(260px, 1fr) minmax(290px, 370px); gap: 16px; }
+      .wheel-wrap { width: min(42vw, 360px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+      #wheel { transition-duration: .01ms !important; }
+    }
+  </style>
 </head>
 <body>
+  <main class="app">
+    <header>
+      <div class="brand"><div class="brand-mark" aria-hidden="true">♠</div><div><h1>European Roulette</h1><div class="subtitle">Place your bets. Trust your luck.</div></div></div>
+      <div class="balance"><small>Available balance</small><strong>€<span id="balance-amount">10,000.00</span></strong></div>
+    </header>
 
-<h1>European Roulette</h1>
-<div id="balance">Balance: €<span id="balance-amount">10000</span></div>
+    <div class="layout">
+      <section class="card wheel-card" aria-label="Roulette wheel">
+        <div class="wheel-wrap"><div class="pointer" aria-hidden="true"></div><div id="wheel" role="img" aria-label="European roulette wheel"></div></div>
+        <div id="result" class="status muted" aria-live="polite">Choose a bet and spin the wheel</div>
+      </section>
 
-<div id="bet-section">
-  <label for="bet-amount">Bet Amount (€):</label>
-  <input id="bet-amount" type="number" min="1" max="10000" value="10">
-  <br>
-  <label for="bet-type">Bet Type:</label>
-  <select id="bet-type">
-    <option value="number" selected>Number</option>
-    <option value="red">Red</option>
-    <option value="black">Black</option>
-    <option value="even">Even</option>
-    <option value="odd">Odd</option>
-    <option value="green">Green</option>
-  </select>
+      <section class="card controls" aria-label="Bet controls">
+        <h2 class="section-title">Place your bet <span>European rules</span></h2>
+        <div class="input-row">
+          <div class="field"><label for="bet-amount">Stake (€)</label><input id="bet-amount" type="number" min="1" step="1" value="10" inputmode="decimal"></div>
+          <div class="field"><label for="bet-type">Bet type</label><select id="bet-type"><option value="number">Straight number (35:1)</option><option value="red">Red (1:1)</option><option value="black">Black (1:1)</option><option value="even">Even (1:1)</option><option value="odd">Odd (1:1)</option><option value="green">Zero / 0 (35:1)</option></select></div>
+        </div>
+        <div class="chips" aria-label="Quick stake selection">
+          <button class="chip" data-amount="10">€10</button><button class="chip" data-amount="25">€25</button><button class="chip" data-amount="50">€50</button><button class="chip" data-amount="100">€100</button><button class="chip" data-amount="500">€500</button>
+        </div>
+        <div id="number-field" class="field number-field"><label for="number-bet">Choose a number (0–36)</label><input id="number-bet" type="number" min="0" max="36" placeholder="e.g. 17" inputmode="numeric"></div>
+        <div class="volume-control">
+          <label class="volume-label" for="volume"><span>Sound effects volume</span><strong><span id="volume-value">70</span>%</strong></label>
+          <input id="volume" type="range" min="1" max="100" value="70" aria-label="Sound effects volume">
+          <small class="volume-help">Use the slider to adjust sound on PC or Android.</small>
+        </div>
+        <div class="actions"><button id="spin-btn" class="primary">Spin the wheel</button><button id="add-100-btn" class="secondary">Add €100</button></div>
+        <p class="help">Payouts are added to your balance along with your original stake. Zero is green and does not count as even or odd.</p>
+        <a href="../Games.html" class="help" style="display:block;text-align:center;margin-top:18px">← Back to games</a>
+      </section>
 
-  <div id="number-bet-container">
-    <label for="number-bet">Number (0-36):</label>
-    <input id="number-bet" type="number" min="0" max="36">
-  </div>
-</div>
+      <section class="card history-card"><h2 class="section-title">Recent results <span id="spin-count">0 spins</span></h2><div id="history" class="history"><span class="empty">Your last 10 results will appear here.</span></div></section>
+    </div>
+  </main>
 
-<div class="buttons-container">
-  <button id="spin-btn">Spin</button>
-  <button id="add-1000-btn">Add €1000</button>
-  <a href="../Games.html"><button id="exit-btn">Exit</button></a>
-</div>
+  <script>
+    const $ = id => document.getElementById(id);
+    const balanceSpan = $('balance-amount'), betAmountInput = $('bet-amount'), betTypeSelect = $('bet-type');
+    const numberField = $('number-field'), numberBetInput = $('number-bet'), spinBtn = $('spin-btn');
+    const volumeInput = $('volume'), volumeValue = $('volume-value');
+    const resultDiv = $('result'), wheel = $('wheel'), history = $('history'), spinCount = $('spin-count');
+    const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+    const size = 360 / 37;
+    const segments = Array.from({ length: 37 }, (_, number) => ({ number, color: number === 0 ? 'green' : redNumbers.has(number) ? 'red' : 'black', start: number * size, end: (number + 1) * size }));
+    const colorHex = { red: '#c9363c', black: '#101414', green: '#128443' };
+    wheel.style.background = 'conic-gradient(' + segments.map(s => `${colorHex[s.color]} ${s.start}deg ${s.end}deg`).join(',') + ')';
 
-<div id="wheel-container">
-  <div id="pointer"></div>
-  <div id="wheel"></div>
-</div>
-
-<div id="result"></div>
-
-<script>
-const balanceSpan = document.getElementById('balance-amount');
-const betAmountInput = document.getElementById('bet-amount');
-const betTypeSelect = document.getElementById('bet-type');
-const numberBetContainer = document.getElementById('number-bet-container');
-const numberBetInput = document.getElementById('number-bet');
-const spinBtn = document.getElementById('spin-btn');
-const add1000Btn = document.getElementById('add-1000-btn');
-const resultDiv = document.getElementById('result');
-const wheel = document.getElementById('wheel');
-
-let balance = 10000;
-let isSpinning = false;
-
-// Show/hide number input
-betTypeSelect.addEventListener('change', () => {
-  numberBetContainer.style.display = (betTypeSelect.value === 'number') ? 'block' : 'none';
-});
-
-// Add €1000 button
-add1000Btn.addEventListener('click', () => {
-  balance += 1000;
-  updateBalance();
-});
-
-// Update balance
-function updateBalance() {
-  balanceSpan.textContent = balance.toFixed(2);
-}
-
-// European roulette numbers and colors
-const redNumbers = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
-const segments = [];
-segments.push({number: 0, color: 'green', startDeg: 0, endDeg: 9.72});
-let currentDeg = 9.72;
-for (let n=1; n<=36; n++) {
-  const color = redNumbers.includes(n) ? 'red' : 'black';
-  segments.push({number: n, color: color, startDeg: currentDeg, endDeg: currentDeg + 9.72});
-  currentDeg += 9.72;
-}
-
-// Wheel background gradient
-function generateGradient() {
-  return segments.map(seg => {
-    const colorHex = seg.color === 'green' ? '#00FF00' : (seg.color === 'red' ? '#FF0000' : '#000000');
-    return `${colorHex} ${seg.startDeg}deg ${seg.endDeg}deg`;
-  }).join(', ');
-}
-function setWheelBackground() {
-  wheel.style.background = `conic-gradient(${generateGradient()})`;
-}
-setWheelBackground();
-
-// Spin wheel logic
-function spinWheel(betType, betNumber, betAmount) {
-  isSpinning = true;
-  resultDiv.textContent = '';
-
-  const fullRotations = 4;
-  const randIdx = Math.floor(Math.random() * segments.length);
-  const targetSegment = segments[randIdx];
-  const segmentMidDeg = (targetSegment.startDeg + targetSegment.endDeg) / 2;
-  const stopDeg = fullRotations * 360 + (360 - segmentMidDeg);
-
-  wheel.style.transition = 'transform 4s cubic-bezier(0.33, 1, 0.68, 1)';
-  wheel.style.transform = `rotate(${stopDeg}deg)`;
-
-  wheel.addEventListener('transitionend', () => {
-    const number = targetSegment.number;
-    const color = targetSegment.color;
-    const isEven = number !== 0 && number % 2 === 0;
-
-    let wins = false;
-    if (betType === 'number') wins = (betNumber === number);
-    else if (betType === 'red') wins = (color === 'red');
-    else if (betType === 'black') wins = (color === 'black');
-    else if (betType === 'even') wins = (number !== 0 && isEven);
-    else if (betType === 'odd') wins = (number !== 0 && !isEven);
-    else if (betType === 'green') wins = (color === 'green');
-
-    let payout = 0;
-    if (wins) {
-      payout = (betType === 'number') ? betAmount * 35 : betAmount;
-      balance += payout + betAmount;
-      resultDiv.textContent = `Winning Number: ${number} (${color}). You win €${payout.toFixed(2)}!`;
-    } else {
-      resultDiv.textContent = `Winning Number: ${number} (${color}). You lose.`;
+    let balance = 500, spinning = false, rotation = 0, results = [];
+    let audioContext;
+    function getAudioContext() {
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === 'suspended') audioContext.resume();
+      return audioContext;
     }
-    updateBalance();
-    isSpinning = false;
-  }, { once: true });
-}
-
-// Spin button
-spinBtn.addEventListener('click', () => {
-  if (isSpinning) return;
-
-  const betAmount = parseFloat(betAmountInput.value);
-  if (isNaN(betAmount) || betAmount <= 0 || betAmount > balance) {
-    alert('Invalid bet amount');
-    return;
-  }
-
-  const betType = betTypeSelect.value;
-  let betNumber = null;
-  if (betType === 'number') {
-    betNumber = parseInt(numberBetInput.value);
-    if (isNaN(betNumber) || betNumber < 0 || betNumber > 36) {
-      alert('Enter a valid number between 0 and 36');
-      return;
+    function playTone(frequency, duration = .12, type = 'sine', delay = 0) {
+      if (Number(volumeInput.value) <= 0) return;
+      const context = getAudioContext(), oscillator = context.createOscillator(), gain = context.createGain();
+      const start = context.currentTime + delay, volume = Number(volumeInput.value) / 100 * .07;
+      oscillator.type = type; oscillator.frequency.setValueAtTime(frequency, start);
+      gain.gain.setValueAtTime(volume, start); gain.gain.exponentialRampToValueAtTime(.001, start + duration);
+      oscillator.connect(gain).connect(context.destination); oscillator.start(start); oscillator.stop(start + duration);
     }
-  }
-
-  balance -= betAmount;
-  updateBalance();
-  spinWheel(betType, betNumber, betAmount);
-});
-</script>
-
+    function playSound(kind) {
+      if (kind === 'spin') { for (let i = 0; i < 8; i++) playTone(180 + i * 18, .06, 'square', i * .09); }
+      if (kind === 'win') [523, 659, 784, 1047].forEach((note, i) => playTone(note, .18, 'sine', i * .09));
+      if (kind === 'lose') [220, 185].forEach((note, i) => playTone(note, .2, 'sawtooth', i * .12));
+      if (kind === 'cash') playTone(660, .14, 'sine');
+    }
+    function updateBalance() { balanceSpan.textContent = balance.toLocaleString('en-IE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    function updateNumberField() { numberField.classList.toggle('hidden', betTypeSelect.value !== 'number'); }
+    function addHistory(segment) {
+      results.unshift(segment); results = results.slice(0, 10); history.innerHTML = '';
+      results.forEach(({ number, color }) => { const item = document.createElement('div'); item.className = 'history-item'; item.innerHTML = `<span class="number-ball ball-${color}">${number}</span><span>${color}</span>`; history.appendChild(item); });
+      spinCount.textContent = `${results.length} ${results.length === 1 ? 'spin' : 'spins'}`;
+    }
+    function isWinner(type, number, color, chosen) {
+      if (type === 'number') return number === chosen;
+      if (type === 'red' || type === 'black' || type === 'green') return color === type;
+      return number !== 0 && (type === 'even' ? number % 2 === 0 : number % 2 !== 0);
+    }
+    betTypeSelect.addEventListener('change', updateNumberField);
+    volumeInput.addEventListener('input', () => { volumeValue.textContent = volumeInput.value; });
+    document.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => { betAmountInput.value = chip.dataset.amount; }));
+    $('add-100-btn').addEventListener('click', () => { getAudioContext(); playSound('cash'); balance += 100; updateBalance(); resultDiv.textContent = '€100 added to your balance.'; resultDiv.className = 'status'; });
+    spinBtn.addEventListener('click', () => {
+      if (spinning) return;
+      const amount = Number(betAmountInput.value), type = betTypeSelect.value;
+      const chosen = Number(numberBetInput.value);
+      if (!Number.isFinite(amount) || amount < 1 || amount > balance) { resultDiv.textContent = 'Enter a stake between €1 and your available balance.'; resultDiv.className = 'status'; return; }
+      if (type === 'number' && (!Number.isInteger(chosen) || chosen < 0 || chosen > 36)) { resultDiv.textContent = 'Choose a whole number from 0 to 36.'; resultDiv.className = 'status'; numberBetInput.focus(); return; }
+      spinning = true; spinBtn.disabled = true; resultDiv.textContent = 'The wheel is spinning…'; resultDiv.className = 'status muted'; balance -= amount; updateBalance();
+      playSound('spin');
+      const target = segments[Math.floor(Math.random() * segments.length)];
+      const targetRotation = (360 - (target.start + target.end) / 2) % 360;
+      const currentMod = ((rotation % 360) + 360) % 360;
+      rotation += 1440 + ((targetRotation - currentMod + 360) % 360);
+      wheel.style.transform = `rotate(${rotation}deg)`;
+      wheel.addEventListener('transitionend', () => {
+        const won = isWinner(type, target.number, target.color, chosen), payout = won ? amount * (type === 'number' || type === 'green' ? 35 : 1) : 0;
+        balance += won ? amount + payout : 0; updateBalance(); addHistory(target);
+        resultDiv.textContent = `Number ${target.number} • ${target.color} — ${won ? `You won €${payout.toFixed(2)}!` : `You lost €${amount.toFixed(2)}.`}`; resultDiv.className = `status${won ? '' : ' muted'}`;
+        playSound(won ? 'win' : 'lose');
+        spinning = false; spinBtn.disabled = false;
+      }, { once: true });
+    });
+    updateBalance(); updateNumberField();
+  </script>
 </body>
 </html>

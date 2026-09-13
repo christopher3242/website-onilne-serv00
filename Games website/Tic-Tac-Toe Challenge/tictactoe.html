@@ -1,45 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Tic Tac Toe</title>
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101827" />
+  <title>Tic Tac Toe — Neon Arena</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(20, 29, 49, .82);
+      --panel-strong: #17223a;
+      --line: rgba(255,255,255,.12);
+      --text: #f5f7ff;
+      --muted: #a9b5d0;
+      --blue: #55d6ff;
+      --pink: #ff70b7;
+      --green: #6df0a8;
+      --shadow: 0 24px 60px rgba(0,0,0,.35);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      min-height: 100svh;
+      margin: 0;
+      padding: 18px;
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 15% 10%, #1c4260 0, transparent 35%),
+                  radial-gradient(circle at 90% 85%, #542443 0, transparent 32%), var(--bg);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app { width: min(100%, 980px); }
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) minmax(330px, 430px);
+      gap: 28px;
+      padding: clamp(20px, 4vw, 42px);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .intro { display: flex; flex-direction: column; justify-content: center; }
+    .eyebrow { color: var(--blue); font-size: .75rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 8px 0 10px; font-size: clamp(2.2rem, 6vw, 4.4rem); line-height: .95; letter-spacing: -.07em; }
+    .subtitle { max-width: 370px; margin: 0; color: var(--muted); line-height: 1.6; }
+
+    .settings { margin-top: 28px; display: grid; gap: 16px; }
+    .setting-group { padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.04); }
+    .setting-title { display: block; margin-bottom: 10px; color: var(--muted); font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .options { display: flex; flex-wrap: wrap; gap: 8px; }
+    .options label { flex: 1 1 auto; cursor: pointer; }
+    .options input { position: absolute; opacity: 0; }
+    .options span { display: block; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); text-align: center; transition: .2s; }
+    .options input:checked + span { border-color: var(--blue); color: var(--text); background: rgba(85,214,255,.14); box-shadow: 0 0 18px rgba(85,214,255,.12); }
+    .options input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
+    #difficulty-container[hidden] { display: none; }
+
+    .volume-row { display: flex; align-items: center; gap: 10px; }
+    .volume-row output { min-width: 44px; color: var(--blue); font-weight: 800; text-align: right; }
+    input[type="range"] { width: 100%; accent-color: var(--blue); cursor: pointer; }
+    .mute-button { min-width: 42px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--text); cursor: pointer; }
+
+    .game { display: flex; flex-direction: column; align-items: center; }
+    .status { width: 100%; min-height: 58px; display: grid; place-items: center; margin-bottom: 14px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.04); color: var(--muted); text-align: center; font-weight: 700; }
+    .status strong { color: var(--text); }
+    #board { width: min(100%, 400px); display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .cell { aspect-ratio: 1; border: 1px solid rgba(255,255,255,.16); border-radius: 18px; background: linear-gradient(145deg, #1a2845, #10192d); color: var(--text); font-size: clamp(3rem, 12vw, 5.8rem); font-weight: 900; line-height: 1; cursor: pointer; box-shadow: inset 0 1px rgba(255,255,255,.08), 0 8px 15px rgba(0,0,0,.18); transition: transform .15s, border-color .2s, background .2s; }
+    .cell:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--blue); background: #203453; }
+    .cell:active:not(:disabled) { transform: scale(.96); }
+    .cell:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+    .cell:disabled { cursor: default; }
+    .cell.x { color: var(--blue); text-shadow: 0 0 22px rgba(85,214,255,.55); }
+    .cell.o { color: var(--pink); text-shadow: 0 0 22px rgba(255,112,183,.55); }
+    .cell.winner { border-color: var(--green); background: rgba(109,240,168,.18); color: var(--green); animation: pulse .8s ease-in-out infinite alternate; }
+    @keyframes pulse { to { box-shadow: 0 0 24px rgba(109,240,168,.3); } }
+    .actions { display: flex; gap: 10px; margin-top: 18px; }
+    button.action { min-width: 125px; padding: 13px 18px; border: 0; border-radius: 12px; color: #07101e; font-weight: 800; cursor: pointer; transition: transform .15s, filter .2s; }
+    button.action:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .restart { background: var(--blue); }
+    .new-game { background: var(--pink); }
+    .scoreboard { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 18px; }
+    .score { padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.04); text-align: center; }
+    .score small { display: block; color: var(--muted); font-size: .7rem; }
+    .score b { display: block; margin-top: 3px; font-size: 1.4rem; }
+    .hint { margin: 16px 0 0; color: var(--muted); font-size: .78rem; text-align: center; }
+    @media (max-width: 720px) {
+      body { padding: 10px; align-items: start; }
+      .shell { grid-template-columns: 1fr; gap: 22px; padding: 22px 16px; border-radius: 22px; }
+      .intro { text-align: center; }
+      .subtitle { margin-inline: auto; }
+      .settings { margin-top: 20px; text-align: left; }
+      .game { width: 100%; }
+      #board { width: min(100%, 430px); }
+    }
+    @media (max-width: 380px) { .shell { padding: 18px 10px; } .cell { border-radius: 12px; } .actions button.action { min-width: 0; flex: 1; } }
+  </style>
 </head>
 <body>
-<div class="container">
-  <h1>Tic Tac Toe</h1>
-  
-  <!-- Mode selection -->
-  <h2>Select Mode:</h2>
-  <label><input type="radio" name="mode" value="2player" checked /> 2 Player</label>
-  <label><input type="radio" name="mode" value="cpu" /> Play vs CPU</label>
-  
-  <!-- CPU Difficulty selection (only shown when CPU mode is selected) -->
-  <div id="difficulty-container" style="margin-top:10px; display:none;">
-    <h3>Select Difficulty:</h3>
-    <label><input type="radio" name="difficulty" value="easy" checked /> Easy</label>
-    <label><input type="radio" name="difficulty" value="normal" /> Normal</label>
-    <label><input type="radio" name="difficulty" value="hard" /> Hard</label>
-  </div>
-  
-  <div id="board" class="board">
-    <div class="cell" data-cell></div>
-    <div class="cell" data-cell></div>
-    <div class="cell" data-cell></div>
-    <div class="cell" data-cell></div>
-    <div class="cell" data-cell></div>
-    <div class="cell" data-cell></div>
-    <div class="cell" data-cell></div>
-    <div class="cell" data-cell></div>
-    <div class="cell" data-cell></div>
-  </div>
-  
-  <button id="restartButton" class="restart-button">Restart</button>
-  <a href="../Games.html"><button id="exitButton" class="exit-button">Exit</button></a>
-  <div class="message" id="message"></div>
-</div>
+  <main class="app">
+    <section class="shell">
+      <section class="intro" aria-label="Game settings">
+        <div class="eyebrow">Neon Arena</div>
+        <h1>Tic Tac Toe</h1>
+        <p class="subtitle">A fast, beautiful classic built for mouse, keyboard, and touch screens.</p>
+        <div class="settings">
+          <div class="setting-group">
+            <span class="setting-title">Game mode</span>
+            <div class="options">
+              <label><input type="radio" name="mode" value="2player" checked><span>👥 2 Players</span></label>
+              <label><input type="radio" name="mode" value="cpu"><span>🤖 vs CPU</span></label>
+            </div>
+          </div>
+          <div id="difficulty-container" class="setting-group" hidden>
+            <span class="setting-title">CPU difficulty</span>
+            <div class="options">
+              <label><input type="radio" name="difficulty" value="easy" checked><span>Easy</span></label>
+              <label><input type="radio" name="difficulty" value="normal"><span>Normal</span></label>
+              <label><input type="radio" name="difficulty" value="hard"><span>Hard</span></label>
+            </div>
+          </div>
+          <div class="setting-group">
+            <span class="setting-title">Sound effects</span>
+            <div class="volume-row">
+              <button id="muteButton" class="mute-button" type="button" aria-label="Mute sound">🔊</button>
+              <input id="volume" type="range" min="1" max="100" value="70" aria-label="Volume">
+              <output id="volumeValue" for="volume">70%</output>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<script src="script.js"></script>
+      <section class="game" aria-label="Game board">
+        <div id="status" class="status" aria-live="polite">Player <strong>X</strong>'s turn</div>
+        <div id="board" role="grid" aria-label="Tic Tac Toe board">
+          <button class="cell" data-index="0" role="gridcell" aria-label="Cell 1"></button>
+          <button class="cell" data-index="1" role="gridcell" aria-label="Cell 2"></button>
+          <button class="cell" data-index="2" role="gridcell" aria-label="Cell 3"></button>
+          <button class="cell" data-index="3" role="gridcell" aria-label="Cell 4"></button>
+          <button class="cell" data-index="4" role="gridcell" aria-label="Cell 5"></button>
+          <button class="cell" data-index="5" role="gridcell" aria-label="Cell 6"></button>
+          <button class="cell" data-index="6" role="gridcell" aria-label="Cell 7"></button>
+          <button class="cell" data-index="7" role="gridcell" aria-label="Cell 8"></button>
+          <button class="cell" data-index="8" role="gridcell" aria-label="Cell 9"></button>
+        </div>
+        <div class="actions">
+          <button id="restartButton" class="action restart" type="button">↻ Restart</button>
+          <button id="newGameButton" class="action new-game" type="button">＋ New game</button>
+        </div>
+        <div class="scoreboard" aria-label="Scoreboard">
+          <div class="score"><small>PLAYER X</small><b id="xScore">0</b></div>
+          <div class="score"><small>DRAWS</small><b id="drawScore">0</b></div>
+          <div class="score"><small>PLAYER O</small><b id="oScore">0</b></div>
+        </div>
+        <p class="hint">Tip: use keys 1–9 to place a mark on desktop.</p>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const cells = [...document.querySelectorAll('.cell')];
+    const status = document.getElementById('status');
+    const difficultyContainer = document.getElementById('difficulty-container');
+    const volume = document.getElementById('volume');
+    const volumeValue = document.getElementById('volumeValue');
+    const muteButton = document.getElementById('muteButton');
+    const winningConditions = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    let board = Array(9).fill(''), current = 'X', active = true, mode = '2player', difficulty = 'easy', timer;
+    let scores = { X: 0, O: 0, draw: 0 }, muted = false, audioContext;
+
+    function sound(frequency, duration = .1, type = 'sine') {
+      if (muted) return;
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator(), gain = audioContext.createGain();
+      oscillator.type = type; oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime((Number(volume.value) / 100) * .08, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + duration);
+      oscillator.connect(gain).connect(audioContext.destination); oscillator.start(); oscillator.stop(audioContext.currentTime + duration);
+    }
+    function updateStatus(text) { status.innerHTML = text; }
+    function updateSettings() { difficultyContainer.hidden = mode !== 'cpu'; }
+    function winningLine(state) { return winningConditions.find(([a,b,c]) => state[a] && state[a] === state[b] && state[a] === state[c]) || null; }
+    function render() {
+      cells.forEach((cell, i) => { cell.textContent = board[i]; cell.className = `cell ${board[i] ? board[i].toLowerCase() : ''}`; cell.disabled = !active || Boolean(board[i]) || (mode === 'cpu' && current === 'O'); cell.setAttribute('aria-label', board[i] ? `Cell ${i + 1}, ${board[i]}` : `Cell ${i + 1}, empty`); });
+      document.getElementById('xScore').textContent = scores.X; document.getElementById('oScore').textContent = scores.O; document.getElementById('drawScore').textContent = scores.draw;
+    }
+    function finish() {
+      const line = winningLine(board);
+      if (line) { line.forEach(i => cells[i].classList.add('winner')); scores[board[line[0]]]++; active = false; updateStatus(`<strong>Player ${board[line[0]]}</strong> wins! 🎉`); sound(660, .25, 'triangle'); render(); return true; }
+      if (board.every(Boolean)) { scores.draw++; active = false; updateStatus("It's a draw! 🤝"); sound(330, .2, 'sine'); render(); return true; }
+      return false;
+    }
+    function move(index, player) { board[index] = player; sound(player === 'X' ? 440 : 520, .1, 'square'); }
+    function play(index) {
+      if (!active || board[index] || (mode === 'cpu' && current === 'O')) return;
+      move(index, current); if (finish()) return;
+      current = current === 'X' ? 'O' : 'X'; updateStatus(mode === 'cpu' && current === 'O' ? 'CPU is thinking…' : `Player <strong>${current}</strong>'s turn`); render();
+      if (mode === 'cpu' && current === 'O') timer = setTimeout(cpuMove, 420);
+    }
+    function available(state) { return state.map((v,i) => v ? null : i).filter(i => i !== null); }
+    function minimax(state, player, hard) {
+      const free = available(state), winner = winningLine(state);
+      if (winner) return { score: state[winner[0]] === 'O' ? 10 : -10 };
+      if (!free.length) return { score: 0 };
+      const moves = free.map(index => { state[index] = player; const result = minimax(state, player === 'O' ? 'X' : 'O', hard); state[index] = ''; return { index, score: result.score }; });
+      const best = moves.filter(m => m.score === (player === 'O' ? Math.max(...moves.map(m => m.score)) : Math.min(...moves.map(m => m.score))));
+      return hard ? best[Math.floor(Math.random() * best.length)] : best[0];
+    }
+    function cpuMove() { if (!active) return; const index = difficulty === 'easy' ? available(board)[Math.floor(Math.random() * available(board).length)] : minimax(board, 'O', difficulty === 'hard').index; move(index, 'O'); if (finish()) return; current = 'X'; updateStatus("Player <strong>X</strong>'s turn"); render(); }
+    function restart(resetScores = false) { clearTimeout(timer); board = Array(9).fill(''); current = 'X'; active = true; if (resetScores) scores = { X: 0, O: 0, draw: 0 }; updateStatus("Player <strong>X</strong>'s turn"); render(); }
+
+    cells.forEach(cell => cell.addEventListener('click', () => play(Number(cell.dataset.index))));
+    document.addEventListener('keydown', event => { if (/^[1-9]$/.test(event.key)) play(Number(event.key) - 1); });
+    document.querySelectorAll('input[name="mode"]').forEach(input => input.addEventListener('change', e => { mode = e.target.value; updateSettings(); restart(); }));
+    document.querySelectorAll('input[name="difficulty"]').forEach(input => input.addEventListener('change', e => { difficulty = e.target.value; restart(); }));
+    volume.addEventListener('input', () => volumeValue.textContent = `${volume.value}%`);
+    muteButton.addEventListener('click', () => { muted = !muted; muteButton.textContent = muted ? '🔇' : '🔊'; muteButton.setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound'); });
+    document.getElementById('restartButton').addEventListener('click', () => restart());
+    document.getElementById('newGameButton').addEventListener('click', () => restart(true));
+    updateSettings(); render();
+  </script>
 </body>
 </html>

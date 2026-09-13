@@ -2,31 +2,353 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rock Paper Scissors with Countdown</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>Rock Paper Scissors</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --card: rgba(22, 31, 55, .88);
+      --card-light: rgba(255, 255, 255, .08);
+      --text: #f8fafc;
+      --muted: #aab5cf;
+      --accent: #7c5cff;
+      --accent-2: #17c9b0;
+      --danger: #ff6685;
+      --border: rgba(255, 255, 255, .12);
+      --shadow: 0 24px 70px rgba(0, 0, 0, .35);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at 15% 10%, #263a74 0, transparent 34%),
+                  radial-gradient(circle at 90% 85%, #193e51 0, transparent 30%), var(--bg);
+    }
+
+    .game {
+      width: min(100%, 760px);
+      padding: clamp(20px, 5vw, 42px);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    header { text-align: center; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent-2);
+      font-size: .76rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(2rem, 7vw, 3.6rem); line-height: 1.05; }
+    .subtitle { margin: 12px 0 0; color: var(--muted); }
+
+    .scoreboard {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: center;
+      margin: 30px 0 24px;
+    }
+    .score {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--card-light);
+      text-align: center;
+    }
+    .score strong { display: block; margin-top: 3px; font-size: 2rem; }
+    .score span { color: var(--muted); font-size: .82rem; font-weight: 700; }
+    .vs { color: var(--muted); font-size: .8rem; font-weight: 800; }
+
+    .arena {
+      position: relative;
+      min-height: 154px;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(124,92,255,.17), rgba(23,201,176,.1));
+      text-align: center;
+    }
+    #countdown {
+      min-height: 1em;
+      color: var(--accent-2);
+      font-size: clamp(3.5rem, 14vw, 6rem);
+      font-weight: 900;
+      line-height: 1;
+    }
+    #countdown.pop { animation: pop .45s ease; }
+    .status { margin: 0; color: var(--muted); font-weight: 650; }
+    @keyframes pop { 50% { transform: scale(1.2); } }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+    }
+    button {
+      min-height: 54px;
+      border: 1px solid transparent;
+      border-radius: 15px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, opacity .18s ease;
+    }
+    .choice {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 112px;
+      color: var(--text);
+      background: rgba(255,255,255,.08);
+      border-color: var(--border);
+    }
+    .choice .icon { font-size: 2.15rem; }
+    button:hover:not(:disabled), button:focus-visible { transform: translateY(-3px); border-color: var(--accent-2); outline: none; }
+    button:active:not(:disabled) { transform: scale(.97); }
+    button:disabled { cursor: not-allowed; opacity: .42; }
+
+    .result {
+      min-height: 94px;
+      display: grid;
+      place-items: center;
+      margin-top: 22px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(0,0,0,.18);
+      text-align: center;
+    }
+    #message { margin: 0 0 6px; font-size: 1.35rem; font-weight: 900; }
+    #computer-choice { margin: 0; color: var(--muted); }
+    .win { color: var(--accent-2); }
+    .lose { color: var(--danger); }
+
+    .actions { display: flex; gap: 12px; margin-top: 20px; }
+    .primary, .secondary { flex: 1; color: white; }
+    .primary { background: linear-gradient(135deg, var(--accent), #a15cff); }
+    .secondary { background: rgba(255,255,255,.09); border-color: var(--border); }
+    .sound-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: .85rem;
+      font-weight: 700;
+    }
+    .sound-controls button {
+      min-height: 36px;
+      padding: 0 10px;
+      color: var(--text);
+      background: rgba(255,255,255,.09);
+      border-color: var(--border);
+      font-size: 1rem;
+    }
+    .sound-controls input { flex: 1; min-width: 80px; accent-color: var(--accent-2); cursor: pointer; }
+    #volume-value { min-width: 38px; color: var(--accent-2); text-align: right; }
+    .help { margin: 18px 0 0; color: var(--muted); font-size: .8rem; text-align: center; }
+
+    @media (max-width: 520px) {
+      .game { border-radius: 22px; }
+      .choices { gap: 8px; }
+      .choice { min-height: 100px; padding: 8px 4px; font-size: .88rem; }
+      .choice .icon { font-size: 1.8rem; }
+      .actions { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Rock Paper Scissors</h1>
-    <!-- Countdown Display -->
-    <div id="countdown">3</div>
-    <!-- Choice Buttons -->
-    <div id="choices" class="choices">
-      <button class="choice" id="rock">Rock</button>
-      <button class="choice" id="paper">Paper</button>
-      <button class="choice" id="scissors">Scissors</button>
+  <main class="game" aria-labelledby="title">
+    <header>
+      <p class="eyebrow">Quick match</p>
+      <h1 id="title">Rock Paper Scissors</h1>
+      <p class="subtitle">Choose your move and beat the computer.</p>
+    </header>
+
+    <section class="scoreboard" aria-label="Scoreboard">
+      <div class="score"><span>YOU</span><strong id="player-score">0</strong></div>
+      <span class="vs">SCORE</span>
+      <div class="score"><span>COMPUTER</span><strong id="computer-score">0</strong></div>
+    </section>
+
+    <section class="arena" aria-live="polite">
+      <div>
+        <div id="countdown" aria-label="Countdown"></div>
+        <p class="status" id="status">Get ready…</p>
+      </div>
+    </section>
+
+    <section class="choices" aria-label="Choose your move">
+      <button class="choice" data-choice="rock" disabled><span class="icon" aria-hidden="true">✊</span><span>Rock</span></button>
+      <button class="choice" data-choice="paper" disabled><span class="icon" aria-hidden="true">✋</span><span>Paper</span></button>
+      <button class="choice" data-choice="scissors" disabled><span class="icon" aria-hidden="true">✌️</span><span>Scissors</span></button>
+    </section>
+
+    <section class="result" aria-live="polite">
+      <div><p id="message">First to choose wins the round!</p><p id="computer-choice"></p></div>
+    </section>
+
+    <div class="actions">
+      <button class="primary" id="reset">New round</button>
+      <button class="secondary" id="exit">Exit game</button>
     </div>
-    <!-- Results Display -->
-    <div id="result" class="result">
-      <p id="message"></p>
-      <p id="computer-choice"></p>
+
+    <div class="sound-controls" aria-label="Sound controls">
+      <button id="sound-toggle" type="button" aria-pressed="false" aria-label="Mute sound">🔊</button>
+      <label for="volume">Volume</label>
+      <input id="volume" type="range" min="1" max="100" value="60" aria-label="Volume from 1 to 100 percent" />
+      <output id="volume-value" for="volume">60%</output>
     </div>
-    <!-- Reset Button -->
-    <button id="reset" style="display:none;">Play Again</button>
-    <!-- Exit Button -->
-    <a href="../games.html" id="exit-link"><button id="exit">Exit</button></a>
-  </div>
-  <script src="script.js"></script>
+    <p class="help">Tip: On a keyboard, use R, P, or S to play.</p>
+  </main>
+
+  <script>
+    const moves = ["rock", "paper", "scissors"];
+    const icons = { rock: "✊", paper: "✋", scissors: "✌️" };
+    const buttons = [...document.querySelectorAll(".choice")];
+    const countdown = document.getElementById("countdown");
+    const status = document.getElementById("status");
+    const message = document.getElementById("message");
+    const computerText = document.getElementById("computer-choice");
+    const playerScore = document.getElementById("player-score");
+    const computerScore = document.getElementById("computer-score");
+    const soundToggle = document.getElementById("sound-toggle");
+    const volumeInput = document.getElementById("volume");
+    const volumeValue = document.getElementById("volume-value");
+    let scores = { player: 0, computer: 0 };
+    let ready = false;
+    let timer;
+    let muted = false;
+    let audioContext;
+
+    function playSound(type) {
+      if (muted || Number(volumeInput.value) === 0) return;
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === "suspended") audioContext.resume();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const settings = {
+        tick: [420, 0.07, "sine"],
+        go: [760, 0.18, "triangle"],
+        win: [880, 0.25, "sine"],
+        lose: [180, 0.28, "sawtooth"],
+        tie: [330, 0.16, "square"]
+      }[type];
+      oscillator.type = settings[2];
+      oscillator.frequency.value = settings[0];
+      gain.gain.setValueAtTime((Number(volumeInput.value) / 100) * 0.12, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + settings[1]);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + settings[1]);
+    }
+
+    function setButtons(enabled) {
+      buttons.forEach(button => button.disabled = !enabled);
+      ready = enabled;
+    }
+
+    function startRound() {
+      clearInterval(timer);
+      setButtons(false);
+      message.textContent = "Choose your move when the countdown ends.";
+      computerText.textContent = "";
+      status.textContent = "Get ready…";
+      let number = 3;
+      countdown.textContent = number;
+      countdown.classList.remove("pop");
+      void countdown.offsetWidth;
+      countdown.classList.add("pop");
+      playSound("tick");
+      timer = setInterval(() => {
+        number--;
+        if (number > 0) {
+          countdown.textContent = number;
+          playSound("tick");
+          countdown.classList.remove("pop");
+          void countdown.offsetWidth;
+          countdown.classList.add("pop");
+        } else {
+          clearInterval(timer);
+          countdown.textContent = "GO!";
+          playSound("go");
+          status.textContent = "Your turn";
+          setButtons(true);
+          setTimeout(() => { countdown.textContent = ""; }, 650);
+        }
+      }, 800);
+    }
+
+    function play(userMove) {
+      if (!ready) return;
+      setButtons(false);
+      const computerMove = moves[Math.floor(Math.random() * moves.length)];
+      const result = userMove === computerMove ? "tie" :
+        ((userMove === "rock" && computerMove === "scissors") ||
+         (userMove === "paper" && computerMove === "rock") ||
+         (userMove === "scissors" && computerMove === "paper")) ? "win" : "lose";
+
+      message.className = result;
+      message.textContent = result === "win" ? "You win this round!" : result === "lose" ? "Computer wins this round!" : "It’s a tie!";
+      computerText.textContent = `Computer chose ${icons[computerMove]} ${computerMove}.`;
+      status.textContent = "Round complete";
+      if (result === "win") scores.player++;
+      if (result === "lose") scores.computer++;
+      playerScore.textContent = scores.player;
+      computerScore.textContent = scores.computer;
+      playSound(result);
+    }
+
+    soundToggle.addEventListener("click", () => {
+      muted = !muted;
+      soundToggle.textContent = muted ? "🔇" : "🔊";
+      soundToggle.setAttribute("aria-pressed", String(muted));
+      soundToggle.setAttribute("aria-label", muted ? "Unmute sound" : "Mute sound");
+    });
+
+    volumeInput.addEventListener("input", () => {
+      volumeValue.textContent = `${volumeInput.value}%`;
+      if (muted && Number(volumeInput.value) > 0) {
+        muted = false;
+        soundToggle.textContent = "🔊";
+        soundToggle.setAttribute("aria-pressed", "false");
+      }
+    });
+
+    buttons.forEach(button => button.addEventListener("click", () => play(button.dataset.choice)));
+    document.getElementById("reset").addEventListener("click", startRound);
+    document.getElementById("exit").addEventListener("click", () => { window.location.href = "../games.html"; });
+    document.addEventListener("keydown", event => {
+      const key = event.key.toLowerCase();
+      const move = { r: "rock", p: "paper", s: "scissors" }[key];
+      if (move) play(move);
+    });
+    startRound();
+  </script>
 </body>
 </html>

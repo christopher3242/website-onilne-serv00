@@ -1,61 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Connect Four</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connect Four</title>
+  <style>
+    :root {
+      --bg: #101827;
+      --panel: rgba(24, 36, 59, .88);
+      --panel-light: #20304c;
+      --text: #f7f9ff;
+      --muted: #aebbd2;
+      --accent: #67e8f9;
+      --board: #2656a3;
+      --hole: #152d58;
+      --shadow: 0 22px 55px rgba(0, 0, 0, .3);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 28px 16px 40px;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #293d69 0, var(--bg) 55%);
+    }
+
+    .app { width: min(100%, 820px); margin: auto; }
+
+    header { text-align: center; margin-bottom: 24px; }
+    .logo { font-size: clamp(2.1rem, 7vw, 3.8rem); line-height: 1; margin: 0 0 8px; letter-spacing: -.06em; }
+    .logo span { color: var(--accent); }
+    .subtitle { color: var(--muted); margin: 0; font-size: .98rem; }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .settings {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    label { display: grid; gap: 7px; color: var(--muted); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+    select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 10px;
+      color: var(--text);
+      background: var(--panel-light);
+      font: inherit;
+      cursor: pointer;
+      outline: none;
+    }
+    select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(103, 232, 249, .15); }
+
+    .game-panel { padding: 20px; }
+    .scorebar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .player { display: flex; align-items: center; gap: 9px; font-weight: 800; }
+    .disc { width: 18px; height: 18px; border-radius: 50%; display: inline-block; box-shadow: inset 0 2px 4px rgba(255,255,255,.35), 0 2px 5px rgba(0,0,0,.3); }
+    #status { color: var(--accent); text-align: center; font-weight: 800; font-size: clamp(.9rem, 3vw, 1.05rem); }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: clamp(5px, 1.2vw, 10px);
+      width: 100%;
+      padding: clamp(9px, 2vw, 15px);
+      aspect-ratio: 7 / 6;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #3470c8, var(--board));
+      box-shadow: inset 0 5px 10px rgba(255,255,255,.14), 0 12px 30px rgba(4, 16, 47, .4);
+    }
+
+    .cell {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      border: 0;
+      border-radius: 50%;
+      background: var(--hole);
+      box-shadow: inset 0 5px 8px rgba(0, 0, 0, .42);
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .15s, filter .15s;
+    }
+    .cell:hover { transform: scale(.94); filter: brightness(1.2); }
+    .cell:active { transform: scale(.88); filter: brightness(1.3); }
+    .cell:focus-visible { outline: 3px solid white; outline-offset: 2px; }
+    .cell.red { background: #ff4d67; }
+    .cell.yellow { background: #ffd447; }
+    .cell.green { background: #35d07f; }
+    .cell.orange { background: #ff914d; }
+    .cell.black { background: #202738; }
+    .cell.gray { background: #a8b2c2; }
+    .cell.blue { background: #4d9dff; }
+    .cell.purple { background: #a879ff; }
+    .cell.pink { background: #f472b6; }
+    .cell.teal { background: #2dd4bf; }
+    .cell.cyan { background: #22d3ee; }
+    .cell.lime { background: #a3e635; }
+
+    .controls { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+    .sound-button { min-width: 120px; }
+    button {
+      min-height: 46px;
+      border: 0;
+      border-radius: 11px;
+      padding: 12px 20px;
+      color: #061321;
+      background: var(--accent);
+      font: 800 .95rem inherit;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .15s, filter .15s;
+    }
+    button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    button.secondary { color: var(--text); background: var(--panel-light); }
+    button:focus-visible { outline: 3px solid white; outline-offset: 3px; }
+
+    @media (max-width: 650px) {
+      body { padding: 16px 8px 28px; }
+      .app { width: 100%; }
+      header { margin-bottom: 16px; }
+      .logo { font-size: clamp(2rem, 12vw, 3rem); }
+      .subtitle { font-size: .86rem; }
+      .settings { grid-template-columns: 1fr; gap: 10px; padding: 14px; margin-bottom: 12px; }
+      label { font-size: .7rem; }
+      select { min-height: 45px; font-size: .95rem; }
+      .game-panel { padding: 10px; border-radius: 18px; }
+      .scorebar { gap: 6px; margin-bottom: 10px; }
+      .player { gap: 5px; font-size: .72rem; }
+      .disc { width: 14px; height: 14px; }
+      #status { font-size: .78rem; line-height: 1.15; }
+      #board { gap: 4px; padding: 8px; border-radius: 14px; }
+      .controls { gap: 8px; margin-top: 14px; }
+      button { flex: 1 1 120px; min-height: 48px; padding: 11px 12px; }
+      .sound-button { min-width: 0; }
+    }
+
+    @media (max-width: 380px) {
+      body { padding-inline: 5px; }
+      .game-panel { padding: 7px; }
+      .player { font-size: .64rem; }
+      #status { font-size: .7rem; }
+      #board { gap: 3px; padding: 6px; }
+      button { font-size: .82rem; }
+    }
+
+    @media (hover: none) {
+      .cell:hover, button:hover { transform: none; filter: none; }
+    }
+  </style>
 </head>
 <body>
+  <main class="app">
+    <header>
+      <h1 class="logo">Connect <span>Four</span></h1>
+      <p class="subtitle">Drop four discs in a row to win</p>
+    </header>
 
-<h1>Connect Four</h1>
+    <section class="panel settings" aria-label="Game settings">
+      <label>Game mode
+        <select id="mode">
+          <option value="2p">Two Players</option>
+          <option value="ai_easy">Player vs AI · Easy</option>
+          <option value="ai_normal">Player vs AI · Normal</option>
+          <option value="ai_hard">Player vs AI · Hard</option>
+        </select>
+      </label>
+      <label>Player 1 color
+        <select id="p1color">
+          <option value="red">Ruby Red</option><option value="yellow">Golden Yellow</option><option value="green">Emerald Green</option><option value="orange">Bright Orange</option><option value="black">Midnight Black</option><option value="gray">Silver Gray</option><option value="blue">Ocean Blue</option><option value="purple">Royal Purple</option><option value="pink">Hot Pink</option><option value="teal">Teal</option><option value="cyan">Cyan</option><option value="lime">Lime</option>
+        </select>
+      </label>
+      <label>Player 2 color
+        <select id="p2color">
+          <option value="yellow">Golden Yellow</option><option value="red">Ruby Red</option><option value="green">Emerald Green</option><option value="orange">Bright Orange</option><option value="black">Midnight Black</option><option value="gray">Silver Gray</option><option value="blue">Ocean Blue</option><option value="purple">Royal Purple</option><option value="pink">Hot Pink</option><option value="teal">Teal</option><option value="cyan">Cyan</option><option value="lime">Lime</option>
+        </select>
+      </label>
+    </section>
 
-<div id="game-settings">
-  <label>
-    Mode:
-    <select id="mode">
-      <option value="2p">Two Player</option>
-      <option value="ai_easy">Player vs AI (Easy)</option>
-      <option value="ai_normal">Player vs AI (Normal)</option>
-      <option value="ai_hard">Player vs AI (Hard)</option>
-    </select>
-  </label>
+    <section class="panel game-panel">
+      <div class="scorebar">
+        <div class="player"><i id="p1disc" class="disc"></i> Player 1</div>
+        <div id="status" role="status" aria-live="polite">Player 1's turn</div>
+        <div class="player">Player 2 <i id="p2disc" class="disc"></i></div>
+      </div>
+      <div id="board" aria-label="Connect Four board"></div>
+      <div class="controls">
+        <button id="restart" type="button">New Game</button>
+        <button id="soundToggle" class="secondary sound-button" type="button" aria-pressed="true">🔊 Sound On</button>
+        <a href="../games.html" style="text-decoration: none;">
+          <button id="exitBtn" class="secondary" type="button">Exit</button>
+        </a>
+      </div>
+    </section>
+  </main>
 
-  <label>
-    Player 1 Color:
-    <select id="p1color">
-      <option value="red">Red</option>
-      <option value="yellow">Yellow</option>
-      <option value="green">Green</option>
-      <option value="orange">Orange</option>
-      <option value="black">Black</option>
-      <option value="gray">Gray</option>
-      <option value="blue">Blue</option>
-    </select>
-  </label>
+  <script>
+    const rows = 6, columns = 7;
+    let board, currentPlayer = 1, isGameActive = true, aiTimer;
+    let gameMode = "2p", playerColors = { 1: "red", 2: "yellow" };
+    const boardElement = document.getElementById("board");
+    const statusElement = document.getElementById("status");
+    const modeSelect = document.getElementById("mode");
+    const p1Select = document.getElementById("p1color");
+    const p2Select = document.getElementById("p2color");
+    const colorNames = { red: "Ruby Red", yellow: "Golden Yellow", green: "Emerald Green", orange: "Bright Orange", black: "Midnight Black", gray: "Silver Gray", blue: "Ocean Blue", purple: "Royal Purple", pink: "Hot Pink", teal: "Teal", cyan: "Cyan", lime: "Lime" };
+    const soundToggle = document.getElementById("soundToggle");
+    let soundEnabled = true;
+    let audioContext;
 
-  <label>
-    Player 2 Color:
-    <select id="p2color">
-      <option value="yellow">Yellow</option>
-      <option value="red">Red</option>
-      <option value="green">Green</option>
-      <option value="orange">Orange</option>
-      <option value="black">Black</option>
-      <option value="gray">Gray</option>
-      <option value="blue">Blue</option>
-    </select>
-  </label>
-</div>
+    function playSound(type) {
+      if (!soundEnabled) return;
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === "suspended") audioContext.resume();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const settings = {
+        drop: { frequency: 240, end: 120, duration: .12 },
+        win: { frequency: 420, end: 760, duration: .3 },
+        draw: { frequency: 180, end: 180, duration: .2 },
+        click: { frequency: 520, end: 520, duration: .06 }
+      }[type];
+      oscillator.type = type === "win" ? "triangle" : "sine";
+      oscillator.frequency.setValueAtTime(settings.frequency, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(settings.end, audioContext.currentTime + settings.duration);
+      gain.gain.setValueAtTime(.0001, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.8, audioContext.currentTime + .01);
+      gain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + settings.duration);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + settings.duration);
+    }
 
-<div id="game-container">
-  <div id="board"></div>
-  <div class="buttons-container">
-    <button id="restart">Restart Game</button>
-    <a href="../Games.html"><button>Exit</button></a>
-  </div>
-</div>
 
-<script src="script.js"></script>
+    function createBoard() {
+      board = Array.from({ length: rows }, () => Array(columns).fill(null));
+      boardElement.innerHTML = "";
+      for (let row = 0; row < rows; row++) for (let column = 0; column < columns; column++) {
+        const cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = "cell";
+        cell.dataset.col = column;
+        cell.setAttribute("aria-label", `Column ${column + 1}, row ${row + 1}`);
+        boardElement.appendChild(cell);
+      }
+      updateTurn();
+    }
+
+    function getCell(row, column) { return boardElement.children[row * columns + column]; }
+    function updateColors() {
+      document.getElementById("p1disc").className = `disc ${playerColors[1]}`;
+      document.getElementById("p2disc").className = `disc ${playerColors[2]}`;
+    }
+    function updateTurn() {
+      statusElement.textContent = isGameActive ? `${gameMode.startsWith("ai") && currentPlayer === 2 ? "AI" : "Player " + currentPlayer}'s turn` : statusElement.textContent;
+    }
+
+    function dropPiece(column) {
+      if (!isGameActive) return;
+      for (let row = rows - 1; row >= 0; row--) if (board[row][column] === null) {
+        board[row][column] = currentPlayer;
+        playSound("drop");
+        const cell = getCell(row, column);
+        cell.classList.add(playerColors[currentPlayer]);
+        cell.setAttribute("aria-label", `${colorNames[playerColors[currentPlayer]]} disc in column ${column + 1}`);
+        if (checkWinner(row, column)) {
+          isGameActive = false;
+          playSound("win");
+          statusElement.textContent = gameMode.startsWith("ai") && currentPlayer === 2 ? "AI wins!" : `Player ${currentPlayer} wins!`;
+        } else if (isBoardFull()) {
+          isGameActive = false;
+          playSound("draw");
+          statusElement.textContent = "It's a draw!";
+        } else {
+          currentPlayer = currentPlayer === 1 ? 2 : 1;
+          updateTurn();
+          if (gameMode.startsWith("ai") && currentPlayer === 2) aiTimer = setTimeout(aiMove, 450);
+        }
+        return;
+      }
+    }
+
+    function aiMove() {
+      if (!isGameActive || currentPlayer !== 2) return;
+      let column = gameMode === "ai_easy" ? getRandomMove() : getBestMove(2);
+      if (column === null && gameMode !== "ai_easy") column = getBestMove(1);
+      if (column === null) column = getRandomMove();
+      if (column !== null) dropPiece(column);
+    }
+    function getRandomMove() {
+      const available = Array.from({ length: columns }, (_, c) => c).filter(c => board[0][c] === null);
+      return available.length ? available[Math.floor(Math.random() * available.length)] : null;
+    }
+    function getBestMove(player) {
+      for (let column = 0; column < columns; column++) for (let row = rows - 1; row >= 0; row--) if (board[row][column] === null) {
+        board[row][column] = player;
+        const wins = checkWinner(row, column);
+        board[row][column] = null;
+        if (wins) return column;
+        break;
+      }
+      return null;
+    }
+    function isBoardFull() { return board[0].every(cell => cell !== null); }
+    function checkWinner(row, column) {
+      const player = board[row][column];
+      return [[1, 0], [0, 1], [1, 1], [1, -1]].some(([r, c]) => countDirection(row, column, r, c, player) >= 4);
+    }
+    function countDirection(row, column, rowStep, columnStep, player) {
+      let count = 1;
+      for (const direction of [1, -1]) {
+        let r = row + rowStep * direction, c = column + columnStep * direction;
+        while (r >= 0 && r < rows && c >= 0 && c < columns && board[r][c] === player) { count++; r += rowStep * direction; c += columnStep * direction; }
+      }
+      return count;
+    }
+
+    boardElement.addEventListener("click", event => {
+      const cell = event.target.closest(".cell");
+      if (!cell || !isGameActive || (gameMode.startsWith("ai") && currentPlayer === 2)) return;
+      const column = Number(cell.dataset.col);
+      if (board[0][column] === null) dropPiece(column);
+    });
+    function restart() {
+      clearTimeout(aiTimer);
+      playerColors = { 1: p1Select.value, 2: p2Select.value };
+      currentPlayer = 1; isGameActive = true; updateColors(); createBoard();
+    }
+    document.getElementById("restart").addEventListener("click", () => { playSound("click"); restart(); });
+    soundToggle.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      soundToggle.textContent = soundEnabled ? "🔊 Sound On" : "🔇 Sound Off";
+      soundToggle.setAttribute("aria-pressed", String(soundEnabled));
+      if (soundEnabled) playSound("click");
+    });
+    document.getElementById("exitBtn").addEventListener("click", () => playSound("click"));
+    modeSelect.addEventListener("change", () => { gameMode = modeSelect.value; restart(); });
+    p1Select.addEventListener("change", updateColors);
+    p2Select.addEventListener("change", updateColors);
+    updateColors(); createBoard();
+  </script>
 </body>
 </html>

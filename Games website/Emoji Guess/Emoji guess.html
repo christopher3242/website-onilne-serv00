@@ -181,7 +181,51 @@ const emojiData = [
   { emoji: '🦋', answer: 'Butterfly' },
   { emoji: '🎁', answer: 'Gift' },
   { emoji: '🐘', answer: 'Elephant' },
-  { emoji: '🦢', answer: 'Swan' }
+  { emoji: '🦢', answer: 'Swan' },
+  // Additional emojis for more variety
+  { emoji: '🔥', answer: 'Fire' },
+  { emoji: '💧', answer: 'Water' },
+  { emoji: '🌪️', answer: 'Tornado' },
+  { emoji: '🌧️', answer: 'Rain' },
+  { emoji: '🌻', answer: 'Sunflower' },
+  { emoji: '🌹', answer: 'Rose' },
+  { emoji: '🌊', answer: 'Wave' },
+  { emoji: '🍇', answer: 'Grapes' },
+  { emoji: '🍓', answer: 'Strawberry' },
+  { emoji: '🍍', answer: 'Pineapple' },
+  { emoji: '🍌', answer: 'Banana' },
+  { emoji: '🍒', answer: 'Cherry' },
+  { emoji: '🦋', answer: 'Butterfly' },
+  { emoji: '🐦', answer: 'Bird' },
+  { emoji: '🐢', answer: 'Turtle' },
+  { emoji: '🦓', answer: 'Zebra' },
+  { emoji: '🦒', answer: 'Giraffe' },
+  { emoji: '🐘', answer: 'Elephant' },
+  { emoji: '🐍', answer: 'Snake' },
+  { emoji: '🐅', answer: 'Tiger' },
+  { emoji: '🦁', answer: 'Lion' },
+  { emoji: '🦍', answer: 'Gorilla' },
+  { emoji: '🐒', answer: 'Monkey' },
+  { emoji: '🐼', answer: 'Panda' },
+  { emoji: '🦥', answer: 'Sloth' },
+  { emoji: '🦦', answer: 'Otter' },
+  { emoji: '🦧', answer: 'Orangutan' },
+  { emoji: '🦚', answer: 'Peacock' },
+  { emoji: '🐙', answer: 'Octopus' },
+  { emoji: '🦑', answer: 'Squid' },
+  { emoji: '🦀', answer: 'Crab' },
+  { emoji: '🦞', answer: 'Lobster' },
+  { emoji: '🦐', answer: 'Shrimp' },
+  { emoji: '🐡', answer: 'Pufferfish' },
+  { emoji: '🦈', answer: 'Shark' },
+  { emoji: '🐅', answer: 'Tiger' },
+  { emoji: '🦓', answer: 'Zebra' },
+  { emoji: '🦌', answer: 'Deer' },
+  { emoji: '🦃', answer: 'Turkey' },
+  { emoji: '🦚', answer: 'Peacock' },
+  { emoji: '🦜', answer: 'Parrot' },
+  { emoji: '🦢', answer: 'Swan' },
+  { emoji: '🦩', answer: 'Flamingo' }
 ];
 
 let currentQuestion = {};
@@ -208,7 +252,8 @@ function shuffleArray(array) {
 function loadQuestion() {
   resultDiv.textContent = '';
   nextBtn.style.display = 'none';
-  showAnswerBtn.style.display = 'inline-block'; // Show "Show Answer" button
+  showAnswerBtn.style.display = 'inline-block';
+  showAnswerBtn.disabled = false; // ensure button is enabled
   choicesContainer.innerHTML = '';
 
   // Pick a random question
@@ -237,11 +282,15 @@ function loadQuestion() {
 function selectAnswer(selected) {
   if (selected === currentQuestion.answer) {
     resultDiv.textContent = 'Correct! 🎉';
+    resultDiv.style.color = 'green';
     score++;
     scoreDiv.textContent = `Score: ${score}`;
   } else {
     wrongGuesses++;
+    score = Math.max(0, score - 1); // prevent negative score
+    scoreDiv.textContent = `Score: ${score}`;
     resultDiv.textContent = `Wrong! The correct answer is "${currentQuestion.answer}".`;
+    resultDiv.style.color = 'red';
   }
   Array.from(choicesContainer.children).forEach(btn => {
     btn.disabled = true;
@@ -255,14 +304,15 @@ function selectAnswer(selected) {
 
 // Show answer temporarily
 function showAnswer() {
+  showAnswerBtn.disabled = true; // disable after click
   const answerText = `Answer: ${currentQuestion.answer}`;
   resultDiv.textContent = answerText;
-  showAnswerBtn.style.display = 'none'; // hide button after click
+  resultDiv.style.color='blue';
 
   setTimeout(() => {
     resultDiv.textContent = '';
-    showAnswerBtn.style.display = 'inline-block'; // show again for next questions
-  }, 2000); // 2 seconds
+    showAnswerBtn.disabled = false;
+  }, 2000);
 }
 
 function endGame() {

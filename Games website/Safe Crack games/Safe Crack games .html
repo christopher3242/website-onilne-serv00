@@ -1,164 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Safe Crack Game with Exit and Reset Buttons</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #222;
-    color: #fff;
-    text-align: center;
-    padding: 50px;
-    margin: 0;
-  }
-  h1 {
-    font-size: 2em;
-  }
-  #safe {
-    font-size: 2em;
-    margin: 20px 0;
-  }
-  input[type="number"] {
-    font-size: 1.5em;
-    padding: 8px;
-    width: 150px;
-    max-width: 90%;
-  }
-  button {
-    font-size: 1.2em;
-    padding: 8px 16px;
-    margin: 10px 5px;
-    cursor: pointer;
-  }
-  #message {
-    margin-top: 20px;
-    font-size: 1.2em;
-    height: 30px;
-  }
-  #attemptsLeft {
-    margin-top: 10px;
-    font-size: 1em;
-    height: 24px;
-  }
-  /* Responsive adjustments */
-  @media(max-width: 600px){
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <title>Safe Crack Challenge</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: rgba(18, 32, 52, .82);
+      --panel-light: rgba(255,255,255,.08);
+      --text: #f4f8ff;
+      --muted: #aab9ce;
+      --accent: #62e6c5;
+      --accent-2: #55a9ff;
+      --danger: #ff7187;
+      --gold: #ffd166;
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
     body {
-      padding: 20px;
+      min-height: 100vh;
+      margin: 0;
+      padding: max(18px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      font: 16px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 50% -10%, #173c63 0, var(--bg) 52%);
     }
-    button {
-      font-size: 1em;
-      padding: 6px 12px;
+
+    .app { width: min(100%, 760px); }
+    header { text-align: center; margin-bottom: 20px; }
+    .eyebrow { color: var(--accent); font-size: .78rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 5px 0; font-size: clamp(2rem, 7vw, 3.5rem); line-height: 1.1; letter-spacing: -.04em; }
+    header p { margin: 8px 0 0; color: var(--muted); }
+
+    .card {
+      padding: clamp(20px, 5vw, 38px);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 24px 70px rgba(0,0,0,.34), inset 0 1px rgba(255,255,255,.08);
+      backdrop-filter: blur(16px);
     }
-    input[type="number"] {
-      font-size: 1.2em;
-      padding: 6px;
-      width: 120px;
+    .topbar { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .badge { padding: 7px 12px; border-radius: 999px; color: var(--accent); background: rgba(98,230,197,.12); font-weight: 750; }
+    .volume { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: .9rem; }
+    .volume output { min-width: 42px; color: var(--text); font-weight: 800; }
+    input[type="range"] { width: 125px; accent-color: var(--accent); cursor: pointer; }
+    .icon-btn, .action-btn {
+      min-height: 48px; border: 0; border-radius: 14px; color: var(--text); font: inherit; font-weight: 750; cursor: pointer;
+      -webkit-tap-highlight-color: transparent; transition: transform .15s, filter .15s, background .15s;
     }
-  }
-</style>
+    .icon-btn { width: 48px; background: var(--panel-light); font-size: 1.2rem; }
+    .icon-btn:hover, .action-btn:hover { filter: brightness(1.15); transform: translateY(-2px); }
+    button:active { transform: scale(.97); }
+    button:focus-visible, input:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+    .safe { margin: 28px 0 22px; text-align: center; }
+    .lock { font-size: 3rem; filter: drop-shadow(0 0 18px rgba(98,230,197,.32)); }
+    .code-input {
+      display: block; width: min(100%, 390px); margin: 14px auto 0; padding: 14px 16px;
+      border: 2px solid #38516f; border-radius: 16px; outline: 0; background: #091728; color: var(--text);
+      text-align: center; font: 800 clamp(1.7rem, 8vw, 2.4rem)/1 system-ui; letter-spacing: .14em;
+    }
+    .code-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(98,230,197,.14); }
+    .hint { margin: 10px 0 0; color: var(--muted); font-size: .9rem; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .action-btn { padding: 12px 16px; background: linear-gradient(135deg, #247bc2, #4a5bd5); }
+    .action-btn.primary { background: linear-gradient(135deg, #12a983, #197bd1); }
+    .action-btn.secondary { background: var(--panel-light); }
+    .action-btn:disabled { cursor: not-allowed; opacity: .48; transform: none; }
+    .message { min-height: 62px; margin: 20px 0 0; padding: 14px; display: grid; place-items: center; border-radius: 15px; background: rgba(0,0,0,.18); color: var(--muted); text-align: center; }
+    .message.success { color: var(--accent); background: rgba(98,230,197,.1); }
+    .message.error { color: var(--danger); background: rgba(255,113,135,.1); }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+    .stat { padding: 12px; border-radius: 14px; background: var(--panel-light); text-align: center; }
+    .stat strong { display: block; font-size: 1.35rem; }
+    .stat span { color: var(--muted); font-size: .78rem; }
+    footer { margin-top: 16px; color: var(--muted); font-size: .8rem; text-align: center; }
+    @media (max-width: 480px) { .topbar { align-items: flex-start; } .volume { width: 100%; } input[type="range"] { flex: 1; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
 </head>
 <body>
-<h1>Safe Crack Game</h1>
-<p>Guess the 4-digit code to open the safe!</p>
-<div id="safe">
-  <input id="guess" min="0" max="9999" type="number" placeholder="Enter 0 - 9999" />
-</div>
-<div>
-  <button onclick="checkGuess()">Guess</button>
-  <button onclick="showAnswer()">Answer</button>
-  <button onclick="resetGame()">Reset</button>
-  <a href="../games.html"><button onclick="exitGame()">Exit</button></a>
-</div>
-<div id="attemptsLeft">Attempts left: 3</div>
-<div id="message"></div>
+  <main class="app">
+    <header>
+      <div class="eyebrow">Security training challenge</div>
+      <h1>🔐 Safe Crack</h1>
+      <p>Find the hidden 4-digit code before your attempts run out.</p>
+    </header>
 
-<script>
-  let code = Math.floor(Math.random() * 10000); // Random code from 0 to 9999
-  let attempts = 0;
-  const maxAttempts = 3;
-  let gameActive = true;
-  let answerTimeout = null; // To manage answer hiding
+    <section class="card" aria-label="Safe crack game">
+      <div class="topbar">
+        <span class="badge" id="status">● Game ready</span>
+        <div class="volume" aria-label="Sound controls">
+          <button class="icon-btn" id="soundButton" type="button" aria-label="Mute sound">🔊</button>
+          <label for="volume">Volume</label>
+          <input id="volume" type="range" min="1" max="100" value="65" aria-label="Sound volume from 1 to 100 percent">
+          <output id="volumeValue" for="volume">65%</output>
+        </div>
+      </div>
 
-  function updateAttemptsLeft() {
-    const attemptsLeftDiv = document.getElementById('attemptsLeft');
-    const attemptsLeft = maxAttempts - attempts;
-    attemptsLeftDiv.textContent = 'Attempts left: ' + attemptsLeft;
-  }
+      <div class="safe">
+        <div class="lock" id="lock" aria-hidden="true">🔒</div>
+        <label for="guess" class="hint">Enter a number from 0000 to 9999</label>
+        <input class="code-input" id="guess" type="text" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="0000" aria-describedby="message">
+        <p class="hint">Tip: every guess tells you whether to go higher or lower.</p>
+      </div>
 
-  function resetGame() {
-    code = Math.floor(Math.random() * 10000);
-    attempts = 0;
-    gameActive = true;
-    document.getElementById('guess').disabled = false;
-    document.getElementById('guess').value = '';
-    document.getElementById('message').textContent = '';
-    // Clear any existing answer display timeout
-    if (answerTimeout) {
-      clearTimeout(answerTimeout);
-      answerTimeout = null;
+      <div class="actions">
+        <button class="action-btn primary" id="guessButton" type="button">🔓 Check code</button>
+        <button class="action-btn secondary" id="answerButton" type="button">💡 Show answer</button>
+        <button class="action-btn secondary" id="resetButton" type="button">↻ New game</button>
+        <button class="action-btn secondary" id="exitButton" type="button">← Exit</button>
+      </div>
+
+      <div class="message" id="message" aria-live="polite">You have 3 attempts. Good luck!</div>
+      <div class="stats">
+        <div class="stat"><strong id="attempts">0</strong><span>Attempts used</span></div>
+        <div class="stat"><strong id="remaining">3</strong><span>Attempts left</span></div>
+        <div class="stat"><strong id="wins">0</strong><span>Games won</span></div>
+      </div>
+    </section>
+    <footer>Sound is generated safely in your browser • Built for keyboard, mouse and touch</footer>
+  </main>
+
+  <script>
+    let code, attempts, active, wins = 0, answerTimer;
+    let audioContext, muted = false;
+    const maxAttempts = 3;
+    const $ = id => document.getElementById(id);
+
+    function sound(frequency, duration = .12, type = 'sine') {
+      if (muted) return;
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === 'suspended') audioContext.resume();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const volume = Number($('volume').value) / 100;
+      oscillator.type = type; oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(.0001, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.12 * volume, audioContext.currentTime + .01);
+      gain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + duration);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(); oscillator.stop(audioContext.currentTime + duration + .02);
     }
-    updateAttemptsLeft();
-  }
+    function chord(notes, type) { notes.forEach((note, i) => setTimeout(() => sound(note, .18, type), i * 90)); }
 
-  function checkGuess() {
-    if (!gameActive) return;
-    const guessInput = document.getElementById('guess');
-    const message = document.getElementById('message');
-    const guessValue = guessInput.value.trim();
-    const guess = parseInt(guessValue, 10);
-
-    if (isNaN(guess) || guess < 0 || guess > 9999) {
-      message.textContent = 'Please enter a valid number between 0 and 9999.';
-      return;
+    function updateStats() {
+      $('attempts').textContent = attempts;
+      $('remaining').textContent = maxAttempts - attempts;
+      $('wins').textContent = wins;
     }
-
-    attempts++;
-    updateAttemptsLeft();
-
-    if (guess === code) {
-      message.textContent = `🎉 Congratulations! You cracked the safe in ${attempts} attempts!`;
-      gameActive = false;
-      document.getElementById('guess').disabled = true;
-    } else if (attempts >= maxAttempts) {
-      message.innerHTML = `💥 Game Over! Reached ${attempts} attempts.<br>The code was: ${String(code).padStart(4, '0')}`;
-      gameActive = false;
-      document.getElementById('guess').disabled = true;
-    } else {
-      if (guess < code) {
-        message.textContent = 'Too low! Try a higher number.';
-      } else {
-        message.textContent = 'Too high! Try a lower number.';
+    function newGame() {
+      code = Math.floor(Math.random() * 10000); attempts = 0; active = true;
+      clearTimeout(answerTimer); $('guess').value = ''; $('guess').disabled = false;
+      $('guessButton').disabled = false; $('answerButton').disabled = false;
+      $('message').className = 'message'; $('message').textContent = 'You have 3 attempts. Good luck!';
+      $('status').textContent = '● Game ready'; $('lock').textContent = '🔒'; updateStats(); $('guess').focus();
+    }
+    function finish(text, className, icon) {
+      active = false; $('guess').disabled = true; $('guessButton').disabled = true; $('answerButton').disabled = true;
+      $('message').className = 'message ' + className; $('message').innerHTML = text; $('lock').textContent = icon;
+    }
+    function checkGuess() {
+      if (!active) return;
+      const value = $('guess').value.trim();
+      if (!/^\d{1,4}$/.test(value)) {
+        $('message').className = 'message error'; $('message').textContent = 'Please enter 1 to 4 digits (0000–9999).'; sound(180, .16, 'square'); return;
       }
+      const guess = Number(value); attempts++; updateStats(); sound(guess === code ? 660 : 260, .1, 'triangle');
+      if (guess === code) { wins++; updateStats(); finish(`🎉 <strong>Safe cracked!</strong><br>You found ${String(code).padStart(4, '0')} in ${attempts} attempt${attempts > 1 ? 's' : ''}.`, 'success', '🔓'); chord([523, 659, 784], 'sine'); $('status').textContent = '● Unlocked'; }
+      else if (attempts >= maxAttempts) { finish(`💥 <strong>Game over.</strong><br>The code was ${String(code).padStart(4, '0')}.`, 'error', '🔒'); chord([330, 247], 'sawtooth'); $('status').textContent = '● Locked'; }
+      else { const direction = guess < code ? 'higher' : 'lower'; $('message').className = 'message'; $('message').textContent = `Not quite — try a ${direction} number.`; }
     }
-  }
-
-  function showAnswer() {
-    const message = document.getElementById('message');
-    message.innerHTML = `The code is: ${String(code).padStart(4, '0')}`;
-    // Hide answer after 2 seconds
-    if (answerTimeout) {
-      clearTimeout(answerTimeout);
+    function showAnswer() {
+      $('message').className = 'message'; $('message').innerHTML = `The code is <strong>${String(code).padStart(4, '0')}</strong>`;
+      sound(880, .14); clearTimeout(answerTimer); answerTimer = setTimeout(() => { if (active) $('message').textContent = 'Answer hidden for suspense!'; }, 2500);
     }
-    answerTimeout = setTimeout(() => {
-      message.innerHTML = 'Answer hidden for suspense!';
-    }, 2000);
-  }
 
-  function exitGame() {
-    resetGame();
-  }
-
-  // Allow pressing Enter to submit guess
-  document.getElementById('guess').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      checkGuess();
-    }
-  });
-
-  // Initialize attempts display
-  updateAttemptsLeft();
-</script>
+    $('guessButton').addEventListener('click', checkGuess); $('answerButton').addEventListener('click', showAnswer); $('resetButton').addEventListener('click', newGame);
+    $('exitButton').addEventListener('click', () => { $('message').textContent = 'Thanks for playing! Press “New game” to play again.'; active = false; $('guess').disabled = true; $('guessButton').disabled = true; $('answerButton').disabled = true; $('status').textContent = '● Paused'; });
+    $('guess').addEventListener('keydown', e => { if (e.key === 'Enter') checkGuess(); });
+    $('guess').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4); });
+    $('volume').addEventListener('input', e => { $('volumeValue').textContent = e.target.value + '%'; if (Number(e.target.value) > 0) { muted = false; $('soundButton').textContent = '🔊'; $('soundButton').setAttribute('aria-label', 'Mute sound'); } });
+    $('soundButton').addEventListener('click', () => { muted = !muted; $('soundButton').textContent = muted ? '🔇' : '🔊'; $('soundButton').setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound'); if (!muted) sound(520, .1); });
+    newGame();
+  </script>
 </body>
 </html>

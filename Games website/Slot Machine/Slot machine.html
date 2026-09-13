@@ -1,353 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Euro Slot Game with Exit and Game Over</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #222;
-    color: #fff;
-    margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  h1 {
-    margin-bottom: 10px;
-    font-size: 2em;
-    text-align: center;
-  }
-  #gameContainer {
-    width: 100%;
-    max-width: 600px;
-    text-align: center;
-  }
-  #money {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-  }
-  #slot-machine {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-  .reel {
-    width: 80px;
-    height: 80px;
-    margin: 0 10px;
-    font-size: 2.5em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #444;
-    border: 2px solid #888;
-    border-radius: 8px;
-    box-shadow: inset 0 0 10px #000;
-    transition: background-color 0.2s;
-  }
-  .reel:hover {
-    background-color: #555;
-  }
-  #buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-  }
-  button {
-    padding: 15px 20px;
-    font-size: 1.2em;
-    margin: 5px;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    transition: background-color 0.2s, transform 0.1s;
-  }
-  button:hover {
-    transform: scale(1.05);
-  }
-  /* Button colors */
-  #spin1 { background-color: #28a745; color: #fff; }
-  #spin2 { background-color: #007bff; color: #fff; }
-  #spin5 { background-color: #ffc107; color: #000; }
-  #spin10 { background-color: #6f42c1; color: #fff; }
-  #spin20 { background-color: #17a2b8; color: #fff; }
-  #spin50 { background-color: #fd7e14; color: #fff; }
-  #spin100 { background-color: #20c997; color: #fff; }
-  #spinRandom { background-color: #6c757d; color: #fff; }
-  #spinAll { background-color: #dc3545; color: #fff; }
-  #addFive { background-color: #20c997; color: #fff; }
-  #exit { background-color: #dc3545; color: #fff; }
-  #restart { background-color: #17a2b8; color: #fff; }
-  #result {
-    margin-top: 15px;
-    font-size: 1.2em;
-    min-height: 1.2em;
-  }
-  /* Responsive adjustments */
-  @media (max-width: 500px) {
-    body {
-      padding: 10px;
-    }
-    #money {
-      font-size: 1.2em;
-    }
-    .reel {
-      width: 70px;
-      height: 70px;
-      font-size: 2em;
-    }
-    button {
-      padding: 12px 16px;
-      font-size: 1em;
-    }
-  }
-  /* Overlay for game over */
-  #topScoreContainer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(34, 34, 34, 0.95);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    display: none;
-    z-index: 999;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-  #topScoreContainer h2 {
-    font-size: 2em;
-    margin-bottom: 10px;
-  }
-  #topScoreContainer #finalScore {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-  }
-  #topScoreContainer #topScore {
-    font-size: 1.2em;
-    margin-bottom: 30px;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#080b20">
+  <title>Neon Fortune — Euro Slots</title>
+  <style>
+    :root{--bg:#080b20;--panel:#121735e8;--panel-light:#ffffff0d;--line:#ffffff1c;--text:#f8f9ff;--muted:#a8afd0;--pink:#ff4d9d;--cyan:#55d9ff;--gold:#ffd166;--green:#46e58c;--red:#ff617e;--purple:#8064ff;--shadow:0 24px 70px #0008}
+    *{box-sizing:border-box}html{min-width:320px;scroll-behavior:smooth}body{margin:0;min-height:100vh;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));color:var(--text);font:16px/1.4 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 5% 0,#303c8a 0,transparent 32%),radial-gradient(circle at 100% 100%,#711f68 0,transparent 36%),var(--bg)}
+    button,input{font:inherit}button{min-height:46px;border:0;border-radius:14px;color:var(--text);font-weight:800;cursor:pointer;touch-action:manipulation;transition:.18s transform,.18s filter,.18s opacity,.18s box-shadow}button:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.15)}button:active:not(:disabled){transform:scale(.97)}button:disabled{opacity:.4;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+    .app{width:min(1160px,100%);margin:auto}.glass{border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow);backdrop-filter:blur(18px)}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 20px;margin-bottom:20px;border-radius:24px}.brand{display:flex;align-items:center;gap:12px}.logo{display:grid;place-items:center;width:50px;height:50px;border-radius:16px;font-size:1.75rem;background:linear-gradient(135deg,#f6ad4e,var(--pink));box-shadow:0 0 30px #ff4d9d88}.brand h1{margin:0;font-size:clamp(1.3rem,4vw,2rem);letter-spacing:-.06em}.brand p{margin:2px 0 0;color:var(--muted);font-size:.78rem}.balance{text-align:right;white-space:nowrap}.label,.eyebrow,.section-title{color:var(--muted);font-size:.7rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.money{color:var(--gold);font-size:clamp(1.4rem,4vw,2rem);font-weight:900;text-shadow:0 0 18px #ffd16666}
+    .layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.75fr);gap:20px}.card{border-radius:26px;overflow:hidden}.game-head{padding:28px 24px 14px;text-align:center}.eyebrow{color:var(--pink)}h2{margin:7px 0;font-size:clamp(1.7rem,5vw,2.7rem);letter-spacing:-.06em}.result{min-height:25px;color:var(--gold);font-weight:800}.result.bad{color:var(--red)}
+    .machine{position:relative;margin:10px 22px 22px;padding:clamp(14px,3vw,24px);border:3px solid var(--purple);border-radius:24px;background:linear-gradient(145deg,#192253,#090d25);box-shadow:inset 0 0 45px #55d9ff22,0 0 35px #8064ff55}.machine:before{content:"";position:absolute;inset:8px;border:1px solid #fff2;border-radius:17px;pointer-events:none}.reels{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,2vw,14px)}.reel{display:grid;place-items:center;min-height:clamp(94px,16vw,150px);border:2px solid #fff6;border-radius:17px;color:#172044;background:linear-gradient(145deg,#fff,#dae4ff);font-size:clamp(2.8rem,8vw,5rem);line-height:1;user-select:none;box-shadow:inset 0 -12px 20px #2f3d7d33,0 8px 0 #050711}.reel.spinning{animation:shake .1s linear infinite}.reel.win{border-color:var(--gold);animation:pulse .6s ease-in-out 3;box-shadow:0 0 25px var(--gold),inset 0 -12px 20px #2f3d7d33}@keyframes shake{50%{transform:translateY(3px) rotate(1deg)}}@keyframes pulse{50%{transform:scale(1.06)}}.payline{margin-top:18px;color:var(--muted);text-align:center;font-size:.76rem}
+    .controls{padding:0 22px 26px}.section-title{display:flex;justify-content:space-between;margin-bottom:10px}.bets{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.bet{padding:10px 5px;background:linear-gradient(135deg,#5545d9,#3275da)}.bet.hot{background:linear-gradient(135deg,#d52e83,#f07146)}.bet small{display:block;color:#fffB;font-size:.67rem}.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}.tool{border:1px solid var(--line);background:var(--panel-light)}#cash{color:#061a22;background:var(--green)}#exit{background:var(--red)}
+    .side{display:grid;align-content:start;gap:20px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{padding:17px;border-radius:18px}.stat span{display:block;color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em}.stat strong{display:block;margin-top:7px;color:var(--gold);font-size:1.3rem}.sound,.history{padding:19px}.sound-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.sound h3,.history h3{margin:0;font-size:1rem}.toggle{min-height:38px;padding:6px 12px;border:1px solid var(--line);background:var(--panel-light);font-size:.78rem}.toggle.off{color:var(--muted)}.volume{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.8rem}.volume input{width:100%;accent-color:var(--pink);cursor:pointer}.volume output{width:42px;color:var(--gold);font-weight:900;text-align:right}.tip{margin:14px 0 0;color:var(--muted);font-size:.75rem;line-height:1.5}.history h3{margin-bottom:12px}#log{max-height:285px;overflow:auto;color:var(--muted);font:.73rem/1.55 ui-monospace,monospace;scrollbar-color:var(--purple) transparent}.entry{padding:9px 0;border-bottom:1px solid #fff2}.empty{color:#70799c;font-size:.84rem}
+    .overlay{position:fixed;inset:0;z-index:10;display:none;place-items:center;padding:20px;background:#040613dd;backdrop-filter:blur(9px)}.modal{width:min(430px,100%);padding:34px 25px;border:1px solid #fff3;border-radius:26px;background:linear-gradient(145deg,#292663,#10142f);box-shadow:var(--shadow);text-align:center}.modal-icon{font-size:3rem}.modal h2{margin:8px 0}.final{color:var(--gold);font-weight:900}.best{margin:9px 0 22px;color:var(--muted)}#restart{width:100%;background:linear-gradient(135deg,var(--pink),var(--purple))}
+    @media(max-width:760px){body{padding:12px}.layout{grid-template-columns:1fr}.topbar{padding:14px 16px}.side{gap:14px}}@media(max-width:470px){.brand p{display:none}.logo{width:43px;height:43px;flex-basis:43px}.bets{grid-template-columns:repeat(2,1fr)}.tools{grid-template-columns:1fr}.machine{margin-inline:12px;padding:13px}.controls{padding-inline:14px}.reel{min-height:86px}.section-title{font-size:.63rem}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
 </head>
 <body>
-
-<h1>Euro Slot Game</h1>
-<div id="gameContainer">
-  <div id="money">Balance: €100.00</div>
-</div>
-<div id="slot-machine">
-  <div class="reel" id="reel1">🍒</div>
-  <div class="reel" id="reel2">🍒</div>
-  <div class="reel" id="reel3">🍒</div>
-</div>
-<div id="buttons">
-  <button id="spin1">Spin (€1, Win €2)</button>
-  <button id="spin2">Spin (€2, Win €5)</button>
-  <button id="spin5">Spin (€5, Win €20)</button>
-  <button id="spin10">Spin (€10, Win €40)</button>
-  <button id="spin20">Spin (€20, Win €50)</button>
-  <button id="spin50">Spin (€50, Win €100)</button>
-  <button id="spin100">Spin (€100, Win €200)</button>
-  <button id="spinRandom">Spin Random (€1-€200)</button>
-  <button id="spinAll">Spin All</button>
-  <button id="addFive">Add Random €1-200</button>
-  <button id="exit">Exit</button>
-</div>
-<div id="result"></div>
-
-<!-- Game Over Overlay -->
-<div id="topScoreContainer">
-  <h2>Game Over!</h2>
-  <div id="finalScore"></div>
-  <div id="topScore">Top Score: €0.00</div>
-  <button id="restart">Restart Game</button>
-</div>
-
-<script>
-const symbols = ['🍒', '🍋', '🔔', '⭐', '🍀', '7️⃣', '🍇', '🍉', '🍊', '🥝', '🍍'];
-const reels = [
-  document.getElementById('reel1'),
-  document.getElementById('reel2'),
-  document.getElementById('reel3')
-];
-
-const moneyDiv = document.getElementById('money');
-const resultDiv = document.getElementById('result');
-const finalScoreDiv = document.getElementById('finalScore');
-const topScoreDiv = document.getElementById('topScore');
-const topScoreContainer = document.getElementById('topScoreContainer');
-
-let balance = 100.00;
-let topScore = 0;
-let totalWinnings = 0;
-
-// Helper functions
-function updateMoney() {
-  moneyDiv.textContent = `Balance: €${balance.toFixed(2)}`;
-}
-function updateTopScore() {
-  topScoreDiv.textContent = `Top Score: €${topScore.toFixed(2)}`;
-}
-function getRandomSymbol() {
-  return symbols[Math.floor(Math.random() * symbols.length)];
-}
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// Spin reels with animation
-async function spinReel(reel) {
-  for (let i = 0; i < 20; i++) {
-    reel.textContent = getRandomSymbol();
-    await sleep(50);
-  }
-  return reel.textContent;
-}
-
-// Main spin function
-async function spin(betAmount, winForTwo, winForThree) {
-  if (balance < betAmount) {
-    endGame();
-    return;
-  }
-  balance -= betAmount;
-  updateMoney();
-
-  const results = await Promise.all(reels.map(r => spinReel(r)));
-
-  const matchCount = results.filter(s => s === results[0]).length;
-
-  // 3% jackpot chance
-  const jackpotChance = Math.random();
-  const isJackpot = jackpotChance < 0.03;
-
-  let winnings = 0;
-
-  if (isJackpot) {
-    const jackpotAmount = Math.floor(Math.random() * (100 - 20 + 1)) + 20;
-    winnings = jackpotAmount;
-    balance += winnings;
-    resultDiv.textContent = `🎉 JACKPOT! 3 Match! You earned €${winnings}!`;
-  } else if (matchCount >= 3) {
-    if (results.every(s => s === '7️⃣')) {
-      winnings = 50; // special reward for 3 "7️⃣"
-      balance += winnings;
-      resultDiv.textContent = '🎉 Lucky 7️⃣! 3 Match! You earned €50!';
-    } else {
-      winnings = winForThree;
-      balance += winnings;
-      resultDiv.textContent = `🎉 3 Match! You earned €${winnings}!`;
-    }
-  } else if (matchCount >= 2) {
-    winnings = winForTwo;
-    balance += winnings;
-    resultDiv.textContent = `✨ 2 Match! You earned €${winnings}!`;
-  } else {
-    resultDiv.textContent = 'Try Again!';
-  }
-
-  updateMoney();
-
-  // Track total winnings for top score
-  totalWinnings += winnings;
-  if (totalWinnings > topScore) {
-    topScore = totalWinnings;
-    updateTopScore();
-  }
-
-  if (balance < 0.01) {
-    endGame();
-  }
-}
-
-// Spin with a random bet amount (1-200)
-async function spinRandom() {
-  const randomBet = Math.floor(Math.random() * 200) + 1; // 1-200
-  await spin(randomBet, 5, 10);
-}
-
-// Spin with all remaining balance
-async function spinAll() {
-  const betAmount = Math.floor(balance);
-  if (betAmount > 0) {
-    await spin(betAmount, 5, 10);
-  } else {
-    resultDiv.textContent = 'No balance to spin!';
-    if (balance < 0.01) {
-      endGame();
-    }
-  }
-}
-
-// End game: show game over overlay
-function endGame() {
-  document.getElementById('gameContainer').style.display = 'none';
-  document.getElementById('buttons').style.display = 'none';
-  document.getElementById('slot-machine').style.display = 'none';
-  resultDiv.textContent = '';
-  finalScoreDiv.textContent = `Your total winnings: €${totalWinnings.toFixed(2)}`;
-  topScoreContainer.style.display = 'flex';
-}
-
-// Restart game
-document.getElementById('restart').addEventListener('click', () => {
-  balance = 100.00;
-  totalWinnings = 0;
-  updateMoney();
-  resultDiv.textContent = '';
-  document.getElementById('gameContainer').style.display = 'block';
-  document.getElementById('buttons').style.display = 'flex';
-  document.getElementById('slot-machine').style.display = 'flex';
-  topScoreContainer.style.display = 'none';
-});
-
-// Exit button
-document.getElementById('exit').addEventListener('click', () => {
-  window.location.href = '../games.html';
-});
-
-// Button event listeners
-document.getElementById('spin1').addEventListener('click', () => {
-  spin(1, 2, 3);
-});
-document.getElementById('spin2').addEventListener('click', () => {
-  spin(2, 5, 8);
-});
-document.getElementById('spin5').addEventListener('click', () => {
-  spin(5, 20, 50);
-});
-document.getElementById('spin10').addEventListener('click', () => {
-  spin(10, 40, 0);
-});
-document.getElementById('spin20').addEventListener('click', () => {
-  spin(20, 50, 0);
-});
-document.getElementById('spin50').addEventListener('click', () => {
-  spin(50, 100, 0);
-});
-document.getElementById('spin100').addEventListener('click', () => {
-  spin(100, 200, 0);
-});
-document.getElementById('spinRandom').addEventListener('click', () => {
-  spinRandom();
-});
-document.getElementById('spinAll').addEventListener('click', () => {
-  spinAll();
-});
-document.getElementById('addFive').addEventListener('click', () => {
-  const randomAmount = Math.floor(Math.random() * 200) + 1;
-  balance += randomAmount;
-  updateMoney();
-});
-</script>
-
+  <main class="app">
+    <header class="topbar glass"><div class="brand"><div class="logo" aria-hidden="true">🎰</div><div><h1>Neon Fortune</h1><p>Spin the reels. Chase the jackpot.</p></div></div><div class="balance"><div class="label">Available balance</div><div class="money" id="money" aria-live="polite">€100.00</div></div></header>
+    <div class="layout">
+      <section class="card glass game" aria-label="Slot machine game">
+        <div class="game-head"><div class="eyebrow">Euro jackpot slots</div><h2>Match the symbols</h2><div class="result" id="result" role="status" aria-live="polite">Choose a wager to begin</div></div>
+        <div class="machine"><div class="reels" aria-label="Three slot reels"><div class="reel" id="reel1">🍒</div><div class="reel" id="reel2">🍒</div><div class="reel" id="reel3">🍒</div></div><div class="payline">2 matching symbols win • 3 matching symbols win big • 7️⃣ pays €50</div></div>
+        <div class="controls"><div class="section-title"><span>Select your wager</span><span>Win up to 4×</span></div><div class="bets"><button class="bet" data-bet="1">€1 <small>→ €2 / €3</small></button><button class="bet" data-bet="2">€2 <small>→ €5 / €8</small></button><button class="bet" data-bet="5">€5 <small>→ €20 / €50</small></button><button class="bet" data-bet="10">€10 <small>→ €40 / €80</small></button><button class="bet" data-bet="20">€20 <small>→ €50 / €100</small></button><button class="bet" data-bet="50">€50 <small>→ €100 / €200</small></button><button class="bet" data-bet="100">€100 <small>→ €200 / €400</small></button><button class="bet hot" id="random">Random €1–€500</button></div><div class="tools"><button class="tool" id="allin">⚡ Spin all-in</button><button class="tool" id="cash">💰 Add cash</button><a href="../games.html" style="text-decoration:none;"><button class="tool" id="exit">Exit</button></a></div></div>
+      </section>
+      <aside class="side"><div class="stats"><div class="stat glass"><span>Total winnings</span><strong id="winnings">€0.00</strong></div><div class="stat glass"><span>Best score</span><strong id="best">€0.00</strong></div></div><section class="sound glass"><div class="sound-top"><h3>🔊 Sound controls</h3><button class="toggle" id="sound">Sound on</button></div><label class="volume"><span>Volume</span><input id="volume" type="range" min="1" max="100" value="65" aria-label="Sound volume"><output id="volumeText">65%</output></label><p class="tip">Tap anywhere once to enable audio on Android. On PC, press <b>Space</b> to spin your last wager.</p></section><section class="history glass"><h3>📜 Spin history</h3><div id="log"><div class="empty">Your spins will appear here.</div></div></section></aside>
+    </div>
+  </main>
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="gameOver"><div class="modal"><div class="modal-icon">🏁</div><h2 id="gameOver">Game over!</h2><div class="final" id="final"></div><div class="best" id="modalBest"></div><button id="restart">Play again</button></div></div>
+  <script>
+    const symbols=['🍒','🍋','🔔','⭐','🍀','7️⃣','🍇','🍉','🍊','🥝','🍍'];
+    const reels=[1,2,3].map(n=>document.getElementById('reel'+n));
+    const $=id=>document.getElementById(id), euro=n=>`€${n.toFixed(2)}`;
+    let balance=100,winnings=0,best=0,lastBet=1,spinning=false,soundOn=true,volume=.65,ctx=null;
+    const randomSymbol=()=>symbols[Math.floor(Math.random()*symbols.length)];
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    function update(){ $('money').textContent=euro(balance);$('winnings').textContent=euro(winnings);$('best').textContent=euro(best);$('modalBest').textContent=`Best score: ${euro(best)}`; }
+    function audio(){try{if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx}catch(e){return null}}
+    function tone(freq,duration=.1,type='sine',delay=0){if(!soundOn)return;const a=audio();if(!a)return;const o=a.createOscillator(),g=a.createGain(),t=a.currentTime+delay;o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(Math.max(.002,volume*.08),t+.01);g.gain.exponentialRampToValueAtTime(.001,t+duration);o.connect(g).connect(a.destination);o.start(t);o.stop(t+duration+.02)}
+    function effect(kind){if(kind==='spin')[180,220,260].forEach((f,i)=>tone(f,.08,'square',i*.07));if(kind==='win')[440,554,659,880].forEach((f,i)=>tone(f,.16,'sine',i*.1));if(kind==='lose')tone(120,.25,'sawtooth');if(kind==='cash')tone(700,.18)}
+    function lock(value){document.querySelectorAll('button').forEach(b=>b.disabled=value)}
+    function addLog(text){const empty=$('log').querySelector('.empty');if(empty)empty.remove();const item=document.createElement('div');item.className='entry';item.textContent=text;$('log').prepend(item)}
+    async function animate(reel,delay){await wait(delay);reel.classList.add('spinning');for(let i=0;i<18;i++){reel.textContent=randomSymbol();await wait(55)}reel.classList.remove('spinning');return reel.textContent}
+    async function spin(bet,two,three){if(spinning)return;if(balance<bet){$('result').className='result bad';$('result').textContent=`Not enough balance for a ${euro(bet)} wager.`;effect('lose');return}lastBet=bet;spinning=true;lock(true);reels.forEach(r=>r.classList.remove('win'));balance-=bet;update();effect('spin');const result=await Promise.all(reels.map((r,i)=>animate(r,i*180)));const matches=result.filter(s=>s===result[0]).length;let prize=0;
+      if(Math.random()<.03){prize=Math.floor(Math.random()*81)+20;$('result').textContent=`🎉 JACKPOT! You won ${euro(prize)}!`}
+      else if(matches===3&&result.every(s=>s==='7️⃣')){prize=50;$('result').textContent='🍀 Lucky 7️⃣! You won €50.00!'}
+      else if(matches===3){prize=three;$('result').textContent=`🎉 Three matches! You won ${euro(prize)}!`}
+      else if(matches===2){prize=two;$('result').textContent=`✨ Two matches! You won ${euro(prize)}!`}
+      else{$('result').className='result bad';$('result').textContent='No match this time — try again!'}
+      if(prize){$('result').className='result';reels.forEach(r=>r.classList.add('win'));effect('win')}else effect('lose');balance+=prize;winnings+=prize;best=Math.max(best,winnings);update();addLog(`${new Date().toLocaleTimeString()} • Wager ${euro(bet)} • ${result.join(' ')} • +${euro(prize)} • Balance ${euro(balance)}`);spinning=false;lock(false);if(balance<1)endGame()}
+    function endGame(){$('overlay').style.display='grid';$('final').textContent=`Total winnings: ${euro(winnings)}`}
+    function restart(){balance=100;winnings=0;reels.forEach(r=>{r.textContent='🍒';r.classList.remove('win')});$('result').className='result';$('result').textContent='Choose a wager to begin';$('log').innerHTML='<div class="empty">Your spins will appear here.</div>';$('overlay').style.display='none';update();effect('cash')}
+    document.querySelectorAll('[data-bet]').forEach(button=>button.onclick=()=>{const b=Number(button.dataset.bet);spin(b,b===1?2:b===2?5:b<=10?b*2:b*2,b===1?3:b===2?8:b<=10?b*5:b*4)});
+    $('random').onclick=()=>{const b=Math.floor(Math.random()*500)+1;spin(b,5,10)};$('allin').onclick=()=>{const b=Math.floor(balance);if(b)spin(b,5,10);else endGame()};$('cash').onclick=()=>{const amount=Math.floor(Math.random()*500)+1;balance+=amount;$('result').className='result';$('result').textContent=`💰 Added ${euro(amount)} to your balance.`;update();effect('cash')};$('restart').onclick=restart;
+    $('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'Sound on':'Sound off';$('sound').classList.toggle('off',!soundOn);if(soundOn)tone(660,.12)};$('volume').oninput=e=>{volume=e.target.value/100;$('volumeText').textContent=e.target.value+'%';if(soundOn)tone(660,.08)};
+    document.addEventListener('pointerdown',()=>audio(),{once:true});document.addEventListener('keydown',e=>{if(e.code==='Space'&&!spinning&&$('overlay').style.display!=='grid'){e.preventDefault();spin(lastBet,Math.max(2,lastBet*2),Math.max(3,lastBet*4))}});update();
+  </script>
 </body>
 </html>

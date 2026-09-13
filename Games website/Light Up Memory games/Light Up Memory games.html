@@ -1,278 +1,355 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Memory Game with Levels & Sound</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #222;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    min-height: 100vh;
-    margin: 0;
-    padding: 20px;
-    color: #fff;
-  }
-
-  h1 {
-    font-size: 1.8em;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-
-  #levelDisplay {
-    font-size: 1.4em;
-    margin-bottom: 10px;
-  }
-
-  #game-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-    width: 100%;
-    max-width: 700px;
-  }
-
-  .color-button {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    transition: all 0.2s;
-    outline: none;
-    font-size: 1.2em;
-  }
-
-  .red { background-color: #ff4d4d; }
-  .green { background-color: #4dff4d; }
-  .blue { background-color: #4d4dff; }
-  .yellow { background-color: #ffff4d; }
-
-  /* Light highlight effect */
-  .light {
-    opacity: 0.6;
-  }
-
-  #status {
-    margin-top: 20px;
-    font-size: 1.4em;
-    text-align: center;
-  }
-
-  #buttons-container {
-    margin-top: 20px;
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  button {
-    padding: 12px 24px;
-    font-size: 1.2em;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background-color: #555;
-    color: #fff;
-    transition: background-color 0.2s;
-  }
-
-  button:hover {
-    background-color: #777;
-  }
-
-  /* Show Answer button style */
-  #showAnswerBtn {
-    background-color: #007bff;
-  }
-  #showAnswerBtn:hover {
-    background-color: #0056b3;
-  }
-
-  /* Responsive adjustments for small screens */
-  @media (max-width: 500px) {
-    h1 {
-      font-size: 1.5em;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#101827" />
+  <title>Memory Lights</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: rgba(20, 32, 54, .88);
+      --text: #f7fbff;
+      --muted: #a9b8cc;
+      --accent: #65d9ff;
+      --success: #69e6a5;
+      --danger: #ff7088;
     }
-    #status {
-      font-size: 1.2em;
+
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: max(18px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 50% -10%, #263d68 0, var(--bg) 48%, #060a12 100%);
     }
-    button {
-      padding: 10px 20px;
-      font-size: 1em;
+
+    /* Centered Exit Button Container */
+    .exit-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
     }
-  }
-</style>
+
+    /* Fixed position Exit link at bottom center */
+    .exit-fixed {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(52, 68, 93, 0.8);
+      padding: 12px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+    .exit-fixed a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    /* Main content styling */
+    .app { width: min(100%, 760px); position: relative; }
+    header { text-align: center; margin: 10px 0 22px; }
+    h1 { margin: 0; font-size: clamp(1.8rem, 5vw, 2.9rem); letter-spacing: -.04em; }
+    .subtitle { margin: 8px 0 0; color: var(--muted); font-size: .98rem; }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px;
+      padding: clamp(16px, 4vw, 28px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.28);
+      backdrop-filter: blur(12px);
+    }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
+    .stat { padding: 12px 8px; text-align: center; border-radius: 14px; background: rgba(255,255,255,.07); }
+    .stat strong { display: block; color: var(--accent); font-size: 1.45rem; }
+    .stat span { color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; }
+
+    #status { min-height: 29px; margin: 0 0 20px; color: #e8f2ff; text-align: center; font-size: clamp(1rem, 3vw, 1.2rem); font-weight: 700; }
+    #status.success { color: var(--success); }
+    #status.error { color: var(--danger); }
+
+    #game-container { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(10px, 2.5vw, 17px); max-width: 580px; margin: auto; }
+    .color-button {
+      position: relative; min-height: clamp(125px, 28vw, 245px); border: 3px solid rgba(255,255,255,.1); border-radius: clamp(18px, 4vw, 30px);
+      cursor: pointer; opacity: .72; box-shadow: inset 0 0 0 1px rgba(0,0,0,.1), 0 9px 18px rgba(0,0,0,.2);
+      transition: transform .14s ease, filter .14s ease, opacity .14s ease, box-shadow .14s ease;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    }
+    .color-button:focus-visible { outline: 4px solid white; outline-offset: 3px; }
+    .color-button:not(:disabled):active { transform: scale(.95); }
+    .color-button:disabled { cursor: not-allowed; }
+    .red { background: linear-gradient(145deg, #ff6f7f, #d92d4d); }
+    .green { background: linear-gradient(145deg, #6df0ab, #16a967); }
+    .blue { background: linear-gradient(145deg, #70b8ff, #2872e4); }
+    .yellow { background: linear-gradient(145deg, #ffe976, #e7a719); }
+    .color-button.light { opacity: 1; filter: brightness(1.45) saturate(1.25); transform: scale(1.045); box-shadow: 0 0 35px currentColor, inset 0 0 35px rgba(255,255,255,.42); }
+    .red.light { color: #ff526b; } .green.light { color: #35ed91; } .blue.light { color: #4b9aff; } .yellow.light { color: #ffd548; }
+
+    .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 11px; margin-top: 24px; }
+    button.control, .exit-link { min-height: 47px; padding: 11px 19px; border: 0; border-radius: 13px; color: white; background: #34445d; font: inherit; font-weight: 700; cursor: pointer; transition: transform .15s, background .15s; text-decoration: none; }
+    button.control:hover, .exit-link:hover { background: #465b78; transform: translateY(-2px); }
+    button.control:focus-visible, .exit-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    #startBtn { background: linear-gradient(135deg, #1bb7e8, #4568ec); }
+    #startBtn:hover { background: linear-gradient(135deg, #35c8f4, #5d7bf3); }
+    #showAnswerBtn { background: #8053c9; }
+    button:disabled { opacity: .48; cursor: not-allowed; transform: none !important; }
+
+    /* Volume control styling */
+    .settings { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; color: var(--muted); font-size: .9rem; }
+    .volume-value { min-width: 42px; color: var(--text); font-weight: 700; }
+    input[type="range"] { width: min(240px, 48vw); accent-color: var(--accent); cursor: pointer; }
+
+    /* Responsive adjustments */
+    @media (max-width: 430px) {
+      .panel { border-radius: 20px; padding: 15px; }
+      .color-button { min-height: 32vw; }
+      .controls { gap: 8px; }
+      button.control, .exit-link { flex: 1 1 42%; padding: 10px 8px; font-size: .9rem; }
+      .settings { flex-wrap: wrap; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; } }
+  </style>
 </head>
 <body>
-<h1>Light Up Memory Games with Levels & Sound</h1>
-<div id="levelDisplay">Level: 0</div>
-<div id="game-container">
-  <button class="color-button red" data-color="red"></button>
-  <button class="color-button green" data-color="green"></button>
-  <button class="color-button blue" data-color="blue"></button>
-  <button class="color-button yellow" data-color="yellow"></button>
-</div>
-<div id="status">Press Start to Play!</div>
+  <!-- Centered Exit Button Overlay -->
+  <div class="exit-center">
+    <a href="../games.html" class="exit-link">Exit</a>
+  </div>
 
-<!-- Buttons: Start, Show Answer, Exit -->
-<div id="buttons-container">
-  <button id="startBtn">Start Game</button>
-  <button id="showAnswerBtn">Show Answer</button>
-  <a href="../games.html" style="text-decoration: none;"><button id="exitBtn">Exit</button></a>
-</div>
+  <!-- Fixed Exit at Bottom Center -->
+  <div class="exit-fixed">
+    <a href="../games.html">Exit</a>
+  </div>
 
-<script>
-const colors = ['red', 'green', 'blue', 'yellow'];
-let sequence = [];
-let playerSequence = [];
-let level = 0;
-let isPlayerTurn = false;
-let gameActive = false;
-let showAnswerTimeout = null;
+  <main class="app">
+    <header>
+      <h1>Memory Lights</h1>
+      <p class="subtitle">Watch the pattern. Repeat it. Beat your best score.</p>
+    </header>
 
-// Select elements
-const buttons = document.querySelectorAll('.color-button');
-const status = document.getElementById('status');
-const startBtn = document.getElementById('startBtn');
-const showAnswerBtn = document.getElementById('showAnswerBtn');
-const exitBtn = document.getElementById('exitBtn');
-const levelDisplay = document.getElementById('levelDisplay');
+    <section class="panel" aria-label="Memory game">
+      <div class="stats">
+        <div class="stat"><strong id="levelDisplay">0</strong><span>Level</span></div>
+        <div class="stat"><strong id="bestDisplay">0</strong><span>Best</span></div>
+        <div class="stat"><strong id="streakDisplay">0</strong><span>Streak</span></div>
+      </div>
+      <p id="status" role="status" aria-live="polite">Press Start to play!</p>
+      <div id="game-container" aria-label="Color buttons">
+        <button class="color-button red" data-color="red" aria-label="Red" disabled></button>
+        <button class="color-button green" data-color="green" aria-label="Green" disabled></button>
+        <button class="color-button blue" data-color="blue" aria-label="Blue" disabled></button>
+        <button class="color-button yellow" data-color="yellow" aria-label="Yellow" disabled></button>
+      </div>
+      <div class="controls">
+        <button class="control" id="startBtn">Start Game</button>
+        <button class="control" id="showAnswerBtn" disabled>Show Answer</button>
+        <a class="exit-link" href="../games.html">Exit</a>
+      </div>
+      <div class="settings">
+        <span>🔊 Volume</span>
+        <input id="volumeSlider" type="range" min="0" max="100" value="65" aria-label="Volume" />
+        <span class="volume-value" id="volumeValue">65%</span>
+      </div>
+      <p class="hint">Keyboard: use R, G, B, Y · Works with touch on Android and mouse on PC</p>
+    </section>
+  </main>
 
-// Setup Web Audio API
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioContext();
+  <script>
+    const colors = ['red', 'green', 'blue', 'yellow'];
+    const frequency = { red: 261.63, green: 329.63, blue: 392, yellow: 523.25 };
+    const buttons = [...document.querySelectorAll('.color-button')];
+    const status = document.getElementById('status');
+    const startBtn = document.getElementById('startBtn');
+    const showAnswerBtn = document.getElementById('showAnswerBtn');
+    const levelDisplay = document.getElementById('levelDisplay');
+    const bestDisplay = document.getElementById('bestDisplay');
+    const streakDisplay = document.getElementById('streakDisplay');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeValue = document.getElementById('volumeValue');
 
-const colorFrequencies = {
-  red: 440,
-  green: 550,
-  blue: 660,
-  yellow: 770
-};
+    let audioCtx;
+    let masterGain;
+    let sequence = [], playerIndex = 0, level = 0, best = Number(localStorage.getItem('memoryLightsBest') || 0);
+    let streak = 0, gameActive = false, playerTurn = false, timerIds = [];
 
-function playSound(frequency, duration=400) {
-  const oscillator = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
-  oscillator.type = 'sine';
-  oscillator.frequency.value = frequency;
-  oscillator.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-  oscillator.start();
-  gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-  setTimeout(() => { oscillator.stop(); }, duration);
-}
+    bestDisplay.textContent = best;
 
-function lightUp(color) {
-  const btn = document.querySelector(`.color-button[data-color="${color}"]`);
-  if (!btn) return;
-  btn.classList.add('light');
-  playSound(colorFrequencies[color]);
-  setTimeout(() => { btn.classList.remove('light'); }, 500);
-}
+    function setStatus(message, type = '') {
+      status.textContent = message;
+      status.className = type;
+    }
+    function updateStats() {
+      levelDisplay.textContent = level;
+      bestDisplay.textContent = best;
+      streakDisplay.textContent = streak;
+    }
+    function clearTimers() { timerIds.forEach(clearTimeout); timerIds = []; }
+    function delay(ms) { return new Promise(resolve => { timerIds.push(setTimeout(resolve, ms)); }); }
 
-function generateNext() {
-  const nextColor = colors[Math.floor(Math.random() * colors.length)];
-  sequence.push(nextColor);
-}
+    function setupAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        audioCtx = new AudioContext();
+        masterGain = audioCtx.createGain();
+        masterGain.connect(audioCtx.destination);
+        updateVolume();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+    function updateVolume() {
+      const value = Number(volumeSlider.value);
+      volumeValue.textContent = `${value}%`;
+      if (masterGain) masterGain.gain.value = value / 100 * 0.22;
+      localStorage.setItem('memoryLightsVolume', value);
+    }
+    const savedVolume = localStorage.getItem('memoryLightsVolume');
+    if (savedVolume !== null) { volumeSlider.value = savedVolume; updateVolume(); }
+    volumeSlider.addEventListener('input', updateVolume);
 
-async function playSequence() {
-  isPlayerTurn = false;
-  status.textContent = 'Watch the sequence!';
-  for (const color of sequence) {
-    lightUp(color);
-    await new Promise(resolve => setTimeout(resolve, 700));
-  }
-  status.textContent = 'Your turn!';
-  isPlayerTurn = true;
-}
-
-function updateLevelDisplay() {
-  levelDisplay.textContent = `Level: ${level}`;
-}
-
-async function nextLevel() {
-  generateNext();
-  updateLevelDisplay();
-  await playSequence();
-}
-
-function startGame() {
-  sequence = [];
-  level = 0;
-  gameActive = true;
-  updateLevelDisplay();
-  status.textContent = 'Game Starting...';
-  setTimeout(() => {
-    nextLevel();
-  }, 500);
-}
-
-function endGame() {
-  sequence = [];
-  playerSequence = [];
-  level = 0;
-  gameActive = false;
-  isPlayerTurn = false;
-  status.textContent = 'Game Over! Press Start to play again.';
-  updateLevelDisplay();
-}
-
-// Handle color button clicks
-buttons.forEach(button => {
-  button.addEventListener('click', () => {
-    if (!isPlayerTurn || !gameActive) return;
-    const color = button.dataset.color;
-    playerSequence.push(color);
-    lightUp(color);
-
-    const idx = playerSequence.length - 1;
-    if (playerSequence[idx] !== sequence[idx]) {
-      status.textContent = 'Wrong! Game Over!';
-      endGame();
-      return;
+    function playSound(color, good = true) {
+      if (!audioCtx || Number(volumeSlider.value) === 0) return;
+      const oscillator = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      oscillator.type = good ? 'sine' : 'sawtooth';
+      oscillator.frequency.value = frequency[color];
+      gain.gain.setValueAtTime(1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (good ? 0.3 : 0.5));
+      oscillator.connect(gain).connect(masterGain);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + (good ? 0.3 : 0.5));
     }
 
-    if (playerSequence.length === sequence.length) {
-      level++;
-      updateLevelDisplay();
-      status.textContent = 'Good job! Next level...';
-      playerSequence = [];
-      setTimeout(nextLevel, 1000);
+    async function lightUp(color, duration = 420) {
+      const button = document.querySelector(`[data-color="${color}"]`);
+      if (!button) return;
+      button.classList.add('light');
+      playSound(color);
+      await delay(duration);
+      button.classList.remove('light');
     }
-  });
-});
 
-// Start game
-startBtn.addEventListener('click', () => {
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  startGame();
-});
+    function setInputEnabled(enabled) {
+      buttons.forEach(btn => btn.disabled = !enabled);
+    }
+    function addColor() {
+      sequence.push(colors[Math.floor(Math.random() * colors.length)]);
+    }
 
-// Show Answer button
-showAnswerBtn.addEventListener('click', () => {
-  if (sequence.length === 0) return;
-  // Cancel previous timeout if any
-  if (showAnswerTimeout) clearTimeout(showAnswerTimeout);
-  status.textContent = 'Answer:';
-  sequence.forEach((color, index) => {
-    setTimeout(() => {
-      lightUp(color);
-    }, index * 600);
-  });
-  // Hide after 2 seconds
-  showAnswerTimeout = setTimeout(() => {
-    status.textContent = 'Your turn!';
-  }, sequence.length * 600 + 2000);
-});
+    async function playSequence() {
+      clearTimers();
+      playerTurn = false;
+      setInputEnabled(false);
+      showAnswerBtn.disabled = true;
+      setStatus('Watch the sequence...');
+      await delay(500);
+      const speed = Math.max(330, 600 - level * 12);
+      for (const color of sequence) {
+        await lightUp(color, speed);
+        await delay(150);
+      }
+      if (!gameActive) return;
+      playerIndex = 0;
+      playerTurn = true;
+      setInputEnabled(true);
+      showAnswerBtn.disabled = false;
+      setStatus('Your turn! Repeat the pattern.');
+    }
 
-// Exit button (inside link)
-</script>
+    function startGame() {
+      clearTimers();
+      setupAudio();
+      sequence = [];
+      level = 1;
+      streak = 0;
+      gameActive = true;
+      updateStats();
+      startBtn.textContent = 'Restart Game';
+      addColor();
+      playSequence();
+    }
+
+    function endGame(message = 'Game over. Press Start to try again.') {
+      clearTimers();
+      gameActive = false;
+      playerTurn = false;
+      setInputEnabled(false);
+      showAnswerBtn.disabled = true;
+      playSound('red', false);
+      setStatus(message, 'error');
+    }
+
+    async function chooseColor(color) {
+      if (!gameActive || !playerTurn) return;
+      await lightUp(color, 220);
+      if (color !== sequence[playerIndex]) {
+        endGame(`Wrong color! You reached level ${level}.`);
+        return;
+      }
+      playerIndex++;
+      if (playerIndex === sequence.length) {
+        level++;
+        streak++;
+        best = Math.max(best, level - 1);
+        localStorage.setItem('memoryLightsBest', best);
+        updateStats();
+        playerTurn = false;
+        setInputEnabled(false);
+        setStatus('Excellent! Next level...');
+        timerIds.push(setTimeout(() => {
+          addColor();
+          updateStats();
+          playSequence();
+        }, 850));
+      }
+    }
+
+    // Event listeners
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => chooseColor(btn.dataset.color));
+    });
+    document.addEventListener('keydown', (event) => {
+      const keyMap = { r: 'red', g: 'green', b: 'blue', y: 'yellow' };
+      if (keyMap[event.key.toLowerCase()]) chooseColor(keyMap[event.key.toLowerCase()]);
+      if (event.key === 'Enter' && !gameActive) startGame();
+    });
+    document.getElementById('startBtn').addEventListener('click', startGame);
+    document.getElementById('showAnswerBtn').addEventListener('click', async () => {
+      if (!gameActive || !sequence.length) return;
+      clearTimers();
+      playerTurn = false;
+      setInputEnabled(false);
+      showAnswerBtn.disabled = true;
+      setStatus('Here is the pattern...');
+      for (const color of sequence) {
+        await lightUp(color, 300);
+        await delay(120);
+      }
+      if (gameActive) {
+        playerIndex = 0;
+        playerTurn = true;
+        setInputEnabled(true);
+        showAnswerBtn.disabled = false;
+        setStatus('Your turn!');
+      }
+    });
+  </script>
 </body>
 </html>

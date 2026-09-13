@@ -34,6 +34,11 @@
       width: fit-content;
       min-width: 150px;
       text-align: center;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    #countDisplay.animate {
+      transform: scale(1.2);
+      background-color: #d4edda;
     }
 
     #timeDisplay, #topTimeDisplay {
@@ -99,8 +104,13 @@
   </div>
 
   <script>
-    let count = 0;
     const target = 150;
+    let count = 0;
+    let startTime = null;
+    let timerInterval = null;
+    let countdownInterval = null;
+    const maxTime = 60; // seconds
+
     const countDisplay = document.getElementById('countDisplay');
     const messageDiv = document.getElementById('message');
     const timeDisplay = document.getElementById('timeDisplay');
@@ -109,21 +119,47 @@
     const countBtn = document.getElementById('countBtn');
     const restartBtn = document.getElementById('restartBtn');
 
-    let startTime = null;
-    let timerInterval = null;
-    let topTime = null; // in seconds
+    // Load top time from local storage
+    let topTime = localStorage.getItem('topTime') ? parseFloat(localStorage.getItem('topTime')) : null;
+    if (topTime !== null) {
+      topTimeDisplay.textContent = `Top Time: ${topTime.toFixed(1)} sec`;
+    } else {
+      topTimeDisplay.textContent = 'Top Time: N/A';
+    }
 
+    // Function to start the timer when first click occurs
     function startTimer() {
       startTime = Date.now();
       if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(updateTime, 100);
+      startCountdown();
     }
 
+    // Function to start countdown from maxTime
+    function startCountdown() {
+      let remainingTime = maxTime;
+      document.getElementById('timeDisplay').textContent = `Time: ${remainingTime.toFixed(1)} sec`;
+      if (countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        remainingTime -= 0.1;
+        if (remainingTime <= 0) {
+          clearInterval(countdownInterval);
+          stopTimer();
+          messageDiv.innerHTML = '<span style="color: red; font-weight: bold;">Time\'s up! Try again.</span>';
+          countBtn.disabled = true;
+        } else {
+          document.getElementById('timeDisplay').textContent = `Time: ${remainingTime.toFixed(1)} sec`;
+        }
+      }, 100);
+    }
+
+    // Function to update elapsed time
     function updateTime() {
       const elapsed = (Date.now() - startTime) / 1000;
       timeDisplay.textContent = `Time: ${elapsed.toFixed(1)} sec`;
     }
 
+    // Function to stop the timer
     function stopTimer() {
       if (timerInterval) {
         clearInterval(timerInterval);
@@ -131,24 +167,36 @@
       }
     }
 
+    // Function to update top time in local storage
+    function updateTopTime(time) {
+      if (topTime === null || time < topTime) {
+        topTime = time;
+        localStorage.setItem('topTime', topTime);
+        topTimeDisplay.textContent = `Top Time: ${topTime.toFixed(1)} sec`;
+      }
+    }
+
+    // Function to update the count display and check for goal
     function updateDisplay() {
       countDisplay.textContent = count;
       if (count === target) {
         stopTimer();
+        clearInterval(countdownInterval);
         const totalTime = (Date.now() - startTime) / 1000;
-        // Update top time if it's better
-        if (topTime === null || totalTime < topTime) {
-          topTime = totalTime;
-          topTimeDisplay.textContent = `Top Time: ${topTime.toFixed(1)} sec`;
-        }
-        messageDiv.innerHTML = '<span id="goodJob" style="color: green; font-weight: bold;">Good job! You reached 150!</span>';
+        updateTopTime(totalTime);
+        // Animate success
+        countDisplay.classList.add('animate');
+        setTimeout(() => countDisplay.classList.remove('animate'), 300);
+        // Show success message
+        messageDiv.innerHTML = '<span style="color: green; font-weight: bold;">Good job! You reached 150!</span>';
         countBtn.disabled = true;
       }
     }
 
-    countBtn.addEventListener('click', () => {
+    // Event listener for Count button
+    document.getElementById('countBtn').addEventListener('click', () => {
       if (count === 0) {
-        startTimer(); // start timer on first click
+        startTimer();
       }
       if (count < target) {
         count++;
@@ -156,14 +204,14 @@
       }
     });
 
-    restartBtn.addEventListener('click', () => {
+    // Event listener for Restart button
+    document.getElementById('restartBtn').addEventListener('click', () => {
       count = 0;
       messageDiv.innerHTML = '';
       countBtn.disabled = false;
-      // Reset timer
       stopTimer();
-      timeDisplay.textContent = `Time: 0.0 sec`;
-      // Keep top time stored
+      clearInterval(countdownInterval);
+      document.getElementById('timeDisplay').textContent = `Time: 0.0 sec`;
       updateDisplay();
     });
 

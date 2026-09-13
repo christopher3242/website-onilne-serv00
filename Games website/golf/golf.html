@@ -1,170 +1,64 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Golf Games</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102a43">
+<title>Mini Golf</title>
 <style>
-  body { 
-    display: flex; flex-direction: column; align-items: center; 
-    background: #87CEEB; margin: 0; font-family: Arial, sans-serif; touch-action: none;
-  }
-  h1 { margin: 20px; color: #006400; }
-  canvas { border: 3px solid #006400; border-radius: 10px; max-width: 95vw; height: auto; }
-  .button-container { display: flex; gap: 10px; margin: 10px; }
-  button { padding: 10px 20px; font-size: 16px; cursor: pointer; border: none; border-radius: 5px; }
-  #restart { background-color: #1E90FF; color: white; }
-  #exit { background-color: #FF6347; color: white; }
-  #powerBar { width: 300px; height: 20px; border: 2px solid #006400; border-radius: 5px; margin: 10px; background: white; position: relative; }
-  #powerFill { height: 100%; width: 0; background: red; border-radius: 5px; }
-  #ballSelect { margin-bottom: 10px; }
+:root{--navy:#102a43;--blue:#1677c8;--ink:#172b4d;--green:#65b96e}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#dff4ff,#eef8ed);font:16px system-ui,sans-serif;color:var(--ink)}
+.game{width:min(100%,1000px);margin:auto;padding:clamp(7px,2vw,18px)}.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;background:var(--navy);color:#fff;border-radius:16px;padding:12px 16px}.top h1{margin:0;text-align:center;font-size:clamp(1.25rem,4vw,2rem)}button,.exit-link{border:0;border-radius:10px;padding:10px 13px;background:#fff;color:var(--navy);font-weight:800;text-decoration:none;cursor:pointer;min-height:42px}.top button{justify-self:end}.exit-link{justify-self:start}.info{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.card,.control{background:#fff;border-radius:12px;padding:8px 12px;box-shadow:0 2px 8px #17324a18}.card span{display:block;font-size:.75rem;color:#627d98}.card strong{font-size:1.1rem}.control{display:flex;align-items:center;gap:7px}.control select{min-height:30px}.control input{accent-color:var(--blue)}.volume{flex:1;min-width:180px}.volume input{width:100%}
+.board{background:#fff;border-radius:16px;padding:7px;box-shadow:0 5px 20px #17324a20}.wrap{position:relative;aspect-ratio:8/5;overflow:hidden;border-radius:11px;background:var(--green)}canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}.power-label{display:flex;justify-content:space-between;margin:8px 2px 4px;font-weight:800}.power{height:12px;background:#cad8e4;border-radius:8px;overflow:hidden}.power i{display:block;width:0;height:100%;background:linear-gradient(90deg,#58bd70,#ffc928,#ed5b45);transition:width .06s}.status{min-height:1.5em;text-align:center;margin:8px 0;font-weight:650}.help,.legend{text-align:center;color:#526b84;font-size:.88rem;margin:5px}.toast{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:clamp(1.5rem,7vw,3.5rem);font-weight:900;text-shadow:0 2px 5px #000;pointer-events:none;opacity:0;transition:opacity .2s}.toast.show{opacity:1}
+@media(max-width:600px){.top{padding:9px;grid-template-columns:auto 1fr auto}.info{gap:5px}.card,.control{padding:7px 8px;font-size:.88rem}.control{flex:1;justify-content:center}.volume{min-width:100%}.help{font-size:.82rem}}
+@media(hover:none){button,.exit-link{padding:12px 13px}canvas{cursor:default}}
 </style>
 </head>
 <body>
-<h1>Golf Games</h1>
-
-<select id="ballSelect">
-  <option value="white">White Ball</option>
-  <option value="red">Red Ball</option>
-  <option value="blue">Blue Ball</option>
-  <option value="yellow">Yellow Ball</option>
-</select>
-
-<canvas id="golfCanvas" width="700" height="400"></canvas>
-
-<div id="powerBar"><div id="powerFill"></div></div>
-
-<div class="button-container">
-  <button id="restart">Restart</button>
-  <a href="../games.html"><button id="exit">Exit</button></a>
-</div>
-
+<main class="game">
+<header class="top"><a class="exit-link" href="../games.html">← Exit</a><h1>⛳ Mini Golf</h1><button id="restart" type="button">↻ Restart</button></header>
+<section class="info" aria-label="Game information">
+<div class="card"><span>Hole</span><strong id="hole">1 / 10</strong></div><div class="card"><span>Strokes</span><strong id="strokes">0</strong></div><div class="card"><span>Best</span><strong id="best">—</strong></div><div class="card"><span>Turn</span><strong id="turn">Player 1</strong></div>
+<label class="control">Mode <select id="mode"><option value="solo">Solo</option><option value="two">2 Players</option><option value="cpu">Player vs CPU</option></select></label><label class="control">Ball <input id="color" type="color" value="#ffcf33" aria-label="Ball color"></label><label class="control volume">Volume <output id="volout">60%</output><input id="volume" type="range" min="1" max="100" value="60" aria-label="Volume"></label>
+</section>
+<div class="board"><div class="wrap"><canvas id="course" width="800" height="500" aria-label="Golf course. Drag from the ball and release to shoot"></canvas><div id="toast" class="toast" aria-hidden="true">Hole complete!</div></div></div>
+<p class="power-label"><span>Power</span><span id="powerText">0%</span></p><div class="power" id="powerMeter" role="progressbar" aria-label="Shot power" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="powerBar"></i></div>
+<p id="status" class="status" role="status" aria-live="polite">Drag from the ball away from your target to aim.</p><p class="legend">🪨 Stone obstacle &nbsp; 💧 Water resets the ball &nbsp; 🟨 Sand slows the ball</p><p class="help">Touch, mouse, or stylus: drag from the ball and release. One pointer at a time.</p>
+</main>
 <script>
-const canvas = document.getElementById("golfCanvas");
-const ctx = canvas.getContext("2d");
-const powerFill = document.getElementById("powerFill");
-const ballSelect = document.getElementById("ballSelect");
-const restartBtn = document.getElementById("restart");
-
-// --- Levels (now 5) ---
-const levels = [
-    { bg: "#3CB371", hole: { x: 600, y: 100, radius: 15 }, obstacles: [{x:200,y:150,width:20,height:150},{x:400,y:50,width:20,height:200}] },
-    { bg: "#228B22", hole: { x: 650, y: 300, radius: 15 }, obstacles: [{x:300,y:100,width:20,height:200},{x:500,y:150,width:20,height:150},{x:200,y:250,width:100,height:20}] },
-    { bg: "#2E8B57", hole: { x: 100, y: 50, radius: 15 }, obstacles: [{x:250,y:50,width:20,height:200},{x:450,y:200,width:20,height:150},{x:300,y:300,width:200,height:20}] },
-    { bg: "#6B8E23", hole: { x: 550, y: 200, radius: 15 }, obstacles: [{x:100,y:100,width:20,height:200},{x:300,y:250,width:150,height:20},{x:500,y:50,width:20,height:100}] },
-    { bg: "#556B2F", hole: { x: 650, y: 50, radius: 15 }, obstacles: [{x:200,y:100,width:20,height:250},{x:400,y:50,width:150,height:20},{x:500,y:150,width:20,height:150},{x:300,y:300,width:200,height:20}] }
-];
-
-let currentLevel = 0;
-let strokes = 0;
-let dragging = false;
-let dragStart = { x: 0, y: 0 };
-let power = 0;
-const maxPower = 50;
-let ball = { x: 100, y: 350, radius: 10, vx: 0, vy: 0, color: 'white' };
-
-// --- Input ---
-function getMousePos(e) {
-    const rect = canvas.getBoundingClientRect();
-    let clientX = e.clientX, clientY = e.clientY;
-    if(e.touches){ clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; }
-    return { x: clientX - rect.left, y: clientY - rect.top };
-}
-
-function startDrag(e) {
-    const pos = getMousePos(e);
-    const dist = Math.hypot(pos.x - ball.x, pos.y - ball.y);
-    if(dist < ball.radius){ dragging = true; dragStart.x = pos.x; dragStart.y = pos.y; }
-}
-
-function endDrag(e) {
-    if(dragging){
-        const pos = getMousePos(e);
-        const dx = dragStart.x - pos.x;
-        const dy = dragStart.y - pos.y;
-        const dist = Math.min(Math.hypot(dx, dy), maxPower);
-        ball.vx = dx / maxPower * 10;
-        ball.vy = dy / maxPower * 10;
-        strokes++;
-        dragging = false;
-        power = 0;
-        powerFill.style.width = '0%';
-    }
-}
-
-canvas.addEventListener('mousedown', startDrag);
-canvas.addEventListener('touchstart', startDrag);
-canvas.addEventListener('mouseup', endDrag);
-canvas.addEventListener('touchend', endDrag);
-canvas.addEventListener('mousemove', e => { if(dragging){ const pos=getMousePos(e); power=Math.min(Math.hypot(dragStart.x-pos.x,dragStart.y-pos.y),maxPower); powerFill.style.width=(power/maxPower*100)+'%'; } });
-canvas.addEventListener('touchmove', e => { if(dragging){ const pos=getMousePos(e); power=Math.min(Math.hypot(dragStart.x-pos.x,dragStart.y-pos.y),maxPower); powerFill.style.width=(power/maxPower*100)+'%'; e.preventDefault(); } });
-
-// Ball color
-ballSelect.addEventListener('change', e=>{ ball.color=e.target.value; });
-
-// Restart
-restartBtn.addEventListener('click', ()=>{
-    ball.x=100; ball.y=350; ball.vx=0; ball.vy=0; strokes=0; currentLevel=0; power=0; powerFill.style.width='0%';
-});
-
-// --- Game Logic ---
-function update(){
-    ball.x += ball.vx;
-    ball.y += ball.vy;
-    ball.vx *= 0.95; ball.vy *= 0.95;
-    const level = levels[currentLevel];
-
-    // Walls
-    if(ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) ball.vx *= -1;
-    if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) ball.vy *= -1;
-
-    // Obstacles
-    level.obstacles.forEach(obs=>{
-        if(ball.x+ball.radius>obs.x && ball.x-ball.radius<obs.x+obs.width && ball.y+ball.radius>obs.y && ball.y-ball.radius<obs.y+obs.height){
-            if(ball.x<obs.x||ball.x>obs.x+obs.width) ball.vx*=-1;
-            if(ball.y<obs.y||ball.y>obs.y+obs.height) ball.vy*=-1;
-        }
-    });
-
-    // Hole
-    const hole = level.hole;
-    if(Math.hypot(ball.x-hole.x, ball.y-hole.y)<ball.radius+hole.radius){
-        alert(`Level ${currentLevel+1} complete! Strokes: ${strokes}`);
-        currentLevel++;
-        if(currentLevel>=levels.length){ alert("🎉 You finished all levels! Game over."); currentLevel=0; }
-        ball.x=100; ball.y=350; ball.vx=0; ball.vy=0; strokes=0;
-    }
-}
-
-function drawArrow(){
-    if(dragging){
-        const dx = dragStart.x - ball.x; const dy = dragStart.y - ball.y;
-        const angle = Math.atan2(dy, dx); const length = power*3;
-        ctx.strokeStyle='yellow'; ctx.lineWidth=3;
-        ctx.beginPath(); ctx.moveTo(ball.x, ball.y); ctx.lineTo(ball.x+Math.cos(angle)*length, ball.y+Math.sin(angle)*length); ctx.stroke();
-        const headLen=10;
-        ctx.beginPath();
-        ctx.moveTo(ball.x+Math.cos(angle)*length, ball.y+Math.sin(angle)*length);
-        ctx.lineTo(ball.x+Math.cos(angle)*(length-headLen)-Math.sin(angle)*headLen, ball.y+Math.sin(angle)*(length-headLen)+Math.cos(angle)*headLen);
-        ctx.lineTo(ball.x+Math.cos(angle)*(length-headLen)+Math.sin(angle)*headLen, ball.y+Math.sin(angle)*(length-headLen)-Math.cos(angle)*headLen);
-        ctx.closePath(); ctx.fillStyle='yellow'; ctx.fill();
-    }
-}
-
-function draw(){
-    const level = levels[currentLevel];
-    ctx.fillStyle=level.bg; ctx.fillRect(0,0,canvas.width,canvas.height);
-    level.obstacles.forEach(obs=>{ ctx.fillStyle="#8B4513"; ctx.fillRect(obs.x, obs.y, obs.width, obs.height); });
-    ctx.beginPath(); ctx.arc(level.hole.x, level.hole.y, level.hole.radius, 0, Math.PI*2); ctx.fillStyle="black"; ctx.fill();
-    drawArrow();
-    ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2); ctx.fillStyle=ball.color; ctx.fill(); ctx.stroke();
-    ctx.fillStyle="white"; ctx.font="18px Arial";
-    ctx.fillText(`Level: ${currentLevel+1} / ${levels.length}`,10,20);
-    ctx.fillText(`Strokes: ${strokes}`,10,40);
-}
-
-function gameLoop(){ update(); draw(); requestAnimationFrame(gameLoop); }
-gameLoop();
+(()=>{'use strict';
+const canvas=document.querySelector('#course'),ctx=canvas.getContext('2d'),W=800,H=500,R=11;
+const $=id=>document.getElementById(id),ui={hole:$('hole'),strokes:$('strokes'),best:$('best'),turn:$('turn'),mode:$('mode'),color:$('color'),volume:$('volume'),volout:$('volout'),status:$('status'),bar:$('powerBar'),power:$('powerText'),meter:$('powerMeter'),toast:$('toast')};
+let holes=[],level=0,player=0,balls=[],scores=[0,0],turnStrokes=0,velocity={x:0,y:0},aim=null,activePointer=null,moving=false,complete=false,cpuTimer=0,audio=null;
+const rand=(a,b)=>Math.random()*(b-a)+a,clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+function rect(x,y,w,h){return{x,y,w,h}}
+function makeLevel(n){let h={start:[55,250],cup:[745,rand(70,430)],walls:[rect(0,0,800,18),rect(0,482,800,18),rect(0,0,18,500),rect(782,0,18,500)],stones:[],water:[],sand:[]};if(n%3===0)h.walls.push(rect(270,115,24,210),rect(500,275,170,24));else if(n%3===1)h.walls.push(rect(245,150,190,24),rect(545,300,24,135));else h.walls.push(rect(300,80,24,175),rect(475,340,24,100));let count=1+n%4;for(let i=0;i<count;i++)h.stones.push({x:rand(220,610),y:rand(65,435),r:rand(22,38)});if(n%2)h.water.push(rect(rand(270,570),rand(50,350),rand(65,110),rand(45,90)));if(n%3!==1)h.sand.push(rect(rand(180,570),rand(70,370),rand(75,135),rand(45,85)));if(n===9){h.water=[rect(320,55,110,135),rect(485,305,125,105)];h.stones=[{x:270,y:250,r:34},{x:620,y:170,r:36}]};return h}
+function resetGame(){clearTimeout(cpuTimer);holes=Array.from({length:10},(_,i)=>makeLevel(i));for(let i=9;i>0;i--){let j=Math.floor(Math.random()*(i+1));[holes[i],holes[j]]=[holes[j],holes[i]]}level=0;player=0;scores=[0,0];loadHole()}
+function loadHole(){clearTimeout(cpuTimer);let h=holes[level];balls=[h.start.slice(),h.start.slice()];velocity={x:0,y:0};aim=null;activePointer=null;moving=false;complete=false;turnStrokes=0;setStatus('Drag from the ball away from your target to aim.');update();draw();if(ui.mode.value==='cpu'&&player===1)cpuTimer=setTimeout(cpuShot,800)}
+function update(){ui.hole.textContent=`${level+1} / 10`;ui.strokes.textContent=turnStrokes;ui.best.textContent=localStorage.getItem('miniGolfBest')||'—';ui.turn.textContent=ui.mode.value==='solo'?'Player 1':player?'CPU'==='CPU'&&ui.mode.value==='cpu'?'CPU':'Player 2':'Player 1'}
+function setStatus(text){ui.status.textContent=text}
+function unlockAudio(){if(!audio){let AC=window.AudioContext||window.webkitAudioContext;if(AC)audio=new AC()}if(audio&&audio.state==='suspended')audio.resume()}
+function sound(freq,duration=.09,type='sine'){if(!audio||audio.state!=='running')return;let o=audio.createOscillator(),g=audio.createGain(),gain=.045*Number(ui.volume.value)/100;o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(gain,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+duration)}
+function inside(p,r){return p[0]>r.x&&p[0]<r.x+r.w&&p[1]>r.y&&p[1]<r.y+r.h}
+function draw(){let h=holes[level];ctx.clearRect(0,0,W,H);ctx.fillStyle='#65b96e';ctx.fillRect(0,0,W,H);h.sand.forEach(r=>{ctx.fillStyle='#e8c982';ctx.fillRect(r.x,r.y,r.w,r.h)});h.water.forEach(r=>{ctx.fillStyle='#36a9d8';ctx.fillRect(r.x,r.y,r.w,r.h);ctx.strokeStyle='#b8efff';ctx.lineWidth=3;ctx.strokeRect(r.x+2,r.y+2,r.w-4,r.h-4)});h.stones.forEach(s=>{ctx.fillStyle='#697783';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#46535c';ctx.lineWidth=3;ctx.stroke()});ctx.fillStyle='#8b5a36';ctx.strokeStyle='#633d25';ctx.lineWidth=2;h.walls.slice(4).forEach(r=>{ctx.fillRect(r.x,r.y,r.w,r.h);ctx.strokeRect(r.x,r.y,r.w,r.h)});ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(h.cup[0],h.cup[1],14,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#333';ctx.stroke();ctx.fillStyle='#222';ctx.beginPath();ctx.arc(h.cup[0],h.cup[1],4,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#17324a';ctx.lineWidth=5;h.walls.forEach(r=>ctx.strokeRect(r.x+2,r.y+2,r.w-4,r.h-4));let b=balls[player];ctx.fillStyle=ui.color.value;ctx.beginPath();ctx.arc(b[0],b[1],R,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#744';ctx.lineWidth=2;ctx.stroke();if(aim&&!moving){ctx.setLineDash([8,7]);ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(b[0],b[1]);ctx.lineTo(aim[0],aim[1]);ctx.stroke();ctx.setLineDash([])}}
+function point(e){let r=canvas.getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height]}
+function canHumanShoot(){return!moving&&!complete&&activePointer===null&&!(ui.mode.value==='cpu'&&player===1)}
+function clearAim(){aim=null;activePointer=null;ui.bar.style.width='0%';ui.power.textContent='0%';ui.meter.setAttribute('aria-valuenow','0');draw()}
+canvas.addEventListener('pointerdown',e=>{if(!canHumanShoot())return;let p=point(e),b=balls[player];if(Math.hypot(p[0]-b[0],p[1]-b[1])<=35){unlockAudio();activePointer=e.pointerId;canvas.setPointerCapture(e.pointerId);aim=p;e.preventDefault();draw()}});
+canvas.addEventListener('pointermove',e=>{if(e.pointerId!==activePointer)return;aim=point(e);let b=balls[player],power=clamp(Math.hypot(aim[0]-b[0],aim[1]-b[1])/2.7,0,100),value=Math.round(power);ui.bar.style.width=value+'%';ui.power.textContent=value+'%';ui.meter.setAttribute('aria-valuenow',value);draw()});
+function release(e){if(e.pointerId!==activePointer)return;let p=point(e),b=balls[player],dx=b[0]-p[0],dy=b[1]-p[1],d=Math.hypot(dx,dy),power=clamp(d/2.7,0,100);clearAim();if(power>3)shoot(dx/d*power*.105,dy/d*power*.105)}
+canvas.addEventListener('pointerup',release);canvas.addEventListener('pointercancel',clearAim);canvas.addEventListener('lostpointercapture',()=>{if(activePointer!==null)clearAim()});
+function shoot(vx,vy){if(moving||complete)return;unlockAudio();velocity={x:vx,y:vy};moving=true;turnStrokes++;scores[player]++;sound(520,.12,'triangle');update();setStatus('Ball in play…');requestAnimationFrame(tick)}
+function tick(){if(!moving)return;let h=holes[level],b=balls[player],slow=h.sand.some(r=>inside(b,r));b[0]+=velocity.x;b[1]+=velocity.y;let speed=slow?.975:.991;velocity.x*=speed;velocity.y*=speed;
+if(b[0]<R+18){b[0]=R+18;velocity.x=Math.abs(velocity.x)*.82;sound(170,.06)}if(b[0]>W-R-18){b[0]=W-R-18;velocity.x=-Math.abs(velocity.x)*.82;sound(170,.06)}if(b[1]<R+18){b[1]=R+18;velocity.y=Math.abs(velocity.y)*.82;sound(170,.06)}if(b[1]>H-R-18){b[1]=H-R-18;velocity.y=-Math.abs(velocity.y)*.82;sound(170,.06)}
+for(let wall of h.walls.slice(4)){let nearestX=clamp(b[0],wall.x,wall.x+wall.w),nearestY=clamp(b[1],wall.y,wall.y+wall.h),dx=b[0]-nearestX,dy=b[1]-nearestY;if(dx*dx+dy*dy<R*R){if(Math.abs(dx)>Math.abs(dy)){b[0]=nearestX+(dx<0?-R:R);velocity.x=-velocity.x*.82}else{b[1]=nearestY+(dy<0?-R:R);velocity.y=-velocity.y*.82}sound(170,.06)}}
+for(let s of h.stones){let dx=b[0]-s.x,dy=b[1]-s.y,d=Math.hypot(dx,dy),min=s.r+R;if(d<min){let nx=dx/(d||1),ny=dy/(d||1),dot=velocity.x*nx+velocity.y*ny;b[0]=s.x+nx*min;b[1]=s.y+ny*min;if(dot<0){velocity.x=(velocity.x-2*dot*nx)*.82;velocity.y=(velocity.y-2*dot*ny)*.82;sound(135,.08,'square')}}}
+if(h.water.some(r=>inside(b,r))){balls[player]=h.start.slice();velocity={x:0,y:0};moving=false;setStatus('Water hazard! The ball returns to the tee.');sound(90,.16,'sine');draw();return}if(Math.hypot(b[0]-h.cup[0],b[1]-h.cup[1])<17&&Math.hypot(velocity.x,velocity.y)<2){b[0]=h.cup[0];b[1]=h.cup[1];velocity={x:0,y:0};moving=false;finishHole();return}if(Math.hypot(velocity.x,velocity.y)<.08){velocity={x:0,y:0};moving=false;afterShot();return}draw();requestAnimationFrame(tick)}
+function afterShot(){if(ui.mode.value!=='solo'){player=player?0:1;turnStrokes=0;update();draw();if(ui.mode.value==='cpu'&&player===1)cpuTimer=setTimeout(cpuShot,700)}else{setStatus('Aim your next shot.');update();draw()}}
+function finishHole(){complete=true;sound(760,.3,'sine');ui.toast.textContent=`${ui.turn.textContent} finished!`;ui.toast.classList.add('show');ui.toast.setAttribute('aria-hidden','false');if(ui.mode.value==='solo'){let best=Number(localStorage.getItem('miniGolfBest')||9999);if(scores[0]<best){localStorage.setItem('miniGolfBest',scores[0]);ui.best.textContent=scores[0]}}setTimeout(()=>{ui.toast.classList.remove('show');ui.toast.setAttribute('aria-hidden','true');if(level<9){level++;player=0;loadHole()}else{setStatus('Course complete! Press Restart for a new random course.');update()}},900)}
+function cpuShot(){if(complete||moving||ui.mode.value!=='cpu'||player!==1)return;let b=balls[1],h=holes[level],dx=h.cup[0]-b[0],dy=h.cup[1]-b[1],d=Math.hypot(dx,dy)||1,angle=Math.atan2(dy,dx)+rand(-.13,.13),power=Math.min(100,d*1.25);shoot(Math.cos(angle)*power*.105,Math.sin(angle)*power*.105)}
+$('restart').addEventListener('click',()=>{unlockAudio();resetGame()});ui.mode.addEventListener('change',()=>{unlockAudio();resetGame()});ui.color.addEventListener('input',draw);ui.volume.addEventListener('input',()=>ui.volout.textContent=ui.volume.value+'%');window.addEventListener('pointerdown',unlockAudio,{once:true,passive:true});resetGame();
+})();
 </script>
 </body>
 </html>

@@ -1,195 +1,331 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Snake Games</title>
-<style>
-  body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #4682B4; /* Blue background */
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#07111f" />
+  <title>Neon Snake</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: rgba(14, 31, 52, .88);
+      --line: rgba(134, 239, 172, .22);
+      --text: #f4fbff;
+      --muted: #9bb1c5;
+      --green: #62f69a;
+      --cyan: #53d9ff;
+      --yellow: #ffd166;
+      --danger: #ff657a;
+    }
 
-  h1 {
-    margin: 20px 0;
-    font-size: 48px;
-    color: #FFFFFF;
-    text-shadow: 2px 2px 4px #000;
-  }
+    * { box-sizing: border-box; }
 
-  /* Style for the game canvas */
-  #gameCanvas {
-    background-color: #000;
-    border: 2px solid #555;
-    width: 90%;
-    max-width: 400px;
-    height: auto;
-  }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 18px;
+      display: flex;
+      justify-content: center;
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+      background: radial-gradient(circle at top, #12345a 0, var(--bg) 48%, #030811 100%);
+    }
 
-  /* Info and controls */
-  #score, #bestScore {
-    font-size: 20px;
-    margin: 8px 0;
-    color: #FFFFFF;
-  }
+    .app { width: min(100%, 760px); }
 
-  #exit {
-    margin-top: 10px;
-    text-decoration: none;
-    color: #FFD700;
-    font-size: 18px;
-  }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
 
-  #exit:hover {
-    text-decoration: underline;
-  }
+    h1 { margin: 0; font-size: clamp(28px, 6vw, 46px); letter-spacing: 2px; }
+    h1 span { color: var(--green); text-shadow: 0 0 18px rgba(98,246,154,.75); }
+    .subtitle { margin: 5px 0 0; color: var(--muted); font-size: 14px; }
 
-  #controller {
-    width: 100%;
-    max-width: 400px;
-    height: 60px;
-    background-color: rgba(255, 255, 255, 0.2);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 10px;
-  }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px;
+      background: var(--panel);
+      box-shadow: 0 18px 55px rgba(0,0,0,.3), inset 0 1px rgba(255,255,255,.05);
+      backdrop-filter: blur(12px);
+    }
 
-  .control {
-    flex: 1;
-    text-align: center;
-    font-size: 24px;
-    cursor: pointer;
-    user-select: none;
-  }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    .stat { padding: 12px; border-radius: 14px; background: rgba(255,255,255,.055); text-align: center; }
+    .stat small { display: block; color: var(--muted); font-size: 12px; }
+    .stat strong { display: block; margin-top: 4px; color: var(--green); font-size: 23px; }
 
-  .control:hover {
-    background-color: rgba(255, 255, 255, 0.4);
-  }
-</style>
+    .game-wrap { position: relative; width: min(100%, 560px); margin: auto; }
+    canvas {
+      display: block; width: 100%; height: auto; aspect-ratio: 1;
+      border: 2px solid rgba(98,246,154,.5); border-radius: 15px;
+      background: #020810; box-shadow: 0 0 30px rgba(83,217,255,.12);
+      touch-action: none;
+    }
+
+    #message {
+      position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
+      font-size: clamp(22px, 6vw, 40px); font-weight: 800; text-align: center;
+      color: var(--yellow); text-shadow: 0 0 20px rgba(255,209,102,.8);
+      opacity: 0; transition: opacity .2s;
+    }
+    #message.show { opacity: 1; }
+
+    .toolbar, .settings { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin-top: 16px; }
+    button, select, input { font: inherit; }
+    button, select {
+      min-height: 44px; border: 1px solid rgba(255,255,255,.15); border-radius: 11px;
+      padding: 9px 16px; color: var(--text); background: #172b43; cursor: pointer;
+      transition: transform .15s, background .15s, border-color .15s;
+    }
+    button:hover, select:hover { background: #22415e; border-color: var(--cyan); }
+    button:active { transform: scale(.96); }
+    button.primary { color: #03130a; background: var(--green); border: 0; font-weight: 800; }
+    button.primary:hover { background: #93ffb9; }
+    .exit-link { text-decoration: none; }
+
+    label { color: var(--muted); font-size: 14px; }
+    .volume { display: flex; align-items: center; gap: 8px; }
+    input[type="range"] { width: 130px; accent-color: var(--green); }
+    #volumeValue { min-width: 40px; color: var(--green); font-weight: 700; }
+
+    .controls { width: min(260px, 100%); display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 18px auto 0; }
+    .control { min-height: 54px; padding: 0; font-size: 25px; font-weight: 700; }
+    .control.up { grid-column: 2; }
+    .control.left { grid-column: 1; grid-row: 2; }
+    .control.down { grid-column: 2; grid-row: 2; }
+    .control.right { grid-column: 3; grid-row: 2; }
+
+    .help { margin: 16px 0 0; color: var(--muted); text-align: center; font-size: 13px; line-height: 1.5; }
+    .status { min-height: 22px; margin-top: 10px; color: var(--cyan); text-align: center; font-size: 14px; }
+
+    @media (max-width: 480px) {
+      body { padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); }
+      header { align-items: flex-start; }
+      .panel { padding: 11px; border-radius: 16px; }
+      .stat strong { font-size: 19px; }
+      .toolbar button, .toolbar select { flex: 1; padding-inline: 10px; }
+      .settings { justify-content: space-between; }
+      input[type="range"] { width: 105px; }
+    }
+  </style>
 </head>
 <body>
+  <main class="app">
+    <header>
+      <div>
+        <h1>NEON <span>SNAKE</span></h1>
+        <p class="subtitle">Eat, grow, and beat your best score.</p>
+      </div>
+      <button id="soundButton" type="button" aria-label="Turn sound off">🔊 Sound</button>
+    </header>
 
-<h1>Snake Games</h1>
+    <section class="panel">
+      <div class="stats" aria-live="polite">
+        <div class="stat"><small>Score</small><strong id="score">0</strong></div>
+        <div class="stat"><small>Best</small><strong id="best">0</strong></div>
+        <div class="stat"><small>Speed</small><strong id="speedLabel">Medium</strong></div>
+      </div>
 
-<canvas id="gameCanvas" width="400" height="400"></canvas>
+      <div class="game-wrap">
+        <canvas id="gameCanvas" width="480" height="480" aria-label="Snake game board"></canvas>
+        <div id="message">GAME OVER<br><small>Press Restart</small></div>
+      </div>
 
-<div id="score">Score: 0</div>
-<div id="bestScore">Best Score: 0</div>
+      <div class="toolbar">
+        <button id="restartButton" class="primary" type="button">↻ Restart</button>
+        <button id="pauseButton" type="button">Ⅱ Pause</button>
+        <select id="speedSelect" aria-label="Game speed">
+          <option value="220">Slow</option>
+          <option value="150" selected>Medium</option>
+          <option value="90">Fast</option>
+        </select>
+        <a href="../games.html" style="text-decoration:none;"><button class="btn" type="button">Exit</button></a>
+      </div>
 
-<a id="exit" href="../games.html" moz-do-not-send="true">Exit</a>
+      <div class="settings">
+        <label class="volume" for="volumeControl">🔈 Volume
+          <input id="volumeControl" type="range" min="1" max="100" value="70" />
+          <span id="volumeValue">70%</span>
+        </label>
+      </div>
 
-<div id="controller">
-  <div class="control" id="left">←</div>
-  <div class="control" id="up">↑</div>
-  <div class="control" id="down">↓</div>
-  <div class="control" id="right">→</div>
-</div>
+      <div class="controls" aria-label="Touch controls">
+        <button class="control up" data-direction="UP" type="button">▲</button>
+        <button class="control left" data-direction="LEFT" type="button">◀</button>
+        <button class="control down" data-direction="DOWN" type="button">▼</button>
+        <button class="control right" data-direction="RIGHT" type="button">▶</button>
+      </div>
+      <p class="help">PC: use Arrow Keys or WASD · Space: pause · Android: swipe the board or use the buttons</p>
+      <div id="status" class="status" aria-live="polite">Ready to play</div>
+    </section>
+  </main>
 
-<script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const size = 24;
+    const cells = canvas.width / size;
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const speedSelect = document.getElementById('speedSelect');
+    const speedLabel = document.getElementById('speedLabel');
+    const statusEl = document.getElementById('status');
+    const messageEl = document.getElementById('message');
+    const pauseButton = document.getElementById('pauseButton');
+    const soundButton = document.getElementById('soundButton');
+    const volumeControl = document.getElementById('volumeControl');
+    const volumeValue = document.getElementById('volumeValue');
 
-const box = 20;
-let snake = [{ x: box * 5, y: box * 5 }];
-let food = {
-    x: Math.floor(Math.random() * (canvas.width / box)) * box,
-    y: Math.floor(Math.random() * (canvas.height / box)) * box
-};
-let direction = 'RIGHT';
-let nextDirection = direction;
-let score = 0;
-let bestScore = localStorage.getItem('bestScore') ? parseInt(localStorage.getItem('bestScore')) : 0;
+    let snake, food, direction, nextDirection, score, best, timer;
+    let paused = false, gameOver = false, soundEnabled = true;
+    let audioContext;
 
-document.getElementById('bestScore').innerText = 'Best Score: ' + bestScore;
+    try { best = Number(localStorage.getItem('neonSnakeBest')) || 0; } catch { best = 0; }
+    bestEl.textContent = best;
 
-document.addEventListener('keydown', (event) => changeDirection(event));
-document.getElementById('left').addEventListener('click', () => changeDirection({ keyCode: 37 }));
-document.getElementById('up').addEventListener('click', () => changeDirection({ keyCode: 38 }));
-document.getElementById('down').addEventListener('click', () => changeDirection({ keyCode: 40 }));
-document.getElementById('right').addEventListener('click', () => changeDirection({ keyCode: 39 }));
-
-function changeDirection(event) {
-    if (event instanceof KeyboardEvent) {
-        event.preventDefault();
+    function audio() {
+      if (!soundEnabled) return null;
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === 'suspended') audioContext.resume();
+      return audioContext;
     }
-    const keyCode = event.keyCode;
-    if (keyCode === 37 && nextDirection !== 'RIGHT') nextDirection = 'LEFT';
-    else if (keyCode === 38 && nextDirection !== 'DOWN') nextDirection = 'UP';
-    else if (keyCode === 39 && nextDirection !== 'LEFT') nextDirection = 'RIGHT';
-    else if (keyCode === 40 && nextDirection !== 'UP') nextDirection = 'DOWN';
-}
 
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    function beep(frequency, duration = .08, type = 'sine') {
+      const ac = audio();
+      if (!ac) return;
+      const oscillator = ac.createOscillator();
+      const gain = ac.createGain();
+      oscillator.type = type;
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(Number(volumeControl.value) / 100 * .07, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, ac.currentTime + duration);
+      oscillator.connect(gain).connect(ac.destination);
+      oscillator.start(); oscillator.stop(ac.currentTime + duration);
+    }
 
-    // Draw food
-    ctx.fillStyle = 'red';
-    ctx.fillRect(food.x, food.y, box, box);
+    function randomFood() {
+      do {
+        food = { x: Math.floor(Math.random() * cells), y: Math.floor(Math.random() * cells) };
+      } while (snake.some(part => part.x === food.x && part.y === food.y));
+    }
 
-    // Update position
-    let snakeX = snake[0].x;
-    let snakeY = snake[0].y;
-    direction = nextDirection;
+    function restart() {
+      clearInterval(timer);
+      snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+      direction = nextDirection = 'RIGHT';
+      score = 0; paused = false; gameOver = false;
+      scoreEl.textContent = score;
+      messageEl.classList.remove('show');
+      pauseButton.textContent = 'Ⅱ Pause';
+      statusEl.textContent = 'Ready to play';
+      randomFood(); draw();
+      timer = setInterval(tick, Number(speedSelect.value));
+    }
 
-    if (direction === 'LEFT') snakeX -= box;
-    if (direction === 'UP') snakeY -= box;
-    if (direction === 'RIGHT') snakeX += box;
-    if (direction === 'DOWN') snakeY += box;
+    function setDirection(newDirection) {
+      const opposites = { LEFT: 'RIGHT', RIGHT: 'LEFT', UP: 'DOWN', DOWN: 'UP' };
+      if (!gameOver && opposites[newDirection] !== direction) nextDirection = newDirection;
+      audio();
+    }
 
-    // Check for eating food
-    if (snakeX === food.x && snakeY === food.y) {
+    function tick() {
+      if (paused || gameOver) return;
+      direction = nextDirection;
+      const head = { ...snake[0] };
+      if (direction === 'LEFT') head.x--;
+      if (direction === 'RIGHT') head.x++;
+      if (direction === 'UP') head.y--;
+      if (direction === 'DOWN') head.y++;
+
+      const hitWall = head.x < 0 || head.y < 0 || head.x >= cells || head.y >= cells;
+      const hitSelf = snake.some(part => part.x === head.x && part.y === head.y);
+      if (hitWall || hitSelf) return endGame();
+
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
         score++;
-        document.getElementById('score').innerText = 'Score: ' + score;
-        food = {
-            x: Math.floor(Math.random() * (canvas.width / box)) * box,
-            y: Math.floor(Math.random() * (canvas.height / box)) * box
-        };
-    } else {
-        snake.pop(); // Remove tail
+        scoreEl.textContent = score;
+        beep(520 + score * 18, .12, 'square');
+        statusEl.textContent = score % 5 === 0 ? 'Great run!' : 'Food collected!';
+        randomFood();
+      } else snake.pop();
+      draw();
     }
 
-    // Check for collisions
-    const newHead = { x: snakeX, y: snakeY };
-    if (
-        snakeX < 0 || snakeY < 0 ||
-        snakeX >= canvas.width || snakeY >= canvas.height ||
-        collision(newHead, snake)
-    ) {
-        clearInterval(game);
-        if (score > bestScore) {
-            bestScore = score;
-            localStorage.setItem('bestScore', bestScore);
-            document.getElementById('bestScore').innerText = 'Best Score: ' + bestScore;
-        }
-        alert('Game Over! Final Score: ' + score);
-        document.location.reload();
-        return;
+    function endGame() {
+      gameOver = true; clearInterval(timer); beep(130, .35, 'sawtooth');
+      if (score > best) {
+        best = score; bestEl.textContent = best;
+        try { localStorage.setItem('neonSnakeBest', best); } catch {}
+      }
+      messageEl.innerHTML = `GAME OVER<br><small>Score: ${score}</small>`;
+      messageEl.classList.add('show');
+      statusEl.textContent = 'Press Restart to play again';
     }
 
-    snake.unshift(newHead);
-
-    // Draw snake
-    for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = (i === 0) ? 'lime' : 'green';
-        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+    function draw() {
+      ctx.fillStyle = '#020810'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = 'rgba(83,217,255,.07)'; ctx.lineWidth = 1;
+      for (let i = 0; i <= cells; i++) {
+        ctx.beginPath(); ctx.moveTo(i * size, 0); ctx.lineTo(i * size, canvas.height); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, i * size); ctx.lineTo(canvas.width, i * size); ctx.stroke();
+      }
+      ctx.shadowBlur = 18; ctx.shadowColor = '#ff657a'; ctx.fillStyle = '#ff657a';
+      ctx.beginPath(); ctx.arc(food.x * size + size / 2, food.y * size + size / 2, size * .35, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 14;
+      snake.forEach((part, index) => {
+        ctx.shadowColor = index ? '#2bd66f' : '#a4ffc5';
+        ctx.fillStyle = index ? '#25b957' : '#8dffb2';
+        ctx.fillRect(part.x * size + 2, part.y * size + 2, size - 4, size - 4);
+      });
+      ctx.shadowBlur = 0;
     }
-}
 
-function collision(head, array) {
-    for (let i = 0; i < array.length; i++) {
-        if (head.x === array[i].x && head.y === array[i].y) {
-            return true;
-        }
+    function togglePause() {
+      if (gameOver) return;
+      paused = !paused;
+      pauseButton.textContent = paused ? '▶ Resume' : 'Ⅱ Pause';
+      statusEl.textContent = paused ? 'Game paused' : 'Keep going!';
+      if (paused) beep(260); else beep(420);
     }
-    return false;
-}
 
-const game = setInterval(draw, 180);
-</script>
+    speedSelect.addEventListener('change', () => {
+      speedLabel.textContent = speedSelect.options[speedSelect.selectedIndex].text;
+      restart();
+    });
+    document.getElementById('restartButton').addEventListener('click', () => { beep(330); restart(); });
+    pauseButton.addEventListener('click', togglePause);
+    soundButton.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundButton.textContent = soundEnabled ? '🔊 Sound' : '🔇 Muted';
+      soundButton.setAttribute('aria-label', soundEnabled ? 'Turn sound off' : 'Turn sound on');
+      if (soundEnabled) beep(600);
+    });
+    volumeControl.addEventListener('input', () => volumeValue.textContent = `${volumeControl.value}%`);
+    document.querySelectorAll('[data-direction]').forEach(button => button.addEventListener('click', () => setDirection(button.dataset.direction)));
+    document.addEventListener('keydown', event => {
+      const keys = { ArrowLeft: 'LEFT', ArrowRight: 'RIGHT', ArrowUp: 'UP', ArrowDown: 'DOWN', a: 'LEFT', d: 'RIGHT', w: 'UP', s: 'DOWN' };
+      if (keys[event.key]) { event.preventDefault(); setDirection(keys[event.key]); }
+      if (event.code === 'Space') { event.preventDefault(); togglePause(); }
+    });
+
+    let startX = 0, startY = 0;
+    canvas.addEventListener('touchstart', event => {
+      startX = event.touches[0].clientX; startY = event.touches[0].clientY;
+    }, { passive: true });
+    canvas.addEventListener('touchend', event => {
+      const dx = event.changedTouches[0].clientX - startX;
+      const dy = event.changedTouches[0].clientY - startY;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 25) return;
+      setDirection(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'RIGHT' : 'LEFT') : (dy > 0 ? 'DOWN' : 'UP'));
+    }, { passive: true });
+
+    restart();
+  </script>
 </body>
 </html>

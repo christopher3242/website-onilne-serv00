@@ -7,7 +7,7 @@
 <style>
   body {
     margin: 0;
-    background-color: rgba(90, 158, 247, 0.667);
+    background: linear-gradient(135deg, #66ccff, #003366);
     overflow: hidden;
     font-family: Arial, sans-serif;
   }
@@ -26,42 +26,31 @@
     margin: 5px;
     font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .btn:hover {
+    background-color: #0056b3;
   }
   h1 {
     text-align: center;
     margin-top: 10px;
     color: #fff;
   }
-  #score {
+  #score, #topScore, #timer, #combo {
     position: fixed;
-    top: 50px;
     width: 100%;
     text-align: center;
     font-size: 24px;
     color: #fff;
     z-index: 10;
   }
-  #topScore {
-    position: fixed;
-    top: 80px;
-    width: 100%;
-    text-align: center;
-    font-size: 20px;
-    color: #fff;
-    z-index: 10;
-  }
-  #timer {
-    position: fixed;
-    top: 110px;
-    width: 100%;
-    text-align: center;
-    font-size: 20px;
-    color: #fff;
-    z-index: 10;
-  }
+  #score { top: 50px; }
+  #topScore { top: 80px; }
+  #timer { top: 110px; }
+  #combo { top: 140px; font-size: 20px; }
   #controls {
     position: fixed;
-    top: 140px;
+    top: 170px;
     width: 100%;
     text-align: center;
     z-index: 10;
@@ -71,19 +60,44 @@
     bottom: -100px;
     width: 50px;
     height: 70px;
-    background-color: red;
     border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
     cursor: pointer;
-    opacity: 0.8;
+    opacity: 0.9;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
     animation: floatUp 8s linear forwards;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: white;
+    transition: transform 0.2s;
   }
-  /* Glowing effect for special balloons */
+  /* Glow for special balloons */
   .glow {
-    box-shadow: 0 0 20px 10px darkblue; /* dark blue glow */
+    box-shadow: 0 0 30px 10px darkblue;
+    animation: glowPulse 2s infinite;
   }
+
+  /* Power-up balloons glow */
+  .powerup {
+    box-shadow: 0 0 20px 10px gold;
+  }
+
+  /* Multi effect balloons glow */
+  .multi {
+    box-shadow: 0 0 20px 10px lime;
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 30px 10px darkblue; }
+    50% { box-shadow: 0 0 40px 15px darkblue; }
+  }
+
   @keyframes floatUp {
     from { transform: translateY(0); }
-    to { transform: translateY(-100vh); }
+    to { transform: translateY(-110vh); }
   }
 </style>
 </head>
@@ -98,99 +112,159 @@
 <div id="score">Score: 0</div>
 <div id="topScore">Top Score: 0</div>
 <div id="timer">Time: 60</div>
+<div id="combo">Combo: 0</div>
 
 <div id="controls">
-  <button id="startBtn" class="btn">Start / Reset Game</button>
+  <button id="startBtn" class="btn">Start / Reset</button>
+  <button id="pauseBtn" class="btn">Pause</button>
 </div>
 
 <script>
   let score = 0;
   let topScore = localStorage.getItem('topScore') || 0;
-  let timeLeft = 60; // longer timer: 60 seconds
+  let timeLeft = 60;
   let balloonsInterval;
   let countdownInterval;
   let scoreMultiplier = 1;
+  let currentCombo = 0;
+  let maxCombo = 0;
+  let paused = false;
+
   const scoreDisplay = document.getElementById('score');
   const topScoreDisplay = document.getElementById('topScore');
   const timerDisplay = document.getElementById('timer');
+  const comboDisplay = document.getElementById('combo');
   const startBtn = document.getElementById('startBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
 
   topScoreDisplay.textContent = 'Top Score: ' + topScore;
 
-  // List of balloon colors for variety
   const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'turquoise', 'gold', 'lime'];
 
   function createBalloon() {
+    if (paused) return; // Don't create balloons if paused
+
     const balloon = document.createElement('div');
     balloon.className = 'balloon';
 
-    // Random horizontal position
+    // Random position
     balloon.style.left = Math.random() * (window.innerWidth - 50) + 'px';
 
-    // Random color from the list
+    // Random color
     const color = colors[Math.floor(Math.random() * colors.length)];
     balloon.style.backgroundColor = color;
 
-    // 10% chance to glow with dark blue glow, score x15
-    if (Math.random() < 0.10) {
+    // Decide if special balloon
+    const rand = Math.random();
+    if (rand < 0.10) {
       balloon.classList.add('glow');
       balloon.dataset.multiplier = 15;
+      balloon.dataset.type = 'special';
+      balloon.textContent = '★';
+    } else if (rand < 0.20) {
+      // Power-up balloon
+      balloon.classList.add('powerup');
+      balloon.dataset.multiplier = 10;
+      balloon.dataset.type = 'powerup';
+      balloon.textContent = 'P';
+    } else if (rand < 0.30) {
+      // Multi-balloon effect
+      balloon.classList.add('multi');
+      balloon.dataset.multiplier = 0; // No score on pop, spawns multiple
+      balloon.dataset.type = 'multi';
+      balloon.textContent = 'M';
     } else {
       balloon.dataset.multiplier = 1;
+      balloon.dataset.type = 'normal';
+      balloon.textContent = '';
     }
 
     // Pop event
     balloon.addEventListener('click', () => {
-      const multiplier = parseInt(balloon.dataset.multiplier);
-      score += multiplier * scoreMultiplier;
-      scoreDisplay.textContent = 'Score: ' + score;
-      balloon.remove();
+      handlePop(balloon);
     });
 
     document.body.appendChild(balloon);
 
-    // Remove balloon when animation ends
+    // Remove on animation end
     balloon.addEventListener('animationend', () => {
       balloon.remove();
     });
   }
 
-  function startGame() {
-    // Reset score and timer
-    score = 0;
-    scoreDisplay.textContent = 'Score: ' + score;
-    timeLeft = 60; // reset to 60 seconds
-    timerDisplay.textContent = 'Time: ' + timeLeft;
-    scoreMultiplier = 1;
+  function handlePop(balloon) {
+    const type = balloon.dataset.type;
+    const multiplier = parseInt(balloon.dataset.multiplier);
+    if (type === 'powerup') {
+      // Double points for next 10 pops
+      scoreMultiplier = 2;
+      setTimeout(() => { scoreMultiplier = 1; }, 15000); // 15 sec duration
+      alert('Power-up! Double points for 15 seconds!');
+    } else if (type === 'multi') {
+      // Spawn multiple balloons
+      for (let i=0; i<3; i++) {
+        createBalloon();
+      }
+    } else {
+      // Normal or special balloons
+      score += multiplier * scoreMultiplier;
+      currentCombo++;
+      if (currentCombo > maxCombo) maxCombo = currentCombo;
+      if (currentCombo >= 5) {
+        alert('Great! Combo x' + currentCombo);
+      }
+    }
 
-    // Clear existing balloons and intervals if any
+    // Update UI
+    scoreDisplay.textContent = 'Score: ' + score;
+    comboDisplay.textContent = 'Combo: ' + currentCombo;
+
+    // Reset combo on pop
+    currentCombo = 0;
+
+    balloon.remove();
+  }
+
+  function startGame() {
+    score = 0;
+    currentCombo = 0;
+    maxCombo = 0;
+    scoreDisplay.textContent = 'Score: ' + score;
+    comboDisplay.textContent = 'Combo: 0';
+    timeLeft = 60;
+    timerDisplay.textContent = 'Time: ' + timeLeft;
+
     clearInterval(balloonsInterval);
     clearInterval(countdownInterval);
-    // Remove existing balloons
     document.querySelectorAll('.balloon').forEach(b => b.remove());
 
-    // Start generating balloons every 650ms
-    balloonsInterval = setInterval(createBalloon, 650);
+    // Generate balloons
+    balloonsInterval = setInterval(createBalloon, 600);
 
-    // Start countdown
+    // Countdown timer
     countdownInterval = setInterval(() => {
-      timeLeft--;
-      timerDisplay.textContent = 'Time: ' + timeLeft;
-      if (timeLeft <= 0) {
-        clearInterval(countdownInterval);
-        clearInterval(balloonsInterval);
-        alert('Time\'s up! Your score: ' + score);
-        if (score > topScore) {
-          localStorage.setItem('topScore', score);
-          topScore = score;
-          topScoreDisplay.textContent = 'Top Score: ' + topScore;
+      if (!paused) {
+        timeLeft--;
+        timerDisplay.textContent = 'Time: ' + timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+          clearInterval(balloonsInterval);
+          alert('Time\'s up! Your score: ' + score);
+          if (score > topScore) {
+            localStorage.setItem('topScore', score);
+            topScore = score;
+            topScoreDisplay.textContent = 'Top Score: ' + topScore;
+          }
         }
       }
     }, 1000);
   }
 
-  startBtn.addEventListener('click', startGame);
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('pauseBtn').addEventListener('click', () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+  });
 </script>
-
 </body>
 </html>

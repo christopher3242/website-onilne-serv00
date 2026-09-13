@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Flag Quiz</title>
+<title>Flag Quiz with Negative Scoring</title>
 <style>
   body {
     font-family: Arial, sans-serif;
     background: #f0f0f0;
+    margin: 0;
     padding: 20px;
   }
   h1 {
@@ -17,112 +18,111 @@
   }
   #quiz-container {
     background: #fff;
-    max-width: 600px;
+    max-width: 800px;
     margin: auto;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
   }
   #question {
-    font-size: 1.2em;
-    margin-bottom: 10px;
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    text-align: center;
   }
   #flag-img {
-    width: 200px;
+    width: 80%;
+    max-width: 300px;
     height: auto;
     display: block;
     margin: 10px auto;
     border: 2px solid #ccc;
+    border-radius: 5px;
   }
   #buttons {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
+    margin-top: 15px;
   }
   button {
-    padding: 10px 15px;
-    font-size: 1em;
+    flex: 1 1 45%;
+    padding: 12px;
+    font-size: 1.1em;
     cursor: pointer;
     border: none;
-    border-radius: 5px;
-    background: #3498db;
+    border-radius: 8px;
+    background-color: #3498db;
     color: #fff;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
   }
   button:hover {
-    background: #2980b9;
+    background-color: #2980b9;
+    transform: scale(1.05);
   }
   #score {
     margin-top: 15px;
     text-align: center;
     font-weight: bold;
+    font-size: 1.2em;
   }
   #answer-text {
     text-align: center;
-    margin-top: 10px;
-    font-size: 1.1em;
+    margin-top: 15px;
+    font-size: 1.2em;
+    font-weight: bold;
     display: none;
-    font-weight: bold;
   }
-  .exit-link {
-    display: inline-block;
-    margin-bottom: 15px;
-    text-decoration: none;
-    color: #e74c3c;
-    font-weight: bold;
+  /* Responsive adjustments */
+  @media(max-width: 600px) {
+    #buttons {
+      flex-direction: column;
+    }
+    button {
+      width: 100%;
+    }
   }
-  .exit-link:hover {
-    text-decoration: underline;
-  }
-  #show-answer-btn, #next-btn, #restart-btn {
-    margin-top: 10px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
+  /* Control buttons styling */
+  .control-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
     font-size: 1em;
+    border-radius: 8px;
+    border: none;
     cursor: pointer;
+    transition: background 0.3s;
+    margin: 5px;
   }
-  #show-answer-btn {
-    background-color: #2ecc71;
-  }
-  #show-answer-btn:hover {
-    background-color: #27ae60;
-  }
-  #next-btn {
-    background-color: #f39c12;
-  }
-  #next-btn:hover {
-    background-color: #e67e22;
-  }
-  #restart-btn {
-    background-color: #e67e22;
-  }
-  #restart-btn:hover {
-    background-color: #d35400;
-  }
+  #show-answer-btn { background-color: #2ecc71; }
+  #show-answer-btn:hover { background-color: #27ae60; }
+  #next-btn { background-color: #f39c12; }
+  #next-btn:hover { background-color: #e67e22; }
+  #restart-btn { background-color: #e67e22; }
+  #restart-btn:hover { background-color: #d35400; }
 </style>
 </head>
 <body>
 
 <h1>Flag Quiz</h1>
-<a href="../games.html" class="exit-link">Exit</a>
+<div style="text-align:center;">
+  <a href="../games.html" class="exit-link" style="text-decoration:none; color:#e74c3c; font-weight:bold;">Exit</a>
+</div>
 
 <div id="quiz-container">
-  <div id="question"></div>
+  <div id="question">Loading...</div>
   <img id="flag-img" src="" alt="Country Flag"/>
   <div id="buttons"></div>
-  <button id="show-answer-btn">Show Answer</button>
-  <button id="next-btn">Next</button>
-  <button id="restart-btn">Restart Quiz</button>
+  <div style="text-align:center;">
+    <button id="show-answer-btn" class="control-btn">Show Answer</button>
+    <button id="next-btn" class="control-btn">Next</button>
+    <button id="restart-btn" class="control-btn">Restart Quiz</button>
+  </div>
   <div id="answer-text"></div>
-  <div id="score"></div>
+  <div id="score">Score: 0</div>
 </div>
 
 <script>
+// 100+ Countries including Malta
 const questions = [
   { country: "United States", flag: "https://flagcdn.com/us.svg" },
   { country: "Canada", flag: "https://flagcdn.com/ca.svg" },
@@ -214,14 +214,14 @@ const questions = [
   { country: "San Marino", flag: "https://flagcdn.com/sm.svg" },
   { country: "Malta", flag: "https://flagcdn.com/mt.svg" },
   // Additional countries
-  { country: "Bhutan", flag: "https://flagcdn.com/bt.svg" },
-  { country: "Nepal", flag: "https://flagcdn.com/np.svg" },
-  { country: "Malawi", flag: "https://flagcdn.com/mw.svg" }
+  { country: "Bhutan", flag: "https://flagcdn.com/bt.svg" }
 ];
 
-let score = 0;
+let score = 0; // start at 0
 let currentQuestion = {};
+let answered = false;
 
+// Elements
 const questionElement = document.getElementById("question");
 const flagImage = document.getElementById("flag-img");
 const buttonsContainer = document.getElementById("buttons");
@@ -231,86 +231,95 @@ const showAnswerBtn = document.getElementById("show-answer-btn");
 const nextBtn = document.getElementById("next-btn");
 const restartBtn = document.getElementById("restart-btn");
 
-// Function to shuffle array
-function shuffleArray(array) {
-  for (let i = array.length -1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i +1));
-    [array[i], array[j]] = [array[j], array[i]];
+// shuffle utility
+function shuffleArray(arr) {
+  for (let i=arr.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
 }
 
-// Generate a question
+// Generate a new question
 function generateQuestion() {
+  answered = false;
+  answerText.style.display = "none";
+  answerText.textContent = "";
+  // pick random question
   currentQuestion = questions[Math.floor(Math.random() * questions.length)];
   questionElement.textContent = "Which country's flag is this?";
   flagImage.src = currentQuestion.flag;
-  answerText.style.display = "none"; // hide answer
-  answerText.textContent = "";
+  generateOptions();
 }
 
+// Generate options
 function generateOptions() {
-  // prepare options
   const options = [currentQuestion.country];
-  const otherCountries = questions.filter(q => q.country !== currentQuestion.country);
-  shuffleArray(otherCountries);
-  for (let i = 0; i < 3; i++) {
-    options.push(otherCountries[i].country);
+  const others = questions.filter(q => q.country !== currentQuestion.country);
+  shuffleArray(others);
+  for (let i=0; i<3; i++) {
+    options.push(others[i].country);
   }
   shuffleArray(options);
-  // display options as buttons
+  // clear previous options
   buttonsContainer.innerHTML = "";
-  options.forEach(option => {
+  options.forEach(opt => {
     const btn = document.createElement("button");
-    btn.textContent = option;
-    btn.onclick = () => handleAnswer(option);
+    btn.textContent = opt;
+    btn.onclick = () => handleAnswer(opt, btn);
+    btn.disabled = false;
     buttonsContainer.appendChild(btn);
   });
 }
 
 // Handle answer
-function handleAnswer(selected) {
+function handleAnswer(selected, btn) {
+  if (answered) return;
+  answered = true;
+  // disable all buttons
+  Array.from(buttonsContainer.children).forEach(b => b.disabled = true);
   if (selected === currentQuestion.country) {
-    alert("Correct!");
     score++;
   } else {
-    alert(`Wrong! It was ${currentQuestion.country}`);
+    score--;
   }
-  updateScore();
-}
-
-// Update score display
-function updateScore() {
+  // update score display
   scoreElement.textContent = `Score: ${score}`;
+  // highlight correct answer
+  Array.from(buttonsContainer.children).forEach(b => {
+    if (b.textContent === currentQuestion.country) {
+      b.style.backgroundColor = "#2ecc71"; // green for correct
+    }
+    if (b.textContent === selected && selected !== currentQuestion.country) {
+      b.style.backgroundColor = "#e74c3c"; // red for wrong
+    }
+  });
+  // Show message
+  answerText.style.display = "block";
+  answerText.style.color = selected === currentQuestion.country ? "green" : "red";
+  answerText.textContent = selected === currentQuestion.country ? "Correct!" : `Wrong! Correct: ${currentQuestion.country}`;
 }
 
-// Next button
-nextBtn.addEventListener("click", () => {
-  generateQuestion();
-  generateOptions();
-});
-
-// Show answer
-showAnswerBtn.addEventListener("click", () => {
-  answerText.textContent = `Answer: ${currentQuestion.country}`;
+// Show answer button
+showAnswerBtn.onclick = () => {
   answerText.style.display = "block";
-  setTimeout(() => {
-    answerText.style.display = "none";
-  }, 2000);
-});
+  answerText.style.color = "blue";
+  answerText.textContent = `Answer: ${currentQuestion.country}`;
+};
+
+// Next question
+nextBtn.onclick = () => {
+  generateQuestion();
+};
 
 // Restart game
-restartBtn.addEventListener("click", () => {
+restartBtn.onclick = () => {
   score = 0;
-  updateScore();
+  scoreElement.textContent = `Score: ${score}`;
   generateQuestion();
-  generateOptions();
-});
+};
 
 // Initialize first question
 generateQuestion();
-generateOptions();
-updateScore();
-
 </script>
 
 </body>

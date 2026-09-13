@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jigsaw Puzzle with Fixed Exit</title>
   <style>
+    /* Reset box model */
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 20px;
@@ -16,35 +20,41 @@
     h1 {
       text-align: center;
       margin-bottom: 20px;
+      font-size: 2em;
+      color: #333;
     }
 
+    /* Container styles */
     .controls {
       max-width: 1200px;
       margin: 0 auto;
     }
 
-    /* Puzzle container styles */
+    /* Puzzle container styles for responsiveness and aesthetics */
     .puzzle-container {
       width: 100%;
-      transition: opacity 0.3s ease, max-height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
-      overflow: hidden;
+      margin: 0 auto;
     }
 
-    /* Make iframe responsive */
+    /* Style for each iframe to ensure responsiveness */
     iframe {
       width: 100%;
-      height: 60vh; /* Use viewport height for better responsiveness */
-      border: none;
+      height: 600px;
+      min-height: 300px;
+      border: 2px solid #888;
+      border-radius: 8px;
+      display: block;
+      margin-bottom: 20px;
     }
 
-    /* Responsive adjustments for smaller screens */
-    @media (max-width: 768px) {
+    /* Adjust height on smaller screens */
+    @media(max-width: 768px) {
       iframe {
         height: 50vh;
       }
     }
 
-    /* Fixed Exit button styles */
+    /* Fixed Exit Button styling for PC & Android */
     .exit-fixed {
       position: fixed;
       top: 20px;
@@ -52,21 +62,31 @@
       z-index: 1000;
     }
 
-    /* Style link as button */
+    /* Style link as button for accessibility & UX */
     .exit-fixed a {
       background-color: #007bff;
-      color: white;
-      padding: 10px 20px;
-      text-decoration: none;
-      border-radius: 4px;
+      color: #fff;
+      padding: 12px 24px;
       font-size: 16px;
-      display: inline-block;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      transition: background-color 0.3s ease;
+      font-weight: bold;
+      border-radius: 6px;
+      text-decoration: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: background-color 0.3s, transform 0.2s;
     }
 
+    /* Hover effects for the button */
     .exit-fixed a:hover {
       background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    /* Smaller screen adjustments for the button */
+    @media(max-width: 480px) {
+      .exit-fixed a {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
     }
   </style>
 </head>
@@ -74,8 +94,19 @@
   <h1>Jigsaw Puzzle</h1>
   <div class="controls">
     <div class="puzzle-container" id="puzzleContainer">
+      <!-- First iframe source -->
       <iframe
-        src="https://www.jigsawplanet.com/?rc=play&amp;pid=35c1eea43132&amp;view=iframe&amp;bgcolor=0x6fe4fb"
+        allowfullscreen="true"
+        src="https://www.jigsawexplorer.com/online-jigsaw-puzzle-player.html?url=aHR0cHM6Ly9pLmltZ3VyLmNvbS9keFdMZXRzLnBuZ18obm9fcHJldmlld180KV8obm9wPTMwKQ~~&cred=TG9jayBhbmQgY2l0eSwgMjAyNiAtIMKpQ2hyaXN0b3BoZXIgY2FtaWxsZXJpIA~~&color=gray"
+        title="Jigsaw Puzzle"
+        style="width: 100%; height: 600px; border: 2px solid #888; border-radius: 8px;"
+      ></iframe>
+      
+      <!-- Second iframe source -->
+      <iframe
+        src="https://www.jigsawplanet.com/?rc=play&pid=271232264124&view=iframe&bgcolor=0x70799e"
+        style="width: 100%; height: 600px; border: 2px solid #888; border-radius: 8px;"
+        frameborder="0"
         allowfullscreen
         title="Jigsaw Puzzle"
       ></iframe>

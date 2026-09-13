@@ -2,308 +2,298 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Penalty Shootout with AI Goalkeeper</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Penalty Shootout</title>
 <style>
-  body { font-family: Arial, sans-serif; text-align: center; background: #f0f8ff; margin: 0; padding: 20px; }
-  #gameCanvas { border: 3px solid #333; background: linear-gradient(to bottom, #a8edea, #fed6e3); display: block; margin: 20px auto; width: 90%; max-width: 400px; height: auto; }
-  button, select { margin: 10px; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; background: #4CAF50; color: white; transition: background 0.3s; }
-  button:hover, select:hover { background: #45a049; }
-  #scoreDisplay { font-size: 20px; margin-top: 10px; }
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 24px 16px;
+    font-family: Inter, Arial, sans-serif;
+    color: #f8fafc;
+    text-align: center;
+    background: radial-gradient(circle at top, #243b67 0, #101827 45%, #070b13 100%);
+  }
+  .app { width: min(720px, 100%); margin: auto; }
+  h1 { margin: 4px 0 6px; font-size: clamp(1.8rem, 5vw, 2.8rem); }
+  .subtitle { margin: 0 0 10px; color: #a9b8d0; }
+  .exit-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #70e1a1;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color .2s, transform .2s;
+  }
+  .exit-link:hover, .exit-link:focus-visible {
+    color: #b8ffd3;
+    transform: translateX(-3px);
+    outline: none;
+    text-decoration: underline;
+  }
+  .panel {
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+    gap: 10px 16px; padding: 14px; border: 1px solid #334766;
+    border-radius: 18px; background: rgba(16, 27, 46, .78); box-shadow: 0 14px 35px #0004;
+  }
+  .scoreboard { display: flex; justify-content: center; gap: 22px; margin: 18px 0; }
+  .stat { min-width: 105px; padding: 10px 16px; border-radius: 14px; background: #172943; }
+  .stat strong { display: block; font-size: 1.6rem; color: #70e1a1; }
+  label { color: #b9c7dc; font-size: .9rem; }
+  select, button, input[type="range"] {
+    border: 1px solid #385274; border-radius: 10px; padding: 10px 14px;
+    color: #f8fafc; background: #203653; font: inherit; cursor: pointer;
+  }
+  input[type="range"] { width: 150px; padding: 6px 8px; accent-color: #70e1a1; }
+  .volume-control { display: inline-flex; align-items: center; gap: 6px; }
+  .volume-control output { min-width: 42px; color: #70e1a1; font-weight: 700; }
+  button { border: 0; font-weight: 700; background: linear-gradient(135deg, #15a56a, #087f63); transition: transform .2s, filter .2s; }
+  button:hover, button:focus-visible { filter: brightness(1.15); transform: translateY(-2px); outline: 2px solid #70e1a1; outline-offset: 2px; }
+  button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+  #gameCanvas { display: block; width: min(100%, 520px); height: auto; margin: 20px auto 12px; border: 3px solid #6b7d9a; border-radius: 18px; background: #8bd3a9; box-shadow: 0 18px 40px #0006; }
+  #status { min-height: 24px; margin: 8px 0 16px; color: #d9e5f7; font-weight: 700; }
+  .actions, .keeper-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .actions button { min-width: 130px; }
+  .keeper-actions { margin-top: 12px; }
+  .keeper-actions button { background: #385274; font-size: .9rem; }
+  .secondary { margin-top: 18px; }
+  .secondary button { background: #334155; }
+  .hidden { display: none !important; }
+  @media (max-width: 480px) {
+    body { padding: 16px 10px; }
+    .panel { align-items: stretch; }
+    .panel label, .panel select { width: 100%; }
+    .scoreboard { gap: 8px; }
+    .stat { min-width: 90px; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
 </style>
 </head>
 <body>
-<h1 style="color:#333;">Penalty Shootout with AI Goalkeeper</h1>
-<div>
-  Score: <span id="score">0</span>
-</div>
-<div>
-  Mode:
-  <select id="mode">
-    <option value="single">Single Player</option>
-    <option value="two">Two Player</option>
-  </select>
-  Difficulty:
-  <select id="difficulty">
-    <option value="easy">Easy</option>
-    <option value="normal" selected>Normal</option>
-    <option value="hard">Hard</option>
-  </select>
-</div>
+<main class="app">
+  <h1>Penalty Shootout</h1>
+  <p class="subtitle">Aim for the corners and beat the goalkeeper.</p>
+  <a href="../games.html" class="exit-link">← Back to Games</a>
 
-<!-- Goalkeeper position selection for two-player mode -->
-<div id="goalkeeperPositionDiv" style="margin-top:10px; display:none;">
-  <button onclick="setGoalkeeperPosition('left')">Goalkeeper Left</button>
-  <button onclick="setGoalkeeperPosition('center')">Goalkeeper Center</button>
-  <button onclick="setGoalkeeperPosition('right')">Goalkeeper Right</button>
-</div>
+  <section class="panel" aria-label="Game settings">
+    <label for="mode">Mode</label>
+    <select id="mode">
+      <option value="single">Single Player</option>
+      <option value="two">Two Player</option>
+    </select>
+    <label for="difficulty">Difficulty</label>
+    <select id="difficulty">
+      <option value="easy">Easy</option>
+      <option value="normal" selected>Normal</option>
+      <option value="hard">Hard</option>
+    </select>
+    <label class="volume-control" for="volume">Volume <output id="volumeValue">70%</output></label>
+    <input id="volume" type="range" min="1" max="100" value="70" aria-label="Sound volume" />
+  </section>
 
-<canvas id="gameCanvas" width="400" height="350"></canvas>
+  <section class="scoreboard" aria-label="Scoreboard">
+    <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+    <div class="stat"><span>Shots</span><strong id="shots">0</strong></div>
+    <div class="stat"><span>Turn</span><strong id="turn">1</strong></div>
+  </section>
 
-<!-- Shooting buttons -->
-<div>
-  <button id="btnLeft" onclick="shoot('left')">Shoot Left</button>
-  <button id="btnCenter" onclick="shoot('center')">Shoot Center</button>
-  <button id="btnRight" onclick="shoot('right')">Shoot Right</button>
-</div>
+  <div id="status" role="status" aria-live="polite">Choose a direction to shoot.</div>
+  <canvas id="gameCanvas" width="520" height="360" aria-label="Penalty shootout game"></canvas>
 
-<!-- Restart and Exit -->
-<div>
-  <button onclick="restartGame()">Restart</button>
-  <a href="../Games.html"><button>Exit</button></a>
-</div>
+  <div class="actions" aria-label="Shooting controls">
+    <button data-direction="left">Shoot Left</button>
+    <button data-direction="center">Shoot Center</button>
+    <button data-direction="right">Shoot Right</button>
+  </div>
+
+  <div id="keeperControls" class="keeper-actions hidden" aria-label="Goalkeeper controls">
+    <button data-keeper="left">Goalkeeper Left</button>
+    <button data-keeper="center">Goalkeeper Center</button>
+    <button data-keeper="right">Goalkeeper Right</button>
+  </div>
+
+  <div class="secondary"><button id="restart">Restart Game</button></div>
+</main>
 
 <script>
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+const shotsEl = document.getElementById('shots');
+const turnEl = document.getElementById('turn');
+const statusEl = document.getElementById('status');
+const modeEl = document.getElementById('mode');
+const difficultyEl = document.getElementById('difficulty');
+const volumeEl = document.getElementById('volume');
+const volumeValueEl = document.getElementById('volumeValue');
+const keeperControls = document.getElementById('keeperControls');
+const shootingButtons = [...document.querySelectorAll('[data-direction]')];
 
-let score = 0;
-let goalkeeperX = 200; // current x position
-const goalkeeperY = 50;
-const goalkeeperRadius = 20;
+const positions = { left: 150, center: 260, right: 370 };
+const targetY = 92;
+let score = 0, totalShots = 0, currentPlayer = 1;
+let goalkeeperX = positions.center, targetX = positions.center;
+let mode = modeEl.value, difficulty = difficultyEl.value;
+let gameActive = true, shotInProgress = false;
+let animationFrame = 0, shotFrame = 0, aiTimer = 0, roundToken = 0;
+let ball = null;
+let audioContext = null;
 
-let gameActive = true;
-let mode = document.getElementById('mode').value;
-let difficulty = document.getElementById('difficulty').value;
-
-let currentPlayer = 1; // 1 or 2
-let totalShots = 0;
-const maxShots = 100000000;
-
-// For two-player mode, store goalkeeper position
-let goalkeeperPosition = 'center'; // 'left', 'center', 'right'
-
-// Set goalkeeper movement parameters based on difficulty
-let goalkeeperSpeed = 1; // pixels per frame
-let moveIntervalTime = 2000; // ms
-updateDifficultySettings();
-
-document.getElementById('difficulty').addEventListener('change', () => {
-  difficulty = document.getElementById('difficulty').value;
-  updateDifficultySettings();
-});
-document.getElementById('mode').addEventListener('change', () => {
-  mode = document.getElementById('mode').value;
-  toggleGoalkeeperButtons();
-  restartGame();
-});
-
-function toggleGoalkeeperButtons() {
-  document.getElementById('goalkeeperPositionDiv').style.display = (mode === 'two') ? 'block' : 'none';
+function getAudioContext() {
+  if (!audioContext) {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return null;
+    audioContext = new AudioContext();
+  }
+  if (audioContext.state === 'suspended') audioContext.resume();
+  return audioContext;
+}
+function playSound(type) {
+  const audio = getAudioContext();
+  if (!audio) return;
+  const gain = audio.createGain();
+  const oscillator = audio.createOscillator();
+  const now = audio.currentTime;
+  const volume = Number(volumeEl.value) / 100;
+  const sounds = {
+    kick: { frequency: 150, end: 65, duration: .16, level: .16 },
+    save: { frequency: 180, end: 75, duration: .28, level: .2 },
+    goal: { frequency: 420, end: 760, duration: .42, level: .22 }
+  };
+  const sound = sounds[type];
+  oscillator.type = type === 'goal' ? 'triangle' : 'sine';
+  oscillator.frequency.setValueAtTime(sound.frequency, now);
+  oscillator.frequency.exponentialRampToValueAtTime(sound.end, now + sound.duration);
+  gain.gain.setValueAtTime(Math.max(.001, sound.level * volume), now);
+  gain.gain.exponentialRampToValueAtTime(.001, now + sound.duration);
+  oscillator.connect(gain).connect(audio.destination);
+  oscillator.start(now);
+  oscillator.stop(now + sound.duration);
 }
 
-// Update difficulty settings
-function updateDifficultySettings() {
-  if (difficulty === 'easy') {
-    goalkeeperSpeed = 0.5;
-    moveIntervalTime = 2500;
-  } else if (difficulty === 'normal') {
-    goalkeeperSpeed = 1;
-    moveIntervalTime = 2000;
-  } else if (difficulty === 'hard') {
-    goalkeeperSpeed = 2;
-    moveIntervalTime = 1500;
+function setStatus(message) { statusEl.textContent = message; }
+function updateBoard() {
+  scoreEl.textContent = score;
+  shotsEl.textContent = totalShots;
+  turnEl.textContent = mode === 'two' ? currentPlayer : '—';
+}
+function setControls(enabled) { shootingButtons.forEach(button => button.disabled = !enabled); }
+function setKeeperPosition(position) { targetX = positions[position]; }
+function settings() {
+  return { easy: { speed: .8, interval: 2800 }, normal: { speed: 1.6, interval: 1900 }, hard: { speed: 2.8, interval: 1200 } }[difficulty];
+}
+function chooseAIPosition() {
+  if (mode === 'single' && gameActive && !shotInProgress) {
+    const keys = Object.keys(positions);
+    setKeeperPosition(keys[Math.floor(Math.random() * keys.length)]);
   }
 }
-
-// Set goalkeeper position (for two-player mode)
-function setGoalkeeperPosition(pos) {
-  goalkeeperPosition = pos;
-  if (pos === 'left') targetX = 100;
-  if (pos === 'center') targetX = 200;
-  if (pos === 'right') targetX = 300;
-  moveGoalkeeper();
+function moveGoalkeeper() {
+  const speed = settings().speed;
+  const distance = targetX - goalkeeperX;
+  goalkeeperX += Math.abs(distance) <= speed ? distance : Math.sign(distance) * speed;
 }
-
-// Variables for smooth movement
-let targetX = 200;
-
-// For AI in single-player mode, define current AI position
-let aiGoalkeeperX = 200;
-
-// Function to move AI goalkeeper randomly based on difficulty
-function moveAIGoalkeeper() {
-  if (mode !== 'single') return;
-  // Random position based on difficulty
-  const positions = {
-    easy: [100, 200, 300],
-    normal: [100, 200, 300],
-    hard: [100, 200, 300]
-  };
-  const options = positions[difficulty];
-  // Random choice
-  const randIndex = Math.floor(Math.random() * options.length);
-  targetX = options[randIndex];
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  sky.addColorStop(0, '#b8e8f0'); sky.addColorStop(1, '#72bd91');
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#eef5f7'; ctx.fillRect(80, 64, 360, 218);
+  ctx.strokeStyle = '#526579'; ctx.lineWidth = 7; ctx.strokeRect(80, 64, 360, 218);
+  ctx.strokeStyle = '#b6c8d1'; ctx.lineWidth = 1;
+  for (let x = 95; x < 440; x += 22) { ctx.beginPath(); ctx.moveTo(x, 70); ctx.lineTo(x, 278); ctx.stroke(); }
+  for (let y = 82; y < 282; y += 22) { ctx.beginPath(); ctx.moveTo(84, y); ctx.lineTo(436, y); ctx.stroke(); }
+  ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(goalkeeperX, 112, 25, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#172033'; ctx.fillRect(goalkeeperX - 18, 134, 36, 58);
+  if (ball) {
+    ctx.save();
+    ctx.fillStyle = '#111827';
+    ctx.shadowColor = '#0008';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.arc(ball.x - 3, ball.y - 3, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
 }
-
-// Animate goalkeeper smoothly
-function animate() {
+function animateScene() {
   moveGoalkeeper();
   draw();
-  if (gameActive) {
-    requestAnimationFrame(animate);
+  if (gameActive) animationFrame = requestAnimationFrame(animateScene);
+}
+function shoot(direction) {
+  if (!gameActive || shotInProgress) return;
+  shotInProgress = true;
+  playSound('kick');
+  setControls(false);
+  const endX = positions[direction], startX = 260, startY = 270;
+  const started = performance.now(), duration = 700;
+  const token = roundToken;
+  cancelAnimationFrame(shotFrame);
+  function ballFrame(now) {
+    if (!gameActive || token !== roundToken) return;
+    const progress = Math.min((now - started) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    ball = {
+      x: startX + (endX - startX) * eased,
+      y: startY + (targetY - startY) * eased - Math.sin(progress * Math.PI) * 24,
+      radius: 11 - progress * 2
+    };
+    draw();
+    if (progress < 1) shotFrame = requestAnimationFrame(ballFrame);
+    else finishShot(endX, token);
   }
+  shotFrame = requestAnimationFrame(ballFrame);
 }
-
-// Move goalkeeper towards targetX
-function moveGoalkeeper() {
-  if (!gameActive) return;
-  const delta = targetX - goalkeeperX;
-  if (Math.abs(delta) > goalkeeperSpeed) {
-    goalkeeperX += (delta > 0 ? 1 : -1) * goalkeeperSpeed;
-  } else {
-    goalkeeperX = targetX;
-  }
-}
-
-// Draw game elements
-function draw() {
-  ctx.clearRect(0, 0, 400, 350);
-  drawGoal();
-  drawGoalkeeper();
-}
-
-// Draw goal frame
-function drawGoal() {
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(50, 70, 300, 200);
-  ctx.fillStyle = '#228B22';
-  ctx.fillRect(50, 70, 300, 10);
-  ctx.strokeStyle = '#555';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(50, 70, 300, 200);
-}
-
-// Draw goalkeeper
-function drawGoalkeeper() {
-  ctx.beginPath();
-  ctx.arc(goalkeeperX, goalkeeperY, goalkeeperRadius, 0, Math.PI * 2);
-  ctx.fillStyle = '#1E90FF';
-  ctx.fill();
-  ctx.closePath();
-}
-
-// Animate ball
-function drawBall(targetX, targetY, callback) {
-  const startX = 200;
-  const startY = 250;
-  const duration = 800;
-  const startTime = performance.now();
-
-  function animate(currentTime) {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const currentX = startX + (targetX - startX) * progress;
-    const currentY = startY + (targetY - startY) * progress;
-
-    ctx.clearRect(0, 0, 400, 350);
-    drawGoal();
-    drawGoalkeeper();
-
-    ctx.beginPath();
-    ctx.arc(currentX, currentY, 10, 0, Math.PI * 2);
-    ctx.fillStyle = '#000';
-    ctx.fill();
-
-    if (progress < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      checkSave(targetX, targetY);
-      if (callback) callback();
-    }
-  }
-  requestAnimationFrame(animate);
-}
-
-// Check save or goal
-function checkSave(targetX, targetY) {
-  const dx = targetX - goalkeeperX;
-  const dy = targetY - goalkeeperY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-  const thresholdDistance = goalkeeperRadius + 10;
-
-  if (
-    distance < thresholdDistance &&
-    targetY <= goalkeeperY + goalkeeperRadius + 10
-  ) {
-    alert('Saved by the goalkeeper!');
+function finishShot(ballX, token) {
+  if (token !== roundToken || !shotInProgress) return;
+  const saved = Math.hypot(ballX - goalkeeperX, targetY - 112) < 43;
+  totalShots++;
+  if (saved) {
+    playSound('save');
+    setStatus(mode === 'two' ? `Player ${currentPlayer}: saved!` : 'Saved by the goalkeeper!');
   } else {
     score++;
-    document.getElementById('score').innerText = score;
+    playSound('goal');
+    setStatus(mode === 'two' ? `Player ${currentPlayer}: GOAL!` : 'GOAL! Great shot!');
   }
-
-  // Switch turn for two-player mode
-  if (mode === 'two') {
-    currentPlayer = currentPlayer === 1 ? 2 : 1;
-  }
-
-  totalShots++;
-  if (totalShots >= maxShots) {
-    alert('Game Over! Final Score: ' + score);
-    gameActive = false;
-  }
-}
-
-// Shooting handler
-function shoot(direction) {
-  if (!gameActive) return;
-  let targetX, targetY;
-  if (direction === 'left') { targetX = 100; targetY = 70; }
-  if (direction === 'center') { targetX = 200; targetY = 70; }
-  if (direction === 'right') { targetX = 300; targetY = 70; }
-
-  if (mode === 'two') {
-    alert('Player ' + currentPlayer + '\'s turn!');
-  }
-
+  if (mode === 'two') currentPlayer = currentPlayer === 1 ? 2 : 1;
+  updateBoard();
+  shotInProgress = false;
+  ball = null;
   draw();
-  drawBall(targetX, targetY);
+  setControls(gameActive);
 }
-
-// Restart game
 function restartGame() {
-  score = 0;
-  document.getElementById('score').innerText = score;
-  gameActive = true;
-  totalShots = 0;
-  currentPlayer = 1;
-  // Reset goalkeeper position
-  targetX = 200;
-  goalkeeperX = 200;
-  // Reset goalkeeper position button
-  setGoalkeeperPosition('center');
-  // Start animation
-  cancelAnimationFrame(animateId);
-  start();
+  cancelAnimationFrame(animationFrame);
+  cancelAnimationFrame(shotFrame);
+  clearTimeout(aiTimer);
+  roundToken++;
+  score = 0; totalShots = 0; currentPlayer = 1; gameActive = true; shotInProgress = false;
+  ball = null;
+  goalkeeperX = targetX = positions.center; keeperControls.classList.toggle('hidden', mode !== 'two');
+  updateBoard(); setControls(true); setStatus('Choose a direction to shoot.'); draw(); animateScene(); scheduleAI();
 }
-let animateId;
-function start() {
-  if (mode === 'single') {
-    moveAIGoalkeeper(); // initial move
-  }
-  animate();
+function scheduleAI() {
+  clearTimeout(aiTimer);
+  if (mode !== 'single' || !gameActive) return;
+  aiTimer = setTimeout(() => { chooseAIPosition(); scheduleAI(); }, settings().interval);
 }
-
-// Initialize game
-toggleGoalkeeperButtons();
-start();
-
-// For single-player mode, periodically change AI goalkeeper position
-setInterval(() => {
-  if (mode === 'single' && gameActive) {
-    moveAIGoalkeeper();
-  }
-}, 2000);
-
-// Support touch on shooting buttons
-document.querySelectorAll('button').forEach(btn => {
-  btn.addEventListener('touchstart', e => {
-    e.preventDefault();
-    if (btn.id === 'btnLeft') shoot('left');
-    if (btn.id === 'btnCenter') shoot('center');
-    if (btn.id === 'btnRight') shoot('right');
-  });
+modeEl.addEventListener('change', () => { mode = modeEl.value; restartGame(); });
+difficultyEl.addEventListener('change', () => { difficulty = difficultyEl.value; scheduleAI(); });
+volumeEl.addEventListener('input', () => {
+  volumeValueEl.textContent = `${volumeEl.value}%`;
 });
+shootingButtons.forEach(button => button.addEventListener('click', () => shoot(button.dataset.direction)));
+keeperControls.addEventListener('click', event => { if (event.target.dataset.keeper) setKeeperPosition(event.target.dataset.keeper); });
+document.getElementById('restart').addEventListener('click', restartGame);
+restartGame();
 </script>
 </body>
 </html>

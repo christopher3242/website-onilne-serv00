@@ -2,159 +2,136 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quiz Game</title>
   <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #15803d;
+      --danger: #dc2626;
+      --selected: #f59e0b;
+      --text: #1f2937;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      background-color: #677ca3;
       margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       min-height: 100vh;
+      padding: 20px;
+      display: grid;
+      place-items: center;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, #64748b, #3b82f6);
     }
 
     .quiz-container {
-      width: 100%;
-      max-width: 450px;
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      width: min(100%, 540px);
       padding: 30px;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .2);
     }
 
-    h1 {
-      margin-top: 0;
-      font-size: 2em;
-      margin-bottom: 10px;
-      color: #333;
-    }
+    h1 { margin: 0 0 12px; text-align: center; }
 
-    #score {
+    #score, #progress {
+      text-align: center;
       font-weight: bold;
-      font-size: 1.2em;
-      margin-bottom: 20px;
-      color: #555;
+      color: #475569;
     }
+
+    #progress { margin-bottom: 22px; font-size: .95rem; }
 
     #question {
-      font-size: 1.3em;
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
       text-align: center;
-      margin-bottom: 25px;
-      color: #222;
     }
 
-    #answer-buttons {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      gap: 15px;
-    }
+    #answer-buttons { display: grid; gap: 10px; }
 
     .btn {
-      padding: 15px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1em;
-      cursor: pointer;
-      background-color: #007bff;
+      width: 100%;
+      padding: 14px 16px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--primary);
       color: #fff;
-      transition: background-color 0.25s, transform 0.1s;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
     }
 
-    .btn:hover {
-      background-color: #0056b3;
-      transform: translateY(-1px);
-    }
-
-    .btn:disabled {
-      background-color: #6c757d;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
+    .btn:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+    .btn:disabled { cursor: not-allowed; opacity: .8; }
+    .answer.selected { background: var(--selected); color: #111827; }
+    .answer.correct { background: var(--success); }
+    .answer.wrong { background: var(--danger); }
 
     #feedback {
-      margin-top: 20px;
-      font-size: 1.2em;
-      min-height: 20px;
-      font-weight: 600;
+      min-height: 28px;
+      margin: 18px 0 0;
+      font-weight: bold;
+      text-align: center;
     }
 
-    #show-answer {
-      margin-top: 20px;
-      background-color: #ffc107;
-      color: #222;
-      font-weight: 600;
-    }
+    .controls { display: grid; gap: 10px; margin-top: 18px; }
+    #submit-button { background: #0f766e; }
+    #submit-button:hover:not(:disabled) { background: #115e59; }
+    #show-answer { background: #64748b; }
+    #show-answer:hover:not(:disabled) { background: #475569; }
+    .exit-button { display: block; text-align: center; text-decoration: none; background: #475569; padding: 10px; border-radius: 8px; color: #fff; }
 
-    #show-answer:hover {
-      background-color: #e0a800;
-    }
-
-    #next-button {
-      margin-top: 25px;
-    }
-
-    /* Exit button styles for consistency */
-    a .btn {
-      margin-top: 20px;
-      background-color: #6c757d;
-    }
-    a .btn:hover {
-      background-color: #5a6268;
-    }
-
-    /* Responsive adjustments */
-    @media(max-width: 500px){
-      .quiz-container {
-        padding: 20px;
-      }
-      #question {
-        font-size: 1.2em;
-      }
+    @media (max-width: 500px) {
+      .quiz-container { padding: 22px; }
+      #question { font-size: 1.15rem; }
     }
   </style>
 </head>
 <body>
-  <div class="quiz-container" id="quiz-container">
+  <main class="quiz-container">
     <h1>Quiz Game</h1>
-    <div id="score">Score: 0</div>
-    <div id="question"></div>
-    <div id="answer-buttons"></div>
-    <div id="feedback"></div>
-    <button id="show-answer" class="btn" style="display:none;">Show Answer</button>
-    <button id="next-button" class="btn" style="display:none;">Next</button>
-    <a href="../games.html" style="text-decoration:none;">
-      <button class="btn">Exit</button>
-    </a>
-  </div>
+    <div id="score" aria-live="polite">Score: 0</div>
+    <div id="progress" aria-live="polite"></div>
+    <div id="question" aria-live="polite"></div>
+    <div id="answer-buttons" role="group" aria-label="Answer choices"></div>
+    <div id="feedback" aria-live="polite"></div>
+
+    <div class="controls">
+      <button id="submit-button" class="btn" type="button" disabled>Check Answer</button>
+      <button id="show-answer" class="btn" type="button">Show Answer</button>
+      <button id="next-button" class="btn" type="button" hidden>Next Question</button>
+      <button id="restart-button" class="btn" type="button" hidden>Play Again</button>
+      <a class="btn exit-button" href="../games.html">Exit</a>
+    </div>
+  </main>
 
   <script>
     const questionElement = document.getElementById('question');
-    const answerButtonsContainer = document.getElementById('answer-buttons');
+    const answerButtons = document.getElementById('answer-buttons');
     const scoreElement = document.getElementById('score');
+    const progressElement = document.getElementById('progress');
     const feedbackElement = document.getElementById('feedback');
-    const nextButton = document.getElementById('next-button');
+    const submitButton = document.getElementById('submit-button');
     const showAnswerButton = document.getElementById('show-answer');
+    const nextButton = document.getElementById('next-button');
+    const restartButton = document.getElementById('restart-button');
 
-    let score = 0;
-    let currentQuestionIndex = 0;
-
-   const questions = [
+    const questions = [
       {
         question: 'What is 2 + 2?',
         answers: [
           { text: '3', correct: false },
           { text: '4', correct: true },
           { text: '5', correct: false },
-          { text: '6', correct: false },
-        ],
+          { text: '6', correct: false }
+        ]
       },
       {
         question: 'What is the capital of France?',
@@ -162,8 +139,8 @@
           { text: 'Berlin', correct: false },
           { text: 'Madrid', correct: false },
           { text: 'Paris', correct: true },
-          { text: 'Lisbon', correct: false },
-        ],
+          { text: 'Lisbon', correct: false }
+        ]
       },
       {
         question: 'What is the largest ocean on Earth?',
@@ -171,17 +148,17 @@
           { text: 'Indian Ocean', correct: false },
           { text: 'Atlantic Ocean', correct: false },
           { text: 'Arctic Ocean', correct: false },
-          { text: 'Pacific Ocean', correct: true },
-        ],
+          { text: 'Pacific Ocean', correct: true }
+        ]
       },
       {
-        question: 'What this Bozo?',
+        question: 'What is this Bozo?',
         answers: [
           { text: 'L', correct: true },
           { text: 'Brairot', correct: false },
           { text: 'maggot', correct: false },
-          { text: 'get out', correct: false },
-        ],
+          { text: 'get out', correct: false }
+        ]
       },
       {
         question: 'What is Cock?',
@@ -189,8 +166,17 @@
           { text: 'Suck up', correct: false },
           { text: 'Balls', correct: true },
           { text: 'Diddy and Drake Oil', correct: false },
-          { text: 'Sex', correct: false },
-        ],
+          { text: 'Sex', correct: false }
+        ]
+      },
+      {
+        question: 'What is Goofy?',
+        answers: [
+          { text: 'n/a', correct: false },
+          { text: 'Ahh!', correct: true },
+          { text: 'oi', correct: false },
+          { text: 'niessie', correct: false }
+        ]
       },
       {
         question: 'What are diddy?',
@@ -198,8 +184,8 @@
           { text: 'oil', correct: true },
           { text: 'Hit and run', correct: false },
           { text: 'bro', correct: false },
-          { text: 'No care', correct: false },
-        ],
+          { text: 'No care', correct: false }
+        ]
       },
       {
         question: 'What are room night?',
@@ -207,100 +193,131 @@
           { text: 'Lol', correct: false },
           { text: 'L + bozo', correct: false },
           { text: 'sex and sleep', correct: true },
-          { text: 'shut up', correct: false },
-        ],
-        },
-        {
+          { text: 'shut up', correct: false }
+        ]
+      },
+      {
         question: 'What If ?',
         answers: [
           { text: 'F you', correct: true },
           { text: 'ohohoho', correct: false },
           { text: 'grounded', correct: true },
-          { text: 'shut down idoit', correct: false },
-        ],
+          { text: 'shut down idoit', correct: false }
+        ]
       },
-    ]
+      {
+        question: 'which this brainrot?',
+        answers: [
+          { text: '67', correct: true },
+          { text: 'tung tung', correct: true },
+          { text: 'skiddi tolite', correct: true },
+          { text: 'son a milk', correct: true }
+        ]
+      }
+    ];
+
+    let score = 0;
+    let currentQuestionIndex = 0;
+    let selectedIndex = null;
+    let questionFinished = false;
 
     function startGame() {
-      currentQuestionIndex = 0;
       score = 0;
-      scoreElement.innerText = 'Score: 0';
-      feedbackElement.innerText = '';
-      nextButton.style.display = 'none';
-      showQuestion(questions[currentQuestionIndex]);
+      currentQuestionIndex = 0;
+      scoreElement.textContent = 'Score: 0';
+      restartButton.hidden = true;
+      showQuestion();
     }
 
-    function showQuestion(question) {
-      questionElement.innerText = question.question;
-      answerButtonsContainer.innerHTML = '';
-      feedbackElement.innerText = '';
-      showAnswerButton.style.display = 'inline-block';
+    function showQuestion() {
+      const current = questions[currentQuestionIndex];
+      selectedIndex = null;
+      questionFinished = false;
+      questionElement.textContent = current.question;
+      progressElement.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+      feedbackElement.textContent = '';
+      answerButtons.innerHTML = '';
+      submitButton.disabled = true;
+      submitButton.hidden = false;
+      showAnswerButton.hidden = false;
       showAnswerButton.disabled = false;
-      nextButton.style.display = 'none';
+      nextButton.hidden = true;
 
-      question.answers.forEach(answer => {
-        const btn = document.createElement('button');
-        btn.innerText = answer.text;
-        btn.className = 'btn';
-        btn.dataset.correct = answer.correct;
-        btn.onclick = () => selectAnswer(btn);
-        answerButtonsContainer.appendChild(btn);
+      current.answers.forEach((answer, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn answer';
+        button.textContent = answer.text;
+        button.addEventListener('click', () => selectAnswer(index));
+        answerButtons.appendChild(button);
       });
     }
 
-    function selectAnswer(btn) {
-      const correct = btn.dataset.correct === 'true';
+    function selectAnswer(index) {
+      if (questionFinished) return;
+      selectedIndex = index;
+      [...answerButtons.children].forEach((button, buttonIndex) => {
+        button.classList.toggle('selected', buttonIndex === index);
+      });
+      submitButton.disabled = false;
+    }
 
-      // Highlight answers
-      Array.from(answerButtonsContainer.children).forEach(b => {
-        b.disabled = true;
-        if (b.dataset.correct === 'true') {
-          b.classList.add('correct');
-        } else {
-          b.classList.add('wrong');
+    function finishQuestion(revealed = false) {
+      if (questionFinished) return;
+      questionFinished = true;
+      const current = questions[currentQuestionIndex];
+      const buttons = [...answerButtons.children];
+
+      const correctAnswers = current.answers
+        .map((ans, idx) => ({ ...ans, index: idx }))
+        .filter(answer => answer.correct);
+      const correctAnswerText = correctAnswers.map(ans => ans.text).join(', ');
+      const isCorrect = selectedIndex !== null && current.answers[selectedIndex].correct;
+
+      buttons.forEach((button, index) => {
+        button.disabled = true;
+        if (current.answers[index].correct) {
+          button.classList.add('correct');
+        } else if (index === selectedIndex) {
+          button.classList.add('wrong');
         }
       });
 
-      if (correct) {
+      if (!revealed && isCorrect) {
         score++;
-        feedbackElement.innerText = 'Correct!';
+        scoreElement.textContent = `Score: ${score}`;
+        feedbackElement.textContent = 'Correct!';
+      } else if (revealed) {
+        feedbackElement.textContent = `Answer: ${correctAnswerText}`;
       } else {
-        feedbackElement.innerText = 'Wrong!';
+        feedbackElement.textContent = `Not quite. The correct answer is ${correctAnswerText}.`;
       }
-      scoreElement.innerText = `Score: ${score}`;
-      nextButton.style.display = 'inline-block';
-      showAnswerButton.disabled = true;
+
+      submitButton.hidden = true;
+      showAnswerButton.hidden = true;
+      nextButton.hidden = false;
     }
 
-    // Show the question + answer briefly
-    showAnswerButton.onclick = () => {
-      const qText = questionElement.innerText;
-      const correctAnswer = Array.from(answerButtonsContainer.children).find(b => b.dataset.correct === 'true').innerText;
-      // Display question + answer
-      questionElement.innerHTML = `<strong>Q:</strong> ${qText}<br/><strong>Answer:</strong> ${correctAnswer}`;
-      
-      // Show for 2 seconds, then restore question
-      setTimeout(() => {
-        showQuestion(questions[currentQuestionIndex]);
-      }, 2000);
-      
-      showAnswerButton.disabled = true;
-    };
+    submitButton.addEventListener('click', () => finishQuestion());
+    showAnswerButton.addEventListener('click', () => finishQuestion(true));
 
-    nextButton.onclick = () => {
+    nextButton.addEventListener('click', () => {
       currentQuestionIndex++;
       if (currentQuestionIndex < questions.length) {
-        showQuestion(questions[currentQuestionIndex]);
+        showQuestion();
       } else {
-        questionElement.innerHTML = `<h2>Quiz Finished!</h2><p>Your final score is: ${score}</p>`;
-        answerButtonsContainer.innerHTML = '';
-        feedbackElement.innerText = '';
-        showAnswerButton.style.display = 'none';
-        nextButton.style.display = 'none';
+        questionElement.textContent = 'Quiz Finished!';
+        progressElement.textContent = '';
+        answerButtons.innerHTML = '';
+        feedbackElement.textContent = `Your final score is ${score} out of ${questions.length}.`;
+        nextButton.hidden = true;
+        restartButton.hidden = false;
       }
-    };
+    });
 
-    // Initialize game
+    restartButton.addEventListener('click', startGame);
+
+    // Initialize game on load
     startGame();
   </script>
 </body>
