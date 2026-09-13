@@ -81,10 +81,11 @@
     .cell.winner { border-color: var(--green); background: rgba(109,240,168,.18); color: var(--green); animation: pulse .8s ease-in-out infinite alternate; }
     @keyframes pulse { to { box-shadow: 0 0 24px rgba(109,240,168,.3); } }
     .actions { display: flex; gap: 10px; margin-top: 18px; }
-    button.action { min-width: 125px; padding: 13px 18px; border: 0; border-radius: 12px; color: #07101e; font-weight: 800; cursor: pointer; transition: transform .15s, filter .2s; }
-    button.action:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .action { min-width: 125px; padding: 13px 18px; border: 0; border-radius: 12px; color: #07101e; font-weight: 800; cursor: pointer; transition: transform .15s, filter .2s; text-decoration: none; text-align: center; }
+    .action:hover { transform: translateY(-2px); filter: brightness(1.1); }
     .restart { background: var(--blue); }
     .new-game { background: var(--pink); }
+    .exit { background: var(--green); }
     .scoreboard { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 18px; }
     .score { padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.04); text-align: center; }
     .score small { display: block; color: var(--muted); font-size: .7rem; }
@@ -152,6 +153,7 @@
         <div class="actions">
           <button id="restartButton" class="action restart" type="button">↻ Restart</button>
           <button id="newGameButton" class="action new-game" type="button">＋ New game</button>
+          <a class="action exit" href="../Games.html">Exit</a>
         </div>
         <div class="scoreboard" aria-label="Scoreboard">
           <div class="score"><small>PLAYER X</small><b id="xScore">0</b></div>

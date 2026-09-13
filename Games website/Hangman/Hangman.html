@@ -32,6 +32,8 @@
     .subtitle { color: var(--muted); margin: 5px 0 0; font-size: .92rem; }
     .sound-control { display: flex; align-items: center; gap: 9px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 14px; background: rgba(15,23,42,.65); }
     .sound-control button { border: 0; background: transparent; color: var(--text); cursor: pointer; font-size: 1.15rem; padding: 0; }
+    #exit-btn { display: inline-block; padding: 10px 15px; border-radius: 12px; background: #334155; color: var(--text); font-weight: 800; text-decoration: none; transition: transform .15s, filter .15s; }
+    #exit-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
     input[type="range"] { accent-color: var(--accent-2); width: 105px; }
     #volumeValue { width: 37px; color: var(--muted); font-size: .82rem; text-align: right; }
     .layout { display: grid; grid-template-columns: 1fr 1.25fr; gap: 18px; }
@@ -76,7 +78,8 @@
   <main class="app">
     <header class="topbar">
       <div><h1>🎯 Hangman</h1><p class="subtitle">Find the word before the final mistake.</p></div>
-      <div class="sound-control" aria-label="Sound controls">
+      <div class="sound-control" aria-label="Game controls">
+        <a id="exit-btn" href="../Games.html">Exit</a>
         <button id="soundButton" type="button" aria-label="Mute sound">🔊</button>
         <input id="volume" type="range" min="1" max="100" value="65" aria-label="Volume" />
         <span id="volumeValue">65%</span>
@@ -141,4 +144,4 @@
     els.sound.addEventListener('click', () => { muted = !muted; els.sound.textContent = muted ? '🔇' : '🔊'; els.sound.setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound'); });
   </script>
 </body>
-</html>
+</html> 

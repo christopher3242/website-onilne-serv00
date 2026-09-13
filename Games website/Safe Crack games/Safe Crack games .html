@@ -183,7 +183,7 @@
     }
 
     $('guessButton').addEventListener('click', checkGuess); $('answerButton').addEventListener('click', showAnswer); $('resetButton').addEventListener('click', newGame);
-    $('exitButton').addEventListener('click', () => { $('message').textContent = 'Thanks for playing! Press “New game” to play again.'; active = false; $('guess').disabled = true; $('guessButton').disabled = true; $('answerButton').disabled = true; $('status').textContent = '● Paused'; });
+    $('exitButton').addEventListener('click', () => { window.location.href = '../Games.html'; });
     $('guess').addEventListener('keydown', e => { if (e.key === 'Enter') checkGuess(); });
     $('guess').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4); });
     $('volume').addEventListener('input', e => { $('volumeValue').textContent = e.target.value + '%'; if (Number(e.target.value) > 0) { muted = false; $('soundButton').textContent = '🔊'; $('soundButton').setAttribute('aria-label', 'Mute sound'); } });
