@@ -1,625 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Custom Video Player with Audio and Captions</title>
-    <!-- Video.js CSS -->
-    <link href="https://vjs.zencdn.net/7.18.1/video-js.css" rel="stylesheet" />
-    <style>
-      body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        min-height: 100vh;
-        margin: 0;
-        background: linear-gradient(
-          120deg,
-          rgb(66, 100, 69) 0%,
-          rgb(10, 85, 60) 100%
-        );
-        font-family: Arial, sans-serif;
-        padding: 20px;
-      }
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Video Player with Audio and Captions</title>
+  <!-- Video.js CSS -->
+  <link href="https://vjs.zencdn.net/7.18.1/video-js.css" rel="stylesheet" />
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      /* Default background gradient, will be overridden by color picker */
+      background: linear-gradient(50deg, rgb(79, 92, 80) 0%, rgb(21, 49, 90) 100%);
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
 
-      .video-container {
-        width: 100%;
-        max-width: 800px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
+    /* Container styles */
+    .video-container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
 
-      h1 {
-        margin-bottom: 10px;
-        color: #fff;
-      }
+    h1 {
+      margin-bottom: 10px;
+      color: #fff;
+    }
 
-      #videoPlayer {
-        width: 100% !important;
-        height: auto !important;
-        border: 0.5px solid #0a478d;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      }
+    #videoPlayer {
+      width: 100% !important;
+      height: auto !important;
+      border: 0.5px solid #3b78be;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
 
-      #videoNumber {
-        margin-top: 10px;
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #fff;
-      }
+    #videoNumber {
+      margin-top: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #fff;
+    }
 
-      .button-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 20px;
-      }
+    /* Button container styling */
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
 
+    button {
+      margin: 5px;
+      padding: 12px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #3d4e7c;
+      color: #fff;
+      transition: background-color 0.3s, opacity 0.5s;
+    }
+
+    button:hover {
+      background-color: #283352
+    }
+
+    /* Hidden class for hiding buttons */
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    /* Responsive styles for small screens */
+    @media (max-width: 600px) {
       button {
-        margin: 5px;
-        padding: 12px 20px;
-        font-size: 1em;
-        cursor: pointer;
-        border: none;
-        border-radius: 5px;
-        background-color: #34335f;
-        color: #fff;
-        transition: background-color 0.3s, opacity 0.5s;
+        padding: 10px 16px;
+        font-size: 0.9em;
       }
+    }
 
-      button:hover {
-        background-color: #2e5f75;
-      }
+    /* Style for background color picker */
+    .color-picker-container {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #fff;
+    }
 
-      /* Hidden class for hiding buttons */
-      .hidden {
-        opacity: 0;
-        pointer-events: none;
-        visibility: hidden;
-      }
+    .color-picker-container label {
+      margin-bottom: 8px;
+    }
 
-      /* Make controls touch-friendly on small screens */
-      @media (max-width: 600px) {
-        button {
-          padding: 10px 16px;
-          font-size: 0.9em;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="video-container">
-      <h1>Custom Video Player</h1>
-      <div class="video-number" id="videoNumber">Video 1</div>
-      <video
-        id="videoPlayer"
-        class="video-js vjs-default-skin"
-        controls
-        preload="auto"
-        poster="placeholder.jpg"
-        playsinline
-      >
-        <source src="video1.mp4" type="video/mp4" />
-        <!-- Subtitle tracks -->
-        <track
-          kind="subtitles"
-          label="English (USA)"
-          srclang="en"
-          src="subtitles_en.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="English (UK)"
-          srclang="en-GB"
-          src="subtitles_uk.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Italiano"
-          srclang="it"
-          src="subtitles_it.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Maltese"
-          srclang="mt"
-          src="subtitles_mt.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="French"
-          srclang="fr"
-          src="subtitles_fr.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Deutsch"
-          srclang="de"
-          src="subtitles_de.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Ukrainian"
-          srclang="uk"
-          src="subtitles_ua.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Poland"
-          srclang="pl"
-          src="subtitles_pl.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Español"
-          srclang="es"
-          src="subtitles_es.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Português"
-          srclang="pt"
-          src="subtitles_pt.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Türkçe"
-          srclang="tr"
-          src="subtitles_tr.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Japanese"
-          srclang="jp"
-          src="subtitles_jp.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Singapore"
-          srclang="sg"
-          src="subtitles_sg.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="China"
-          srclang="cn"
-          src="subtitles_cn.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="India"
-          srclang="in"
-          src="subtitles_in.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Brazil"
-          srclang="br"
-          src="subtitles_br.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Argentina"
-          srclang="ar"
-          src="subtitles_ar.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Finnish"
-          srclang="fi"
-          src="subtitles_fi.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Swedish"
-          srclang="sv"
-          src="subtitles_sv.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Hungary"
-          srclang="hu"
-          src="subtitles_hu.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Czechia"
-          srclang="cs"
-          src="subtitles_cs.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Bulgaria"
-          srclang="bg"
-          src="subtitles_bg.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Slovakia"
-          srclang="sk"
-          src="subtitles_sk.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Romania"
-          srclang="ro"
-          src="subtitles_ro.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Austria"
-          srclang="at"
-          src="subtitles_at.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Slovenia"
-          srclang="si"
-          src="subtitles_si.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Croatia"
-          srclang="hr"
-          src="subtitles_hr.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Serbia"
-          srclang="rs"
-          src="subtitles_rs.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Greece"
-          srclang="el"
-          src="subtitles_el.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Belgium"
-          srclang="be"
-          src="subtitles_be.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Lithuania"
-          srclang="lt"
-          src="subtitles_lt.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Spain"
-          srclang="es"
-          src="subtitles_es.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Denmark"
-          srclang="da"
-          src="subtitles_da.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Estonia"
-          srclang="et"
-          src="subtitles_et.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Ireland"
-          srclang="ga"
-          src="subtitles_ga.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Norway"
-          srclang="no"
-          src="subtitles_no.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="France"
-          srclang="fr"
-          src="subtitles_fr.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Turkey"
-          srclang="tr"
-          src="subtitles_tr.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Venezuela"
-          srclang="ve"
-          src="subtitles_ve.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Morocco"
-          srclang="ma"
-          src="subtitles_ma.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Algeria"
-          srclang="dz"
-          src="subtitles_dz.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Mali"
-          srclang="ml"
-          src="subtitles_ml.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Iceland"
-          srclang="is"
-          src="subtitles_is.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Greenland"
-          srclang="gl"
-          src="subtitles_gl.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Antarctica"
-          srclang="aq"
-          src="subtitles_aq.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Peru"
-          srclang="pe"
-          src="subtitles_pe.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Brazil"
-          srclang="br"
-          src="subtitles_br2.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Somalia"
-          srclang="so"
-          src="subtitles_so.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Bahrain"
-          srclang="bh"
-          src="subtitles_bh.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Egypt"
-          srclang="eg"
-          src="subtitles_eg.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Iran"
-          srclang="ir"
-          src="subtitles_ir.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Iraq"
-          srclang="iq"
-          src="subtitles_iq.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Israel"
-          srclang="il"
-          src="subtitles_il.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="West Bank"
-          srclang="ps"
-          src="subtitles_ps.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Gaza"
-          srclang="ps"
-          src="subtitles_gaza.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Jordan"
-          srclang="jo"
-          src="subtitles_jo.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Kuwait"
-          srclang="kw"
-          src="subtitles_kw.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Lebanon"
-          srclang="lb"
-          src="subtitles_lb.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Oman"
-          srclang="om"
-          src="subtitles_om.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Qatar"
-          srclang="qa"
-          src="subtitles_qa.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Saudi Arabia"
-          srclang="sa"
-          src="subtitles_sa.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Syria"
-          srclang="sy"
-          src="subtitles_sy.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="United Arab Emirates"
-          srclang="ae"
-          src="subtitles_ae.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Yemen"
-          srclang="ye"
-          src="subtitles_ye.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Tunisia"
-          srclang="tn"
-          src="subtitles_tn.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Western Sahara"
-          srclang="eh"
-          src="subtitles_eh.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Mali"
-          srclang="ml"
-          src="subtitles_ml.vtt"
-        />
-        <track
-          kind="subtitles"
-          label="Libya"
-          srclang="ly"
-          src="subtitles_ly2.vtt"
-        />
-      </video>
-      <div class="button-container">
-        <button id="prev" class="hidden" onclick="prevVideo()">Back</button>
-        <button id="random" onclick="randomVideo()">Random</button>
-        <button id="next" class="hidden" onclick="nextVideo()">Next</button>
-        <button id="search" onclick="searchVideo()">Search Video</button>
-        <button id="playbackRateBtn" onclick="setCustomPlaybackRate()">
-          Set Playback Rate
-        </button>
-        <a href="../../your%20favorite.html" style="text-decoration: none">
-          <button id="exit">Exit</button>
-        </a>
-      </div>
+    input[type="color"] {
+      width: 50px;
+      height: 50px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="video-container">
+    <h1>Custom Video Player</h1>
+    <div class="video-number" id="videoNumber">Video 1</div>
+    <!-- Video.js Player -->
+    <video
+      id="videoPlayer"
+      class="video-js vjs-default-skin"
+      controls
+      preload="auto"
+      poster="placeholder.jpg"
+      playsinline
+    >
+      <source src="video1.mp4" type="video/mp4" />
+      <!-- Subtitle tracks (sample, add as needed) -->
+      <!-- Subtitle tracks -->
+<track kind="subtitles" label="English (USA)" srclang="en" src="subtitles_en.vtt" />
+<track kind="subtitles" label="English (UK)" srclang="en-GB" src="subtitles_uk.vtt" />
+<track kind="subtitles" label="Maltese" srclang="mt" src="subtitles_mt.vtt" />
+<track kind="subtitles" label="Italiano" srclang="it" src="subtitles_it.vtt" />
+<track kind="subtitles" label="French" srclang="fr" src="subtitles_fr.vtt" />
+<track kind="subtitles" label="Deutsch" srclang="de" src="subtitles_de.vtt" />
+<track kind="subtitles" label="Ukrainian" srclang="uk" src="subtitles_ua.vtt" />
+<track kind="subtitles" label="Poland" srclang="pl" src="subtitles_pl.vtt" />
+<track kind="subtitles" label="Español" srclang="es" src="subtitles_es.vtt" />
+<track kind="subtitles" label="Português" srclang="pt" src="subtitles_pt.vtt" />
+<track kind="subtitles" label="Türkçe" srclang="tr" src="subtitles_tr.vtt" />
+<track kind="subtitles" label="Japanese" srclang="jp" src="subtitles_jp.vtt" />
+<track kind="subtitles" label="Singapore" srclang="sg" src="subtitles_sg.vtt" />
+<track kind="subtitles" label="China" srclang="cn" src="subtitles_cn.vtt" />
+<track kind="subtitles" label="India" srclang="in" src="subtitles_in.vtt" />
+<track kind="subtitles" label="Brazil" srclang="br" src="subtitles_br.vtt" />
+<track kind="subtitles" label="Argentina" srclang="ar" src="subtitles_ar.vtt" />
+<track kind="subtitles" label="Finnish" srclang="fi" src="subtitles_fi.vtt" />
+<track kind="subtitles" label="Swedish" srclang="sv" src="subtitles_sv.vtt" />
+<track kind="subtitles" label="Hungary" srclang="hu" src="subtitles_hu.vtt" />
+<track kind="subtitles" label="Czechia" srclang="cs" src="subtitles_cs.vtt" />
+<track kind="subtitles" label="Bulgaria" srclang="bg" src="subtitles_bg.vtt" />
+<track kind="subtitles" label="Slovakia" srclang="sk" src="subtitles_sk.vtt" />
+<track kind="subtitles" label="Romania" srclang="ro" src="subtitles_ro.vtt" />
+<track kind="subtitles" label="Austria" srclang="at" src="subtitles_at.vtt" />
+<track kind="subtitles" label="Slovenia" srclang="si" src="subtitles_si.vtt" />
+<track kind="subtitles" label="Croatia" srclang="hr" src="subtitles_hr.vtt" />
+<track kind="subtitles" label="Serbia" srclang="rs" src="subtitles_rs.vtt" />
+<track kind="subtitles" label="Greece" srclang="el" src="subtitles_el.vtt" />
+<track kind="subtitles" label="Belgium" srclang="be" src="subtitles_be.vtt" />
+<track kind="subtitles" label="Lithuania" srclang="lt" src="subtitles_lt.vtt" />
+<track kind="subtitles" label="Spain" srclang="es" src="subtitles_es.vtt" />
+<track kind="subtitles" label="Denmark" srclang="da" src="subtitles_da.vtt" />
+<track kind="subtitles" label="Estonia" srclang="et" src="subtitles_et.vtt" />
+<track kind="subtitles" label="Ireland" srclang="ga" src="subtitles_ga.vtt" />
+<track kind="subtitles" label="Norway" srclang="no" src="subtitles_no.vtt" />
+<track kind="subtitles" label="France" srclang="fr" src="subtitles_fr.vtt" />
+<track kind="subtitles" label="Turkey" srclang="tr" src="subtitles_tr.vtt" />
+<track kind="subtitles" label="Venezuela" srclang="ve" src="subtitles_ve.vtt" />
+<track kind="subtitles" label="Morocco" srclang="ma" src="subtitles_ma.vtt" />
+<track kind="subtitles" label="Algeria" srclang="dz" src="subtitles_dz.vtt" />
+<track kind="subtitles" label="Mali" srclang="ml" src="subtitles_ml.vtt" />
+<track kind="subtitles" label="Iceland" srclang="is" src="subtitles_is.vtt" />
+<track kind="subtitles" label="Greenland" srclang="gl" src="subtitles_gl.vtt" />
+<track kind="subtitles" label="Antarctica" srclang="aq" src="subtitles_aq.vtt" />
+<track kind="subtitles" label="Peru" srclang="pe" src="subtitles_pe.vtt" />
+<track kind="subtitles" label="Brazil" srclang="br" src="subtitles_br2.vtt" />
+<track kind="subtitles" label="Somalia" srclang="so" src="subtitles_so.vtt" />
+<track kind="subtitles" label="Bahrain" srclang="bh" src="subtitles_bh.vtt" />
+<track kind="subtitles" label="Egypt" srclang="eg" src="subtitles_eg.vtt" />
+<track kind="subtitles" label="Iran" srclang="ir" src="subtitles_ir.vtt" />
+<track kind="subtitles" label="Iraq" srclang="iq" src="subtitles_iq.vtt" />
+<track kind="subtitles" label="Israel" srclang="il" src="subtitles_il.vtt" />
+<track kind="subtitles" label="West Bank" srclang="ps" src="subtitles_ps.vtt" />
+<track kind="subtitles" label="Gaza" srclang="ps" src="subtitles_gaza.vtt" />
+<track kind="subtitles" label="Jordan" srclang="jo" src="subtitles_jo.vtt" />
+<track kind="subtitles" label="Kuwait" srclang="kw" src="subtitles_kw.vtt" />
+<track kind="subtitles" label="Lebanon" srclang="lb" src="subtitles_lb.vtt" />
+<track kind="subtitles" label="Oman" srclang="om" src="subtitles_om.vtt" />
+<track kind="subtitles" label="Qatar" srclang="qa" src="subtitles_qa.vtt" />
+<track kind="subtitles" label="Saudi Arabia" srclang="sa" src="subtitles_sa.vtt" />
+<track kind="subtitles" label="Syria" srclang="sy" src="subtitles_sy.vtt" />
+<track kind="subtitles" label="United Arab Emirates" srclang="ae" src="subtitles_ae.vtt" />
+<track kind="subtitles" label="Yemen" srclang="ye" src="subtitles_ye.vtt" />
+<track kind="subtitles" label="Tunisia" srclang="tn" src="subtitles_tn.vtt" />
+<track kind="subtitles" label="Western Sahara" srclang="eh" src="subtitles_eh.vtt" />
+<track kind="subtitles" label="Mali" srclang="ml" src="subtitles_ml.vtt" />
+<track kind="subtitles" label="Libya" srclang="ly" src="subtitles_ly2.vtt" />
+      <!-- Add other subtitle tracks as needed -->
+    </video>
+    <!-- Buttons -->
+    <div class="button-container">
+      <button id="prev" class="hidden" onclick="prevVideo()">Back</button>
+      <button id="random" onclick="randomVideo()">Random</button>
+      <button id="next" class="hidden" onclick="nextVideo()">Next</button>
+      <button id="search" onclick="searchVideo()">Search Video</button>
+      <button id="playbackRateBtn" onclick="setCustomPlaybackRate()">Set Playback Rate</button>
+      <a href="../../your%20favorite.html" style="text-decoration: none">
+        <button id="exit">Exit</button>
+      </a>
     </div>
-    <!-- Video.js JS -->
-    <script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
-    <script>
-      const videoNumberDisplay = document.getElementById("videoNumber");
-      let currentVideoIndex = 0;
+    <!-- Background color picker -->
+    <div class="color-picker-container">
+      <label for="bgColorPicker">Pick Background Color:</label>
+      <input type="color" id="bgColorPicker" value="#1e251e" />
+    </div>
+  </div>
 
-      // Generate video sources from 1 to 10000
-      const videoSources = [];
-      for (let i = 1; i <= 10000; i++) {
-        videoSources.push(`video${i}.mp4`);
-      }
+  <!-- Video.js JS -->
+  <script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
+  <script>
+    // Initialize variables
+    const videoNumberDisplay = document.getElementById("videoNumber");
+    const bgColorPicker = document.getElementById("bgColorPicker");
+    let currentVideoIndex = 0;
 
-      const videoPlayer = videojs("videoPlayer", {
-        controls: true,
-        preload: "auto",
-        fluid: true,
-        controlBar: {
-          fullscreenToggle: true,
-          pictureInPictureToggle: true,
-        },
-        playbackRates: [0.5, 1, 1.5, 2],
-      });
+    // Generate video sources from 1 to 12000
+    const videoSources = [];
+    for (let i = 1; i <= 12000; i++) {
+      videoSources.push(`video${i}.mp4`);
+    }
 
-      function updateButtonVisibility() {
-        document
-          .getElementById("prev")
-          .classList.toggle("hidden", currentVideoIndex === 0);
-        document
-          .getElementById("next")
-          .classList.toggle(
-            "hidden",
-            currentVideoIndex === videoSources.length - 1
-          );
-      }
+    // Initialize Video.js player
+    const videoPlayer = videojs("videoPlayer", {
+      controls: true,
+      preload: "auto",
+      fluid: true,
+      controlBar: {
+        fullscreenToggle: true,
+        pictureInPictureToggle: true,
+      },
+      playbackRates: [0.5, 1, 1.5, 2],
+    });
 
-      function updateVideo() {
-        const src = videoSources[currentVideoIndex];
-        videoPlayer.src({ type: "video/mp4", src: src });
-        videoPlayer.load();
-        videoPlayer.play();
-        updateButtonVisibility();
-        updateVideoNumber();
-      }
+    // Function to update button visibility
+    function updateButtonVisibility() {
+      document.getElementById("prev").classList.toggle("hidden", currentVideoIndex === 0);
+      document.getElementById("next").classList.toggle("hidden", currentVideoIndex === videoSources.length - 1);
+    }
 
-      function updateVideoNumber() {
-        document.getElementById("videoNumber").textContent = `Video ${
-          currentVideoIndex + 1
-        }`;
-      }
+    // Function to update the video source
+    function updateVideo() {
+      const src = videoSources[currentVideoIndex];
+      videoPlayer.src({ type: "video/mp4", src: src });
+      videoPlayer.load();
+      videoPlayer.play();
+      updateButtonVisibility();
+      updateVideoNumber();
+    }
 
-      function prevVideo() {
-        if (currentVideoIndex > 0) {
-          currentVideoIndex--;
-          updateVideo();
-        }
-      }
+    // Function to update displayed video number
+    function updateVideoNumber() {
+      document.getElementById("videoNumber").textContent = `Video ${currentVideoIndex + 1}`;
+    }
 
-      function nextVideo() {
-        if (currentVideoIndex < videoSources.length - 1) {
-          currentVideoIndex++;
-          updateVideo();
-        }
-      }
-
-      function randomVideo() {
-        currentVideoIndex = Math.floor(Math.random() * videoSources.length);
+    // Navigation functions
+    function prevVideo() {
+      if (currentVideoIndex > 0) {
+        currentVideoIndex--;
         updateVideo();
       }
+    }
 
-      function searchVideo() {
-        const input = prompt("Enter video number (1-10000):");
-        const num = parseInt(input);
-        if (!isNaN(num) && num >= 1 && num <= 10000) {
-          currentVideoIndex = num - 1;
-          updateVideo();
-        } else {
-          alert("Invalid number. Please enter a number between 1 and 10000.");
-        }
+    function nextVideo() {
+      if (currentVideoIndex < videoSources.length - 1) {
+        currentVideoIndex++;
+        updateVideo();
       }
+    }
 
-      function setCustomPlaybackRate() {
-        const rate = prompt("Enter playback rate (0 to 10):", "1");
-        const numRate = parseFloat(rate);
-        if (!isNaN(numRate) && numRate >= 0 && numRate <= 10) {
-          videoPlayer.playbackRate(numRate);
-        } else {
-          alert("Invalid rate. Please enter a number between 0 and 10.");
-        }
-      }
-
-      // Initialize with the first video
+    function randomVideo() {
+      currentVideoIndex = Math.floor(Math.random() * videoSources.length);
       updateVideo();
-    </script>
-  </body>
+    }
+
+    function searchVideo() {
+      const input = prompt("Enter video number (1-12000):");
+      const num = parseInt(input);
+      if (!isNaN(num) && num >= 1 && num <= 12000) {
+        currentVideoIndex = num - 1;
+        updateVideo();
+      } else {
+        alert("Invalid number. Please enter a number between 1 and 12000.");
+      }
+    }
+
+    function setCustomPlaybackRate() {
+      const rate = prompt("Enter playback rate (0 to 10):", "1");
+      const numRate = parseFloat(rate);
+      if (!isNaN(numRate) && numRate >= 0 && numRate <= 10) {
+        videoPlayer.playbackRate(numRate);
+      } else {
+        alert("Invalid rate. Please enter a number between 0 and 10.");
+      }
+    }
+
+    // Event listener for background color picker
+    bgColorPicker.addEventListener("input", function() {
+      document.body.style.background = this.value;
+    });
+
+    // Initialize with the first video
+    updateVideo();
+  </script>
+</body>
 </html>

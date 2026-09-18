@@ -1,114 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="windows-1252" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NSFW 2026-2027</title>
-<style>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>NSFW 2026 - Present</title>
+    <style>
   body {
     margin: 0;
-    height: 100vh;
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    color: #fff;
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-items: center;
-    background: linear-gradient(323deg, rgb(80, 63, 12) 0%, rgb(105, 31, 83) 100%);
-    transition: background-color 1s;
-    color: white;
-    font-family: Arial, sans-serif;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Container for main content */
-  .content {
-    width: 90%;
-    max-width: 800px;
+    align-items: flex-start;
+    background: linear-gradient(60deg, rgb(75, 68, 46) 0%, rgb(75, 36, 63) 100%);
     padding: 20px;
     box-sizing: border-box;
-    text-align: center;
-    z-index: 1;
   }
 
+  /* Main container */
+  .container {
+    width: 100%;
+    max-width: 950px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    backdrop-filter: blur(4px);
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  /* Header */
   h1 {
     font-size: 2em;
     margin-bottom: 1em;
-    color: #33ccff;
+    color: #2399c0;
     text-decoration: underline;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
   }
 
-  .links {
-    text-align: left;
-    margin-top: 20px;
+  /* Search box styles */
+  .search-box {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  #searchInput {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
     font-size: 1em;
+    outline: none;
+    background-color: #fff;
+    color: #000;
+    transition: box-shadow 0.2s;
+  }
+  #searchInput:focus {
+    box-shadow: 0 0 8px rgba(255,255,255,0.7);
   }
 
+  /* Links list styles */
+  .links {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+    padding: 0;
+  }
   .links p {
     margin: 8px 0;
+    padding: 5px 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-
+  .links p:hover {
+    background-color: rgba(255,255,255,0.1);
+  }
   .links a {
-    color: rgb(170, 200, 255);
-    text-decoration: none;
+    color: #a8caff;
+    text-decoration: underline;
+    word-break: break-word;
   }
 
-  /* Exit button styling */
+  /* Exit button styles */
   .exit-button {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #ad2222; /* Bright red for visibility */
-    color: white;
+    background-color: #ad2222;
+    color: #fff;
     border: none;
-    padding: 12px 20px;
+    padding: 14px 24px;
     font-size: 1.2em;
     border-radius: 8px;
     cursor: pointer;
     text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     transition: background-color 0.3s, transform 0.2s;
-    z-index: 999; /* ensure it's on top */
+    z-index: 999;
   }
-
   .exit-button:hover {
-    background-color: #991c1c; /* darker red on hover */
+    background-color: #991c1c;
     transform: scale(1.05);
   }
 
   /* Responsive adjustments */
-  @media (max-width: 600px) {
+  @media(max-width: 600px) {
     h1 {
       font-size: 1.5em;
     }
     .exit-button {
       font-size: 1em;
-      padding: 10px 16px;
+      padding: 12px 20px;
     }
   }
+
+  /* RGB color picker styles */
+  .color-picker-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .color-slider {
+    width: 200px;
+  }
+  label {
+    margin-top: 10px;
+    font-size: 0.9em;
+  }
 </style>
-</head>
-<body>
+  </head>
+  <body>
+    <div class="container">
+      <h1><font face="Calisto MT">Discord NSFW 2026 - Present</font></h1>
+      <!-- Search Input -->
+      <div class="search-box"> <input id="searchInput"
+          placeholder="Search links..." type="text"> </div>
+      <!-- Links List -->
+      <div class="links" id="linksList">
+        <p data-search="group family"><strong>Group Family</strong> <a
+            href="https://discord.gg/srZZcMA89p" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/srZZcMA89p</a></p>
+        <p data-search="sexyx christopher 18+"><strong>Sexyx and
+            Christopher (18+)</strong> <a
+            href="https://discord.gg/3WFpCzGUYv" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/3WFpCzGUYv</a></p>
+        <p data-search="gaming crib 18+"><strong>Gaming Crib (18+)</strong>
+          <a href="https://discord.gg/KdxDk4DNhY" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/KdxDk4DNhY</a></p>
+        <p data-search="sexy bitch 18+"><strong>Sexy Bitch (18+)</strong>
+          <a href="https://discord.gg/pv8xn6c5HU" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/pv8xn6c5HU</a></p>
+        <p data-search="roasting christopher 18+"><strong>Roasting
+            Christopher (18+)</strong> <a
+            href="https://discord.gg/akZT6SbXW8" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/akZT6SbXW8</a></p>
+        <p data-search="bedroom cum 18+"><strong>Bedroom Cum (18+)</strong>
+          <a href="https://discord.gg/xwerZR6w5a" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/xwerZR6w5a</a></p>
+        <p data-search="sexy crib"><strong>Sexy Crib</strong> <a
+            href="https://discord.gg/nHdNmSY9NZ" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/nHdNmSY9NZ</a></p>
+        <p data-search="fullmoviecinema"><strong>Fullmoviecinema Server</strong>
+          <a href="https://discord.gg/HSh7QBYzXs" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/HSh7QBYzXs</a></p>
+        <p data-search="github"><strong>Github</strong> <a
+            href="https://discord.gg/6aKgdNWfAD" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/6aKgdNWfAD</a></p>
+        <p data-search="sexy house"><strong>Sexy House</strong> <a
+            href="https://discord.gg/b7yFy3wGGm" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/b7yFy3wGGm</a></p>
+        <p data-search="backup 18+"><strong>Backup 18+</strong> <a
+            href="https://discord.gg/m7vy4HgNjT" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/m7vy4HgNjT</a></p>
+        <p data-search="androidfiretv"><strong>Androidfiretv</strong> <a
+            href="https://discord.gg/2xAuvRx2UZ" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/2xAuvRx2UZ</a></p>
+        <p data-search="wix boxing hacked"><strong>Wix Boxing Hacked</strong>
+          <a href="https://discord.gg/eqmSDFhzRS" target="_blank"
+            rel="noopener noreferrer">https://discord.gg/eqmSDFhzRS</a></p>
+      </div>
+      <!-- RGB Background Color Picker -->
+      <div class="color-picker-container">
+        <h2 style="margin-top:40px; color:#fff;">Background RGB Color
+          Picker</h2>
+        <input id="bgColorPicker" class="color-slider" value="#483d8b"
+          title="Choose Background Color" type="color"> <label
+          for="bgColorPicker">Select background color</label> </div>
+    </div>
+    <!-- Exit Button -->
+    <a href="../../your%20favorite.html" class="exit-button">Exit</a>
+    <script>
+  // Search functionality
+  const searchInput = document.getElementById('searchInput');
+  const links = document.getElementById('linksList').getElementsByTagName('p');
 
-<div class="content">
-  <h1>Nsfw 2026 - 2027 (Only private Link) :-</h1>
-  <div class="links">
-    <p>(Only Private) Group Family <a href="https://discord.gg/srZZcMA89p" target="_blank">https://discord.gg/srZZcMA89p</a></p>
-    <p>(Only private 18+) Sexyx and Christopher <a href="https://discord.gg/3WFpCzGUYv" target="_blank">https://discord.gg/3WFpCzGUYv</a></p>
-    <p>(Only private 18+) Gaming Crib <a href="https://discord.gg/KdxDk4DNhY" target="_blank">https://discord.gg/KdxDk4DNhY</a></p>
-    <p>(Only private 18+) Sexy bitch <a href="https://discord.gg/pv8xn6c5HU" target="_blank">https://discord.gg/pv8xn6c5HU</a></p>
-    <p>(Only private 18+) Roasting Christopher <a href="https://discord.gg/akZT6SbXW8" target="_blank">https://discord.gg/akZT6SbXW8</a></p>
-    <p>(Only private 18+) Bedroom Cum <a href="https://discord.gg/xwerZR6w5a" target="_blank">https://discord.gg/xwerZR6w5a</a></p>
-    <p>(ONLY Private) Sexy crib <a href="https://discord.gg/nHdNmSY9NZ" target="_blank">https://discord.gg/nHdNmSY9NZ</a></p>
-    <p>(ONLY Private) Fullmoviecinema's server <a href="https://discord.gg/HSh7QBYzXs" target="_blank">https://discord.gg/HSh7QBYzXs</a></p>
-    <p>(Only Private) Github <a href="https://discord.gg/6aKgdNWfAD" target="_blank">https://discord.gg/6aKgdNWfAD</a></p>
-    <p>(Only Private) Sexy house <a href="https://discord.gg/b7yFy3wGGm" target="_blank">https://discord.gg/b7yFy3wGGm</a></p>
-    <p>(ONLY Private) Backup 18+ <a href="https://discord.gg/m7vy4HgNjT" target="_blank">https://discord.gg/m7vy4HgNjT</a></p>
-    <p>(ONLY Private) Androidfiretv <a href="https://discord.gg/2xAuvRx2UZ" target="_blank">https://discord.gg/2xAuvRx2UZ</a></p>
-    <p>Wix Boxing hacked <a href="https://discord.gg/eqmSDFhzRS" target="_blank">https://discord.gg/eqmSDFhzRS</a></p>
-  </div>
-</div>
+  searchInput.addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    Array.from(links).forEach(link => {
+      const text = link.dataset.search.toLowerCase();
+      link.style.display = text.includes(query) ? '' : 'none';
+    });
+  });
 
-<!-- Exit Button -->
-<a href="../../your%20favorite.html" class="exit-button">Exit</a>
-
-</body>
+  // Background color picker
+  const colorPicker = document.getElementById('bgColorPicker');
+  colorPicker.addEventListener('input', () => {
+    document.body.style.background = colorPicker.value;
+  });
+</script>
+  </body>
 </html>

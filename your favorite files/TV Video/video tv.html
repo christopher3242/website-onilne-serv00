@@ -15,7 +15,7 @@
       justify-content: flex-start;
       min-height: 100vh;
       margin: 0;
-      background: linear-gradient(240deg,rgba(69, 69, 117, 1) 36%, rgba(99, 144, 176, 1) 100%);
+      background: linear-gradient(240deg,rgb(36, 36, 51) 36%, rgb(66, 199, 199) 100%);
       font-family: Arial, sans-serif;
       padding: 20px;
     }
@@ -37,7 +37,7 @@
     #videoPlayer {
       width: 100% !important;
       height: auto !important;
-      border: 0.8px solid #87bfff;
+      border: 0.8px solid #6a8cfa;
       border-radius: 15px;
       box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
     }
@@ -63,13 +63,13 @@
       cursor: pointer;
       border: none;
       border-radius: 5px;
-      background-color: #144496;
+      background-color: #40629e;
       color: #fff;
       transition: background-color 0.3s, opacity 0.5s;
     }
 
     button:hover {
-      background-color: #152C54;
+      background-color: #152135;
     }
 
     /* Hidden class for hiding buttons */
@@ -106,6 +106,19 @@
       border-radius: 4px;
       border: 1px solid #ccc;
       font-size: 1em;
+    }
+
+    /* Background color picker styling */
+    .color-picker-container {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #bgColorPicker {
+      margin-top: 5px;
+      padding: 5px;
     }
   </style>
 </head>
@@ -228,9 +241,15 @@
 
     <!-- Search input for video number -->
     <div class="controls-section" style="margin-top: 20px">
-      <label for="videoNumberInput">Search Video Number (1-12000):</label>
-      <input type="number" id="videoNumberInput" min="1" max="12000" />
+      <label for="videoNumberInput">Search Video Number (1-15000):</label>
+      <input type="number" id="videoNumberInput" min="1" max="15000" />
       <button onclick="searchVideoByInput()">Go</button>
+    </div>
+
+    <!-- Background color picker -->
+    <div class="color-picker-container">
+      <label for="bgColorPicker">Pick Background Color:</label>
+      <input type="color" id="bgColorPicker" value="#1e251e" />
     </div>
 
     <!-- Video.js JS -->
@@ -239,9 +258,9 @@
       const videoNumberDisplay = document.getElementById("videoNumber");
       let currentVideoIndex = 0;
 
-      // Generate video sources from 1 to 12000
+      // Generate video sources from 1 to 15000
       const videoSources = [];
-      for (let i = 1; i <= 12000; i++) {
+      for (let i = 1; i <= 15000; i++) {
         videoSources.push(`video${i}.mp4`);
       }
 
@@ -303,13 +322,13 @@
       }
 
       function searchVideo() {
-        const input = prompt("Enter video number (1-12000):");
+        const input = prompt("Enter video number (1-15000):");
         const num = parseInt(input);
-        if (!isNaN(num) && num >= 1 && num <= 12000) {
+        if (!isNaN(num) && num >= 1 && num <= 15000) {
           currentVideoIndex = num - 1;
           updateVideo();
         } else {
-          alert("Invalid number. Please enter a number between 1 and 12000.");
+          alert("Invalid number. Please enter a number between 1 and 15000.");
         }
       }
 
@@ -317,11 +336,11 @@
       function searchVideoByInput() {
         const numInput = document.getElementById("videoNumberInput").value;
         const num = parseInt(numInput);
-        if (!isNaN(num) && num >= 1 && num <= 12000) {
+        if (!isNaN(num) && num >= 1 && num <= 15000) {
           currentVideoIndex = num - 1;
           updateVideo();
         } else {
-          alert("Invalid number. Please enter a number between 1 and 12000.");
+          alert("Invalid number. Please enter a number between 1 and 15000.");
         }
       }
 
@@ -360,6 +379,14 @@
         .addEventListener("change", function () {
           setPlaybackRate(this.value);
         });
+
+      // Background color picker event
+      document
+        .getElementById("bgColorPicker")
+        .addEventListener("input", function () {
+          document.body.style.background = this.value;
+        });
     </script>
-  </body>
+  </div>
+</body>
 </html>

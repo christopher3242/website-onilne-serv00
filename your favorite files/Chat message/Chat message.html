@@ -1,505 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ultra Chat</title>
-
 <style>
-
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-}
-
-body{
-font-family:Arial;
-background:var(--body);
-color:var(--text);
-display:flex;
-flex-direction:column;
-height:100vh;
-}
-
-/* THEMES */
-
-:root{
---body:#111;
---text:#fff;
---chat:#fff;
---header:#222;
---user:#007bff;
---bot:#e5e5ea;
-}
-
-/* HEADER */
-
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:10px 20px;
-background:var(--header);
-flex-wrap:wrap;
-}
-
-header h1{
-font-size:22px;
-}
-
-.controls{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-align-items:center;
-}
-
-button{
-border:none;
-padding:6px 10px;
-border-radius:4px;
-cursor:pointer;
-font-weight:bold;
-}
-
-input{
-padding:6px;
-border-radius:4px;
-border:1px solid #ccc;
-}
-
-/* EXIT */
-
-#exitBtn{
-background:#e74c3c;
-color:#fff;
-text-decoration:none;
-padding:6px 10px;
-border-radius:4px;
-}
-
-#exitBtn:hover{
-background:#c0392b;
-}
-
-/* MAIN */
-
-main{
-flex:1;
-display:flex;
-justify-content:center;
-padding:10px;
-}
-
-/* CHAT */
-
-.chat-container{
-width:100%;
-max-width:850px;
-height:90%;
-background:var(--chat);
-display:flex;
-flex-direction:column;
-border-radius:10px;
-overflow:hidden;
-}
-
-/* CHAT HEADER */
-
-.chat-header{
-background:#333;
-color:#fff;
-padding:10px;
-display:flex;
-justify-content:space-between;
-}
-
-/* MESSAGES */
-
-.chat-messages{
-flex:1;
-overflow-y:auto;
-padding:10px;
-display:flex;
-flex-direction:column;
-gap:6px;
-}
-
-.message{
-max-width:70%;
-padding:10px 15px;
-border-radius:20px;
-font-size:14px;
-position:relative;
-}
-
-.message.user{
-align-self:flex-start;
-background:var(--user);
-color:#fff;
-}
-
-.message.bot{
-align-self:flex-end;
-background:var(--bot);
-color:#000;
-}
-
-/* ACTIONS */
-
-.msg-actions{
-font-size:10px;
-margin-top:3px;
-display:flex;
-gap:6px;
-}
-
-.msg-actions span{
-cursor:pointer;
-color:#555;
-}
-
-/* TIMESTAMP */
-
-.timestamp{
-font-size:10px;
-opacity:.7;
-}
-
-/* INPUT */
-
-.input-area{
-display:flex;
-gap:6px;
-padding:10px;
-border-top:1px solid #ddd;
-}
-
-#messageInput{
-flex:1;
-padding:10px;
-border-radius:20px;
-}
-
-/* EMOJI */
-
-#emojiPanel{
-display:none;
-flex-wrap:wrap;
-gap:6px;
-padding:10px;
-background:#eee;
-}
-
-#emojiPanel span{
-cursor:pointer;
-font-size:20px;
-}
-
-/* TYPING */
-
-#typing{
-font-size:12px;
-padding:5px 10px;
-color:#555;
-}
-
+:root{--body:#0b1020;--surface:#151d33;--surface2:#202b46;--text:#f8fafc;--muted:#9aa8c5;--accent:#4f8cff;--mine:#2563eb;--other:#e7edf8;--otherText:#111827;--border:#33415f}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--body);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}button,input,select{font:inherit}button{border:0;cursor:pointer;color:inherit;background:var(--surface2);padding:9px 12px;border-radius:9px;font-weight:700;transition:.2s}button:hover{filter:brightness(1.2);transform:translateY(-1px)}button:active{transform:scale(.96)}input,select{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:9px;padding:9px;outline:none}input:focus,select:focus{border-color:var(--accent)}header{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:12px max(16px,calc((100vw - 1200px)/2));background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}h1{font-size:22px;white-space:nowrap}.controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.controls input{width:150px}.volume{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:12px}.volume input{width:90px;padding:0;accent-color:var(--accent)}#exitBtn{background:#d9485f;text-decoration:none;color:white;padding:9px 12px;border-radius:9px;font-weight:700}main{flex:1;min-height:0;padding:14px;display:flex;justify-content:center}.chat-container{width:100%;max-width:960px;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:16px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 15px 50px #0004}.chat-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border)}.user-info{display:flex;align-items:center;gap:10px}.avatar{width:34px;height:34px;display:grid;place-items:center;background:var(--accent);border-radius:50%;font-weight:bold}.status{font-size:12px;color:#67e8a5}.status.afk{color:#facc15}.status.dnd{color:#fb7185}.status.offline{color:#94a3b8}.chat-actions{display:flex;gap:7px}.chat-messages{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}.message{max-width:min(76%,620px);padding:10px 13px;border-radius:17px;animation:pop .22s ease;word-wrap:break-word}.message.user{align-self:flex-end;background:var(--mine);border-bottom-right-radius:5px}.message.other{align-self:flex-start;background:var(--other);color:var(--otherText);border-bottom-left-radius:5px}.message.ai{align-self:flex-start;background:linear-gradient(135deg,#7138d6,#4267df);color:white;border-bottom-left-radius:5px}.message-head{font-size:11px;font-weight:800;opacity:.75;margin-bottom:4px}.msg-text{white-space:pre-wrap;line-height:1.4}.message-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:5px;font-size:10px;opacity:.65}.msg-actions{display:flex;gap:7px}.msg-actions span{cursor:pointer}.typing{min-height:27px;padding:4px 18px;color:var(--muted);font-size:12px}.dots span{display:inline-block;animation:bounce 1s infinite}.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}.emoji-panel,.gif-panel{display:none;flex-wrap:wrap;gap:6px;padding:9px 14px;background:var(--surface2);border-top:1px solid var(--border)}.emoji-panel.open,.gif-panel.open{display:flex}.emoji-panel button{font-size:20px;padding:4px 7px;background:transparent}.gif-panel button{position:relative;min-width:92px;min-height:58px;padding:0;overflow:hidden;background:var(--surface);border:1px solid var(--border)}.gif-panel img{display:block;width:100%;height:100%;object-fit:cover}.gif-panel span{position:absolute;inset:auto 4px 3px;color:white;font-size:10px;text-shadow:0 1px 3px #000;font-weight:800}.input-area{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border);padding-bottom:max(12px,env(safe-area-inset-bottom))}.input-area input{flex:1;border-radius:22px;padding:11px 15px}.attach{background:transparent;border:1px solid var(--border);font-size:20px;padding:7px 11px}.send{background:var(--accent);min-width:74px}.drop-active{outline:2px dashed var(--accent);outline-offset:-6px;background:#4f8cff12}.shared-gif{display:block;max-width:100%;width:240px;border-radius:10px;margin-top:3px}.attachment{display:flex;align-items:center;gap:9px;margin-top:7px;padding:8px 10px;border-radius:10px;background:#0002}.attachment a{color:inherit;font-weight:700;text-decoration:none;overflow-wrap:anywhere}.attachment a:hover{text-decoration:underline}.msg-text a{color:inherit;font-weight:700;text-decoration:underline;overflow-wrap:anywhere}.drop-help{padding:0 18px 7px;color:var(--muted);font-size:11px;text-align:center}.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:#111827;color:white;padding:10px 15px;border-radius:10px;opacity:0;pointer-events:none;transition:.25s;z-index:5}.toast.show{opacity:1;transform:translate(-50%,0)}@keyframes pop{from{opacity:0;transform:scale(.92) translateY(5px)}to{opacity:1;transform:none}}@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+@media(max-width:700px){header{padding:10px 12px}h1{font-size:19px}.controls{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr}.controls input{width:100%;grid-column:span 3}.controls .volume{grid-column:span 2;justify-content:center}.volume input{width:100px}#exitBtn{text-align:center}main{padding:6px}.chat-container{border-radius:12px}.chat-messages{padding:12px}.message{max-width:88%}.chat-header{padding:10px 12px}.chat-actions button{padding:8px}.input-area{padding:9px}.send{min-width:62px}}
 </style>
 </head>
-
 <body>
-
 <header>
-
-<h1>Ultra Chat</h1>
-
+<h1>⚡ Ultra Chat</h1>
 <div class="controls">
-
-<button id="user1Btn">User1</button>
-<button id="user2Btn">User2</button>
-
-<input id="searchBox" placeholder="Search chat">
-
-<select id="themeSelect"></select>
-
-<button id="renameBtn">Rename</button>
+<select id="userSelect" aria-label="Choose user"></select>
+<input id="searchBox" placeholder="Search chat" aria-label="Search chat">
+<select id="themeSelect" aria-label="Choose theme"></select>
+<select id="statusSelect" aria-label="Choose status">
+<option value="online">Online</option>
+<option value="afk">AFK</option>
+<option value="dnd">DND</option>
+<option value="offline">Offline</option>
+</select>
+<label class="volume">🔊 <input id="volume" type="range" min="0" max="100" value="65" aria-label="Volume"><output id="volumeValue">65%</output></label>
+<button id="soundBtn" title="Toggle sounds">Sound on</button>
+<button id="vibrateBtn" title="Toggle vibration">Vibrate on</button>
+<button id="renameBtn" title="Set a custom name for the selected user">Custom name</button>
+<button id="addMember" title="Add a new group member">+ Member</button>
+<button id="removeMember" title="Remove the selected group member">Remove</button>
 <button id="clearChat">Clear</button>
 <button id="exportChat">Export</button>
-
 <a id="exitBtn" href="../../your favorite.html">Exit</a>
-
 </div>
-
 </header>
-
-<main>
-
-<div class="chat-container">
-
-<div class="chat-header">
-<span id="currentUser">User 1</span>
-<button id="emojiToggle">😊</button>
-</div>
-
-<div class="chat-messages" id="messages"></div>
-
-<div id="typing"></div>
-
-<div id="emojiPanel"></div>
-
-<div class="input-area">
-<input id="messageInput" placeholder="Type message">
-<button id="sendBtn">Send</button>
-</div>
-
-</div>
-
-</main>
-
+<main><div class="chat-container">
+<div class="chat-header"><div class="user-info"><div class="avatar" id="avatar">1</div><div><strong id="currentUser">User 1</strong><div class="status">● Group chat · 20 members</div></div></div><div class="chat-actions"><button id="aiBtn" class="ai-on" title="Toggle offline AI assistant">AI on</button><button id="emojiToggle" title="Open emoji picker">😊</button><button id="gifToggle" title="Open GIF picker">GIF</button></div></div>
+<div class="chat-messages" id="messages" aria-live="polite"></div><div class="typing" id="typing"></div><div class="emoji-panel" id="emojiPanel"></div><div class="gif-panel" id="gifPanel"></div>
+<div class="drop-help">Drop files here or use 📎 to share files and URLs</div><div class="input-area" id="dropZone"><button id="attachBtn" class="attach" title="Attach files">📎</button><input id="fileInput" type="file" multiple hidden><input id="messageInput" autocomplete="off" placeholder="Message, URL, or drop a file…"><button id="sendBtn" class="send">Send</button></div>
+</div></main><div class="toast" id="toast"></div>
 <script>
-
-/* USERS */
-
-let users={user1:"User 1",user2:"User 2"}
-let current="user1"
-
-/* ELEMENTS */
-
-const messages=document.getElementById("messages")
-const label=document.getElementById("currentUser")
-
-/* UPDATE USER */
-
-function updateUser(){
-label.textContent=users[current]
-}
-
-document.getElementById("user1Btn").onclick=()=>{current="user1";updateUser()}
-document.getElementById("user2Btn").onclick=()=>{current="user2";updateUser()}
-
-/* TIME */
-
-function time(){
-return new Date().toLocaleTimeString([],{
-hour:"2-digit",minute:"2-digit"
-})
-}
-
-/* ADD MESSAGE */
-
-function addMessage(text){
-
-const div=document.createElement("div")
-
-div.className="message "+(current==="user1"?"user":"bot")
-
-div.innerHTML=`
-<div class="msgText">${users[current]}: ${text}</div>
-<div class="timestamp">${time()}</div>
-<div class="msg-actions">
-<span class="edit">edit</span>
-<span class="delete">delete</span>
-</div>
-`
-
-messages.appendChild(div)
-messages.scrollTop=messages.scrollHeight
-
-saveChat()
-}
-
-/* SEND */
-
-function sendMessage(){
-
-const input=document.getElementById("messageInput")
-
-const text=input.value.trim()
-
-if(!text) return
-
-addMessage(text)
-
-input.value=""
-}
-
-/* EVENTS */
-
-document.getElementById("sendBtn").onclick=sendMessage
-
-document.getElementById("messageInput").addEventListener("keydown",e=>{
-if(e.key==="Enter") sendMessage()
-})
-
-/* EDIT DELETE */
-
-messages.addEventListener("click",e=>{
-
-if(e.target.classList.contains("delete")){
-e.target.closest(".message").remove()
-saveChat()
-}
-
-if(e.target.classList.contains("edit")){
-
-const msg=e.target.closest(".message").querySelector(".msgText")
-
-const newText=prompt("Edit message",msg.textContent)
-
-if(newText) msg.textContent=newText
-
-saveChat()
-}
-
-})
-
-/* SEARCH */
-
-document.getElementById("searchBox").addEventListener("input",e=>{
-
-const term=e.target.value.toLowerCase()
-
-document.querySelectorAll(".message").forEach(m=>{
-
-m.style.display=
-m.innerText.toLowerCase().includes(term)?"":"none"
-
-})
-
-})
-
-/* SAVE */
-
-function saveChat(){
-localStorage.setItem("chat",messages.innerHTML)
-}
-
-function loadChat(){
-
-const data=localStorage.getItem("chat")
-
-if(data) messages.innerHTML=data
-}
-
-loadChat()
-
-/* CLEAR */
-
-document.getElementById("clearChat").onclick=()=>{
-messages.innerHTML=""
-localStorage.removeItem("chat")
-}
-
-/* EXPORT */
-
-document.getElementById("exportChat").onclick=()=>{
-
-const blob=new Blob([messages.innerText],{type:"text/plain"})
-
-const a=document.createElement("a")
-a.href=URL.createObjectURL(blob)
-a.download="chat.txt"
-a.click()
-
-}
-
-/* RENAME */
-
-document.getElementById("renameBtn").onclick=()=>{
-
-const name=prompt("New name")
-
-if(name){
-users[current]=name
-updateUser()
-}
-
-}
-
-/* EMOJI */
-
-const emojis=["😀","😁","😂","🤣","😍","😎","😭","😡","👍","🔥","❤️","🎉"]
-
-const panel=document.getElementById("emojiPanel")
-
-emojis.forEach(e=>{
-const s=document.createElement("span")
-s.textContent=e
-s.onclick=()=>{
-document.getElementById("messageInput").value+=e
-}
-panel.appendChild(s)
-})
-
-document.getElementById("emojiToggle").onclick=()=>{
-panel.style.display=panel.style.display==="flex"?"none":"flex"
-}
-
-/* TYPING */
-
-const typing=document.getElementById("typing")
-
-document.getElementById("messageInput").addEventListener("input",()=>{
-
-typing.textContent=users[current]+" is typing..."
-
-clearTimeout(window.typingTimer)
-
-window.typingTimer=setTimeout(()=>{
-typing.textContent=""
-},1200)
-
-})
-
-/* THEMES */
-
-const themes=[
-["Dark","#111","#fff"],
-["Ocean","#001f3f","#fff"],
-["Green","#003300","#fff"],
-["Pink","#ffc0cb","#000"],
-["Purple","#4b0082","#fff"],
-["Orange","#ff8c00","#000"],
-["Gold","#ffd700","#000"],
-["Sky","#87ceeb","#000"],
-["Gray","#444","#fff"],
-["Teal","#008080","#fff"],
-["Rose","#ffe4e1","#000"],
-["Mint","#98ff98","#000"],
-["Lavender","#e6e6fa","#000"],
-["Sun","#fffacd","#000"],
-["Forest","#228b22","#fff"],
-["Night","#000","#fff"],
-["Steel","#708090","#fff"],
-["Peach","#ffdab9","#000"],
-["Sand","#f4a460","#000"],
-["Ice","#e0ffff","#000"]
-]
-
-const themeSelect=document.getElementById("themeSelect")
-
-themes.forEach((t,i)=>{
-const o=document.createElement("option")
-o.value=i
-o.textContent=t[0]
-themeSelect.appendChild(o)
-})
-
-themeSelect.onchange=()=>{
-
-const t=themes[themeSelect.value]
-
-document.documentElement.style.setProperty("--body",t[1])
-document.documentElement.style.setProperty("--text",t[2])
-
-}
-
-updateUser()
-
-</script>
-
-</body>
-</html>
+const defaultUsers={user1:'User 1'};const savedUsers=JSON.parse(localStorage.getItem('ultraUsers')||'{}');const users=Object.assign(defaultUsers,savedUsers);if(!localStorage.getItem('ultraMembersCleaned')){Object.keys(users).filter(id=>/^user([2-9]|1[0-9]|20)$/.test(id)).forEach(id=>delete users[id]);localStorage.setItem('ultraMembersCleaned','true');saveUsers()}let current='user1',sound=true,vibrate=true,ai=true,audio;
+function saveUsers(){localStorage.setItem('ultraUsers',JSON.stringify(users))}
+let userStatus=localStorage.getItem('ultraStatus')||'online';
+const statusLabels={online:'Online',afk:'AFK',dnd:'DND',offline:'Offline'};
+function updateMemberCount(){const status=document.querySelector('.status');status.textContent='● '+statusLabels[userStatus]+' · Group chat · '+Object.keys(users).length+' members';status.className='status '+userStatus}
+function renderUsers(){const select=$('userSelect'),selected=current;select.innerHTML='';Object.entries(users).forEach(([id,name],i)=>{const o=document.createElement('option');o.value=id;o.textContent=name;o.dataset.number=i+1;select.appendChild(o)});current=users[selected]?selected:Object.keys(users)[0];select.value=current;select.dispatchEvent(new Event('change'));updateMemberCount()}
+function addMember(){const name=prompt('Enter the new member name','User '+(Object.keys(users).length+1));if(!name||!name.trim())return;let number=1;while(users['user'+number])number++;users['user'+number]=name.trim();saveUsers();renderUsers();$('userSelect').value='user'+number;$('userSelect').dispatchEvent(new Event('change'));showToast('Member added')}
+function removeMember(){if(Object.keys(users).length<=1){showToast('At least one member is required');return}const name=users[current];if(!confirm('Remove '+name+' from the group?'))return;delete users[current];saveUsers();renderUsers();showToast(name+' removed');feedback('delete')}
+const $=id=>document.getElementById(id), messages=$('messages');
+const emojis=['😀','😁','😂','🤣','😍','😎','😭','😡','👍','🔥','❤️','🎉','✨','🙌','🤖','💡'];
+const gifs=[['Celebration','data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 100"><rect width="180" height="100" fill="#7138d6"/><text x="90" y="58" text-anchor="middle" font-size="30">🎉✨</text><animate attributeName="opacity" values=".65;1;.65" dur="1s" repeatCount="indefinite"/></svg>')],['Laughing','data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 100"><rect width="180" height="100" fill="#2563eb"/><text x="90" y="58" text-anchor="middle" font-size="30">😂🤣</text><animate attributeName="opacity" values=".7;1;.7" dur=".8s" repeatCount="indefinite"/></svg>')],['Awesome','data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 100"><rect width="180" height="100" fill="#0f766e"/><text x="90" y="58" text-anchor="middle" font-size="30">🔥👍</text><animate attributeName="opacity" values=".6;1;.6" dur="1.2s" repeatCount="indefinite"/></svg>')],['Love it','data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 100"><rect width="180" height="100" fill="#be185d"/><text x="90" y="58" text-anchor="middle" font-size="30">❤️😍</text><animate attributeName="opacity" values=".65;1;.65" dur=".9s" repeatCount="indefinite"/></svg>')]];
+Object.entries(users).forEach(([id,name],i)=>{const o=document.createElement('option');o.value=id;o.textContent=name;o.dataset.number=i+1;$('userSelect').appendChild(o)});emojis.forEach(e=>{const b=document.createElement('button');b.textContent=e;b.onclick=()=>{$('messageInput').value+=e;$('messageInput').focus()};$('emojiPanel').appendChild(b)});gifs.forEach(([name,url])=>{const b=document.createElement('button');const img=document.createElement('img');img.src=url;img.alt=name+' GIF';const label=document.createElement('span');label.textContent=name;b.append(img,label);b.onclick=()=>{addMessage(name+' GIF',current,'user',true,null,url);$('gifPanel').classList.remove('open')};$('gifPanel').appendChild(b)});
+const themes=[['Midnight','#0b1020','#f8fafc','#151d33','#202b46','#e7edf8','#111827'],['Ocean','#002b45','#fff','#064766','#0b5d7a','#d9f3ff','#082f49'],['Forest','#082b1c','#fff','#10452d','#17613e','#dcfce7','#052e16'],['Rose','#ffe4e1','#111','#fff1f2','#ffe4e6','#fff','#4c0519'],['Purple','#321052','#fff','#48166f','#5b2189','#f3e8ff','#2e1065'],['Snow','#eef3f8','#111','#fff','#dce6f2','#fff','#111827'],['Sunset','#54220d','#fff','#713014','#8b421b','#ffedd5','#431407']];themes.forEach((t,i)=>{const o=document.createElement('option');o.value=i;o.textContent=t[0];$('themeSelect').appendChild(o)});
+function feedback(kind='message'){if(sound&&Number($('volume').value)){audio=audio||new (window.AudioContext||window.webkitAudioContext)();const osc=audio.createOscillator(),gain=audio.createGain();osc.frequency.value=kind==='send'?620:kind==='delete'?180:420;gain.gain.value=Number($('volume').value)/100*.035;osc.connect(gain);gain.connect(audio.destination);osc.start();osc.stop(audio.currentTime+.09)}if(vibrate&&navigator.vibrate)navigator.vibrate(kind==='send'?[15,25,15]:12)}
+function showToast(text){$('toast').textContent=text;$('toast').classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>$('toast').classList.remove('show'),1800)}
+function time(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
+function linkify(text){const frag=document.createDocumentFragment(),url=/((https?:\/\/|www\.)[^\s<]+)/gi;let last=0,match;while((match=url.exec(text))){frag.append(document.createTextNode(text.slice(last,match.index)));const a=document.createElement('a');a.href=match[0].startsWith('www.')?'https://'+match[0]:match[0];a.target='_blank';a.rel='noopener noreferrer';a.textContent=match[0];frag.append(a);last=url.lastIndex}frag.append(document.createTextNode(text.slice(last)));return frag}
+function addMessage(text,who=current,type='user',save=true,attachment=null,gifUrl=null){const div=document.createElement('div');div.className='message '+(type==='ai'?'ai':who===current?'user':'other');const head=document.createElement('div');head.className='message-head';head.textContent=type==='ai'?'🤖 Ultra AI':users[who];const body=document.createElement('div');body.className='msg-text';if(gifUrl){const gif=document.createElement('img');gif.src=gifUrl;gif.alt=text;gif.className='shared-gif';body.appendChild(gif)}else body.appendChild(linkify(text));if(attachment){const item=document.createElement('div');item.className='attachment';const a=document.createElement('a');a.href=attachment.url;a.download=attachment.name;a.target='_blank';a.rel='noopener noreferrer';a.textContent='📎 '+attachment.name+' ('+attachment.size+')';item.appendChild(a);body.appendChild(item)}const foot=document.createElement('div');foot.className='message-foot';const stamp=document.createElement('span');stamp.textContent=time();foot.appendChild(stamp);if(type==='user'){const actions=document.createElement('span');actions.className='msg-actions';actions.innerHTML='<span class="edit">edit</span><span class="delete">delete</span>';foot.appendChild(actions)}div.append(head,body,foot);messages.appendChild(div);messages.scrollTop=messages.scrollHeight;if(save)saveChat();if(save)feedback(type==='user'?'send':'message')}
+function saveChat(){localStorage.setItem('ultraChat',messages.innerHTML);localStorage.setItem('ultraUsers',JSON.stringify(users))}function loadChat(){const data=localStorage.getItem('ultraChat');if(data)messages.innerHTML=data;else addMessage('Welcome! Switch between User 1–5, or ask the offline AI for a quick reply.','user1','other',false)}
+function aiReply(text){const q=text.toLowerCase();let reply=q.includes('hello')||q.includes('hi')?'Hello! Great to have everyone here.':q.includes('help')?'Try asking me about the time, ideas, planning, or chat features.':q.includes('time')?`The current time is ${time()}.`:q.includes('thank')?'You’re welcome!':`I’m the offline group assistant. I received “${text}”. Tell me more and I’ll help turn it into an idea.`;$('typing').innerHTML='<span class="dots">AI is typing <span>●</span><span>●</span><span>●</span></span>';setTimeout(()=>{ $('typing').textContent='';addMessage(reply,'ai','ai')},700+Math.random()*500)}
+function sendMessage(){const input=$('messageInput'),text=input.value.trim();if(!text)return;addMessage(text);input.value='';if(ai)aiReply(text)}
+function formatSize(bytes){if(bytes<1024)return bytes+' B';if(bytes<1048576)return (bytes/1024).toFixed(1)+' KB';return (bytes/1048576).toFixed(1)+' MB'}
+function shareFiles(fileList){[...fileList].slice(0,8).forEach(file=>{const reader=new FileReader();reader.onload=()=>addMessage('Shared a file:',current,'user',true,{name:file.name,size:formatSize(file.size),url:reader.result});reader.readAsDataURL(file)});if(fileList.length>8)showToast('Only the first 8 files were added')}
+$('attachBtn').onclick=()=>$('fileInput').click();$('fileInput').onchange=e=>{shareFiles(e.target.files);e.target.value=''};
+$('addMember').onclick=addMember;$('removeMember').onclick=removeMember;updateMemberCount();
+const dropZone=$('dropZone');['dragenter','dragover'].forEach(event=>dropZone.addEventListener(event,e=>{e.preventDefault();dropZone.classList.add('drop-active')}));['dragleave','drop'].forEach(event=>dropZone.addEventListener(event,e=>{e.preventDefault();dropZone.classList.remove('drop-active')}));dropZone.ondrop=e=>shareFiles(e.dataTransfer.files);
+$('sendBtn').onclick=sendMessage;$('messageInput').onkeydown=e=>{if(e.key==='Enter')sendMessage()};$('emojiToggle').onclick=()=>{$('emojiPanel').classList.toggle('open');$('gifPanel').classList.remove('open')};$('gifToggle').onclick=()=>{$('gifPanel').classList.toggle('open');$('emojiPanel').classList.remove('open')};$('userSelect').onchange=e=>{current=e.target.value;$('currentUser').textContent=users[current];$('avatar').textContent=(users[current].trim()[0]||e.target.selectedOptions[0].dataset.number).toUpperCase();feedback('message')};
+messages.onclick=e=>{const box=e.target.closest('.message');if(!box)return;if(e.target.classList.contains('delete')){box.remove();saveChat();feedback('delete')}if(e.target.classList.contains('edit')){const text=box.querySelector('.msg-text'),next=prompt('Edit message',text.textContent);if(next&&next.trim()){text.textContent=next.trim();saveChat();feedback('message')}}};$('searchBox').oninput=e=>{const term=e.target.value.toLowerCase();document.querySelectorAll('.message').forEach(m=>m.style.display=m.innerText.toLowerCase().includes(term)?'':'none')};
+$('clearChat').onclick=()=>{messages.innerHTML='';localStorage.removeItem('ultraChat');showToast('Chat cleared');feedback('delete')};$('exportChat').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([messages.innerText],{type:'text/plain'}));a.download='ultra-chat.txt';a.click();URL.revokeObjectURL(a.href);showToast('Chat exported')};$('renameBtn').onclick=()=>{const oldName=users[current],name=prompt('Enter a custom name for '+oldName,oldName);if(name!==null&&name.trim()){users[current]=name.trim();$('userSelect').selectedOptions[0].textContent=users[current];$('currentUser').textContent=users[current];$('avatar').textContent=users[current][0].toUpperCase();saveChat();showToast('Custom name saved')}};
+$('volume').oninput=e=>{$('volumeValue').textContent=e.target.value+'%';if(Number(e.target.value))feedback('message')};$('soundBtn').onclick=()=>{sound=!sound;$('soundBtn').textContent=sound?'Sound on':'Sound off';showToast(sound?'Sounds enabled':'Sounds muted')};$('vibrateBtn').onclick=()=>{vibrate=!vibrate;$('vibrateBtn').textContent=vibrate?'Vibrate on':'Vibrate off';showToast(vibrate?'Vibration enabled':'Vibration unavailable/disabled')};$('aiBtn').onclick=()=>{ai=!ai;$('aiBtn').textContent=ai?'AI on':'AI off';showToast(ai?'Offline AI enabled':'Offline AI disabled')};
+$('themeSelect').onchange=e=>{const t=themes[e.target.value];const root=document.documentElement;['--body','--text','--surface','--surface2','--other','--otherText'].forEach((name,i)=>root.style.setProperty(name,t[i+1]));localStorage.setItem('ultraTheme',e.target.value);showToast(t[0]+' theme')};
+$('statusSelect').value=userStatus;$('statusSelect').onchange=e=>{userStatus=e.target.value;localStorage.setItem('ultraStatus',userStatus);updateMemberCount();showToast(statusLabels[userStatus]+' status')};
+const savedTheme=localStorage.getItem('ultraTheme');if(savedTheme!==null&&themes[savedTheme]){$('themeSelect').value=savedTheme;$('themeSelect').dispatchEvent(new Event('change'))}loadChat();$('userSelect').dispatchEvent(new Event('change'));
+</script></body></html>
