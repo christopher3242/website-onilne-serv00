@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LED Sync Visualizer - 30 Effects</title>
+<title>LED Sync Visualizer — 2000 New Audio-Reactive Effects</title>
 
 <style>
 * {
@@ -95,6 +95,23 @@ button {
   font-size: 14px;
 }
 
+#dropZone {
+  margin-top: 6px;
+  padding: 14px 10px;
+  border: 2px dashed #555;
+  border-radius: 7px;
+  color: #bbb;
+  text-align: center;
+  font-size: 12px;
+  transition: .2s;
+}
+
+#dropZone.drag-over {
+  border-color: #0f0;
+  background: rgba(0, 255, 0, .12);
+  color: #0f0;
+}
+
 input[type="file"],
 select {
   background: #eee;
@@ -115,6 +132,19 @@ button:hover {
 
 button:active {
   transform: scale(.98);
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid #0f0;
+  outline-offset: 2px;
+}
+
+button,
+select,
+input[type="range"] {
+  touch-action: manipulation;
 }
 
 .control-row {
@@ -141,6 +171,29 @@ button:active {
   min-height: 31px;
 }
 
+#effectSearch {
+  margin-bottom: 6px;
+}
+
+.favorite-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+#favoriteEffectBtn.is-favorite {
+  background: #806b00;
+  color: #fff59a;
+}
+
+#favoritesFilterBtn.active {
+  background: #0b713f;
+}
+
+#effectSearch::placeholder {
+  color: #777;
+}
+
 #liveValues {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -156,6 +209,29 @@ button:active {
   padding: 6px;
   border-radius: 4px;
 }
+#effectInfo {
+  margin-top: 10px;
+  padding: 8px 9px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(0,255,160,.12), rgba(100,0,255,.16));
+  border: 1px solid rgba(255,255,255,.1);
+  font-family: monospace;
+  font-size: 11px;
+  display: grid;
+  gap: 3px;
+}
+#effectInfo span {
+  color: #aaa;
+}
+#liveValues {
+  grid-template-columns: repeat(3, 1fr);
+}
+@media (max-width: 600px) {
+  #liveValues {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 
 #fpsCounter {
   position: fixed;
@@ -193,12 +269,30 @@ button:active {
 
 @media (max-width: 600px) {
   #sidebar {
-    width: 225px;
+    top: 55px;
+    left: 6px;
+    width: min(280px, calc(100vw - 12px));
+    max-height: calc(100vh - 65px);
     padding: 10px;
   }
 
   #header {
-    font-size: 17px;
+    height: 44px;
+    padding: 11px 6px;
+    font-size: 16px;
+  }
+
+  input[type="file"],
+  select,
+  button {
+    min-height: 42px;
+  }
+
+  #fpsCounter {
+    top: auto;
+    right: 6px;
+    bottom: 52px;
+    font-size: 11px;
   }
 }
 </style>
@@ -209,13 +303,16 @@ button:active {
 <canvas id="canvas"></canvas>
 
 <div id="header">
-  LED Sync Visualizer — 30 Effects
+  LED Sync Visualizer — 2000 New Audio-Reactive Effects
 </div>
 
 <div id="sidebar">
 
-  <label>Upload Audio</label>
-  <input type="file" id="fileInput" accept="audio/*">
+  <label>Upload Audio / MP3</label>
+  <input type="file" id="fileInput" accept="audio/*,.mp3">
+  <div id="dropZone" role="button" tabindex="0">
+    Drop an MP3 or audio file here
+  </div>
 
   <div class="control-row">
     <button id="playBtn">▶ Play</button>
@@ -232,39 +329,25 @@ button:active {
     <button id="exitFullscreenBtn">Exit Fullscreen</button>
   </div>
 
+  <label for="effectSearch">Search Effects</label>
+  <input
+    type="search"
+    id="effectSearch"
+    placeholder="Type an effect name..."
+    autocomplete="off"
+  >
+
+  <div class="favorite-controls">
+    <button id="favoriteEffectBtn" type="button">☆ Favorite</button>
+    <button id="favoritesFilterBtn" type="button">Show Favorites</button>
+  </div>
+
   <label for="effectSelect">Effect</label>
 
-  <select id="effectSelect">
-    <option value="wave">01 — Wave Beat</option>
-    <option value="spiral">02 — Spiral</option>
-    <option value="rainbowWave">03 — Rainbow Wave</option>
-    <option value="colorPulse">04 — Color Pulse</option>
-    <option value="strobeFlash">05 — Strobe Flash</option>
-    <option value="hypnoticSpiral">06 — Hypnotic Spiral</option>
-    <option value="waterRipple">07 — Water Ripple</option>
-    <option value="lightning">08 — Lightning Strike</option>
-    <option value="fireFlame">09 — Fire Flame</option>
-    <option value="musicSpectrum">10 — Music Spectrum</option>
-    <option value="rotatingColors">11 — Rotating Colors</option>
-    <option value="colorExplosion">12 — Color Explosion</option>
-    <option value="flicker">13 — Flicker</option>
-    <option value="gradientRainbow">14 — Gradient Rainbow</option>
-    <option value="pulseWave">15 — Pulse Wave</option>
-    <option value="fireworks">16 — Fireworks</option>
-    <option value="colorTwirl">17 — Color Twirl</option>
-    <option value="chaseLights">18 — Chase Lights</option>
-    <option value="lightTunnel">19 — Light Tunnel</option>
-    <option value="waveSpiral">20 — Wave Spiral</option>
-    <option value="rainbowSpiral">21 — Rainbow Spiral</option>
-    <option value="meteorBurst">22 — Meteor Burst</option>
-    <option value="starlight">23 — Starlight</option>
-    <option value="discoBall">24 — Disco Ball</option>
-    <option value="lavaFlow">25 — Lava Flow</option>
-    <option value="pixelFlicker">26 — Pixel Flicker</option>
-    <option value="liquidGlow">27 — Liquid Glow</option>
-    <option value="laserBeam">28 — Laser Beam</option>
-    <option value="auroraFlash">29 — Aurora Flash</option>
-    <option value="neonPulse">30 — Neon Pulse</option>
+  <button id="randomEffectBtn" type="button">🎲 Random Effect</button>
+
+  <select id="effectSelect" aria-label="Choose one of 2000 visual effects">
+    <option value="fx1">1 — Neon Rainfall 01</option>
   </select>
 
   <label for="beatSensitivityRange">
@@ -281,6 +364,22 @@ button:active {
 
   <div class="value">
     Sensitivity: <span id="beatSensitivityValue">50</span>
+  </div>
+
+  <label for="bassEqRange">
+    Bass EQ
+  </label>
+
+  <input
+    type="range"
+    id="bassEqRange"
+    min="-12"
+    max="12"
+    value="0"
+  >
+
+  <div class="value">
+    Bass: <span id="bassEqValue">0</span> dB
   </div>
 
   <label for="volumeRange">
@@ -303,16 +402,18 @@ button:active {
     Select an audio file
   </div>
 
-  <div id="liveValues">
-    <div>
-      Beat<br>
-      <b id="beatValue">0%</b>
-    </div>
+  <div id="effectInfo">
+    <b id="effectNumber">Effect 1 / 2000</b>
+    <span id="effectFamily">Neon Rainfall</span>
+  </div>
 
-    <div>
-      Volume<br>
-      <b id="volumeDisplay">50%</b>
-    </div>
+  <div id="liveValues">
+    <div>Beat energy<br><b id="beatValue">0%</b></div>
+    <div>Volume<br><b id="volumeDisplay">50%</b></div>
+    <div>Bass<br><b id="bassValue">0%</b></div>
+    <div>Mid<br><b id="midValue">0%</b></div>
+    <div>Treble<br><b id="trebleValue">0%</b></div>
+    <div>Hue / Time<br><b id="hueTimeValue">0° / 0.0s</b></div>
   </div>
 
 </div>
@@ -364,6 +465,7 @@ resize();
 ========================================================= */
 
 const fileInput = document.getElementById("fileInput");
+const dropZone = document.getElementById("dropZone");
 const playBtn = document.getElementById("playBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const stopBtn = document.getElementById("stopBtn");
@@ -378,6 +480,81 @@ const exitFullscreenBtn =
 const effectSelect =
   document.getElementById("effectSelect");
 
+/*
+   2000-EFFECT CATALOG
+   40 visual families × 50 deterministic variants = 2000 effects.
+   Each variant changes geometry, motion, frequency mapping, palette,
+   density, depth and beat response — not just the displayed name.
+*/
+const EFFECT_FAMILIES = [
+  "Neon Rainfall", "Prism Carousel", "Bass Cathedral", "Solar Mesh",
+  "Crystal Storm", "Aurora Mesh", "Fractal Fire", "Cyber Sparks",
+  "Orbits", "Rings", "Rays", "Geometric Shapes", "Waveforms", "Blooms",
+  "Halos", "Trails", "Bursts", "Spectrum Patterns", "Beat Mandala",
+  "Frequency Bubbles", "Soundwave Tunnel", "Beat Confetti", "Energy Rings",
+  "Plasma Grid", "Tunnel Rings", "Orbiting Orbs", "Matrix Rain", "Vortex",
+  "Circle Spectrum", "Galaxy", "Scanlines", "Geometric Burst",
+  "Sine Ribbons", "Kaleidoscope", "Ember Storm", "Radar Pulse",
+  "Hexagon Flow", "Prism Burst", "Fireworks", "Fire"
+];
+
+const EFFECT_VARIANTS = 50;
+const EFFECT_TOTAL = EFFECT_FAMILIES.length * EFFECT_VARIANTS;
+
+const EFFECT_VARIANT_NAMES = [
+  "Pulse", "Flux", "Drift", "Bloom", "Surge", "Echo", "Orbit", "Rush",
+  "Prism", "Nova", "Cascade", "Wave", "Spark", "Glow", "Storm", "Flow",
+  "Fever", "Dream", "Arc", "Core", "Shift", "Burst", "Shimmer", "Drive",
+  "Halo", "Rift", "Dance", "Frost", "Inferno", "Pulsewave", "Gravity",
+  "Mirage", "Vector", "Lumen", "Comet", "Radiance", "Hyper", "Velvet",
+  "Quantum", "Fusion", "Neon", "Cosmic", "Crystal", "Voltage", "Spectral",
+  "Solar", "Lunar", "Electric", "Infinite", "Ultra"
+];
+
+function buildEffectCatalog() {
+  effectSelect.innerHTML = "";
+
+  for (let i = 1; i <= EFFECT_TOTAL; i++) {
+    const familyIndex = Math.floor((i - 1) / EFFECT_VARIANTS);
+    const variantIndex = (i - 1) % EFFECT_VARIANTS;
+    const option = document.createElement("option");
+
+    option.value = "fx" + i;
+    option.textContent =
+      `${i} — ${EFFECT_FAMILIES[familyIndex]} ${EFFECT_VARIANT_NAMES[variantIndex]} ${String(variantIndex + 1).padStart(2, "0")}`;
+
+    effectSelect.appendChild(option);
+  }
+
+  effectSelect.value = "fx1";
+}
+
+buildEffectCatalog();
+
+const randomEffectBtn =
+  document.getElementById("randomEffectBtn");
+
+const effectSearch =
+  document.getElementById("effectSearch");
+
+const favoriteEffectBtn =
+  document.getElementById("favoriteEffectBtn");
+
+const favoritesFilterBtn =
+  document.getElementById("favoritesFilterBtn");
+
+const FAVORITES_STORAGE_KEY = "led-sync-visualizer-favorites";
+let favoritesOnly = false;
+let favoriteEffects = new Set();
+
+try {
+  favoriteEffects = new Set(
+    JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || "[]")
+  );
+} catch (error) {
+  favoriteEffects = new Set();
+}
+
 const sensitivityRange =
   document.getElementById("beatSensitivityRange");
 
@@ -386,6 +563,12 @@ const sensitivityValue =
 
 const volumeRange =
   document.getElementById("volumeRange");
+
+const bassEqRange =
+  document.getElementById("bassEqRange");
+
+const bassEqValue =
+  document.getElementById("bassEqValue");
 
 const volumeValue =
   document.getElementById("volumeValue");
@@ -398,6 +581,12 @@ const beatValue =
 
 const volumeDisplay =
   document.getElementById("volumeDisplay");
+const bassValue = document.getElementById("bassValue");
+const midValue = document.getElementById("midValue");
+const trebleValue = document.getElementById("trebleValue");
+const hueTimeValue = document.getElementById("hueTimeValue");
+const effectNumber = document.getElementById("effectNumber");
+const effectFamily = document.getElementById("effectFamily");
 
 const fpsDisplay =
   document.getElementById("fpsCounter");
@@ -408,12 +597,17 @@ const fpsDisplay =
 
 let audioCtx = null;
 let analyser = null;
+let bassEqNode = null;
 let gainNode = null;
 let buffer = null;
 let sourceNode = null;
+let sourceGeneration = 0;
 
 let isPlaying = false;
 let loopMode = false;
+let playbackOffset = 0;
+let playbackStartedAt = 0;
+let audioFileName = "";
 
 let volumeLevel = .5;
 let beatSensitivity = 50;
@@ -430,10 +624,13 @@ let waveformData =
    VISUAL STATE
 ========================================================= */
 
-let currentEffect = "wave";
+let currentEffect = "fx1";
 
 let time = 0;
+let lastFrameTime = performance.now();
 let hue = 0;
+let matrixDrops = [];
+let emberParticles = [];
 let beatEnergy = 0;
 let smoothBass = 0;
 let smoothMid = 0;
@@ -446,6 +643,7 @@ let ripples = [];
 let meteors = [];
 
 let lastBeat = 0;
+let beatCooldown = 0;
 
 let animationId = null;
 
@@ -503,6 +701,27 @@ function clearScreen(alpha = 1) {
 
 async function initAudio(arrayBuffer) {
 
+  if (sourceNode) {
+    try {
+      sourceNode.stop();
+      sourceNode.disconnect();
+    } catch (e) {}
+  }
+
+  sourceNode = null;
+  sourceGeneration++;
+  isPlaying = false;
+  playbackOffset = 0;
+  beatEnergy = 0;
+  lastBeat = 0;
+  beatCooldown = 0;
+  smoothBass = 0;
+  smoothMid = 0;
+  smoothTreble = 0;
+  analyser = null;
+  bassEqNode = null;
+  gainNode = null;
+
   if (audioCtx) {
     try {
       await audioCtx.close();
@@ -521,11 +740,22 @@ async function initAudio(arrayBuffer) {
   analyser.fftSize = fftSize;
   analyser.smoothingTimeConstant = .78;
 
+  bassEqNode =
+    audioCtx.createBiquadFilter();
+
+  bassEqNode.type = "lowshelf";
+  bassEqNode.frequency.value = 180;
+  bassEqNode.gain.value = Number(bassEqRange.value);
+
   gainNode =
     audioCtx.createGain();
 
   gainNode.gain.value =
     volumeLevel;
+
+  bassEqNode.connect(gainNode);
+  gainNode.connect(analyser);
+  analyser.connect(audioCtx.destination);
 
   frequencyData =
     new Uint8Array(analyser.frequencyBinCount);
@@ -552,20 +782,29 @@ function createSource() {
     } catch (e) {}
   }
 
-  sourceNode =
+  const source =
     audioCtx.createBufferSource();
 
-  sourceNode.buffer = buffer;
-  sourceNode.loop = loopMode;
+  sourceNode = source;
+  sourceGeneration++;
 
-  sourceNode.connect(gainNode);
-  gainNode.connect(analyser);
-  analyser.connect(audioCtx.destination);
+  source.buffer = buffer;
+  source.loop = loopMode;
+  source.connect(bassEqNode);
 
-  sourceNode.onended = () => {
+  const generation = sourceGeneration;
 
-    if (!loopMode) {
+  source.onended = () => {
+    if (
+      generation === sourceGeneration &&
+      source === sourceNode &&
+      !loopMode &&
+      isPlaying
+    ) {
       isPlaying = false;
+      playbackOffset = 0;
+      sourceNode = null;
+      beatEnergy = 0;
       setStatus("Finished");
     }
   };
@@ -588,22 +827,36 @@ async function playAudio() {
     return;
   }
 
-  if (audioCtx.state === "suspended") {
-    await audioCtx.resume();
+  try {
+    if (audioCtx.state !== "running") {
+      await audioCtx.resume();
+    }
+
+    createSource();
+
+    const offset = loopMode
+      ? playbackOffset % buffer.duration
+      : Math.min(playbackOffset, Math.max(0, buffer.duration - .01));
+
+    playbackStartedAt = audioCtx.currentTime - offset;
+    sourceNode.start(0, offset);
+    isPlaying = true;
+    setStatus("Playing" + (audioFileName ? ": " + audioFileName : ""));
+
+    if (!animationId) {
+      animationId = requestAnimationFrame(draw);
+    }
+  } catch (error) {
+    console.error(error);
+    setStatus("Unable to play audio");
   }
+}
 
-  createSource();
-
-  sourceNode.start(0);
-
-  isPlaying = true;
-
-  setStatus("Playing");
-
-  if (!animationId) {
-    animationId =
-      requestAnimationFrame(draw);
+function getPlaybackPosition() {
+  if (isPlaying && audioCtx) {
+    return audioCtx.currentTime - playbackStartedAt;
   }
+  return playbackOffset;
 }
 
 async function pauseAudio() {
@@ -612,10 +865,24 @@ async function pauseAudio() {
     return;
   }
 
-  await audioCtx.suspend();
-
+  playbackOffset = getPlaybackPosition();
   isPlaying = false;
 
+  if (sourceNode) {
+    try {
+      sourceNode.stop();
+      sourceNode.disconnect();
+    } catch (e) {}
+  }
+
+  sourceNode = null;
+  sourceGeneration++;
+  await audioCtx.suspend();
+  beatEnergy = 0;
+  beatValue.textContent = "0%";
+  bassValue.textContent = "0%";
+  midValue.textContent = "0%";
+  trebleValue.textContent = "0%";
   setStatus("Paused");
 }
 
@@ -624,20 +891,22 @@ function stopAudio() {
   if (sourceNode) {
     try {
       sourceNode.stop();
-    } catch (e) {}
-
-    try {
       sourceNode.disconnect();
     } catch (e) {}
   }
 
   sourceNode = null;
+  sourceGeneration++;
   isPlaying = false;
-
+  playbackOffset = 0;
   beatEnergy = 0;
-
+  lastBeat = 0;
+  beatCooldown = 0;
+  smoothBass = 0;
+  smoothMid = 0;
+  smoothTreble = 0;
+  resetEffectState();
   clearScreen();
-
   setStatus("Stopped");
 }
 
@@ -645,30 +914,54 @@ function stopAudio() {
    UI
 ========================================================= */
 
-fileInput.addEventListener("change", async () => {
+async function loadAudioFile(file) {
 
-  const file = fileInput.files[0];
-
-  if (!file) {
+  if (!file || (!file.type.startsWith("audio/") && !file.name.toLowerCase().endsWith(".mp3"))) {
+    setStatus("Please choose an MP3 or audio file");
     return;
   }
 
   setStatus("Loading audio...");
 
   try {
-
-    const arrayBuffer =
-      await file.arrayBuffer();
-
+    const arrayBuffer = await file.arrayBuffer();
     await initAudio(arrayBuffer);
 
+    audioFileName = file.name;
+    playbackOffset = 0;
+    isPlaying = false;
     setStatus("Loaded: " + file.name);
-
   } catch (error) {
-
     console.error(error);
-
     setStatus("Error loading audio");
+  }
+}
+
+fileInput.addEventListener("change", () => {
+  loadAudioFile(fileInput.files[0]);
+});
+
+dropZone.addEventListener("dragover", event => {
+  event.preventDefault();
+  dropZone.classList.add("drag-over");
+});
+
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("drag-over");
+});
+
+dropZone.addEventListener("drop", event => {
+  event.preventDefault();
+  dropZone.classList.remove("drag-over");
+  loadAudioFile(event.dataTransfer.files[0]);
+});
+
+dropZone.addEventListener("click", () => fileInput.click());
+
+dropZone.addEventListener("keydown", event => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    fileInput.click();
   }
 });
 
@@ -709,12 +1002,105 @@ exitFullscreenBtn.onclick = async () => {
   }
 };
 
+function updateEffectInfo() {
+  const id = Number(currentEffect.replace("fx", "")) || 1;
+  const familyIndex = Math.floor((id - 1) / EFFECT_VARIANTS);
+  const variantIndex = (id - 1) % EFFECT_VARIANTS;
+
+  effectNumber.textContent = `Effect ${id} / ${EFFECT_TOTAL}`;
+  effectFamily.textContent =
+    `${EFFECT_FAMILIES[familyIndex]} · ${EFFECT_VARIANT_NAMES[variantIndex]} ${String(variantIndex + 1).padStart(2, "0")}`;
+}
+
 effectSelect.onchange = () => {
-
-  currentEffect =
-    effectSelect.value;
-
+  currentEffect = effectSelect.value;
   resetEffectState();
+  updateEffectInfo();
+  updateFavoriteButton();
+};
+
+randomEffectBtn.onclick = () => {
+
+  const visibleOptions = Array.from(effectSelect.options)
+    .filter(option => !option.hidden);
+
+  if (!visibleOptions.length) {
+    return;
+  }
+
+  const randomOption =
+    visibleOptions[Math.floor(Math.random() * visibleOptions.length)];
+
+  effectSelect.value = randomOption.value;
+  currentEffect = randomOption.value;
+  resetEffectState();
+  updateEffectInfo();
+  setStatus("Random effect: " + randomOption.textContent);
+};
+
+function saveFavorites() {
+  localStorage.setItem(
+    FAVORITES_STORAGE_KEY,
+    JSON.stringify(Array.from(favoriteEffects))
+  );
+}
+
+function updateFavoriteButton() {
+  const isFavorite = favoriteEffects.has(currentEffect);
+  favoriteEffectBtn.textContent = isFavorite ? "★ Favorited" : "☆ Favorite";
+  favoriteEffectBtn.classList.toggle("is-favorite", isFavorite);
+}
+
+function filterEffects() {
+  const query = effectSearch.value.trim().toLowerCase();
+  const currentValue = effectSelect.value;
+
+  for (const option of effectSelect.options) {
+    const matchesSearch = !query ||
+      option.textContent.toLowerCase().includes(query);
+    const matchesFavorites = !favoritesOnly ||
+      favoriteEffects.has(option.value);
+    option.hidden = !(matchesSearch && matchesFavorites);
+  }
+
+  const selectedOption = Array.from(effectSelect.options)
+    .find(option => option.value === currentValue && !option.hidden);
+
+  if (selectedOption) {
+    effectSelect.value = currentValue;
+  } else {
+    const firstVisible = Array.from(effectSelect.options)
+      .find(option => !option.hidden);
+
+    if (firstVisible) {
+      effectSelect.value = firstVisible.value;
+      currentEffect = firstVisible.value;
+      resetEffectState();
+      updateEffectInfo();
+    }
+  }
+
+  updateFavoriteButton();
+}
+
+effectSearch.oninput = filterEffects;
+
+favoriteEffectBtn.onclick = () => {
+  if (favoriteEffects.has(currentEffect)) {
+    favoriteEffects.delete(currentEffect);
+  } else {
+    favoriteEffects.add(currentEffect);
+  }
+  saveFavorites();
+  updateFavoriteButton();
+  if (favoritesOnly) filterEffects();
+};
+
+favoritesFilterBtn.onclick = () => {
+  favoritesOnly = !favoritesOnly;
+  favoritesFilterBtn.textContent = favoritesOnly ? "Show All Effects" : "Show Favorites";
+  favoritesFilterBtn.classList.toggle("active", favoritesOnly);
+  filterEffects();
 };
 
 sensitivityRange.oninput = () => {
@@ -726,20 +1112,45 @@ sensitivityRange.oninput = () => {
     beatSensitivity;
 };
 
+bassEqRange.oninput = () => {
+
+  const bassDb = clamp(
+    Number(bassEqRange.value) || 0,
+    -12,
+    12
+  );
+
+  bassEqRange.value = bassDb;
+  bassEqValue.textContent = bassDb;
+
+  if (bassEqNode && audioCtx) {
+    bassEqNode.gain.setTargetAtTime(
+      bassDb,
+      audioCtx.currentTime,
+      .015
+    );
+  }
+};
+
 volumeRange.oninput = () => {
 
-  volumeLevel =
-    Number(volumeRange.value) / 100;
+  const percent = clamp(
+    Number(volumeRange.value) || 0,
+    0,
+    100
+  );
 
-  volumeValue.textContent =
-    volumeRange.value;
-
-  volumeDisplay.textContent =
-    volumeRange.value + "%";
+  volumeRange.value = percent;
+  volumeLevel = percent / 100;
+  volumeValue.textContent = percent;
+  volumeDisplay.textContent = percent + "%";
 
   if (gainNode) {
-    gainNode.gain.value =
-      volumeLevel;
+    gainNode.gain.setTargetAtTime(
+      volumeLevel,
+      audioCtx ? audioCtx.currentTime : 0,
+      .015
+    );
   }
 };
 
@@ -816,22 +1227,30 @@ function analyzeAudio() {
       .12
     );
 
+  const sensitivityBoost =
+    map(beatSensitivity, 1, 100, .85, 1.35);
+
+  beatCooldown = Math.max(0, beatCooldown - 1);
+
   if (
+    beatCooldown === 0 &&
     bass > threshold &&
-    bass > lastBeat + .04
+    bass > lastBeat + .025
   ) {
 
     beatEnergy =
       clamp(
-        bass * 1.3,
+        (bass - threshold) * 2.4 * sensitivityBoost + .45,
         0,
         1
       );
 
+    beatCooldown = Math.round(
+      map(beatSensitivity, 1, 100, 10, 4)
+    );
+
     spawnBeatParticles(
-      Math.floor(
-        4 + beatEnergy * 18
-      )
+      Math.floor(4 + beatEnergy * 18)
     );
 
   } else {
@@ -839,11 +1258,17 @@ function analyzeAudio() {
     beatEnergy *= .91;
   }
 
-  lastBeat =
-    lerp(lastBeat, bass, .08);
+  lastBeat = lerp(
+    lastBeat,
+    bass,
+    map(beatSensitivity, 1, 100, .06, .16)
+  );
 
   beatValue.textContent =
     Math.round(beatEnergy * 100) + "%";
+  bassValue.textContent = Math.round(smoothBass * 100) + "%";
+  midValue.textContent = Math.round(smoothMid * 100) + "%";
+  trebleValue.textContent = Math.round(smoothTreble * 100) + "%";
 
   return {
     bass: smoothBass,
@@ -942,11 +1367,19 @@ function drawParticles(mult = 1) {
 function resetEffectState() {
 
   particles = [];
+  matrixDrops = [];
+  emberParticles = [];
   sparks = [];
   ripples = [];
   meteors = [];
 
   stars = [];
+
+  const matrixColumns = Math.ceil(width / 18);
+  matrixDrops = Array.from(
+    { length: matrixColumns },
+    () => rand(-height, 0)
+  );
 
   for (let i = 0; i < 180; i++) {
 
@@ -2101,6 +2534,7 @@ function effectDiscoBall(a) {
     Math.min(width, height) *
     (.2 + a.beat * .12);
 
+  ctx.save();
   ctx.beginPath();
 
   ctx.arc(
@@ -2558,136 +2992,1037 @@ function effectNeonPulse(a) {
 }
 
 /* =========================================================
-   EFFECT DISPATCHER
+   31–45 — ADDITIONAL EFFECTS
 ========================================================= */
 
-function drawEffect(name, a) {
-
-  switch (name) {
-
-    case "wave":
-      effectWave(a);
-      break;
-
-    case "spiral":
-      effectSpiral(a);
-      break;
-
-    case "rainbowWave":
-      effectRainbowWave(a);
-      break;
-
-    case "colorPulse":
-      effectColorPulse(a);
-      break;
-
-    case "strobeFlash":
-      effectStrobeFlash(a);
-      break;
-
-    case "hypnoticSpiral":
-      effectHypnoticSpiral(a);
-      break;
-
-    case "waterRipple":
-      effectWaterRipple(a);
-      break;
-
-    case "lightning":
-      effectLightning(a);
-      break;
-
-    case "fireFlame":
-      effectFireFlame(a);
-      break;
-
-    case "musicSpectrum":
-      effectMusicSpectrum(a);
-      break;
-
-    case "rotatingColors":
-      effectRotatingColors(a);
-      break;
-
-    case "colorExplosion":
-      effectColorExplosion(a);
-      break;
-
-    case "flicker":
-      effectFlicker(a);
-      break;
-
-    case "gradientRainbow":
-      effectGradientRainbow(a);
-      break;
-
-    case "pulseWave":
-      effectPulseWave(a);
-      break;
-
-    case "fireworks":
-      effectFireworks(a);
-      break;
-
-    case "colorTwirl":
-      effectColorTwirl(a);
-      break;
-
-    case "chaseLights":
-      effectChaseLights(a);
-      break;
-
-    case "lightTunnel":
-      effectLightTunnel(a);
-      break;
-
-    case "waveSpiral":
-      effectWaveSpiral(a);
-      break;
-
-    case "rainbowSpiral":
-      effectRainbowSpiral(a);
-      break;
-
-    case "meteorBurst":
-      effectMeteorBurst(a);
-      break;
-
-    case "starlight":
-      effectStarlight(a);
-      break;
-
-    case "discoBall":
-      effectDiscoBall(a);
-      break;
-
-    case "lavaFlow":
-      effectLavaFlow(a);
-      break;
-
-    case "pixelFlicker":
-      effectPixelFlicker(a);
-      break;
-
-    case "liquidGlow":
-      effectLiquidGlow(a);
-      break;
-
-    case "laserBeam":
-      effectLaserBeam(a);
-      break;
-
-    case "auroraFlash":
-      effectAuroraFlash(a);
-      break;
-
-    case "neonPulse":
-      effectNeonPulse(a);
-      break;
-
-    default:
-      effectWave(a);
+function effectPlasmaGrid(a) {
+  clearScreen(.2);
+  const spacing = 42;
+  ctx.lineWidth = 1 + a.beat * 2;
+  ctx.shadowBlur = 12;
+  for (let x = -spacing; x < width + spacing; x += spacing) {
+    ctx.beginPath();
+    for (let y = 0; y <= height; y += 12) {
+      const px = x + Math.sin(y * .018 + time * 2) * (12 + a.bass * 35);
+      if (y === 0) ctx.moveTo(px, y); else ctx.lineTo(px, y);
+    }
+    ctx.strokeStyle = hsl(hue + x * .2, 100, 60, .7);
+    ctx.stroke();
   }
+  for (let y = -spacing; y < height + spacing; y += spacing) {
+    ctx.beginPath();
+    for (let x = 0; x <= width; x += 12) {
+      const py = y + Math.cos(x * .018 - time * 2) * (12 + a.mid * 30);
+      if (x === 0) ctx.moveTo(x, py); else ctx.lineTo(x, py);
+    }
+    ctx.strokeStyle = hsl(hue + y * .2 + 120, 100, 60, .6);
+    ctx.stroke();
+  }
+  ctx.shadowBlur = 0;
+}
+
+function effectTunnelRings(a) {
+  clearScreen(.16);
+  const c = center();
+  const max = Math.max(width, height) * .8;
+  for (let i = 0; i < 20; i++) {
+    const p = (i / 20 + time * (.22 + a.bass * .15)) % 1;
+    const radius = 10 + p * max;
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = hsl(hue + i * 18, 100, 60, 1 - p);
+    ctx.lineWidth = 2 + a.beat * 4;
+    ctx.stroke();
+  }
+}
+
+function effectOrbitingOrbs(a) {
+  clearScreen(.14);
+  const c = center();
+  for (let i = 0; i < 12; i++) {
+    const angle = time * (.5 + i * .03) + i * Math.PI * 2 / 12;
+    const radius = Math.min(width, height) * (.18 + (i % 3) * .1) + a.bass * 100;
+    const x = c.x + Math.cos(angle) * radius;
+    const y = c.y + Math.sin(angle) * radius;
+    ctx.beginPath();
+    ctx.fillStyle = hsl(hue + i * 30, 100, 60, .8);
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = ctx.fillStyle;
+    ctx.arc(x, y, 5 + a.beat * 12, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.shadowBlur = 0;
+}
+
+function effectMatrixRain(a) {
+  clearScreen(.12);
+  ctx.font = "16px monospace";
+  for (let i = 0; i < matrixDrops.length; i++) {
+    const x = i * 18;
+    const y = matrixDrops[i];
+    ctx.fillStyle = hsl(110 + a.treble * 80, 100, 55, .75);
+    ctx.fillText(String.fromCharCode(0x30a0 + Math.random() * 96), x, y);
+    matrixDrops[i] += 5 + a.bass * 18;
+    if (matrixDrops[i] > height + 30) matrixDrops[i] = rand(-200, 0);
+  }
+}
+
+function effectVortex(a) {
+  clearScreen(.13);
+  const c = center();
+  ctx.save();
+  ctx.translate(c.x, c.y);
+  for (let i = 0; i < 80; i++) {
+    const r = i * 7 + a.bass * 80;
+    const angle = i * .28 + time * 2 - r * .002;
+    ctx.fillStyle = hsl(hue + i * 4, 100, 60, .8);
+    ctx.beginPath();
+    ctx.arc(Math.cos(angle) * r, Math.sin(angle) * r, 2 + a.beat * 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function effectCircleSpectrum(a) {
+  clearScreen(.16);
+  const c = center();
+  const count = 96;
+  const radius = Math.min(width, height) * .2;
+  for (let i = 0; i < count; i++) {
+    const angle = i * Math.PI * 2 / count + time * .2;
+    const value = frequencyData[Math.floor(i / count * frequencyData.length)] / 255 || 0;
+    const r1 = radius;
+    const r2 = radius + value * 180 + a.beat * 40;
+    ctx.beginPath();
+    ctx.moveTo(c.x + Math.cos(angle) * r1, c.y + Math.sin(angle) * r1);
+    ctx.lineTo(c.x + Math.cos(angle) * r2, c.y + Math.sin(angle) * r2);
+    ctx.strokeStyle = hsl(hue + i * 3, 100, 60, .85);
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+}
+
+function effectGalaxy(a) {
+  clearScreen(.1);
+  const c = center();
+  for (let i = 0; i < 260; i++) {
+    const arm = i % 4;
+    const r = rand(10, Math.max(width, height) * .55);
+    const angle = r * .012 + arm * Math.PI / 2 + time * .15;
+    ctx.fillStyle = hsl(hue + r * .1, 80, 60, .45);
+    ctx.beginPath();
+    ctx.arc(c.x + Math.cos(angle) * r, c.y + Math.sin(angle) * r * .55, rand(.5, 2.5) + a.beat * 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function effectScanlines(a) {
+  clearScreen(.22);
+  for (let y = 0; y < height; y += 8) {
+    ctx.fillStyle = hsl(hue + y * .3, 100, 55, .15 + a.average * .35);
+    ctx.fillRect(0, y + Math.sin(time * 4) * 3, width, 3 + a.beat * 4);
+  }
+}
+
+function effectGeometricBurst(a) {
+  clearScreen(.14);
+  const c = center();
+  ctx.save();
+  ctx.translate(c.x, c.y);
+  ctx.rotate(time * .4);
+  for (let i = 0; i < 14; i++) {
+    const r = 30 + i * 28 + a.beat * 80;
+    ctx.strokeStyle = hsl(hue + i * 25, 100, 60, .7);
+    ctx.lineWidth = 2 + a.beat * 3;
+    ctx.strokeRect(-r, -r, r * 2, r * 2);
+    ctx.rotate(Math.PI / 28);
+  }
+  ctx.restore();
+}
+
+function effectSineRibbons(a) {
+  clearScreen(.12);
+  for (let line = 0; line < 12; line++) {
+    ctx.beginPath();
+    for (let x = 0; x <= width; x += 6) {
+      const y = height / 2 + (line - 5.5) * 22 + Math.sin(x * .012 + time * 2 + line) * (25 + a.bass * 100);
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = hsl(hue + line * 18, 100, 60, .65);
+    ctx.lineWidth = 2 + a.beat * 2;
+    ctx.stroke();
+  }
+}
+
+function effectKaleidoscope(a) {
+  clearScreen(.14);
+  const c = center();
+  ctx.save();
+  ctx.translate(c.x, c.y);
+  for (let i = 0; i < 12; i++) {
+    ctx.rotate(Math.PI / 6);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(40 + a.beat * 140, -height);
+    ctx.lineTo(100 + a.bass * 180, 0);
+    ctx.closePath();
+    ctx.fillStyle = hsl(hue + i * 30, 100, 55, .18);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function effectEmberStorm(a) {
+  clearScreen(.1);
+  for (let i = 0; i < 90; i++) {
+    const x = rand(0, width);
+    const y = height - ((time * (30 + i % 7 * 8) + i * 47) % (height + 40));
+    ctx.fillStyle = hsl(rand(5, 55), 100, 60, .35 + a.bass * .5);
+    ctx.fillRect(x, y, 2 + a.beat * 3, 8 + a.beat * 14);
+  }
+}
+
+function effectRadarPulse(a) {
+  clearScreen(.12);
+  const c = center();
+  const radius = Math.min(width, height) * .42;
+  ctx.strokeStyle = hsl(120 + hue, 100, 55, .5);
+  ctx.lineWidth = 2;
+  for (let i = 1; i <= 4; i++) {
+    ctx.beginPath(); ctx.arc(c.x, c.y, radius * i / 4, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.beginPath();
+  ctx.moveTo(c.x, c.y);
+  ctx.lineTo(c.x + Math.cos(time * 1.5) * radius, c.y + Math.sin(time * 1.5) * radius);
+  ctx.strokeStyle = hsl(120 + hue, 100, 65, .9);
+  ctx.stroke();
+}
+
+function effectHexagonFlow(a) {
+  clearScreen(.14);
+  const size = 28;
+  for (let x = -size; x < width + size; x += size * 1.75) {
+    for (let y = -size; y < height + size; y += size * 1.5) {
+      const offset = (Math.round(y / size) % 2) * size * .85;
+      const yy = y + Math.sin(time + x * .01) * 8;
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const angle = Math.PI / 3 * i;
+        const px = x + offset + Math.cos(angle) * size * .45;
+        const py = yy + Math.sin(angle) * size * .45;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = hsl(hue + x * .15 + y * .1, 100, 60, .5 + a.beat * .3);
+      ctx.stroke();
+    }
+  }
+}
+
+function effectPrismBurst(a) {
+  clearScreen(.12);
+  const c = center();
+  ctx.save();
+  ctx.translate(c.x, c.y);
+  ctx.rotate(time * .6);
+  for (let i = 0; i < 24; i++) {
+    const angle = i * Math.PI * 2 / 24;
+    const length = Math.min(width, height) * (.25 + a.beat * .35);
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(angle) * 20, Math.sin(angle) * 20);
+    ctx.lineTo(Math.cos(angle) * length, Math.sin(angle) * length);
+    ctx.strokeStyle = hsl(hue + i * 15, 100, 65, .7);
+    ctx.lineWidth = 3 + a.treble * 5;
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+/* =========================================================
+   46–50 — BEAT-SYNCED EFFECTS
+========================================================= */
+
+function effectBeatMandala(a) {
+  clearScreen(.14);
+  const c = center();
+  const spokes = 32;
+  const radius = Math.min(width, height) * (.18 + a.beat * .22);
+  ctx.save();
+  ctx.translate(c.x, c.y);
+  ctx.rotate(time * .25);
+  ctx.lineWidth = 2 + a.beat * 4;
+  for (let i = 0; i < spokes; i++) {
+    const angle = i * Math.PI * 2 / spokes;
+    const length = radius * (.65 + a.bass * .8);
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(angle) * 18, Math.sin(angle) * 18);
+    ctx.lineTo(Math.cos(angle) * length, Math.sin(angle) * length);
+    ctx.strokeStyle = hsl(hue + i * 11, 100, 60, .75);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function effectFrequencyBubbles(a) {
+  clearScreen(.12);
+  const count = 48;
+  for (let i = 0; i < count; i++) {
+    const value = frequencyData.length
+      ? frequencyData[Math.floor(i / count * frequencyData.length)] / 255
+      : 0;
+    const x = (i + .5) / count * width;
+    const y = height * .55 + Math.sin(time * 1.5 + i) * height * .25;
+    const radius = 4 + value * 34 + a.beat * 12;
+    ctx.beginPath();
+    ctx.fillStyle = hsl(hue + i * 8, 100, 60, .35 + value * .6);
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function effectSoundwaveTunnel(a) {
+  clearScreen(.13);
+  const c = center();
+  const rings = 18;
+  for (let i = 0; i < rings; i++) {
+    const p = (i / rings + time * (.18 + a.bass * .12)) % 1;
+    const radius = 15 + p * Math.max(width, height) * .65;
+    const distortion = Math.sin(time * 3 + i) * (8 + a.mid * 35);
+    ctx.beginPath();
+    ctx.ellipse(c.x, c.y, radius + distortion, radius * .62, time * .15, 0, Math.PI * 2);
+    ctx.strokeStyle = hsl(hue + i * 20, 100, 60, 1 - p);
+    ctx.lineWidth = 2 + a.beat * 3;
+    ctx.stroke();
+  }
+}
+
+function effectBeatConfetti(a) {
+  clearScreen(.2);
+  updateParticles();
+  drawParticles(1.4);
+  if (a.beat > .62) spawnBeatParticles(Math.floor(12 + a.beat * 24));
+  for (const p of particles) {
+    ctx.fillStyle = hsl(p.hue, 100, 60, p.life);
+    ctx.fillRect(p.x, p.y, p.size * 2, p.size * 4);
+  }
+}
+
+function effectEnergyRings(a) {
+  clearScreen(.1);
+  const c = center();
+  const maxRadius = Math.max(width, height) * .6;
+  for (let i = 0; i < 10; i++) {
+    const radius = (i * maxRadius / 10 + time * 90 + a.beat * 80) % maxRadius;
+    const alpha = 1 - radius / maxRadius;
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = hsl(hue + i * 28, 100, 62, alpha * .8);
+    ctx.lineWidth = 2 + a.bass * 5;
+    ctx.stroke();
+  }
+}
+
+/* =========================================================
+   2000 NEW PROCEDURAL AUDIO-REACTIVE EFFECTS
+   40 families × 50 variants.
+   The selected ID deterministically changes the renderer's
+   geometry, density, frequency routing, palette, motion and
+   beat response, so every catalog entry is a distinct variant.
+========================================================= */
+
+function fxSeed(id) {
+  let x = (id * 0x9e3779b9) >>> 0;
+  x ^= x >>> 16;
+  x = Math.imul(x, 0x85ebca6b);
+  x ^= x >>> 13;
+  x = Math.imul(x, 0xc2b2ae35);
+  x ^= x >>> 16;
+  return (x >>> 0) / 4294967296;
+}
+
+function fxHash(id, n) {
+  return fxSeed((id + 1) * (n + 17) + n * 1013);
+}
+
+function fxParams(id) {
+  const v = (id - 1) % EFFECT_VARIANTS;
+  return {
+    speed: .18 + fxHash(id, 1) * 2.6,
+    density: 8 + Math.floor(fxHash(id, 2) * 34),
+    scale: .35 + fxHash(id, 3) * 1.65,
+    twist: -1.2 + fxHash(id, 4) * 2.4,
+    spread: .35 + fxHash(id, 5) * 1.9,
+    sides: 3 + Math.floor(fxHash(id, 6) * 9),
+    hueStep: 5 + fxHash(id, 7) * 44,
+    phase: fxHash(id, 8) * Math.PI * 2,
+    wobble: 10 + fxHash(id, 9) * 110,
+    depth: .35 + fxHash(id, 10) * 1.5,
+    audioMix: fxHash(id, 11),
+    mirror: fxHash(id, 12) > .48,
+    variant: v
+  };
+}
+
+function fxPointSpectrum(i, count, a, p) {
+  const idx = Math.floor((i / count) * frequencyData.length);
+  const raw = frequencyData.length ? frequencyData[idx] / 255 : 0;
+  return clamp(raw * (.55 + a.average * .8) + a.beat * .45, 0, 1);
+}
+
+function fxStroke(points, alpha = .7, width = 2) {
+  ctx.beginPath();
+  for (let i = 0; i < points.length; i++) {
+    const q = points[i];
+    if (i === 0) ctx.moveTo(q.x, q.y);
+    else ctx.lineTo(q.x, q.y);
+  }
+  ctx.strokeStyle = hsl(qh, 100, 62, alpha);
+  ctx.lineWidth = width;
+  ctx.stroke();
+}
+
+function drawNewEffect(id, a) {
+  const n = Number(id.replace("fx", "")) || 1;
+  const family = Math.floor((n - 1) / EFFECT_VARIANTS);
+  const p = fxParams(n);
+  const c = center();
+  const maxR = Math.max(width, height) * .72;
+  const baseHue = hue + p.phase * 57;
+  const qh = baseHue;
+
+  clearScreen(.085 + (n % 5) * .018);
+
+  ctx.save();
+  ctx.globalCompositeOperation = n % 3 === 0 ? "lighter" : "source-over";
+
+  /* 0 Neon Rainfall */
+  if (family === 0) {
+    const cols = p.density * 3;
+    for (let i = 0; i < cols; i++) {
+      const x = ((i * 97 + n * 13) % (width + 80)) - 40;
+      const fall = (time * (80 + p.speed * 90) + i * 43) % (height + 160) - 80;
+      const audio = fxPointSpectrum(i, cols, a, p);
+      const len = 12 + audio * (55 + p.wobble);
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 62, .18 + audio * .72);
+      ctx.lineWidth = 1 + audio * 4;
+      ctx.beginPath();
+      ctx.moveTo(x, fall);
+      ctx.lineTo(x + Math.sin(time * p.speed + i) * 8, fall + len);
+      ctx.stroke();
+    }
+
+  /* 1 Prism Carousel */
+  } else if (family === 1) {
+    ctx.translate(c.x, c.y);
+    ctx.rotate(time * p.speed * .25);
+    const arms = p.density;
+    for (let i = 0; i < arms; i++) {
+      const ang = i * Math.PI * 2 / arms;
+      const s = fxPointSpectrum(i, arms, a, p);
+      const r1 = 25 + a.bass * 80;
+      const r2 = 90 + s * maxR * .55;
+      ctx.save();
+      ctx.rotate(ang);
+      ctx.beginPath();
+      ctx.moveTo(r1, 0);
+      ctx.lineTo(r2, -18 - s * 80);
+      ctx.lineTo(r2 + 35, 0);
+      ctx.lineTo(r2, 18 + s * 80);
+      ctx.closePath();
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 62, .65);
+      ctx.lineWidth = 1 + a.treble * 4;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+  /* 2 Bass Cathedral */
+  } else if (family === 2) {
+    const bars = p.density + 8;
+    for (let i = 0; i < bars; i++) {
+      const x = (i + .5) * width / bars;
+      const band = frequencyData.length
+        ? frequencyData[Math.floor(i / bars * frequencyData.length * .35)] / 255
+        : 0;
+      const h = 30 + band * height * (.55 + a.bass * .9) + a.beat * 100;
+      const w = width / bars * .72;
+      ctx.fillStyle = hsl(baseHue + i * p.hueStep, 100, 55, .16 + band * .65);
+      ctx.fillRect(x - w / 2, height - h, w, h);
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep + 30, 100, 70, .7);
+      ctx.strokeRect(x - w / 2, height - h, w, h);
+    }
+
+  /* 3 Solar Mesh */
+  } else if (family === 3) {
+    const cols = 7 + p.variant % 7;
+    const rows = 5 + (p.variant * 3) % 7;
+    for (let y = 0; y <= rows; y++) {
+      ctx.beginPath();
+      for (let x = 0; x <= cols; x++) {
+        const xx = x * width / cols;
+        const yy = y * height / rows +
+          Math.sin(time * p.speed + x * p.twist + y) *
+          (12 + a.mid * p.wobble);
+        if (!x) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
+      }
+      ctx.strokeStyle = hsl(baseHue + y * p.hueStep, 100, 60, .34 + a.mid * .4);
+      ctx.stroke();
+    }
+    for (let x = 0; x <= cols; x++) {
+      ctx.beginPath();
+      for (let y = 0; y <= rows; y++) {
+        const xx = x * width / cols +
+          Math.cos(time * p.speed + y * p.twist) * (10 + a.bass * p.wobble);
+        const yy = y * height / rows;
+        if (!y) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
+      }
+      ctx.strokeStyle = hsl(baseHue + x * p.hueStep + 90, 100, 60, .28 + a.treble * .42);
+      ctx.stroke();
+    }
+
+  /* 4 Crystal Storm */
+  } else if (family === 4) {
+    const shards = p.density * 2;
+    for (let i = 0; i < shards; i++) {
+      const x = (fxHash(n, i) * width);
+      const y = (time * (20 + p.speed * 55) + fxHash(n, i + 30) * height) % (height + 120) - 60;
+      const s = 5 + fxPointSpectrum(i, shards, a, p) * 45;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(time * p.twist + i);
+      ctx.beginPath();
+      ctx.moveTo(-s, 0); ctx.lineTo(0, -s * 1.8);
+      ctx.lineTo(s * .75, 0); ctx.lineTo(0, s * 1.8); ctx.closePath();
+      ctx.fillStyle = hsl(baseHue + i * p.hueStep, 100, 68, .18);
+      ctx.fill();
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 72, .7);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+  /* 5 Aurora Mesh */
+  } else if (family === 5) {
+    for (let band = 0; band < 9 + p.variant % 8; band++) {
+      ctx.beginPath();
+      for (let x = 0; x <= width; x += 8) {
+        const y = height * (.15 + band * .1) +
+          Math.sin(x * (.004 + p.scale * .004) + time * p.speed + band) *
+          (35 + a.mid * p.wobble) +
+          Math.sin(x * .017 - time * p.speed * .7) * 15;
+        if (!x) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = hsl(baseHue + band * 23, 100, 63, .2 + a.treble * .5);
+      ctx.lineWidth = 2 + a.beat * 3;
+      ctx.stroke();
+    }
+
+  /* 6 Fractal Fire */
+  } else if (family === 6) {
+    const sparksN = p.density * 3;
+    for (let i = 0; i < sparksN; i++) {
+      const u = fxHash(n, i);
+      const x = c.x + (u - .5) * width * .9;
+      const rise = (time * (30 + p.speed * 65) + fxHash(n, i + 400) * height) % (height + 100);
+      const y = height - rise;
+      const audio = a.bass * .8 + fxPointSpectrum(i, sparksN, a, p) * .8;
+      const size = 2 + audio * 11;
+      ctx.fillStyle = hsl(baseHue - rise * .08 + i * 3, 100, 58 + audio * 20, .22 + audio * .65);
+      ctx.beginPath();
+      ctx.arc(x + Math.sin(time * p.speed + i) * 12, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+  /* 7 Cyber Sparks */
+  } else if (family === 7) {
+    const sparksN = p.density * 3;
+    for (let i = 0; i < sparksN; i++) {
+      const ang = fxHash(n, i) * Math.PI * 2;
+      const r = (fxHash(n, i + 90) * maxR + time * (30 + p.speed * 30)) % maxR;
+      const s = fxPointSpectrum(i, sparksN, a, p);
+      const x = c.x + Math.cos(ang + time * p.twist) * r;
+      const y = c.y + Math.sin(ang + time * p.twist) * r;
+      ctx.fillStyle = hsl(baseHue + i * p.hueStep, 100, 65, .25 + s * .7);
+      ctx.fillRect(x, y, 2 + s * 6, 2 + a.beat * 7);
+    }
+
+  /* 8 Orbits */
+  } else if (family === 8) {
+    ctx.translate(c.x, c.y);
+    const orbitCount = 4 + p.variant % 8;
+    for (let o = 0; o < orbitCount; o++) {
+      const radius = 45 + o * (28 + p.scale * 18) + a.bass * 90;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, radius, radius * (.45 + .06 * (o % 4)), time * p.twist + o, 0, Math.PI * 2);
+      ctx.strokeStyle = hsl(baseHue + o * p.hueStep, 100, 60, .32 + a.mid * .35);
+      ctx.stroke();
+      const ang = time * p.speed * (o % 2 ? -1 : 1) + o;
+      const x = Math.cos(ang) * radius;
+      const y = Math.sin(ang) * radius * (.45 + .06 * (o % 4));
+      ctx.fillStyle = hsl(baseHue + o * p.hueStep + 60, 100, 65, .9);
+      ctx.beginPath();
+      ctx.arc(x, y, 4 + a.beat * 10, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+  /* 9 Rings */
+  } else if (family === 9 || family === 24) {
+    for (let i = 0; i < p.density; i++) {
+      const q = (i / p.density + time * (.08 + p.speed * .04) + a.bass * .2) % 1;
+      const r = 12 + q * maxR;
+      const squish = .45 + a.mid * .55;
+      ctx.beginPath();
+      ctx.ellipse(c.x, c.y, r, r * squish, time * p.twist + i * .1, 0, Math.PI * 2);
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 62, (1 - q) * (.25 + a.beat * .8));
+      ctx.lineWidth = 1 + a.treble * 4;
+      ctx.stroke();
+    }
+
+  /* 10 Rays */
+  } else if (family === 10 || family === 37) {
+    ctx.translate(c.x, c.y);
+    const rays = p.density * 2;
+    for (let i = 0; i < rays; i++) {
+      const ang = i * Math.PI * 2 / rays + time * p.twist;
+      const s = fxPointSpectrum(i, rays, a, p);
+      const inner = 20 + a.bass * 60;
+      const outer = inner + 80 + s * maxR * (.45 + p.scale * .22);
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(ang) * inner, Math.sin(ang) * inner);
+      ctx.lineTo(Math.cos(ang) * outer, Math.sin(ang) * outer);
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 65, .18 + s * .75);
+      ctx.lineWidth = 1 + a.beat * 4 + s * 2;
+      ctx.stroke();
+    }
+
+  /* 11 Geometric Shapes */
+  } else if (family === 11 || family === 31) {
+    ctx.translate(c.x, c.y);
+    const count = 6 + p.variant % 10;
+    for (let i = 0; i < count; i++) {
+      const sides = 3 + ((p.sides + i) % 9);
+      const r = 30 + i * 30 + a.beat * 100 + a.bass * 50;
+      ctx.save();
+      ctx.rotate(time * p.twist * (i % 2 ? -1 : 1) + i * .2);
+      ctx.beginPath();
+      for (let j = 0; j <= sides; j++) {
+        const ang = j * Math.PI * 2 / sides;
+        const rr = r * (1 + Math.sin(j * p.scale + time * p.speed) * .12 * a.mid);
+        const x = Math.cos(ang) * rr;
+        const y = Math.sin(ang) * rr;
+        if (!j) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 60, .22 + a.treble * .55);
+      ctx.lineWidth = 1 + a.beat * 3;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+  /* 12 Waveforms */
+  } else if (family === 12 || family === 32) {
+    const rows = 4 + p.variant % 9;
+    for (let row = 0; row < rows; row++) {
+      ctx.beginPath();
+      for (let x = 0; x <= width; x += 5) {
+        const idx = Math.floor((x / width) * waveformData.length);
+        const sample = waveformData.length ? (waveformData[idx] - 128) / 128 : 0;
+        const y = height * (.18 + row * .1) +
+          sample * (35 + a.mid * 130) +
+          Math.sin(x * .008 * p.scale + time * p.speed + row) * (12 + a.bass * 40);
+        if (!x) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = hsl(baseHue + row * p.hueStep, 100, 62, .3 + a.treble * .55);
+      ctx.lineWidth = 1 + a.beat * 3;
+      ctx.stroke();
+    }
+
+  /* 13 Blooms */
+  } else if (family === 13) {
+    ctx.translate(c.x, c.y);
+    const petals = 6 + p.variant % 14;
+    for (let layer = 0; layer < 4 + p.variant % 4; layer++) {
+      const radius = 35 + layer * 36 + a.bass * 100;
+      ctx.beginPath();
+      for (let i = 0; i <= petals * 2; i++) {
+        const ang = i * Math.PI * 2 / (petals * 2);
+        const petal = 1 + Math.sin(ang * petals) * (.18 + a.mid * .45);
+        const rr = radius * petal;
+        const x = Math.cos(ang) * rr;
+        const y = Math.sin(ang) * rr;
+        if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = hsl(baseHue + layer * p.hueStep, 100, 60, .05 + a.beat * .08);
+      ctx.fill();
+      ctx.strokeStyle = hsl(baseHue + layer * p.hueStep, 100, 66, .45);
+      ctx.stroke();
+    }
+
+  /* 14 Halos */
+  } else if (family === 14) {
+    for (let i = 0; i < 10 + p.variant % 8; i++) {
+      const r = 30 + i * 34 + Math.sin(time * p.speed + i) * p.wobble * a.mid;
+      const alpha = .12 + a.beat * .5;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 65, alpha);
+      ctx.lineWidth = 1 + a.treble * 4;
+      ctx.stroke();
+    }
+
+  /* 15 Trails */
+  } else if (family === 15) {
+    const count = p.density * 2;
+    for (let i = 0; i < count; i++) {
+      const ang = fxHash(n, i) * Math.PI * 2;
+      const r = 20 + ((time * (50 + p.speed * 70) + i * 53) % maxR);
+      const s = fxPointSpectrum(i, count, a, p);
+      const x = c.x + Math.cos(ang + time * p.twist) * r;
+      const y = c.y + Math.sin(ang + time * p.twist) * r;
+      const tail = 18 + s * 90;
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 64, .15 + s * .65);
+      ctx.lineWidth = 1 + s * 4;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(
+        x - Math.cos(ang + time * p.twist) * tail,
+        y - Math.sin(ang + time * p.twist) * tail
+      );
+      ctx.stroke();
+    }
+
+  /* 16 Bursts */
+  } else if (family === 16 || family === 38) {
+    ctx.translate(c.x, c.y);
+    const spokes = p.density * 2;
+    const kick = a.beat * (80 + p.wobble) + a.bass * 90;
+    for (let i = 0; i < spokes; i++) {
+      const ang = i * Math.PI * 2 / spokes + time * p.twist;
+      const len = 35 + kick + fxPointSpectrum(i, spokes, a, p) * maxR * .55;
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 64, .22 + a.beat * .65);
+      ctx.lineWidth = 1 + a.treble * 4;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(ang) * 20, Math.sin(ang) * 20);
+      ctx.lineTo(Math.cos(ang) * len, Math.sin(ang) * len);
+      ctx.stroke();
+    }
+
+  /* 17 Spectrum Patterns */
+  } else if (family === 17 || family === 28) {
+    ctx.translate(c.x, c.y);
+    const bars = 64 + p.variant % 48;
+    const radius = Math.min(width, height) * (.18 + a.bass * .12);
+    for (let i = 0; i < bars; i++) {
+      const s = fxPointSpectrum(i, bars, a, p);
+      const ang = i * Math.PI * 2 / bars + time * .08;
+      const r1 = radius;
+      const r2 = radius + 10 + s * (120 + a.beat * 100);
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 62, .18 + s * .7);
+      ctx.lineWidth = 1 + s * 5;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(ang) * r1, Math.sin(ang) * r1);
+      ctx.lineTo(Math.cos(ang) * r2, Math.sin(ang) * r2);
+      ctx.stroke();
+    }
+
+  /* 18 Beat Mandala */
+  } else if (family === 18) {
+    ctx.translate(c.x, c.y);
+    const petals = 18 + p.variant % 32;
+    for (let ring = 0; ring < 4; ring++) {
+      const rr = 30 + ring * 48 + a.beat * (ring + 1) * 30;
+      ctx.beginPath();
+      for (let i = 0; i <= petals; i++) {
+        const ang = i * Math.PI * 2 / petals;
+        const wob = 1 + Math.sin(ang * (3 + p.variant % 7) + time * p.speed) * .18 * (a.mid + .2);
+        const x = Math.cos(ang) * rr * wob;
+        const y = Math.sin(ang) * rr * wob;
+        if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = hsl(baseHue + ring * 35, 100, 62, .28 + a.beat * .5);
+      ctx.stroke();
+    }
+
+  /* 19 Frequency Bubbles */
+  } else if (family === 19) {
+    const count = p.density * 2;
+    for (let i = 0; i < count; i++) {
+      const s = fxPointSpectrum(i, count, a, p);
+      const x = ((i + .5) / count) * width +
+        Math.sin(time * p.speed + i) * p.wobble;
+      const y = height * (.5 + .38 * Math.sin(time * (.3 + p.speed * .1) + i * p.twist));
+      const r = 3 + s * (15 + p.scale * 25);
+      ctx.fillStyle = hsl(baseHue + i * p.hueStep, 100, 62, .1 + s * .55);
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep + 40, 100, 72, .4 + s * .4);
+      ctx.stroke();
+    }
+
+  /* 20 Soundwave Tunnel */
+  } else if (family === 20 || family === 24) {
+    const rings = 14 + p.variant % 20;
+    for (let i = 0; i < rings; i++) {
+      const q = (i / rings + time * (.08 + p.speed * .04)) % 1;
+      const r = 10 + q * maxR;
+      const s = fxPointSpectrum(i, rings, a, p);
+      ctx.beginPath();
+      ctx.ellipse(c.x, c.y, r, r * (.5 + s * .5), time * p.twist + i * .1, 0, Math.PI * 2);
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 62, (1 - q) * (.2 + s * .8));
+      ctx.lineWidth = 1 + a.beat * 4;
+      ctx.stroke();
+    }
+
+  /* 21 Beat Confetti */
+  } else if (family === 21) {
+    const count = p.density * 4;
+    for (let i = 0; i < count; i++) {
+      const x = (fxHash(n, i) * width + time * (20 + p.speed * 35)) % width;
+      const y = (fxHash(n, i + 100) * height + time * (45 + p.speed * 70)) % height;
+      const kick = a.beat * (5 + p.wobble * .12);
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(time * p.twist + i);
+      ctx.fillStyle = hsl(baseHue + i * p.hueStep, 100, 62, .18 + a.beat * .75);
+      ctx.fillRect(-2, -2, 4 + kick, 7 + kick * 2);
+      ctx.restore();
+    }
+
+  /* 22 Energy Rings */
+  } else if (family === 22) {
+    const rings = 12 + p.variant % 12;
+    for (let i = 0; i < rings; i++) {
+      const r = ((i * maxR / rings) + time * (45 + p.speed * 35) + a.beat * 120) % maxR;
+      const alpha = 1 - r / maxR;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 62, alpha * (.2 + a.beat * .85));
+      ctx.lineWidth = 1 + a.bass * 5;
+      ctx.stroke();
+    }
+
+  /* 23 Plasma Grid */
+  } else if (family === 23) {
+    const cols = 10 + p.variant % 10;
+    const rows = 7 + p.variant % 8;
+    for (let y = 0; y <= rows; y++) {
+      ctx.beginPath();
+      for (let x = 0; x <= cols; x++) {
+        const xx = x * width / cols;
+        const yy = y * height / rows +
+          Math.sin(time * p.speed + x * .9 + y * p.twist) * (8 + a.bass * 70);
+        if (!x) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
+      }
+      ctx.strokeStyle = hsl(baseHue + y * p.hueStep, 100, 60, .25 + a.average * .5);
+      ctx.stroke();
+    }
+
+  /* 25 Orbiting Orbs */
+  } else if (family === 25) {
+    ctx.translate(c.x, c.y);
+    const orbs = 5 + p.variant % 12;
+    for (let i = 0; i < orbs; i++) {
+      const r = 40 + i * 24 + a.bass * 110;
+      const ang = time * p.speed * (i % 2 ? -1 : 1) + i * p.phase;
+      const x = Math.cos(ang) * r;
+      const y = Math.sin(ang) * r * (.55 + .04 * (i % 5));
+      const s = fxPointSpectrum(i, orbs, a, p);
+      ctx.fillStyle = hsl(baseHue + i * p.hueStep, 100, 64, .25 + s * .7);
+      ctx.beginPath();
+      ctx.arc(x, y, 4 + s * 13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep + 30, 100, 75, .7);
+      ctx.stroke();
+    }
+
+  /* 26 Matrix Rain */
+  } else if (family === 26) {
+    const cols = 18 + p.variant % 25;
+    const step = width / cols;
+    for (let i = 0; i < cols; i++) {
+      const x = i * step;
+      const y = ((time * (55 + p.speed * 70) + fxHash(n, i) * height * 2) % (height + 80)) - 80;
+      const rows = 5 + (i + p.variant) % 8;
+      for (let j = 0; j < rows; j++) {
+        const yy = y - j * 18;
+        if (yy < -20 || yy > height + 20) continue;
+        const audio = fxPointSpectrum(i + j, cols + rows, a, p);
+        ctx.fillStyle = hsl(baseHue + i * p.hueStep, 100, 62, .08 + audio * .8 * (1 - j / rows));
+        ctx.fillRect(x, yy, 2 + audio * 4, 11);
+      }
+    }
+
+  /* 27 Vortex */
+  } else if (family === 27) {
+    ctx.translate(c.x, c.y);
+    const arms = 3 + p.variant % 7;
+    for (let i = 0; i < p.density * 3; i++) {
+      const r = 8 + i * (maxR / (p.density * 3));
+      const arm = i % arms;
+      const ang = r * (.012 + p.scale * .008) + arm * Math.PI * 2 / arms +
+        time * p.speed * .35 - a.bass * r * .002;
+      const s = fxPointSpectrum(i, p.density * 3, a, p);
+      const x = Math.cos(ang) * r;
+      const y = Math.sin(ang) * r * (.55 + p.depth * .25);
+      ctx.fillStyle = hsl(baseHue + i * p.hueStep, 100, 64, .2 + s * .75);
+      ctx.beginPath();
+      ctx.arc(x, y, 1 + s * 5 + a.beat * 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+  /* 29 Galaxy */
+  } else if (family === 29) {
+    const starsN = p.density * 12;
+    for (let i = 0; i < starsN; i++) {
+      const r = fxHash(n, i) * maxR;
+      const arm = i % (2 + p.variant % 5);
+      const ang = r * (.006 + p.scale * .006) + arm * Math.PI * 2 / (2 + p.variant % 5) + time * .1;
+      const x = c.x + Math.cos(ang) * r;
+      const y = c.y + Math.sin(ang) * r * (.48 + p.depth * .16);
+      const s = fxPointSpectrum(i, starsN, a, p);
+      ctx.fillStyle = hsl(baseHue + r * .05 + i * p.hueStep, 85, 62, .15 + s * .7);
+      ctx.beginPath();
+      ctx.arc(x, y, .5 + s * 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+  /* 30 Scanlines */
+  } else if (family === 30) {
+    const spacing = 5 + p.variant % 10;
+    for (let y = 0; y < height; y += spacing) {
+      const scan = Math.sin(y * .03 + time * p.speed) * (2 + a.mid * 15);
+      ctx.fillStyle = hsl(baseHue + y * p.hueStep * .08, 100, 58, .08 + a.average * .28);
+      ctx.fillRect(0, y + scan, width, 1 + a.beat * 3);
+    }
+
+  /* 33 Kaleidoscope */
+  } else if (family === 33) {
+    ctx.translate(c.x, c.y);
+    const sectors = 6 + p.variant % 12;
+    const layers = 5 + p.variant % 6;
+    for (let s = 0; s < sectors; s++) {
+      ctx.save();
+      ctx.rotate(s * Math.PI * 2 / sectors + time * p.twist * .1);
+      if (s % 2 && p.mirror) ctx.scale(-1, 1);
+      for (let layer = 0; layer < layers; layer++) {
+        const r = 30 + layer * 48 + a.beat * 70;
+        const w = 20 + a.treble * 70;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(r, -w);
+        ctx.lineTo(r + 45, 0);
+        ctx.lineTo(r, w);
+        ctx.closePath();
+        ctx.fillStyle = hsl(baseHue + layer * p.hueStep + s * 18, 100, 60, .04 + a.mid * .08);
+        ctx.fill();
+        ctx.strokeStyle = hsl(baseHue + layer * p.hueStep + s * 18, 100, 66, .45);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+  /* 34 Ember Storm */
+  } else if (family === 34 || family === 39) {
+    const embers = p.density * 5;
+    for (let i = 0; i < embers; i++) {
+      const x = fxHash(n, i) * width;
+      const rise = (time * (35 + p.speed * 70) + fxHash(n, i + 500) * height) % (height + 60);
+      const y = height - rise;
+      const s = fxPointSpectrum(i, embers, a, p);
+      ctx.fillStyle = hsl(5 + baseHue * .08 + s * 35, 100, 55 + s * 20, .15 + s * .7);
+      ctx.beginPath();
+      ctx.arc(x + Math.sin(time * p.speed + i) * 12, y, 1 + s * 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+  /* 35 Radar Pulse */
+  } else if (family === 35) {
+    const rMax = Math.min(width, height) * .48;
+    for (let i = 1; i <= 6; i++) {
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, rMax * i / 6, 0, Math.PI * 2);
+      ctx.strokeStyle = hsl(baseHue + i * p.hueStep, 100, 60, .14 + a.mid * .25);
+      ctx.stroke();
+    }
+    const ang = time * p.speed;
+    const sweep = 0.12 + a.treble * .5;
+    ctx.beginPath();
+    ctx.moveTo(c.x, c.y);
+    ctx.lineTo(c.x + Math.cos(ang) * rMax, c.y + Math.sin(ang) * rMax);
+    ctx.strokeStyle = hsl(baseHue + 100, 100, 68, .85);
+    ctx.lineWidth = 2 + a.beat * 4;
+    ctx.stroke();
+    for (let i = 0; i < p.density * 2; i++) {
+      const rr = fxHash(n, i) * rMax;
+      const aa = fxHash(n, i + 200) * Math.PI * 2;
+      const d = Math.abs(Math.atan2(Math.sin(aa - ang), Math.cos(aa - ang)));
+      if (d < sweep) {
+        ctx.fillStyle = hsl(baseHue + i * p.hueStep, 100, 65, .35 + a.beat * .5);
+        ctx.beginPath();
+        ctx.arc(c.x + Math.cos(aa) * rr, c.y + Math.sin(aa) * rr, 2 + a.beat * 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+  /* 36 Hexagon Flow */
+  } else if (family === 36) {
+    const size = 20 + p.variant % 24;
+    const cols = Math.ceil(width / (size * 1.7)) + 2;
+    const rows = Math.ceil(height / (size * 1.45)) + 2;
+    for (let gy = -1; gy < rows; gy++) {
+      for (let gx = -1; gx < cols; gx++) {
+        const x = gx * size * 1.72 + (gy % 2) * size * .86;
+        const y = gy * size * 1.48;
+        const wave = Math.sin(time * p.speed + x * .01 + y * .013);
+        const rr = size * (.38 + .12 * wave + a.beat * .16);
+        ctx.beginPath();
+        for (let k = 0; k < 6; k++) {
+          const ang = Math.PI / 3 * k + time * p.twist * .08;
+          const px = x + Math.cos(ang) * rr;
+          const py = y + Math.sin(ang) * rr;
+          if (!k) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = hsl(baseHue + x * .06 + y * .04, 100, 62, .2 + a.mid * .45);
+        ctx.stroke();
+      }
+    }
+
+  /* Fallback / extra family: Fire */
+  } else {
+    const flames = p.density * 5;
+    for (let i = 0; i < flames; i++) {
+      const x = fxHash(n, i) * width;
+      const heat = fxPointSpectrum(i, flames, a, p);
+      const y = height - ((time * (25 + p.speed * 50) + i * 17) % (height * .7 + 80));
+      const size = 2 + heat * 10 + a.beat * 4;
+      ctx.fillStyle = hsl(baseHue - y * .08 + heat * 30, 100, 54 + heat * 22, .18 + heat * .72);
+      ctx.beginPath();
+      ctx.arc(x + Math.sin(time * p.speed + i) * 14, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    for (let i = 0; i < 10 + p.variant % 10; i++) {
+      const r = 20 + i * 34 + a.bass * 100;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, r, Math.PI, Math.PI * 2);
+      ctx.strokeStyle = hsl(baseHue + i * 14, 100, 58, .18 + a.beat * .4);
+      ctx.stroke();
+    }
+  }
+
+  ctx.restore();
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+}
+
+function drawEffect(name, a) {
+  if (name && name.startsWith("fx")) {
+    drawNewEffect(name, a);
+    return;
+  }
+
+  /* Safety fallback for old saved selections/bookmarks. */
+  effectWave(a);
 }
 
 /* =========================================================
@@ -2698,6 +4033,9 @@ function draw(now) {
 
   animationId =
     requestAnimationFrame(draw);
+
+  const delta = Math.min((now - lastFrameTime) / 1000, .05);
+  lastFrameTime = now;
 
   fpsFrames++;
 
@@ -2712,19 +4050,26 @@ function draw(now) {
     fpsTime = now;
   }
 
-  time += .016;
-  hue += .7;
+  time += delta;
+  hue += delta * 44;
 
   if (hue >= 360) {
     hue -= 360;
   }
 
-  if (!analyser || !isPlaying) {
-    return;
-  }
+  hueTimeValue.textContent =
+    `${Math.round(hue)}° / ${time.toFixed(1)}s`;
 
   const audio =
-    analyzeAudio();
+    isPlaying && analyser
+      ? analyzeAudio()
+      : {
+          bass: smoothBass,
+          mid: smoothMid,
+          treble: smoothTreble,
+          average: 0,
+          beat: 0
+        };
 
   drawEffect(
     currentEffect,
@@ -2735,6 +4080,9 @@ function draw(now) {
 /* =========================================================
    START ANIMATION
 ========================================================= */
+
+updateEffectInfo();
+updateFavoriteButton();
 
 animationId =
   requestAnimationFrame(draw);

@@ -1,0 +1,238 @@
+<!DO<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Archery</title>
+<style>
+  :root { --gold:#ffd166; --ink:#102a43; --panel:rgba(8,27,48,.9); }
+  * { box-sizing:border-box; }
+  html,body { margin:0; min-height:100%; font-family:system-ui,-apple-system,Segoe UI,sans-serif; color:#fff; background:#081b30; }
+  body { overflow:hidden; touch-action:none; }
+  canvas { touch-action:none; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; }
+  .app { min-height:100vh; display:flex; flex-direction:column; background:linear-gradient(#1687b8 0%,#76d3dd 53%,#e6bd76 53%,#c78d58 100%); }
+  header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px clamp(12px,4vw,38px); background:rgba(5,24,43,.82); z-index:2; }
+  h1 { margin:0; font-size:clamp(1.15rem,3vw,2rem); letter-spacing:.04em; }
+  .stats { display:flex; gap:clamp(10px,3vw,30px); font-size:clamp(.8rem,2vw,1rem); text-align:center; }
+  .stats b { display:block; color:var(--gold); font-size:1.25em; }
+  main { position:relative; flex:1; display:flex; align-items:center; justify-content:center; padding:10px; min-height:0; }
+  canvas { display:block; width:min(100%,1100px); height:auto; max-height:calc(100vh - 155px); border:3px solid rgba(255,255,255,.75); border-radius:16px; box-shadow:0 12px 35px rgba(0,0,0,.3); background:#72cfdb; }
+  .panel { position:absolute; left:50%; bottom:20px; transform:translateX(-50%); width:min(94%,560px); padding:11px 14px; border:1px solid rgba(255,255,255,.25); border-radius:16px; background:var(--panel); box-shadow:0 8px 24px #0005; }
+  .row { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; }
+  button,select,input { font:inherit; }
+  button,select { min-height:38px; border:0; border-radius:9px; padding:7px 12px; color:var(--ink); background:#fff; cursor:pointer; }
+  button { font-weight:700; }
+  button.primary { color:#402d00; background:var(--gold); }
+  button:active { transform:scale(.97); }
+  label { font-size:.9rem; }
+  input[type=range] { width:115px; accent-color:var(--gold); vertical-align:middle; }
+  .power { margin-top:8px; display:flex; align-items:center; gap:8px; font-size:.82rem; }
+  .meter { flex:1; height:12px; overflow:hidden; border:1px solid #fff8; border-radius:99px; background:#ffffff30; }
+  #powerBar { width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,#42e695,#ffd166,#ff5e62); transition:width .05s linear; }
+  #message { position:absolute; top:18px; left:50%; transform:translateX(-50%); padding:9px 16px; border-radius:99px; background:#061b2dcc; font-weight:700; opacity:0; transition:opacity .2s; pointer-events:none; white-space:nowrap; }
+  #message.show { opacity:1; }
+  .hint { margin:6px 0 0; color:#d8f5ff; text-align:center; font-size:.78rem; }
+  @media (max-width:600px) {
+    header { padding:9px 12px; } .stats { gap:10px; } .stats b { font-size:1.05em; }
+    main { padding:5px; align-items:flex-start; padding-top:8px; } canvas { max-height:calc(100vh - 215px); border-radius:11px; }
+    .panel { bottom:8px; padding:8px; } button,select { min-height:34px; padding:5px 8px; font-size:.85rem; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>🏹 Archery</h1>
+    <div class="stats"><div>Player<b id="score">0</b></div><div>CPU<b id="cpuScore">0</b></div><div>Best<b id="best">0</b></div><div>Hits<b id="hits">0</b></div><div>Combo<b id="combo">0</b></div></div>
+  </header>
+  <main>
+    <canvas id="gameCanvas" width="1100" height="650" aria-label="Archery game"></canvas>
+    <div id="message" role="status"></div>
+    <section class="panel">
+      <div class="row">
+        <button class="primary" id="restartBtn">↻ Replay</button>
+        <a href="../Games.html" style="text-decoration: none;"><button id="exitBtn" type="button">Exit</button></a>
+        <select id="difficulty" aria-label="Difficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select>
+        <select id="mode" aria-label="Game mode"><option value="solo">Solo</option><option value="cpu">Player vs CPU</option></select>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <label>🔊 Volume <input id="volume" type="range" min="0" max="100" value="55"><output id="volumeValue">55%</output></label>
+        <button id="soundBtn" type="button">Sound on</button>
+      </div>
+      <div class="row wind-control"><label>🌬️ Custom wind <input id="wind" type="range" min="-20" max="20" value="0"><output id="windValue">0</output></label></div>
+      <div class="power"><span>Power</span><div class="meter"><div id="powerBar"></div></div><span id="powerValue">0%</span></div>
+      <p class="hint">PC: hold and drag with the mouse · Android: touch, drag and release</p>
+    </section>
+  </main>
+</div>
+<script>
+'use strict';
+const canvas=document.getElementById('gameCanvas'), ctx=canvas.getContext('2d');
+const scoreEl=document.getElementById('score'), cpuScoreEl=document.getElementById('cpuScore'), bestEl=document.getElementById('best'), hitsEl=document.getElementById('hits'), comboEl=document.getElementById('combo');
+const powerBar=document.getElementById('powerBar'), powerValue=document.getElementById('powerValue'), message=document.getElementById('message');
+const volume=document.getElementById('volume'), volumeValue=document.getElementById('volumeValue'), soundBtn=document.getElementById('soundBtn');
+const windInput=document.getElementById('wind'), windValue=document.getElementById('windValue');
+const W=1100,H=650, start={x:105,y:390}, maxPower=34;
+let score=0, cpuScore=0, hits=0, combo=0, best=Number(localStorage.getItem('archeryBest')||0), targets=[], charging=false, power=0, aim={x:400,y:300};
+let wind=0, difficulty='normal', mode='solo', audioCtx=null, muted=false, messageTimer, cpuTimer=null, cpuBusy=false, gameOver=false;
+const arrow={...start, vx:0, vy:0, angle:0, flying:false, length:62};
+bestEl.textContent=best;
+function sound(freq,duration=.1,type='sine') {
+  if(muted || Number(volume.value)===0) return;
+  audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  const osc=audioCtx.createOscillator(), gain=audioCtx.createGain(); osc.type=type; osc.frequency.value=freq;
+  gain.gain.setValueAtTime(Number(volume.value)/100*.12,audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);
+  osc.connect(gain).connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime+duration);
+}
+function notify(text) { message.textContent=text; message.classList.add('show'); clearTimeout(messageTimer); messageTimer=setTimeout(()=>message.classList.remove('show'),1300); }
+function updateUI() { scoreEl.textContent=score; cpuScoreEl.textContent=cpuScore; hitsEl.textContent=hits; comboEl.textContent=combo; powerBar.style.width=(power/maxPower*100)+'%'; powerValue.textContent=Math.round(power/maxPower*100)+'%'; }
+function makeTargets() { targets=[]; const count=difficulty==='easy'?4:difficulty==='hard'?6:5; for(let i=0;i<count;i++) targets.push({x:560+Math.random()*460,y:100+Math.random()*390,r:38+Math.random()*20}); }
+function resetArrow() { Object.assign(arrow,start,{vx:0,vy:0,angle:0,flying:false}); charging=false; power=0; updateUI(); }
+function restart() {
+  clearTimeout(cpuTimer);
+  score=0;
+  cpuScore=0;
+  hits=0;
+  combo=0;
+  cpuBusy=false;
+  gameOver=false;
+  makeTargets();
+  resetArrow();
+  updateUI();
+  notify(mode==='cpu'?'Your turn':'Replay started');
+}
+function pointerPosition(e) { const r=canvas.getBoundingClientRect(); return {x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}; }
+function cancelShot() {
+  charging=false;
+  power=0;
+  updateUI();
+}
+function finishShot(e) {
+  if(!charging || arrow.flying) return;
+  e.preventDefault();
+  charging=false;
+  const p=pointerPosition(e), dx=p.x-arrow.x, dy=p.y-arrow.y, len=Math.hypot(dx,dy)||1;
+  arrow.angle=Math.atan2(dy,dx);
+  const force=Math.max(3,power);
+  arrow.vx=dx/len*force;
+  arrow.vy=dy/len*force;
+  arrow.flying=true;
+  power=0;
+  updateUI();
+  sound(520,.16,'triangle');
+}
+canvas.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  if(arrow.flying || cpuBusy || gameOver || (mode==='cpu' && score>=400)) return;
+  canvas.setPointerCapture(e.pointerId);
+  const p=pointerPosition(e);
+  charging=true;
+  aim=p;
+  power=0;
+  sound(220,.05);
+});
+canvas.addEventListener('pointermove',e=>{
+  e.preventDefault();
+  if(!charging) return;
+  aim=pointerPosition(e);
+  power=Math.min(maxPower,power+.7);
+  updateUI();
+});
+canvas.addEventListener('pointerup',finishShot);
+canvas.addEventListener('pointercancel',cancelShot);
+canvas.addEventListener('lostpointercapture',cancelShot);
+document.getElementById('restartBtn').onclick=restart;
+document.getElementById('difficulty').onchange=e=>{difficulty=e.target.value;restart();};
+document.getElementById('mode').onchange=e=>{mode=e.target.value;restart();};
+windInput.oninput=()=>{wind=Number(windInput.value)/100;windValue.textContent=(wind===0?'0':`${wind>0?'+':''}${wind.toFixed(2)}`);};
+volume.oninput=()=>volumeValue.textContent=volume.value+'%';
+soundBtn.onclick=()=>{muted=!muted;soundBtn.textContent=muted?'Sound off':'Sound on';if(!muted)sound(660,.1);};
+function pointsForDistance(target,dist) {
+  const ratio=dist/target.r;
+  return ratio<.2?50:ratio<.4?40:ratio<.6?30:ratio<.8?20:10;
+}
+function endMatch() {
+  gameOver=true;
+  clearTimeout(cpuTimer);
+  const result=score===cpuScore?'Draw!':score>cpuScore?'You win!':'CPU wins!';
+  notify(`${result} ${score} - ${cpuScore}`);
+  sound(score>cpuScore?880:score<cpuScore?180:520,.35,'sine');
+}
+function scoreHit(t,dist) {
+  const basePoints=pointsForDistance(t,dist);
+  combo++;
+  const multiplier=Math.min(5,1+Math.floor(combo/3));
+  const points=basePoints*multiplier;
+  score+=points;
+  hits++;
+  if(score>best){best=score;localStorage.setItem('archeryBest',best);}
+  sound(700+points*5,.25,'sine');
+  updateUI();
+  resetArrow();
+  if(mode==='cpu') {
+    notify(`You scored +${points}${multiplier>1?` (${multiplier}x combo)`:''}`);
+    if(score>=400 || cpuScore>=400) endMatch();
+    else {
+      notify(`You scored +${points}${multiplier>1?` (${multiplier}x combo)`:''} — CPU turn`);
+      cpuTimer=setTimeout(cpuTurn,700);
+    }
+  } else notify(`Bullseye! +${points} points`);
+}
+function cpuTurn() {
+  if(mode!=='cpu' || gameOver || cpuBusy) return;
+  cpuBusy=true;
+  const target=targets[Math.floor(Math.random()*targets.length)];
+  const accuracy=difficulty==='easy'?.75:difficulty==='hard'?.93:.84;
+  const distance=target.r*(1-accuracy)+Math.random()*target.r*accuracy;
+  const points=pointsForDistance(target,distance);
+  cpuScore+=points;
+  updateUI();
+  sound(380+points*4,.2,'triangle');
+  if(cpuScore>=200 || score>=200) {
+    cpuBusy=false;
+    endMatch();
+    return;
+  }
+  notify(`CPU scored +${points} — your turn`);
+  cpuBusy=false;
+}
+function update() {
+  if(!arrow.flying || gameOver) return;
+  arrow.x+=arrow.vx+wind;
+  arrow.y+=arrow.vy;
+  arrow.vy+=.22;
+  arrow.angle=Math.atan2(arrow.vy,arrow.vx+wind);
+  for(const t of targets){const d=Math.hypot(arrow.x-t.x,arrow.y-t.y);if(d<t.r){scoreHit(t,d);return;}}
+  if(arrow.x<-80||arrow.x>W+80||arrow.y>H+80||arrow.y<-80){
+    combo=0;
+    updateUI();
+    notify(mode==='cpu'?'Miss — combo lost, CPU turn':'Miss! Combo lost');
+    sound(130,.12,'sawtooth');
+    resetArrow();
+    if(mode==='cpu' && !gameOver) cpuTimer=setTimeout(cpuTurn,700);
+  }
+}
+function drawBackground(){ctx.fillStyle='#76d3dd';ctx.fillRect(0,0,W,H);ctx.fillStyle='#c78d58';ctx.fillRect(0,470,W,180);ctx.fillStyle='#55aa70';for(let i=0;i<12;i++){ctx.beginPath();ctx.arc(i*110+30,475,70,Math.PI,Math.PI*2);ctx.fill();}ctx.fillStyle='#fff8';ctx.beginPath();ctx.arc(170,105,48,0,Math.PI*2);ctx.arc(225,105,65,0,Math.PI*2);ctx.arc(285,105,42,0,Math.PI*2);ctx.fill();}
+function drawTargets(){targets.forEach(t=>{ctx.fillStyle='#eee';ctx.beginPath();ctx.arc(t.x,t.y,t.r,0,Math.PI*2);ctx.fill();[['#ef476f',1],['#fff',.8],['#ef476f',.6],['#ffd166',.4],['#e63946',.2]].forEach(([c,r])=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(t.x,t.y,t.r*r,0,Math.PI*2);ctx.fill();});ctx.strokeStyle='#263238';ctx.lineWidth=3;ctx.stroke();});}
+function drawArrow(){ctx.save();ctx.translate(arrow.x,arrow.y);ctx.rotate(arrow.angle);ctx.strokeStyle='#633b20';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(arrow.length,0);ctx.stroke();ctx.fillStyle='#e63946';ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(-32,-9);ctx.lineTo(-28,0);ctx.lineTo(-32,9);ctx.fill();ctx.restore();}
+function draw() {
+  drawBackground();
+  drawTargets();
+
+  if (charging) {
+    ctx.strokeStyle = '#ffffffaa';
+    ctx.setLineDash([8, 8]);
+    ctx.beginPath();
+    ctx.moveTo(arrow.x, arrow.y);
+    ctx.lineTo(aim.x, aim.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  drawArrow();
+}
+function loop(){update();draw();requestAnimationFrame(loop);} makeTargets();updateUI();loop();
+</script>
+</body>
+</html>

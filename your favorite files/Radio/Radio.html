@@ -1,350 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Malta Radio Stations with Theme Switcher</title>
-<style>
-  :root {
-    --bg-color: #222;
-    --text-color: #fff;
-    --button-bg: #555;
-    --button-hover: #777;
-    --accent-color: #ff4d4d;
-    --station-bg: #333;
-    --station-hover: #555;
-  }
-
-  body {
-    font-family: 'Arial', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    margin: 0;
-    padding: 20px;
-    transition: background-color 0.5s, color 0.5s;
-    display: flex;
-    justify-content: center;
-  }
-
-  .container {
-    max-width: 950px;
-    width: 100%;
-    text-align: center;
-  }
-
-  h1 {
-    margin-bottom: 10px;
-    font-size: 2.8em;
-  }
-
-  /* Theme toggle button style */
-  #themeToggle {
-    display: block;
-    margin: 10px auto 20px auto;
-    padding: 12px 24px;
-    background-color: var(--button-bg);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-  }
-
-  #themeToggle:hover {
-    background-color: var(--button-hover);
-  }
-
-  /* Navigation buttons */
-  .nav-buttons {
-    display: flex;
-    justify-content: center;
-    margin: 10px 0;
-    gap: 15px;
-  }
-
-  .nav-buttons button {
-    font-size: 24px;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 8px;
-    background-color: var(--button-bg);
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  .nav-buttons button:hover {
-    background-color: var(--button-hover);
-  }
-
-  /* Station list styles */
-  .station-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 20px;
-  }
-
-  .station {
-    background: var(--station-bg);
-    padding: 12px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-    min-width: 250px;
-    text-align: center;
-  }
-
-  .station:hover {
-    background: var(--station-hover);
-    transform: scale(1.02);
-  }
-
-  /* Player controls container */
-  #playerControls {
-    margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-  }
-
-  #stationInfo {
-    font-size: 1.2em;
-    font-weight: bold;
-  }
-
-  /* Buttons styling */
-  .buttons {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-  }
-
-  button {
-    font-size: 24px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    background-color: var(--button-bg);
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-  }
-
-  button:hover {
-    background-color: var(--button-hover);
-    transform: scale(1.03);
-  }
-
-  /* Volume slider */
-  input[type=range] {
-    width: 200px;
-  }
-
-  /* Exit button styles */
-  .exit-container {
-    margin-top: 20px;
-  }
-  .exit-link {
-    display: inline-block;
-    background-color: var(--accent-color);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 16px;
-    transition: background-color 0.3s;
-  }
-  .exit-link:hover {
-    background-color: #cc0000;
-  }
-
-  /* Themes: Gray, Black, Green */
-  body.gray-theme {
-    --bg-color: #d3d3d3;
-    --text-color: #222;   
-    --button-bg: #888;
-    --button-hover: #555;
-    --station-bg: #aaa;
-    --station-hover: #888;
-  }
-
-  body.black-theme {
-    --bg-color: #000;
-    --text-color: #eee;
-    --button-bg: #444;
-    --button-hover: #222;
-    --station-bg: #222;
-    --station-hover: #444;
-  }
-
-  body.green-theme {
-    --bg-color: #006400;
-    --text-color: #f0f0f0;
-    --button-bg: #228b22;
-    --button-hover: #006400;
-    --station-bg: #006400;
-    --station-hover: #228b22;
-  }
-
-  /* Responsive adjustments */
-  @media(max-width: 600px) {
-    h1 {
-      font-size: 2em;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>Malta Radio Player</title>
+  <style>
+    :root {
+      --bg: #eaf6ff;
+      --bg-deep: #60b8f5;
+      --panel: rgba(255,255,255,.94);
+      --panel-2: #d7edff;
+      --text: #06224d;
+      --muted: #456b91;
+      --accent: #8bd3ff;
+      --accent-2: #1479d1;
+      --blue: #218be0;
+      --gray: #60758a;
+      --danger: #dc3545;
+      --border: rgba(21,105,180,.28);
+      --shadow: 0 18px 50px rgba(15,77,130,.22);
+      --surface: rgba(255,255,255,.82);
+      --track: #c6dbe6;
     }
-    #volumeRange {
-      width: 150px;
+
+    body.dark {
+      --bg: #071a35;
+      --bg-deep: #0b4d83;
+      --panel: rgba(8, 30, 58, .96);
+      --panel-2: #123b64;
+      --text: #e5f4ff;
+      --muted: #a9c9e3;
+      --accent: #55bdf5;
+      --accent-2: #38a9ed;
+      --blue: #1976c8;
+      --border: rgba(137,211,255,.3);
+      --shadow: 0 18px 50px rgba(0,0,0,.42);
+      --surface: rgba(11,43,76,.9);
+      --track: #315a7c;
     }
-  }
-</style>
+
+    * { box-sizing: border-box; }
+    html { min-width: 280px; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top, var(--bg-deep) 0, var(--bg-deep) 34%, var(--bg) 78%);
+      transition: background .25s ease, color .25s ease;
+    }
+
+    button, input { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    .app { width: min(1180px, 100%); margin: auto; padding: 24px; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px; }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .brand-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 15px; background: linear-gradient(135deg, var(--blue), var(--accent)); font-size: 24px; box-shadow: var(--shadow); }
+    h1 { margin: 0; font-size: clamp(1.45rem, 3vw, 2.2rem); }
+    .subtitle { color: var(--muted); margin: 4px 0 0; font-size: .9rem; }
+    .theme-button, .icon-button { border: 1px solid var(--border); color: var(--text); background: var(--surface); border-radius: 12px; cursor: pointer; min-height: 44px; padding: 0 14px; }
+    body.dark .player { background: linear-gradient(145deg, rgba(13,51,88,.98), rgba(8,30,58,.98)); }
+    body.dark #search, body.dark .favorites-filter, body.dark .station { background: var(--surface); }
+    body.dark .station:hover, body.dark .station.active { background: rgba(39,132,205,.3); }
+    body.dark .main-control { color: #031426; }
+    body.dark #volumeRange { background: linear-gradient(to right, var(--accent-2) 0%, var(--accent-2) 50%, var(--track) 50%, var(--track) 100%); }
+    button:hover, button:focus-visible { filter: brightness(1.18); outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .player { background: linear-gradient(145deg, rgba(255,255,255,.97), rgba(211,239,255,.97)); border: 1px solid var(--border); border-radius: 24px; padding: clamp(18px, 4vw, 32px); box-shadow: var(--shadow); margin-bottom: 24px; }
+    .now-playing { display: flex; align-items: center; gap: 17px; min-width: 0; }
+    .station-art { display: grid; flex: 0 0 74px; place-items: center; width: 74px; height: 74px; border-radius: 20px; background: linear-gradient(135deg, #65c7ff, #07549a); color: #eff6ff; font-size: 34px; box-shadow: 0 8px 24px rgba(30,64,175,.35); }
+    .now-playing h2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 0 0 5px; font-size: clamp(1.15rem, 3vw, 1.6rem); }
+    .now-playing p { margin: 0; color: var(--muted); }
+    .status { display: inline-flex; align-items: center; gap: 7px; margin-top: 9px; color: var(--muted); font-size: .85rem; }
+    .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+    .status.live { color: #86efac; }
+    .status.live::before { background: #22c55e; box-shadow: 0 0 0 5px rgba(34,197,94,.12); }
+    .status.error { color: #fda4af; }
+    .status.error::before { background: var(--danger); }
+    .player-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 25px; }
+    .main-control { width: 62px; height: 56px; border: 0; border-radius: 17px; background: linear-gradient(135deg, var(--blue), var(--accent)); color: #102033; font-size: 25px; cursor: pointer; }
+    .nav-control { width: 48px; height: 48px; border: 1px solid var(--border); border-radius: 14px; color: var(--text); background: var(--panel-2); cursor: pointer; font-size: 20px; }
+    .volume-box { display: flex; align-items: center; gap: 10px; flex: 1 1 250px; min-width: 220px; color: var(--muted); }
+    #volumeRange { appearance: none; accent-color: var(--accent-2); width: 100%; min-width: 100px; height: 7px; border-radius: 99px; background: linear-gradient(to right, var(--accent-2) 0%, var(--accent-2) 50%, var(--track) 50%, var(--track) 100%); cursor: pointer; }
+    #volumeRange::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border: 3px solid #fff; border-radius: 50%; background: var(--accent-2); box-shadow: 0 2px 8px rgba(14,116,144,.35); }
+    #volumeRange::-moz-range-thumb { width: 17px; height: 17px; border: 3px solid #fff; border-radius: 50%; background: var(--accent-2); box-shadow: 0 2px 8px rgba(14,116,144,.35); }
+    #volumeValue { width: 44px; color: var(--text); font-weight: 700; text-align: right; }
+    .search-row { display: flex; gap: 10px; margin-bottom: 17px; }
+    #search { flex: 1; min-width: 0; min-height: 48px; padding: 0 16px; border: 1px solid var(--border); border-radius: 13px; background: rgba(255,255,255,.9); color: var(--text); outline: none; }
+    .favorites-filter { min-height: 48px; padding: 0 15px; border: 1px solid var(--border); border-radius: 13px; color: var(--text); background: rgba(255,255,255,.9); cursor: pointer; white-space: nowrap; }
+    .favorites-filter.active { color: #fff; background: var(--accent-2); border-color: var(--accent-2); }
+    .favorites-filter:disabled { opacity: .55; cursor: not-allowed; }
+    #search:focus { border-color: var(--accent); }
+    .station-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 13px; }
+    .station { position: relative; display: flex; align-items: center; gap: 12px; min-height: 78px; padding: 14px 45px 14px 15px; border: 1px solid var(--border); border-radius: 16px; color: var(--text); background: rgba(255,255,255,.78); text-align: left; cursor: pointer; transition: transform .2s, border-color .2s, background .2s; }
+    .station:hover, .station.active { transform: translateY(-2px); border-color: #2563eb; background: rgba(147,197,253,.34); }
+    .station-logo { display: grid; place-items: center; flex: 0 0 40px; width: 40px; height: 40px; border-radius: 12px; background: var(--panel-2); color: #176589; font-size: 19px; }
+    .station-name { display: block; font-weight: 700; }
+    .station-genre { display: block; color: var(--muted); font-size: .82rem; margin-top: 3px; }
+    .favorite { position: absolute; top: 10px; right: 10px; padding: 4px; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 19px; }
+    .favorite.selected { color: #facc15; }
+    .empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 30px; }
+    .exit-link { display: inline-block; margin-top: 22px; color: var(--muted); font-size: .9rem; text-decoration: none; }
+    .exit-link:hover { color: #16749c; }
+    .soft-blue { --bg: #e4f4ff; --bg-deep: #82ccfa; }
+    .soft-blue .player { background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(219,234,254,.98)); }
+
+    @media (max-width: 600px) {
+      .app { padding: 16px 12px calc(20px + env(safe-area-inset-bottom)); }
+      header { align-items: flex-start; }
+      .theme-button { padding: 0 11px; font-size: .85rem; }
+      .player { border-radius: 20px; padding: 20px 16px; }
+      .player-controls { gap: 10px; }
+      .volume-box { flex-basis: 100%; min-width: 100%; margin-top: 5px; }
+      .station { min-height: 72px; }
+    }
+  </style>
 </head>
 <body>
+  <main class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">📻</div>
+        <div><h1>Malta Radio</h1><p class="subtitle">Live music wherever you are</p></div>
+      </div>
+      <button class="theme-button" id="themeToggle" type="button" aria-label="Switch to dark theme">🌙 Dark Theme</button>
+    </header>
 
-<div class="container">
-  <h1>Malta Radio Stations</h1>
-  <button id="themeToggle">Switch to Gray Theme</button>
+    <section class="player" aria-label="Radio player">
+      <div class="now-playing">
+        <div class="station-art" aria-hidden="true">🎵</div>
+        <div style="min-width:0">
+          <h2 id="stationName">Choose a station</h2>
+          <p id="stationGenre">Select any station below to begin</p>
+          <div class="status" id="status" role="status">Ready</div>
+        </div>
+      </div>
+      <audio id="audioPlayer" preload="none" playsinline></audio>
+      <div class="player-controls">
+        <button class="nav-control" id="prevBtn" type="button" aria-label="Previous station">⏮</button>
+        <button class="main-control" id="playPause" type="button" aria-label="Play" disabled>▶</button>
+        <button class="nav-control" id="nextBtn" type="button" aria-label="Next station">⏭</button>
+        <button class="icon-button" id="randomBtn" type="button" aria-label="Play a random station">🔀 Random</button>
+        <button class="icon-button" id="muteBtn" type="button" aria-label="Mute" disabled>🔊</button>
+        <div class="volume-box">
+          <label for="volumeRange">Volume</label>
+          <input id="volumeRange" type="range" min="0" max="100" value="50" step="1" aria-label="Volume from 0 to 100 percent" />
+          <output id="volumeValue" for="volumeRange">50%</output>
+        </div>
+      </div>
+    </section>
 
-  <!-- Navigation Buttons -->
-  <div class="nav-buttons">
-    <button id="prevBtn" aria-label="Previous Station">&lt;</button>
-    <button id="nextBtn" aria-label="Next Station">&gt;</button>
-  </div>
-
-  <!-- Station list -->
-  <div class="station-list" id="stationList"></div>
-
-  <!-- Player controls -->
-  <div id="playerControls" style="display:none;">
-    <div id="stationInfo">
-      <span id="stationName"></span>
+    <div class="search-row">
+      <input id="search" type="search" placeholder="Search stations or genres…" aria-label="Search stations" autocomplete="off" />
+      <button class="favorites-filter" id="favoritesFilter" type="button" aria-pressed="false">☆ Favorites</button>
     </div>
-    <audio id="audioPlayer" controls></audio>
-    
-    <div class="buttons">
-      <button id="playPause" title="Play/Pause">⏯️</button>
-    </div>
-    
-    <!-- Volume control -->
-    <div>
-      <label for="volumeRange">Volume:</label>
-      <input type="range" id="volumeRange" min="1" max="100" value="50" />
-    </div>
-  </div>
+    <section class="station-list" id="stationList" aria-label="Radio stations"></section>
+    <a class="exit-link" href="../../your%20favorite.html">← Exit</a>
+  </main>
 
-  <!-- Exit button container -->
-  <div class="exit-container">
-    <a href="../../your%20favorite.html" class="exit-link">Exit</a>
-  </div>
-</div>
+  <script>
+    const stations = [
+      { name: "Radju Malta 1", genre: "Maltes", url: "http://s38.myradiostream.com/6982/listen.mp3" },
+      { name: "NET FM", genre: "Better Music", url: "http://s2.voscast.com:11392/default" },
+      { name: "Radju Malta 2", genre: "Multilingual", url: "http://s11.myradiostream.com/4954/listen.mp3" },
+      { name: "Bay Easy", genre: "More music! More feel good!", url: "http://stream.v3.network:8018/stream" },
+      { name: "Vibe FM", genre: "Defected Radio", url: "https://vibe.mt/stream" },
+      { name: "Radio USA", genre: "America's Best Country", url: "https://playerservices.streamtheworld.com/api/livestream-redirect/WUSZFM.mp3" },
+      { name: "Virgin Radio Italy", genre: "Style Rock", url: "http://icecast.unitedradio.it/Virgin.mp3" },
+      { name: "Calypso Radio 101.8", genre: "Mużika mill-passat", url: "https://s4.radio.co/sf3aa4c25a/listen" },
+      { name: "Radio Flash", genre: "La radio che funziona", url: "https://stream2.xdevel.com/audio5s194-48/stream/icecast.audio" },
+      { name: "Antenne Bayern Pop XXL", genre: "Pop XXL", url: "http://stream.antenne.de/pop-xxl/stream/mp3" },
+      { name: "104.6 RTL DJ Mix", genre: "DJ Mix", url: "http://stream.104.6rtl.com/elektro/mp3-192/" },
+      { name: "Power Pop", genre: "Power Pop", url: "https://live.powerapp.com.tr/powerpop/abr/playlist.m3u8" },
+      { name: "Power 95", genre: "Power 95", url: "https://usa10.fastcast4u.com/power95grenada" },
+      { name: "Bass Mg", genre: "Bass Mg", url: "https://bass-mg.stream.laut.fm/bass-mg" },
+      { name: "Japan City Pop", genre: "Retro Tokyo", url: "https://play.streamafrica.net/japancitypop" },
+      { name: "Phonk", genre: "Phonk", url: "https://stream.laut.fm/phonk" },
+      { name: "Boom Dancer Radio Phonk", genre: "Phonk", url: "https://stream.radioboom.ru/listen/boom-dancer-radiophonk_fm/Phonkstream.mp3" },
+      { name: "1000 Techno", genre: "Techno", url: "https://stream.laut.fm/1000techno" },
+      { name: "Phonk Wave", genre: "Phonk", url: "https://stream.laut.fm/phonkwave" },
+      { name: "Entencity", genre: "Electronic", url: "https://stream.laut.fm/entencity" },
+      { name: "BigFM Deep Tech House", genre: "Deep Tech House", url: "https://stream.bigfm.de/deeptechhouse/mp3-128/" },
+      { name: "Cloud Radio", genre: "Live Radio", url: "http://646.cloudrad.io:8314" },
+      { name: "Asura Hosting Radio", genre: "Live Radio", url: "https://a4.asurahosting.com:7230/radio.mp3" },
+      { name: "NRJ Audio", genre: "Live Radio", url: "https://streaming.nrjaudio.fm/oug77irb92oc" },
+      { name: "Remix Pros", genre: "Remixes", url: "https://stream.remixpros.com/stream" },
+      { name: "RTL Radio Lounge", genre: "Lounge", url: "http://stream.rtlradio.de/lounge/mp3-192/" },
+      { name: "Disneyland 360", genre: "Disney Music", url: "https://stream.laut.fm/disneyland-360" },
+      { name: "DJ Steffen", genre: "DJ Mix", url: "https://stream.laut.fm/djsteffen" }
+    ];
 
-<script>
-const stations = [
-  { name: "Radju Malta 1", genre: "Maltes", url: "http://s38.myradiostream.com/6982/listen.mp3" },
-  { name: "NET FM", genre: "Better Music", url: "http://s2.voscast.com:11392/default" },
-  { name: "Radju Malta 2", genre: "Multilingual", url: "http://s11.myradiostream.com/4954/listen.mp3" },
-  { name: "Bay Easy", genre: "More music! More feel good!", url: "http://stream.v3.network:8018/stream" },
-  { name: "Vibe FM", genre: "DEFECTED RADIO WITH /w bro", url: "https://vibe.mt/stream" },
-  { name: "Radio USA", genre: "America's Best Country", url: "https://playerservices.streamtheworld.com/api/livestream-redirect/WUSZFM.mp3" },
-  { name: "Virgin Radio Italy", genre: "Style Rock", url: "http://icecast.unitedradio.it/Virgin.mp3" },
-  { name: "Calypso Radio 101.8", genre: "Mużika mill-passat", url: "https://s4.radio.co/sf3aa4c25a/listen" },
-  { name: "Radio Flash", genre: "La radio che funziona", url: "https://stream2.xdevel.com/audio5s194-48/stream/icecast.audio" },
-  { name: "Antenne Bayern Pop XXL", genre: "Pop XXL", url: "http://stream.antenne.de/pop-xxl/stream/mp3" },
-  { name: "104.6 RTL DJ Mix", genre: "DJ Mix", url: "http://stream.104.6rtl.com/elektro/mp3-192/" },
-  { name: "Power Pop", genre: "Power Pop", url: "https://live.powerapp.com.tr/powerpop/abr/playlist.m3u8" },
-  { name: "Power 95", genre: "Power 95", url: "https://usa10.fastcast4u.com/power95grenada" },
-  { name: "Bass Mg", genre: "Bass Mg", url: "https://bass-mg.stream.laut.fm/bass-mg" },
-  { name: "Japan City Pop", genre: "Retro Tokyo", url: "https://play.streamafrica.net/japancitypop" },
-  { name: "Phonk", genre: "/w bro", url: "https://stream.laut.fm/phonk" }
-];
+    const $ = id => document.getElementById(id);
+    const audio = $('audioPlayer');
+    const normalizeText = value => value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+    let currentIndex = -1;
+    let isPlaying = false;
+    let favorites;
+    try {
+      favorites = JSON.parse(localStorage.getItem('radioFavorites') || '[]');
+      if (!Array.isArray(favorites)) favorites = [];
+    } catch (error) {
+      favorites = [];
+    }
 
-const stationListDiv = document.getElementById('stationList');
-const playerContainer = document.getElementById('playerControls');
-const stationNameElem = document.getElementById('stationName');
-const audioPlayer = document.getElementById('audioPlayer');
-const volumeRange = document.getElementById('volumeRange');
-const themeToggleBtn = document.getElementById('themeToggle');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
+    let showFavoritesOnly = false;
 
-let currentStationIndex = 0;
-let currentStation = null;
-let isPlaying = false;
-let currentThemeIndex = 0; // 0: gray, 1: black, 2: green
+    function saveFavorites() {
+      try {
+        localStorage.setItem('radioFavorites', JSON.stringify(favorites));
+      } catch (error) {
+        // Favorites still work for the current page if storage is unavailable.
+      }
+    }
 
-const themes = ['gray-theme', 'black-theme', 'green-theme'];
-const themeNames = ['Gray', 'Black', 'Green'];
+    function renderStations() {
+      const query = normalizeText($('search').value);
+      $('stationList').innerHTML = '';
+      const visible = stations.map((station, index) => ({ station, index })).filter(({ station, index }) => {
+        const searchableText = normalizeText(`${station.name} ${station.genre}`);
+        const matchesSearch = !query || searchableText.includes(query);
+        const matchesFavorites = !showFavoritesOnly || favorites.includes(index);
+        return matchesSearch && matchesFavorites;
+      });
+      $('favoritesFilter').classList.toggle('active', showFavoritesOnly);
+      $('favoritesFilter').setAttribute('aria-pressed', String(showFavoritesOnly));
+      $('favoritesFilter').textContent = showFavoritesOnly ? '★ Favorites' : '☆ Favorites';
+      $('favoritesFilter').disabled = !favorites.length && !showFavoritesOnly;
+      if (!visible.length) {
+        $('stationList').innerHTML = `<div class="empty">${showFavoritesOnly ? 'No favorite stations yet.' : 'No stations match your search.'}</div>`;
+        return;
+      }
+      visible.forEach(({ station, index }) => {
+        const card = document.createElement('div');
+        card.className = `station${index === currentIndex ? ' active' : ''}`;
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.innerHTML = `<span class="station-logo">📻</span><span><span class="station-name"></span><span class="station-genre"></span></span><button class="favorite" type="button" aria-label="Favorite ${station.name}">${favorites.includes(index) ? '★' : '☆'}</button>`;
+        card.querySelector('.station-name').textContent = station.name;
+        card.querySelector('.station-genre').textContent = station.genre;
+        const favorite = card.querySelector('.favorite');
+        favorite.classList.toggle('selected', favorites.includes(index));
+        favorite.onclick = event => { event.stopPropagation(); toggleFavorite(index); };
+        card.onclick = () => loadStation(index, true);
+        card.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); loadStation(index, true); } };
+        $('stationList').appendChild(card);
+      });
+    }
 
-// Populate station list
-stations.forEach((station, index) => {
-  const div = document.createElement('div');
-  div.className = 'station';
-  div.innerHTML = `<strong>${station.name}</strong><br><em>${station.genre}</em>`;
-  div.onclick = () => loadStation(index);
-  stationListDiv.appendChild(div);
-});
+    function setStatus(text, type = '') { $('status').textContent = text; $('status').className = `status ${type}`; }
+    function loadStation(index, autoPlay = false) {
+      currentIndex = (index + stations.length) % stations.length;
+      const station = stations[currentIndex];
+      audio.pause(); audio.src = station.url; audio.load();
+      $('stationName').textContent = station.name;
+      $('stationGenre').textContent = station.genre;
+      $('playPause').disabled = false; $('muteBtn').disabled = false;
+      isPlaying = false; updateControls(); setStatus('Ready to play'); renderStations();
+      if (autoPlay) startPlayback();
+    }
+    function startPlayback() {
+      if (currentIndex < 0) return;
+      setStatus('Connecting…');
+      audio.play().catch(() => setStatus('Tap play to start audio', 'error'));
+    }
+    function updateControls() {
+      $('playPause').textContent = isPlaying ? '⏸' : '▶';
+      $('playPause').setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
+      $('muteBtn').textContent = audio.muted || audio.volume === 0 ? '🔇' : '🔊';
+      $('muteBtn').setAttribute('aria-label', audio.muted ? 'Unmute' : 'Mute');
+    }
+    function toggleFavorite(index) {
+      favorites = favorites.includes(index)
+        ? favorites.filter(item => item !== index)
+        : [...favorites, index];
+      saveFavorites();
+      renderStations();
+    }
 
-// Load station by index
-function loadStation(index) {
-  currentStationIndex = index;
-  const station = stations[index];
-  currentStation = station;
-  document.getElementById('stationName').textContent = station.name;
-  audioPlayer.src = station.url;
-  playerContainer.style.display = 'flex';
-  isPlaying = false;
-  updatePlayPause();
-  audioPlayer.pause();
-  audioPlayer.volume = volumeRange.value / 100;
-}
+    $('favoritesFilter').onclick = () => {
+      showFavoritesOnly = !showFavoritesOnly;
+      renderStations();
+    };
 
-// Play/Pause toggle
-document.getElementById('playPause').onclick = () => {
-  if (!currentStation) return;
-  if (isPlaying) {
-    audioPlayer.pause();
-  } else {
-    audioPlayer.play();
-  }
-};
-audioPlayer.onplay = () => {
-  isPlaying = true;
-  updatePlayPause();
-};
-audioPlayer.onpause = () => {
-  isPlaying = false;
-  updatePlayPause();
-};
-function updatePlayPause() {
-  document.getElementById('playPause').textContent = '⏯️';
-}
+    $('playPause').onclick = () => isPlaying ? audio.pause() : startPlayback();
+    $('prevBtn').onclick = () => loadStation(currentIndex <= 0 ? stations.length - 1 : currentIndex - 1, true);
+    $('nextBtn').onclick = () => loadStation(currentIndex + 1, true);
+    $('randomBtn').onclick = () => {
+      if (!stations.length) return;
+      let randomIndex = Math.floor(Math.random() * stations.length);
+      if (stations.length > 1 && randomIndex === currentIndex) {
+        randomIndex = (randomIndex + 1) % stations.length;
+      }
+      loadStation(randomIndex, true);
+    };
+    $('muteBtn').onclick = () => { audio.muted = !audio.muted; updateControls(); };
+    $('volumeRange').oninput = event => {
+      const value = Number(event.target.value);
+      audio.volume = value / 100;
+      $('volumeValue').textContent = `${value}%`;
+      $('volumeRange').style.background = `linear-gradient(to right, var(--accent-2) 0%, var(--accent-2) ${value}%, #c6dbe6 ${value}%, #c6dbe6 100%)`;
+      if (value > 0) audio.muted = false;
+      localStorage.setItem('radioVolume', String(value));
+      updateControls();
+    };
+    $('search').addEventListener('input', renderStations);
+    $('search').addEventListener('search', renderStations);
+    $('search').addEventListener('change', renderStations);
+    audio.onplay = () => { isPlaying = true; setStatus('Live', 'live'); updateControls(); };
+    audio.onpause = () => { isPlaying = false; if (currentIndex >= 0) setStatus('Paused'); updateControls(); };
+    audio.onerror = () => { isPlaying = false; setStatus('Stream unavailable', 'error'); updateControls(); };
+    const savedVolume = Number(localStorage.getItem('radioVolume'));
+    const initialVolume = Number.isFinite(savedVolume) && savedVolume >= 0 && savedVolume <= 100 ? savedVolume : 50;
+    audio.volume = initialVolume / 100;
+    $('volumeRange').value = initialVolume;
+    $('volumeRange').dispatchEvent(new Event('input'));
+    function applyTheme(theme) {
+      const isDark = theme === 'dark';
+      document.body.classList.toggle('dark', isDark);
+      $('themeToggle').textContent = isDark ? '☀️ Light Theme' : '🌙 Dark Theme';
+      $('themeToggle').setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+      try { localStorage.setItem('radioTheme', isDark ? 'dark' : 'light'); } catch (error) { /* Theme works for this page. */ }
+    }
 
-// Volume control
-volumeRange.oninput = () => {
-  audioPlayer.volume = volumeRange.value / 100;
-};
-
-// Theme toggle button
-document.getElementById('themeToggle').onclick = () => {
-  currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-  document.body.className = themes[currentThemeIndex];
-  document.getElementById('themeToggle').textContent = `Switch to ${themeNames[(currentThemeIndex + 1) % themes.length]} Theme`;
-};
-
-// Load first station on page load
-loadStation(currentStationIndex);
-
-// Navigation buttons
-prevBtn.onclick = () => {
-  const newIndex = (currentStationIndex - 1 + stations.length) % stations.length;
-  loadStation(newIndex);
-};
-nextBtn.onclick = () => {
-  const newIndex = (currentStationIndex + 1) % stations.length;
-  loadStation(newIndex);
-};
-</script>
-
+    let savedTheme = 'light';
+    try { savedTheme = localStorage.getItem('radioTheme') === 'dark' ? 'dark' : 'light'; } catch (error) { /* Use light theme by default. */ }
+    applyTheme(savedTheme);
+    $('themeToggle').onclick = () => applyTheme(document.body.classList.contains('dark') ? 'light' : 'dark');
+    renderStations();
+  </script>
 </body>
 </html>

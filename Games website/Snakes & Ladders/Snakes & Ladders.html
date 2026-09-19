@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en" class=""><head><script>window.livecodes = window.livecodes || {};</script><title>DeepAI Code Snippet</title><meta name="title" content="DeepAI Code Snippet"><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style id="__livecodes_styles__"></style><script src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.js" async=""></script><script type="importmap">{
+  "imports": {}
+}</script></head><body>
+
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#6648d9">
+  <meta name="color-scheme" content="light">
+  <title>Snakes &amp; Ladders</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap');
+
+    :root {
+      --ink: #202b49;
+      --purple: #6648d9;
+      --purple-dark: #4b31b5;
+      --red: #fa5368;
+      --blue: #3598ed;
+      --cream: #fffdf8;
+      --line: #e9e7f2;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 8% 12%, #fff5d7 0 10%, transparent 27%), radial-gradient(circle at 90% 85%, #e5ddff 0 8%, transparent 28%), #f5f3fb;
+      color: var(--ink);
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .game-shell {
+      max-width: 1230px;
+      margin: auto;
+      padding: 30px 24px 45px;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 25px;
+      margin-bottom: 25px;
+    }
+
+    .eyebrow {
+      color: #ee8b39;
+      letter-spacing: 2.5px;
+      font-size: 12px;
+      font-weight: 800;
+      margin: 0 0 4px;
+    }
+
+    .hero h1 {
+      font: 800 clamp(2.35rem, 5vw, 4.4rem) / 0.95 'Baloo 2', cursive;
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .hero h1 span {
+      color: #f15372;
+    }
+
+    .subtitle {
+      color: #7d8299;
+      margin: 9px 0 0;
+      font-size: 15px;
+    }
+
+    .secondary-btn {
+      border: 2px solid #e0ddf3;
+      border-radius: 13px;
+      background: #fff;
+      padding: 12px 18px;
+      color: var(--purple);
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .secondary-btn:hover,
+    .exit-btn:hover {
+      border-color: var(--purple);
+      transform: translateY(-2px);
+    }
+
+    .exit-btn {
+      border: 2px solid #f2d5dc;
+      border-radius: 13px;
+      background: #fff;
+      padding: 12px 18px;
+      color: #d4435b;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .exit-btn:hover {
+      border-color: #d4435b;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid #a99bf0;
+      outline-offset: 2px;
+    }
+
+    button {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      transform: none;
+    }
+
+    .game-layout {
+      display: grid;
+      grid-template-columns: minmax(510px, 1fr) 335px;
+      gap: 25px;
+      align-items: start;
+    }
+
+    .board-card,
+    .dice-card,
+    .players-card,
+    .settings-card {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #e8e4f2;
+      border-radius: 21px;
+      box-shadow: 0 12px 30px #4c3b8610;
+    }
+
+    .board-card {
+      padding: 18px;
+    }
+
+    .turn-banner {
+      height: 47px;
+      border-radius: 12px;
+      background: #f1eeff;
+      display: flex;
+      align-items: center;
+      padding: 0 17px;
+      gap: 9px;
+      color: var(--purple);
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+
+    .turn-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--red);
+      border-radius: 50%;
+      box-shadow: 0 0 0 5px #fa53681c;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      aspect-ratio: 1;
+      border: 5px solid #d8d0ff;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .cell {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 5px;
+      color: #5c6180;
+      font-size: clamp(9px, 1.25vw, 14px);
+      font-weight: 800;
+      border: 1px solid #e8e4f0;
+      background: #fff;
+      overflow: visible;
+    }
+
+    .cell:nth-child(odd) {
+      background: #fffbf2;
+    }
+
+    .cell.ladder-start {
+      background: #e9f8ed;
+      color: #21864b;
+    }
+
+    .cell.snake-start {
+      background: #fff0f1;
+      color: #d4435b;
+    }
+
+    .cell.ladder-start::after,
+    .cell.snake-start::after {
+      position: absolute;
+      left: 4px;
+      bottom: 3px;
+      font-size: clamp(13px, 2vw, 22px);
+      line-height: 1;
+      z-index: 1;
+      filter: drop-shadow(0 2px 1px #202b4930);
+    }
+
+    .cell.ladder-start::after {
+      content: '🪜';
+    }
+
+    .cell.snake-start::after {
+      content: '🐍';
+    }
+
+    .cell-number {
+      position: relative;
+      z-index: 2;
+    }
+
+    .token {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      width: clamp(21px, 4vw, 34px);
+      height: clamp(21px, 4vw, 34px);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: clamp(8px, 1.2vw, 12px);
+      font-weight: 900;
+      border: 3px solid white;
+      box-shadow: 0 3px 6px #1d204455;
+      z-index: 4;
+      animation: pop 0.35s ease;
+    }
+
+    .token.p1 {
+      background: var(--red);
+    }
+
+    .token.p2 {
+      background: var(--blue);
+      left: auto;
+      right: 4px;
+    }
+
+    .token.p3 {
+      background: #42b883;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 4px;
+      font-size: clamp(7px, 1vw, 10px);
+    }
+
+    .token.p4 {
+      background: #e7ad3f;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 28px;
+      font-size: clamp(7px, 1vw, 10px);
+    }
+
+    .cell.has-both .token.p1 {
+      left: 3px;
+    }
+
+    .cell.has-both .token.p2 {
+      right: 3px;
+      bottom: 24px;
+    }
+
+    .cell.has-both .token.p3 {
+      left: 50%;
+      bottom: 4px;
+    }
+
+    .cell.has-both .token.p4 {
+      left: 50%;
+      bottom: 28px;
+    }
+
+    @keyframes pop {
+      from {
+        opacity: 0;
+        scale: 0.3;
+      }
+      to {
+        opacity: 1;
+        scale: 1;
+      }
+    }
+
+    .board-legend {
+      display: flex;
+      gap: 22px;
+      justify-content: center;
+      color: #888ba1;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 12px 0 0;
+    }
+
+    .board-legend i {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      border-radius: 4px;
+      vertical-align: -2px;
+      margin-right: 5px;
+    }
+
+    .legend-ladder {
+      background: #e9f8ed;
+    }
+
+    .legend-snake {
+      background: #fff0f1;
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 15px;
+    }
+
+    .dice-card {
+      text-align: center;
+      padding: 18px 20px 17px;
+    }
+
+    .dice-label {
+      color: #9292a7;
+      letter-spacing: 2px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .dice {
+      font-size: 86px;
+      line-height: 1.15;
+      color: var(--purple);
+      filter: drop-shadow(0 7px 4px #4e35a52b);
+      font-family: Arial, sans-serif;
+      margin: 2px 0 8px;
+    }
+
+    .roll-btn {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 15px;
+      background: linear-gradient(135deg, #7659e7, #5737c8);
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: 0.7px;
+      box-shadow: 0 7px 15px #6245cc40;
+      cursor: pointer;
+    }
+
+    .roll-btn:hover {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+    }
+
+    .hint {
+      margin: 9px 0 0;
+      color: #9c9cae;
+      font-size: 11px;
+    }
+
+    .players-card,
+    .settings-card {
+      padding: 18px 20px;
+    }
+
+    .players-card h2,
+    .settings-card h2 {
+      font: 800 19px 'Baloo 2';
+      margin: 0 0 12px;
+    }
+
+    .player-row {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      margin-top: 7px;
+    }
+
+    .player-row.active {
+      border-color: #d8cffb;
+      background: #faf9ff;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .red-avatar {
+      background: var(--red);
+    }
+
+    .blue-avatar {
+      background: var(--blue);
+    }
+
+    .green-avatar {
+      background: #42b883;
+    }
+
+    .yellow-avatar {
+      background: #e7ad3f;
+    }
+
+    .name-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+      color: #6c7088;
+      margin-bottom: 13px;
+    }
+
+    .name-label input {
+      width: 120px;
+      border: 1px solid #ddd8f1;
+      border-radius: 8px;
+      padding: 6px 8px;
+      color: var(--purple);
+      font: 800 12px 'Nunito', sans-serif;
+    }
+
+    .player-row em {
+      font-style: normal;
+      color: #9292a7;
+      font-size: 10px;
+    }
+
+    .player-row div {
+      display: grid;
+      gap: 1px;
+      flex: 1;
+    }
+
+    .player-row small {
+      color: #999caf;
+      font-size: 11px;
+    }
+
+    .player-row strong {
+      font-size: 20px;
+    }
+
+    .range-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #6c7088;
+    }
+
+    .range-label b {
+      color: var(--purple);
+    }
+
+    .difficulty-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+      color: #6c7088;
+      margin-bottom: 13px;
+    }
+
+    .difficulty-row select {
+      border: 1px solid #ddd8f1;
+      border-radius: 8px;
+      padding: 5px 8px;
+      color: var(--purple);
+      font: 800 12px 'Nunito', sans-serif;
+      background: #fff;
+    }
+
+    .setting-help {
+      display: block;
+      color: #999caf;
+      font-size: 11px;
+      margin: -5px 0 13px;
+    }
+
+    input[type=range] {
+      accent-color: var(--purple);
+      width: 100%;
+      margin: 12px 0 16px;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      color: #6c7088;
+    }
+
+    .switch-row input {
+      display: none;
+    }
+
+    .switch {
+      margin-left: auto;
+      width: 42px;
+      height: 23px;
+      background: #d7d6e2;
+      border-radius: 20px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .switch:after {
+      content: '';
+      position: absolute;
+      width: 17px;
+      height: 17px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: 0.2s;
+    }
+
+    .switch-row input:checked + .switch {
+      background: var(--purple);
+    }
+
+    .switch-row input:checked + .switch:after {
+      left: 22px;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: #a0a1b1;
+      font-size: 12px;
+      margin: 0;
+    }
+
+    .message {
+      position: fixed;
+      left: 50%;
+      bottom: 25px;
+      transform: translate(-50%, 20px);
+      background: #202b49;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+      z-index: 20;
+    }
+
+    .message.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 900px) {
+      .game-shell {
+        padding: 22px 16px 35px;
+      }
+
+      .game-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .side-panel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .settings-card,
+      .footer-note {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .game-shell {
+        padding: 16px 10px 28px;
+      }
+
+      .hero {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.2rem, 12vw, 3.2rem);
+      }
+
+      .subtitle {
+        font-size: 13px;
+      }
+
+      .hero-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .secondary-btn,
+      .exit-btn {
+        width: 100%;
+        min-height: 46px;
+      }
+
+      .game-layout {
+        gap: 14px;
+      }
+
+      .board-card {
+        padding: 10px;
+      }
+
+      .turn-banner {
+        height: auto;
+        min-height: 45px;
+        padding: 9px 12px;
+        flex-wrap: wrap;
+        font-size: 12px;
+      }
+
+      .board-legend {
+        gap: 14px;
+      }
+
+      .side-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .dice-card,
+      .players-card,
+      .settings-card {
+        padding: 15px;
+      }
+
+      .dice {
+        font-size: 72px;
+      }
+
+      .roll-btn {
+        min-height: 50px;
+        font-size: 14px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+
+  </style>
+
+
+  <main class="game-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">CLASSIC ARCADE BOARD GAME</p>
+        <h1>Snakes <span>&amp;</span> Ladders</h1>
+        <p class="subtitle">Race to square 100. Climb ladders, dodge snakes, and be the first to reach the top!</p>
+      </div>
+      <div class="hero-actions">
+        <button class="new-game secondary-btn" type="button">↻ New game</button>
+        <button id="exitButton" class="exit-btn" type="button">↩ Exit</button>
+      </div>
+    </header>
+
+    <section class="game-layout">
+      <div class="board-card">
+        <div class="turn-banner"><span class="turn-dot"></span><span id="turnText">Player 1's turn</span><span id="statusText">Roll the dice!</span></div>
+        <div id="board" class="board" role="grid" aria-label="Snakes and ladders board"></div>
+        <div class="board-legend"><span><i class="legend-ladder"></i> Ladder</span><span><i class="legend-snake"></i> Snake</span></div>
+      </div>
+
+      <aside class="side-panel">
+        <div class="dice-card">
+          <div class="dice-label">DICE ROLL</div>
+          <div id="dice" class="dice" aria-live="polite">⚄</div>
+          <button id="rollButton" class="roll-btn" type="button" aria-label="Roll the dice">ROLL DICE <span aria-hidden="true">⟶</span></button>
+          <p class="hint">Press <b>Space</b> or <b>Enter</b> to roll</p>
+        </div>
+        <div class="players-card" aria-labelledby="playersHeading">
+          <h2 id="playersHeading">Players</h2>
+          <div class="player-row active" id="player1Row">
+            <span class="avatar red-avatar" aria-hidden="true">P1</span>
+            <div>
+              <b>Player 1</b>
+              <small id="p1Position">Square 1</small>
+            </div>
+            <strong id="p1Score" aria-label="Player 1 score">0</strong>
+          </div>
+          <div class="player-row" id="player2Row">
+            <span class="avatar blue-avatar" aria-hidden="true">P2</span>
+            <div>
+              <b>Player 2</b>
+              <small id="p2Position">Square 1</small>
+            </div>
+            <strong id="p2Score" aria-label="Player 2 score">0</strong>
+          </div>
+          <div class="player-row" id="player3Row">
+            <span class="avatar green-avatar" aria-hidden="true">P3</span>
+            <div>
+              <b>Player 3</b>
+              <small id="p3Position">Square 1</small>
+            </div>
+            <strong id="p3Score" aria-label="Player 3 score">0</strong>
+          </div>
+          <div class="player-row" id="player4Row">
+            <span class="avatar yellow-avatar" aria-hidden="true">CPU</span>
+            <div>
+              <b>Player 4 <em>(CPU)</em></b>
+              <small id="p4Position">Square 1</small>
+            </div>
+            <strong id="p4Score" aria-label="Player 4 score">0</strong>
+          </div>
+        </div>
+        <div class="settings-card">
+          <h2>Game settings</h2>
+          <label class="name-label" for="player1Name"><span>✏️ Player 1 name</span><input id="player1Name" type="text" value="Player 1" maxlength="18"></label>
+          <label class="name-label" for="player2Name"><span>✏️ Player 2 name</span><input id="player2Name" type="text" value="Player 2" maxlength="18"></label>
+          <label class="name-label" for="player3Name"><span>✏️ Player 3 name</span><input id="player3Name" type="text" value="Player 3" maxlength="18"></label>
+          <label class="name-label" for="player4Name"><span>✏️ Player 4 name</span><input id="player4Name" type="text" value="Player 4" maxlength="18"></label>
+          <label class="difficulty-row" for="players">
+            <span>👥 Number of Players (0-4):</span>
+            <select id="players" aria-describedby="playersHelp">
+              <option value="1">1</option>
+              <option value="2" selected="">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </label>
+          <small id="playersHelp" class="setting-help">Player 1 is always human. Choose 1–4 total players.</small>
+          <label class="difficulty-row" for="cpu">
+            <span id="cpuLabel">🤖 Number of CPUs (0-4):</span>
+            <select id="cpu" aria-describedby="cpuHelp"></select>
+          </label>
+          <small id="cpuHelp" class="setting-help">Choose 1–3 CPUs when using 2–4 players. Player 1 is always human.</small>
+          <label class="difficulty-row" for="difficulty"><span>🤖 CPU difficulty</span>
+            <select id="difficulty">
+              <option value="easy">Easy</option>
+              <option value="normal" selected="">Normal</option>
+              <option value="hard">Hard</option>
+            </select>
+          </label>
+          <label class="range-label" for="volume"><span>🔊 Sound volume</span><b><span id="volumeValue">70</span>%</b></label>
+          <input id="volume" type="range" min="0" max="100" value="70" aria-valuemin="0" aria-valuemax="100" aria-valuenow="70">
+          <label class="switch-row"><span>📳 Vibration feedback</span><input id="vibration" type="checkbox" checked=""><span class="switch"></span></label>
+        </div>
+        <p class="footer-note">First player to land exactly on 100 wins!</p>
+      </aside>
+    </section>
+  </main>
+  <div id="message" class="message" role="status"></div>
+  <script>
+    // JavaScript code from your provided code, adapted for self-contained page
+    const board = document.getElementById('board');
+    const diceEl = document.getElementById('dice');
+    const rollButton = document.getElementById('rollButton');
+    const turnText = document.getElementById('turnText');
+    const statusText = document.getElementById('statusText');
+    const message = document.getElementById('message');
+    const volume = document.getElementById('volume');
+    const volumeValue = document.getElementById('volumeValue');
+    const vibration = document.getElementById('vibration');
+    const difficulty = document.getElementById('difficulty');
+    const playersSelect = document.getElementById('players');
+    const cpuSelect = document.getElementById('cpu');
+    const cpuLabel = document.getElementById('cpuLabel');
+    const player1Name = document.getElementById('player1Name');
+    const player2Name = document.getElementById('player2Name');
+    const player3Name = document.getElementById('player3Name');
+    const player4Name = document.getElementById('player4Name');
+    const nameInputs = [player1Name, player2Name, player3Name, player4Name];
+    const exitButton = document.getElementById('exitButton');
+
+    const diceFaces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+    const ladders = {3:22, 8:30, 28:56, 36:44, 51:67, 71:92, 80:99};
+    const snakes = {17:7, 46:25, 62:19, 64:60, 87:24, 93:73, 98:78};
+    const players = [
+      {position:1, name:'Player 1', token:'P1', cpu:false},
+      {position:1, name:'Player 2', token:'P2', cpu:false},
+      {position:1, name:'Player 3', token:'P3', cpu:false},
+      {position:1, name:'Player 4', token:'P4', cpu:false}
+    ];
+
+    let current = 0, busy = false, gameOver = false, audioContext, cpuTimer;
+    let gameVersion = 0;
+
+    // Initialize game
+    function syncCpuOptions(playerCount, preserveSelection = true) {
+      const safePlayerCount = Math.max(1, Math.min(4, Number(playerCount) || 1));
+      const maxCpu = safePlayerCount - 1;
+      const previousCpu = preserveSelection ? Number(cpuSelect.value) : 1;
+      // A one-player game has no room for a CPU; otherwise CPU 1 is the default.
+      const minimumCpu = maxCpu > 0 ? 1 : 0;
+      const selectedCpu = Math.min(maxCpu, Math.max(minimumCpu, Number.isFinite(previousCpu) ? previousCpu : minimumCpu));
+
+      cpuLabel.textContent = '🤖 Number of CPUs (1-4):';
+      cpuSelect.replaceChildren();
+      for (let count = minimumCpu; count <= maxCpu; count++) {
+        const option = document.createElement('option');
+        option.value = String(count);
+        option.textContent = String(count);
+        cpuSelect.appendChild(option);
+      }
+      cpuSelect.value = String(selectedCpu);
+    }
+
+    function updateGameMode({ resetPositions = false, preserveCpu = true } = {}) {
+      const playerCount = Math.max(1, Math.min(4, Number(playersSelect.value) || 1));
+      playersSelect.value = String(playerCount);
+      syncCpuOptions(playerCount, preserveCpu);
+      const maxCpu = playerCount - 1;
+      const minimumCpu = maxCpu > 0 ? 1 : 0;
+      const cpuCount = Math.min(maxCpu, Math.max(minimumCpu, Number(cpuSelect.value) || minimumCpu));
+      cpuSelect.value = String(cpuCount);
+
+      players.forEach((player, index) => {
+        player.active = index < playerCount;
+        player.cpu = player.active && index >= playerCount - cpuCount;
+        if (!player.active || resetPositions) player.position = 1;
+      });
+
+      nameInputs.forEach((input, index) => {
+        const player = players[index];
+        input.disabled = !player.active;
+        input.setAttribute('aria-label', `${player.cpu ? 'CPU ' : ''}Player ${index + 1} name`);
+        if (!player.active) input.value = `Player ${index + 1}`;
+      });
+
+      clearTimeout(cpuTimer);
+      cpuTimer = null;
+      gameVersion++;
+      busy = false;
+      gameOver = false;
+      diceEl.classList.remove('rolling');
+      diceEl.textContent = '⚄';
+      rollButton.innerHTML = 'ROLL DICE <span aria-hidden="true">⟶</span>';
+      statusText.textContent = 'Roll the dice!';
+      if (!players[current]?.active) current = 0;
+      setTurn();
+      drawTokens();
+    }
+
+    function buildBoard() {
+      board.innerHTML = '';
+      for (let row=9; row>=0; row--) {
+        const numbers = [];
+        for (let col=1; col<=10; col++) {
+          const num = row*10 + col;
+          numbers.push(num);
+        }
+        if (row % 2 === 1) numbers.reverse();
+        numbers.forEach(number => {
+          const cell = document.createElement('div');
+          cell.className='cell';
+          cell.dataset.square=number;
+          cell.setAttribute('role','gridcell');
+          cell.setAttribute('aria-label',`Square ${number}${ladders[number]?' , ladder to '+ladders[number] : snakes[number]?' , snake to '+snakes[number]:''}`);
+          if (ladders[number]) cell.classList.add('ladder-start');
+          if (snakes[number]) cell.classList.add('snake-start');
+          cell.innerHTML = `<span class="cell-number">${number}</span>`;
+          board.appendChild(cell);
+        });
+      }
+      drawTokens();
+    }
+
+    function drawTokens() {
+      document.querySelectorAll('.token').forEach(t => t.remove());
+      document.querySelectorAll('.cell').forEach(c => c.classList.remove('has-both'));
+      players.forEach((player, index) => {
+        if (!player.active) return;
+        const cell = document.querySelector(`[data-square="${player.position}"]`);
+        if (!cell) return;
+        const tokensHere = Array.from(cell.querySelectorAll('.token'));
+        if (tokensHere.length > 0) cell.classList.add('has-both');
+        const token = document.createElement('span');
+        token.className=`token p${index+1}`;
+        token.textContent=player.token;
+        cell.appendChild(token);
+        document.getElementById(`p${index+1}Position`).textContent = `Square ${player.position}`;
+        document.getElementById(`p${index+1}Score`).textContent = player.position - 1;
+      });
+    }
+
+    function setTurn() {
+      const displayNames = nameInputs.map((input,i)=>input.value.trim()||`Player ${i+1}`);
+      players.forEach((player, index) => {
+        player.name = displayNames[index];
+        const row = document.getElementById(`player${index+1}Row`);
+        if (!row) return;
+        row.querySelector('b').textContent = displayNames[index];
+        row.querySelector('.avatar').textContent = player.cpu ? `CPU ${index+1}` : `P${index+1}`;
+        row.classList.toggle('active', index===current);
+        row.hidden = !player.active;
+      });
+      turnText.textContent = `${players[current].name}'s turn`;
+      document.querySelectorAll('.player-row').forEach((row,i) => {
+        row.classList.toggle('active', i===current);
+        row.hidden = !players[i].active;
+      });
+      rollButton.disabled = players[current].cpu || busy || gameOver;
+      if (players[current].cpu && !gameOver && !busy) {
+        statusText.textContent='CPU is thinking...';
+        clearTimeout(cpuTimer);
+        cpuTimer=setTimeout(()=>{
+          cpuTimer=null; roll();
+        }, difficulty.value==='hard'?450 : difficulty.value==='normal'?700:950);
+      }
+    }
+
+    function playSound(type) {
+      if (!volume || Number(volume.value)<=0) return;
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      if (!audioContext) audioContext = new AudioContext();
+      if (audioContext.state==='suspended') audioContext.resume().catch(()=>{});
+      const now = audioContext.currentTime;
+      const gain = audioContext.createGain();
+      const osc = audioContext.createOscillator();
+      const settings = type==='win' ? {freq:523,end:880,duration:.5} :
+                       type==='ladder' ? {freq:440,end:700,duration:.35} :
+                       type==='snake' ? {freq:240,end:90,duration:.35} :
+                       {freq:260,end:520,duration:.18};
+      osc.type=type==='snake' ? 'sawtooth' : 'sine';
+      osc.frequency.setValueAtTime(settings.freq, now);
+      osc.frequency.exponentialRampToValueAtTime(settings.end, now + settings.duration);
+      gain.gain.setValueAtTime((Number(volume.value)/100)*.22, now);
+      gain.gain.exponentialRampToValueAtTime(.001, now + settings.duration);
+      osc.connect(gain).connect(audioContext.destination);
+      osc.start(now);
+      osc.stop(now + settings.duration);
+    }
+
+    function buzz(pattern) {
+      if (vibration.checked && navigator.vibrate) navigator.vibrate(pattern);
+    }
+
+    function showMessage(text) {
+      message.textContent=text;
+      message.classList.add('show');
+      clearTimeout(showMessage.timer);
+      showMessage.timer=setTimeout(()=>message.classList.remove('show'),1900);
+    }
+
+    function wait(ms) {
+      return new Promise(resolve=>setTimeout(resolve,ms));
+    }
+
+    function cpuRoll(position) {
+      const options = [1,2,3,4,5,6].map(amount => {
+        const target = position + amount;
+        if (target>100) return {amount, score:-20};
+        const destination = ladders[target] || snakes[target] || target;
+        let score=destination;
+        if (ladders[target]) score+=35;
+        if (snakes[target]) score-=45;
+        return {amount, score};
+      });
+      if (difficulty.value==='easy' || Math.random()<(difficulty.value==='normal'?0.35:0.1)) {
+        return Math.floor(Math.random()*6)+1;
+      }
+      return options.sort((a,b)=>b.score - a.score)[0].amount;
+    }
+
+    async function roll() {
+      if (busy || gameOver || !players[current]?.active) return;
+      const turnVersion = gameVersion;
+      busy=true; rollButton.disabled=true; playSound('roll');
+      diceEl.classList.add('rolling');
+      for (let i=0; i<8; i++) {
+        if (turnVersion !== gameVersion) {
+          diceEl.classList.remove('rolling');
+          return;
+        }
+        diceEl.textContent=diceFaces[Math.floor(Math.random()*6)];
+        await wait(65);
+      }
+      if (turnVersion !== gameVersion) {
+        diceEl.classList.remove('rolling');
+        return;
+      }
+      diceEl.classList.remove('rolling');
+      const player=players[current];
+      const amount=player.cpu ? cpuRoll(player.position) : Math.floor(Math.random()*6)+1;
+      diceEl.textContent=diceFaces[amount-1];
+      buzz([35]);
+      const old=player.position;
+      const target=old+amount;
+      statusText.textContent=`${player.name} rolled ${amount}`;
+      if (target>100) {
+        showMessage('Need an exact roll to reach 100');
+        await wait(700);
+        nextTurn();
+        return;
+      }
+      for (let step=old+1; step<=target; step++) {
+        if (turnVersion !== gameVersion) return;
+        player.position=step;
+        drawTokens();
+        await wait(115);
+      }
+      if (ladders[player.position]) {
+        const end=ladders[player.position];
+        playSound('ladder');
+        buzz([40,40,80]);
+        showMessage(`Ladder! Climb to ${end}`);
+        await wait(650);
+        if (turnVersion !== gameVersion) return;
+        player.position=end;
+        drawTokens();
+      } else if (snakes[player.position]) {
+        const end=snakes[player.position];
+        playSound('snake');
+        buzz([120,50,120]);
+        showMessage(`Snake! Slide to ${end}`);
+        await wait(650);
+        if (turnVersion !== gameVersion) return;
+        player.position=end;
+        drawTokens();
+      }
+      if (player.position===100) {
+        gameOver=true;
+        playSound('win');
+        buzz([100,60,100,60,250]);
+        turnText.textContent=`${player.name} wins!`;
+        statusText.textContent='🎉 Champion!';
+        showMessage(`${player.name} reached 100 and wins!`);
+        rollButton.textContent='GAME OVER';
+        return;
+      }
+      nextTurn();
+    }
+
+    function nextTurn() {
+      const activePlayers=players.filter(p=>p.active);
+      if (!activePlayers.length) return;
+      const currentPlayer=players[current];
+      const currentIndex=activePlayers.indexOf(currentPlayer);
+      current=players.indexOf(activePlayers[(currentIndex+1)%activePlayers.length]);
+      busy=false;
+      rollButton.disabled=players[current].cpu;
+      setTurn();
+    }
+
+    function newGame() {
+      clearTimeout(cpuTimer);
+      gameVersion++;
+      players.forEach(p=>p.position=1);
+      current=0;
+      busy=false;
+      gameOver=false;
+      diceEl.textContent='⚄';
+      rollButton.innerHTML='ROLL DICE <span>⟶</span>';
+      statusText.textContent='Roll the dice!';
+      drawTokens();
+      setTurn();
+      showMessage('New game started!');
+    }
+
+    volume.addEventListener('input', ()=> {
+      const level = Math.max(0, Math.min(100, Number(volume.value) || 0));
+      volume.value = level;
+      volumeValue.textContent = level;
+      volume.setAttribute('aria-valuenow', level);
+      volume.setAttribute('aria-valuetext', `${level}%`);
+    });
+    playersSelect.addEventListener('change', () => {
+      updateGameMode({ resetPositions: true, preserveCpu: true });
+    });
+    cpuSelect.addEventListener('change', () => {
+      updateGameMode({ resetPositions: true, preserveCpu: true });
+    });
+    nameInputs.forEach((input,i)=> {
+      input.addEventListener('input', ()=> {
+        setTurn();
+        if (current===i && !busy) {
+          turnText.textContent=`${players[i].name}'s turn`;
+        }
+      });
+    });
+    rollButton.addEventListener('click', roll);
+    document.querySelector('.new-game').addEventListener('click', newGame);
+    exitButton.addEventListener('click', () => {
+      window.location.href = '../Games.html';
+    });
+    document.addEventListener('keydown', event => {
+      const isTyping=['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName);
+      if ((event.code==='Space'||event.code==='Enter') && !isTyping && !players[current].cpu) {
+        event.preventDefault();
+        roll();
+      }
+    });
+
+    // Initialize game state
+    volumeValue.textContent=volume.value;
+    volume.setAttribute('aria-valuenow', volume.value);
+    volume.setAttribute('aria-valuetext', `${volume.value}%`);
+    // Start with Player 1 (human) versus CPU 1.
+    playersSelect.value = '2';
+    syncCpuOptions(2, false);
+    cpuSelect.value = '1';
+    buildBoard();
+    updateGameMode({ preserveCpu: true });
+  </script>
+
+<script></script></body></html>

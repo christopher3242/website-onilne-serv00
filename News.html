@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>News and Update</title>
+<title>News and Updates</title>
 <style>
   /* Reset and base styles */
   * {
@@ -12,16 +12,92 @@
     padding: 0;
   }
 
-  body {    font-family: Arial, sans-serif;    background-color: rgb(26, 63, 105);    color: #fff;    padding: 20px;    display: flex;    flex-direction: column;    min-height: 100vh;    position: relative;  }
-  header {    text-align: center;    margin-bottom: 20px;  }
-  h1 {    font-size: 2em;    text-decoration: underline;    margin-bottom: 10px;  }
-  main {    flex: 1;    max-width: 900px;    margin: 0 auto;    padding: 10px;  }
-  .section {    background-color: rgba(255, 255, 255, 0.1);    padding: 20px;    margin-bottom: 20px;    border-radius: 10px;    box-shadow: 0 4px 8px rgba(0,0,0,0.2);  }
-  .section h2 {    margin-bottom: 15px;    font-size: 1.5em;    border-bottom: 2px solid #fff;    padding-bottom: 5px;  }
-  p {    font-size: 1.2em;    line-height: 1.5;  }
-  /* Exit button styling */  .exit-btn {    position: fixed;    top: 20px;    right: 20px;    background-color: #0d6bb8;    color: #fff;    padding: 12px 24px;    text-decoration: none;    border-radius: 5px;    font-size: 1em;    transition: background-color 0.3s, transform 0.2s;    box-shadow: 0 4px 6px rgba(0,0,0,0.1);  }
-  .exit-btn:hover {    background-color: #1c3a8f;    transform: scale(1.05);  }
-  /* Responsive adjustments */  @media (max-width: 600px) {    body {      padding: 10px;    }    h1 {      font-size: 1.5em;    }    .exit-btn {      padding: 10px 20px;      font-size: 0.9em;    }    .section h2 {      font-size: 1.3em;    }  }</style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: rgb(26, 63, 105);
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: 2em;
+    text-decoration: underline;
+    margin-bottom: 10px;
+  }
+
+  main {
+    flex: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 10px;
+  }
+
+  .section {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  .section h2 {
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    border-bottom: 2px solid #fff;
+    padding-bottom: 5px;
+  }
+
+  p {
+    font-size: 1.2em;
+    line-height: 1.5;
+  }
+
+  /* Exit button styling */
+  .exit-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #0d6bb8;
+    color: #fff;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .exit-btn:hover {
+    background-color: #1c3a8f;
+    transform: scale(1.05);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    body {
+      padding: 10px;
+    }
+    h1 {
+      font-size: 1.5em;
+    }
+    .exit-btn {
+      padding: 10px 20px;
+      font-size: 0.9em;
+    }
+    .section h2 {
+      font-size: 1.3em;
+    }
+  }
+</style>
 </head>
 <body>
 <header>
@@ -29,10 +105,22 @@
 </header>
 <main>
   <div class="section">
-    <h2>V5.9 Beta 3</h2>
-    <p>Exciting new features and improvements coming in Beta 3! Stay tuned for updates on gaming and whiteboard functionalities.</p>
+    <h2>V6</h2>
+    <p>Exciting new features and improvements coming in V6! Stay tuned for updates on gaming and whiteboard functionalities.</p>
+  </div>
+  <!-- New Games and Updates Section -->
+  <div class="section">
+    <h2>Games & Updates</h2>
+    <p>We are excited to introduce and improve the following games and features:</p>
+    <ul>
+      <li>Snakes & Ladders</li>
+      <li>Uno Games</li>
+      <li>Chess</li>
+      <li>Archery</li>
+    </ul>
+    <p>Additionally, we've updated and improved the Radio and LED Rave Sync features for an enhanced experience.</p>
   </div>
 </main>
-<a class="exit-btn" href="../../your%20favorite.html"> Exit</a>
+<a class="exit-btn" href="../../your%20favorite.html">Exit</a>
 </body>
 </html>
