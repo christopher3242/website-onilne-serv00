@@ -156,7 +156,12 @@
     <h1>Discord NSFW 2026 - Present</h1>
 
     <div class="search-box">
-      <input id="searchInput" type="search" placeholder="Search links..." aria-label="Search links">
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search links..."
+        aria-label="Search links"
+      >
     </div>
     <p id="searchCount" aria-live="polite"></p>
 
@@ -165,63 +170,87 @@
         <strong>Group Family</strong>
         <a href="https://discord.gg/srZZcMA89p" target="_blank" rel="noopener noreferrer">https://discord.gg/srZZcMA89p</a>
       </p>
+
       <p data-search="sexyx christopher 18+">
         <strong>Sexyx and Christopher (18+)</strong>
         <a href="https://discord.gg/3WFpCzGUYv" target="_blank" rel="noopener noreferrer">https://discord.gg/3WFpCzGUYv</a>
       </p>
+
       <p data-search="gaming crib 18+">
         <strong>Gaming Crib (18+)</strong>
         <a href="https://discord.gg/KdxDk4DNhY" target="_blank" rel="noopener noreferrer">https://discord.gg/KdxDk4DNhY</a>
       </p>
+
       <p data-search="sexy bitch 18+">
         <strong>Sexy Bitch (18+)</strong>
         <a href="https://discord.gg/pv8xn6c5HU" target="_blank" rel="noopener noreferrer">https://discord.gg/pv8xn6c5HU</a>
       </p>
+
       <p data-search="roasting christopher 18+">
         <strong>Roasting Christopher (18+)</strong>
         <a href="https://discord.gg/akZT6SbXW8" target="_blank" rel="noopener noreferrer">https://discord.gg/akZT6SbXW8</a>
       </p>
+
       <p data-search="bedroom cum 18+">
         <strong>Bedroom Cum (18+)</strong>
         <a href="https://discord.gg/xwerZR6w5a" target="_blank" rel="noopener noreferrer">https://discord.gg/xwerZR6w5a</a>
       </p>
+
       <p data-search="sexy crib">
         <strong>Sexy Crib</strong>
         <a href="https://discord.gg/nHdNmSY9NZ" target="_blank" rel="noopener noreferrer">https://discord.gg/nHdNmSY9NZ</a>
       </p>
+
       <p data-search="fullmoviecinema">
         <strong>Fullmoviecinema Server</strong>
         <a href="https://discord.gg/HSh7QBYzXs" target="_blank" rel="noopener noreferrer">https://discord.gg/HSh7QBYzXs</a>
       </p>
+
       <p data-search="github">
         <strong>Github</strong>
         <a href="https://discord.gg/6aKgdNWfAD" target="_blank" rel="noopener noreferrer">https://discord.gg/6aKgdNWfAD</a>
       </p>
+
       <p data-search="sexy house">
         <strong>Sexy House</strong>
         <a href="https://discord.gg/b7yFy3wGGm" target="_blank" rel="noopener noreferrer">https://discord.gg/b7yFy3wGGm</a>
       </p>
+
       <p data-search="backup 18+">
         <strong>Backup 18+</strong>
         <a href="https://discord.gg/m7vy4HgNjT" target="_blank" rel="noopener noreferrer">https://discord.gg/m7vy4HgNjT</a>
       </p>
+
       <p data-search="androidfiretv">
         <strong>Androidfiretv</strong>
         <a href="https://discord.gg/2xAuvRx2UZ" target="_blank" rel="noopener noreferrer">https://discord.gg/2xAuvRx2UZ</a>
       </p>
+
       <p data-search="wix boxing hacked">
         <strong>Wix Boxing Hacked</strong>
         <a href="https://discord.gg/eqmSDFhzRS" target="_blank" rel="noopener noreferrer">https://discord.gg/eqmSDFhzRS</a>
       </p>
+
       <p data-search="private cinmeatvfull">
         <strong>(Only Private) CinemaTvFull</strong>
         <a href="https://discord.gg/PpKFbaJNTA" target="_blank" rel="noopener noreferrer">https://discord.gg/PpKFbaJNTA</a>
+      </p>
+
+      <p data-search="only private 18+ groups dm people">
+        <strong>(ONLY Private 18+) Groups DM People</strong>
+        <a href="https://discord.gg/m8a2wYWDdD" target="_blank" rel="noopener noreferrer">https://discord.gg/m8a2wYWDdD</a>
       </p>
     </div>
 
     <section class="color-picker-container">
       <h2>Background Color Picker</h2>
-      <input id="bgColorPicker" class="color-slider" type="color" value="#483d8b" title="Choose background color">
+      <input
+        id="bgColorPicker"
+        class="color-slider"
+        type="color"
+        value="#483d8b"
+        title="Choose background color"
+      >
       <label for="bgColorPicker">Select background color</label>
     </section>
   </main>
@@ -241,6 +270,7 @@
         const searchableText = (
           item.dataset.search || item.textContent
         ).toLowerCase();
+
         item.hidden = !searchableText.includes(query);
 
         if (!item.hidden) {
