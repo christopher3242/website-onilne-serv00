@@ -11,6 +11,17 @@ const timeZones = [
   { name: 'North Macedonia', offset: 1, dstStart: '03-29', dstEnd: '10-25', id: 'northMacedonia' },
   { name: 'Czechia', offset: 1, dstStart: '03-29', dstEnd: '10-25', id: 'czechia' },
   { name: 'Cyprus', offset: 2, dstStart: '03-29', dstEnd: '10-25', id: 'cyprus' },
+  { name: 'Bahrain', offset: 3, dstStart: '', dstEnd: '', id: 'bahrain' },
+  { name: 'Dubai', offset: 4, dstStart: '', dstEnd: '', id: 'dubai' },
+  { name: 'Iraq', offset: 3, dstStart: '', dstEnd: '', id: 'iraq' },
+  { name: 'Jordan', offset: 3, dstStart: '', dstEnd: '', id: 'jordan' },
+  { name: 'Kuwait', offset: 3, dstStart: '', dstEnd: '', id: 'kuwait' },
+  { name: 'Oman', offset: 4, dstStart: '', dstEnd: '', id: 'oman' },
+  { name: 'Palestine', offset: 2, dstStart: '', dstEnd: '', id: 'palestine' },
+  { name: 'Qatar', offset: 3, dstStart: '', dstEnd: '', id: 'qatar' },
+  { name: 'Saudi Arabia', offset: 3, dstStart: '', dstEnd: '', id: 'saudiArabia' },
+  { name: 'United Arab Emirates', offset: 4, dstStart: '', dstEnd: '', id: 'unitedArabEmirates' },
+  { name: 'Yemen', offset: 3, dstStart: '', dstEnd: '', id: 'yemen' },
   { name: 'Vatican City (Holy See)', offset: 1, dstStart: '03-29', dstEnd: '10-25', id: 'vatican' },
   { name: 'Germany', offset: 1, dstStart: '03-29', dstEnd: '10-25', id: 'germany' },
   { name: 'Italy', offset: 1, dstStart: '03-29', dstEnd: '10-25', id: 'italy' },
@@ -31,6 +42,7 @@ const timeZones = [
   { name: 'Tokyo', offset: 9, dstStart: '', dstEnd: '', id: 'tokyo' },
   { name: 'South Korea', offset: 9, dstStart: '', dstEnd: '', id: 'southKorea' },
   { name: 'Peru', offset: -5, dstStart: '', dstEnd: '', id: 'peru' },
+  { name: 'Brazil (São Paulo)', offset: -3, dstStart: '', dstEnd: '', id: 'brazil-sao-paulo' },
   { name: 'Los Angeles', offset: -8, dstStart: '03-14', dstEnd: '11-07', id: 'los-angeles' },
   { name: 'Russia', offset: 3, dstStart: '03-29', dstEnd: '10-25', id: 'russia' }, // Adjust as per specific region
   { name: 'Iran', offset: 3.5, dstStart: '03-21', dstEnd: '09-21', id: 'iran' }, // Note: Iran DST rules vary
@@ -38,92 +50,77 @@ const timeZones = [
   { name: 'Lebanon', offset: 2, dstStart: '03-29', dstEnd: '10-25', id: 'lebanon' },
   { name: 'Syria', offset: 2, dstStart: '03-29', dstEnd: '10-25', id: 'syria' },
   { name: 'Venezuela', offset: -4, dstStart: '', dstEnd: '', id: 'venezuela' },
+  { name: 'Cuba', offset: -5, dstStart: '03-14', dstEnd: '11-07', id: 'cuba' },
 ];
 
 let currentTimeZoneIndex = 0;
 let is24HourFormat = false;
 
-// Helper to determine if DST is active based on date
-function isDST(date, dstStartStr, dstEndStr) {
-  if (!dstStartStr || !dstEndStr) return false;
-  const year = date.getFullYear();
+const timeZoneIds = {
+  malta: 'Europe/Malta', london: 'Europe/London', sydney: 'Australia/Sydney',
+  ukraine: 'Europe/Kyiv', alaska: 'America/Anchorage', france: 'Europe/Paris',
+  spain: 'Europe/Madrid', poland: 'Europe/Warsaw', hungary: 'Europe/Budapest',
+  northMacedonia: 'Europe/Skopje', czechia: 'Europe/Prague', cyprus: 'Asia/Nicosia',
+  bahrain: 'Asia/Bahrain', dubai: 'Asia/Dubai', iraq: 'Asia/Baghdad',
+  jordan: 'Asia/Amman', kuwait: 'Asia/Kuwait', oman: 'Asia/Muscat',
+  palestine: 'Asia/Hebron', qatar: 'Asia/Qatar', saudiArabia: 'Asia/Riyadh',
+  unitedArabEmirates: 'Asia/Dubai', yemen: 'Asia/Aden',
+  vatican: 'Europe/Vatican', germany: 'Europe/Berlin',
+  italy: 'Europe/Rome', greece: 'Europe/Athens', switzerland: 'Europe/Zurich',
+  sweden: 'Europe/Stockholm', finland: 'Europe/Helsinki', denmark: 'Europe/Copenhagen',
+  greenland: 'America/Nuuk', portugal: 'Europe/Lisbon', ireland: 'Europe/Dublin',
+  iceland: 'Atlantic/Reykjavik', norway: 'Europe/Oslo', luxembourg: 'Europe/Luxembourg',
+  'usa-east': 'America/New_York', 'canada-east': 'America/Toronto', china: 'Asia/Shanghai',
+  tokyo: 'Asia/Tokyo', southKorea: 'Asia/Seoul', peru: 'America/Lima',
+  'brazil-sao-paulo': 'America/Sao_Paulo', 'los-angeles': 'America/Los_Angeles',
+  russia: 'Europe/Moscow', iran: 'Asia/Tehran', israel: 'Asia/Jerusalem',
+  lebanon: 'Asia/Beirut', syria: 'Asia/Damascus', venezuela: 'America/Caracas',
+  cuba: 'America/Havana'
+};
 
-  function getSecondSunday(year, month) {
-    const firstDay = new Date(year, month, 1);
-    let count = 0;
-    const dateIter = new Date(firstDay);
-    while (dateIter.getMonth() === month) {
-      if (dateIter.getDay() === 0) { // Sunday
-        count++;
-        if (count === 2) return new Date(dateIter);
-      }
-      dateIter.setDate(dateIter.getDate() + 1);
-    }
-  }
-
-  function getFirstSunday(year, month) {
-    const firstDay = new Date(year, month, 1);
-    const dateIter = new Date(firstDay);
-    while (dateIter.getMonth() === month) {
-      if (dateIter.getDay() === 0) return new Date(dateIter);
-      dateIter.setDate(dateIter.getDate() + 1);
-    }
-  }
-
-  const dstStartMonth = parseInt(dstStartStr.split('-')[0]) - 1;
-  const dstStartDay = parseInt(dstStartStr.split('-')[1]);
-  const dstEndMonth = parseInt(dstEndStr.split('-')[0]) - 1;
-  const dstEndDay = parseInt(dstEndStr.split('-')[1]);
-
-  const dstStartDate = getSecondSunday(year, dstStartMonth);
-  const dstEndDate = getFirstSunday(year, dstEndMonth);
-
-  // Normalize times to noon for consistency
-  dstStartDate.setHours(12, 0, 0);
-  dstEndDate.setHours(12, 0, 0);
-  date.setHours(12, 0, 0);
-
-  if (dstEndDate < dstStartDate) {
-    // spans year end
-    return date >= dstStartDate || date < dstEndDate;
-  } else {
-    return date >= dstStartDate && date < dstEndDate;
-  }
+function getUtcOffsetMinutes(date, timeZone) {
+  const part = new Intl.DateTimeFormat('en', {
+    timeZone,
+    timeZoneName: 'longOffset'
+  }).formatToParts(date).find((item) => item.type === 'timeZoneName').value;
+  const match = part.match(/GMT([+-])(\d{2}):(\d{2})/);
+  if (!match) return 0;
+  const minutes = Number(match[2]) * 60 + Number(match[3]);
+  return match[1] === '+' ? minutes : -minutes;
 }
 
-// Calculate current offset considering DST
-function getOffset(zone) {
-  const now = new Date();
-  let offset = zone.offset;
-  if (isDST(now, zone.dstStart, zone.dstEnd)) {
-    offset += 1;
-  }
-  return offset;
+function getDaylightSavingStatus(date, timeZone) {
+  const year = date.getUTCFullYear();
+  const januaryOffset = getUtcOffsetMinutes(new Date(Date.UTC(year, 0, 1)), timeZone);
+  const julyOffset = getUtcOffsetMinutes(new Date(Date.UTC(year, 6, 1)), timeZone);
+
+  if (januaryOffset === julyOffset) return 'This location does not observe daylight saving time';
+
+  const currentOffset = getUtcOffsetMinutes(date, timeZone);
+  return currentOffset > Math.min(januaryOffset, julyOffset)
+    ? 'Daylight saving time is in effect'
+    : 'Standard time (daylight saving time is off)';
 }
 
-// Format time based on current format
-function getTime(offset) {
-  const date = new Date(new Date().getTime() + offset * 60 * 60 * 1000);
-  let hours = date.getUTCHours();
-  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
-  const seconds = date.getUTCSeconds().toString().padStart(2, '0');
-
-  if (!is24HourFormat) {
-    const amPm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12 || 12;
-    return `${hours}:${minutes}:${seconds} ${amPm}`;
-  } else {
-    return `${hours.toString().padStart(2, '0')}:${minutes}:${seconds}`;
-  }
+function formatTime(date, timeZone) {
+  return new Intl.DateTimeFormat(undefined, {
+    timeZone,
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: !is24HourFormat
+  }).format(date);
 }
 
 // Main update function
 function updateDisplay() {
   const zone = timeZones[currentTimeZoneIndex];
+  const timeZone = timeZoneIds[zone.id];
+  const now = new Date();
   document.getElementById('cityName').innerText = zone.name;
-  const offset = getOffset(zone);
-  document.getElementById('time').innerText = getTime(offset);
-  setTimeout(updateDisplay, 1000);
+  document.getElementById('time').innerText = formatTime(now, timeZone);
+  document.getElementById('localTime').innerText = formatTime(now);
+  document.getElementById('dstStatus').innerText = getDaylightSavingStatus(now, timeZone);
 }
 
 // Navigation functions
@@ -140,6 +137,7 @@ function nextTimeZone() {
 function toggleTimeFormat() {
   is24HourFormat = !is24HourFormat;
   document.getElementById('formatBtn').innerText = is24HourFormat ? 'Switch to 12-Hour' : 'Switch to 24-Hour';
+  updateDisplay();
 }
 
 // Exit button handler
@@ -150,5 +148,35 @@ function exitPage() {
  
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
+  const options = document.getElementById('timeZoneOptions');
+  const search = document.getElementById('zoneSearch');
+
+  timeZones.forEach((zone) => {
+    const option = document.createElement('option');
+    option.value = zone.name;
+    options.appendChild(option);
+  });
+
+  const selectTimeZone = () => {
+    const query = search.value.trim().toLowerCase();
+    const matchIndex = timeZones.findIndex(
+      (zone) => zone.name.toLowerCase() === query
+    );
+    if (matchIndex !== -1) {
+      currentTimeZoneIndex = matchIndex;
+      updateDisplay();
+    }
+  };
+
+  search.addEventListener('change', selectTimeZone);
+  search.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      selectTimeZone();
+      search.blur();
+    }
+  });
+
   updateDisplay();
+  window.setInterval(updateDisplay, 1000);
 });

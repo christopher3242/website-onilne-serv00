@@ -12,7 +12,13 @@
   <div id="clock" class="clock">
     <h2 id="cityName"></h2>
     <div id="time" class="time"></div>
+    <p id="dstStatus" class="dst-status" aria-live="polite"></p>
+    <p class="local-clock-label">Your local time</p>
+    <div id="localTime" class="local-time"></div>
   </div>
+  <label class="search-label" for="zoneSearch">Search a city</label>
+  <input id="zoneSearch" class="zone-search" type="search" list="timeZoneOptions" placeholder="Type a city name..." autocomplete="off" />
+  <datalist id="timeZoneOptions"></datalist>
   <div class="buttons">
     <button onclick="previousTimeZone()">Previous</button>
     <button onclick="nextTimeZone()">Next</button>
