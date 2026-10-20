@@ -1,276 +1,541 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Photo Slideshow with Music</title>
-<style>
-  body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background-color: #f0f2f5;
-    margin: 0;
-    padding: 20px;
-    text-align: center;
-    color: #333;
-  }
-
-  h1 {
-    margin-bottom: 20px;
-    font-size: 2em;
-    color: #222;
-  }
-
-  /* Carousel styling */
-  #carousel {
-    width: 80%;
-    max-width: 700px;
-    margin: 0 auto 30px auto;
-    overflow: hidden;
-    border-radius: 15px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    background: #fff;
-  }
-
-  /* Flex container for sliding images */
-  .slides {
-    display: flex;
-    transition: transform 1s ease-in-out;
-  }
-
-  /* Each image styling */
-  .slides img {
-    width: 100%;
-    flex-shrink: 0;
-    border-radius: 15px;
-    object-fit: cover;
-  }
-
-  /* Controls styling */
-  #controls {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
-  }
-
-  .button {
-    padding: 12px 25px;
-    font-size: 1em;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background-color: #007BFF;
-    color: #fff;
-    transition: background-color 0.3s, transform 0.2s;
-    touch-action: manipulation;
-  }
-
-  .button:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-  }
-
-  /* Extension selection container */
-  #extensionContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  #extensionContainer label {
-    font-weight: bold;
-    font-size: 1em;
-  }
-
-  #extensionContainer select {
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 1em;
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 600px) {
-    h1 {
-      font-size: 1.5em;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>Photo Slideshow with Music</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #111827;
+      --panel: #1f2937;
+      --panel-strong: #273449;
+      --text: #f3f4f6;
+      --muted: #b8c2d1;
+      --accent: #60a5fa;
+      --accent-hover: #3b82f6;
+      --border: rgba(255,255,255,.14);
+      --shadow: 0 18px 48px rgba(0,0,0,.32);
     }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: max(20px, env(safe-area-inset-top)) 20px max(28px, env(safe-area-inset-bottom));
+      background: radial-gradient(ellipse at top, color-mix(in srgb, var(--accent) 20%, var(--page)) 0, var(--page) 58%);
+      color: var(--text);
+      font: 16px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      transition: background .2s, color .2s;
+    }
+    main { width: min(100%, 1100px); margin: 0 auto; }
+    .page-header { margin: 4px 0 22px; text-align: center; }
+    h1 { margin: 0; font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spacing: -.035em; }
+    .subtitle { margin: 6px 0 0; color: var(--muted); }
+    .toolbar, .audio-panel {
+      display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+      gap: 12px 16px; padding: 16px; border: 1px solid var(--border);
+      border-radius: 16px; background: color-mix(in srgb, var(--panel) 92%, transparent);
+    }
+    .toolbar { margin-bottom: 16px; }
+    .field { display: flex; align-items: center; gap: 8px; }
+    label { color: var(--muted); font-size: .92rem; font-weight: 600; }
+    select, input[type="number"] {
+      min-height: 42px; padding: 8px 11px; border: 1px solid var(--border);
+      border-radius: 9px; background: var(--panel-strong); color: var(--text); font: inherit;
+    }
+    input[type="number"] { width: 110px; }
     .button {
-      padding: 10px 20px;
-      font-size: 0.9em;
+      display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px 16px; border: 1px solid transparent; border-radius: 10px;
+      background: var(--accent); color: #0b1220; font: inherit; font-weight: 700;
+      text-decoration: none; cursor: pointer; touch-action: manipulation;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
     }
-    #extensionContainer {
-      flex-direction: column;
-      gap: 8px;
+    .button:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .button:active { transform: translateY(0); }
+    .button.secondary { border-color: var(--border); background: var(--panel-strong); color: var(--text); }
+    .button.secondary:hover { border-color: var(--accent); }
+    .button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+    .button:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+    #photoPicker { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); }
+    #carousel {
+      position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden;
+      border: 1px solid var(--border); border-radius: 18px; background: #080b10;
+      box-shadow: var(--shadow); touch-action: pan-y; user-select: none; -webkit-user-select: none;
     }
-  }
-
-  /* Animation for perspective flip (if needed) */
-  @keyframes perspectiveRightRetourn {
-    0% {
-      transform-origin: 100% 0;
-      transform: perspective(800px) rotateY(180deg);
+    #slideImage { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+    #imageMessage {
+      position: absolute; inset: 0; display: grid; place-content: center; gap: 8px;
+      padding: 24px; color: var(--muted); text-align: center;
     }
-    100% {
-      transform-origin: 100% 0;
-      transform: perspective(800px) rotateY(0deg);
+    #imageMessage[hidden] { display: none; }
+    #imageMessage strong { color: var(--text); font-size: 1.1rem; }
+    .photo-list-panel {
+      margin-top: 16px; padding: 16px; border: 1px solid var(--border);
+      border-radius: 16px; background: color-mix(in srgb, var(--panel) 92%, transparent);
     }
-  }
-
-  .perspectiveRightRetourn {
-    backface-visibility: visible !important;
-    animation-name: perspectiveRightRetourn;
-  }
-</style>
+    .photo-list-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 0 0 10px; }
+    .photo-list-heading h2 { margin: 0; font-size: 1.1rem; }
+    .list-start { min-height: 36px; padding: 6px 12px; }
+    .drop-active { outline: 3px dashed var(--accent); outline-offset: 3px; }
+    #photoListCount { color: var(--muted); font-size: .9rem; }
+    #photoList {
+      display: grid; gap: 6px; max-height: 240px; margin: 0; padding: 0 4px 0 0;
+      overflow: auto; list-style: none; overscroll-behavior: contain;
+    }
+    #photoList[hidden] { display: none; }
+    #photoList li { min-width: 0; }
+    .photo-list-item {
+      display: flex; width: 100%; min-height: 42px; align-items: center; gap: 10px;
+      padding: 8px 11px; overflow: hidden; border: 1px solid transparent; border-radius: 8px;
+      background: var(--panel-strong); color: var(--text); font: inherit; text-align: left;
+      cursor: pointer;
+    }
+    .photo-list-item:hover { border-color: var(--accent); }
+    .photo-list-item[aria-current="true"] { border-color: var(--accent); color: var(--accent); }
+    .photo-list-number { flex: 0 0 3ch; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .photo-list-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .photo-list-empty { margin: 0; color: var(--muted); }
+    .slide-badge {
+      position: absolute; right: 14px; bottom: 14px; padding: 6px 11px;
+      border: 1px solid rgba(255,255,255,.18); border-radius: 999px;
+      background: rgba(0,0,0,.68); color: #fff; font-size: .9rem;
+      font-variant-numeric: tabular-nums; backdrop-filter: blur(8px);
+    }
+    .slide-dots { position: absolute; left: 14px; bottom: 14px; display: flex; gap: 6px; }
+    .slide-dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.45); }
+    .slide-dots span.active { width: 20px; border-radius: 99px; background: var(--accent); }
+    .main-controls { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+    .search-form { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+    .search-form label { flex-basis: 100%; text-align: center; }
+    .audio-panel { margin-top: 16px; }
+    #volume { width: min(240px, 52vw); accent-color: var(--accent); }
+    #volumeValue { min-width: 4ch; color: var(--muted); font-variant-numeric: tabular-nums; }
+    #audio { display: block; width: min(100%, 580px); margin: 14px auto 0; }
+    .hint { margin: 12px 0 0; color: var(--muted); font-size: .85rem; text-align: center; }
+    .theme-light { color-scheme: light; --page:#edf2f7; --panel:#fff; --panel-strong:#f5f7fb; --text:#172033; --muted:#586579; --accent:#2563eb; --accent-hover:#3b82f6; --border:rgba(15,23,42,.14); --shadow:0 18px 48px rgba(31,41,55,.15); }
+    .theme-blue { --page:#0c2340; --panel:#123456; --panel-strong:#1a456c; --accent:#38bdf8; --accent-hover:#7dd3fc; }
+    .theme-pink { --page:#351729; --panel:#4b2039; --panel-strong:#632c4b; --accent:#f472b6; --accent-hover:#f9a8d4; }
+    .theme-green { --page:#10281f; --panel:#1b3b2d; --panel-strong:#24513b; --accent:#4ade80; --accent-hover:#86efac; }
+    .theme-purple { --page:#24133d; --panel:#352052; --panel-strong:#482b6c; --accent:#c084fc; --accent-hover:#d8b4fe; }
+    .theme-orange { --page:#3b2010; --panel:#512d17; --panel-strong:#693a1c; --accent:#fb923c; --accent-hover:#fdba74; }
+    .theme-teal { --page:#0d3030; --panel:#164344; --panel-strong:#205858; --accent:#2dd4bf; --accent-hover:#5eead4; }
+    .theme-red { --page:#321515; --panel:#4b2020; --panel-strong:#632929; --accent:#f87171; --accent-hover:#fca5a5; }
+    .theme-yellow { --page:#332b11; --panel:#4c4018; --panel-strong:#66551e; --accent:#facc15; --accent-hover:#fde047; }
+    .theme-indigo { --page:#171b3b; --panel:#242b55; --panel-strong:#303b70; --accent:#818cf8; --accent-hover:#a5b4fc; }
+    .theme-sunset { --page:#351b25; --panel:#512b36; --panel-strong:#6b3942; --accent:#fb7185; --accent-hover:#fdba74; }
+    .theme-mint { --page:#102c2a; --panel:#1b433e; --panel-strong:#245b52; --accent:#5eead4; --accent-hover:#a7f3d0; }
+    .theme-slate { --page:#1e293b; --panel:#334155; --panel-strong:#475569; --accent:#cbd5e1; --accent-hover:#f1f5f9; }
+    .effect-fade { animation: fade .4s ease; }
+    .effect-zoom { animation: zoom .4s ease; }
+    .effect-flip { animation: flip .5s ease; }
+    .effect-bounce { animation: bounce .5s ease; }
+    .effect-slide { animation: slide .4s ease; }
+    .effect-rotate { animation: rotate .5s ease; }
+    .effect-blur { animation: blur .5s ease; }
+    .effect-swing { animation: swing .5s ease; transform-origin: top center; }
+    .effect-zoom-out { animation: zoom-out .4s ease; }
+    .effect-wipe { animation: wipe .5s ease; }
+    .effect-slide-up { animation: slide-up .45s ease; }
+    .effect-slide-down { animation: slide-down .45s ease; }
+    .effect-zoom-in { animation: zoom-in .45s ease; }
+    .effect-pop { animation: pop .45s cubic-bezier(.2, .8, .2, 1); }
+    .effect-shake { animation: shake .45s ease; }
+    .effect-skew { animation: skew .45s ease; }
+    .effect-curtain { animation: curtain .55s ease; }
+    .effect-flash { animation: flash .45s ease; }
+    @keyframes fade { from { opacity:.15 } to { opacity:1 } }
+    @keyframes zoom { from { transform:scale(.88) } to { transform:scale(1) } }
+    @keyframes flip { from { transform:perspective(800px) rotateY(65deg); opacity:.25 } to { transform:perspective(800px) rotateY(0); opacity:1 } }
+    @keyframes bounce { 0% { transform:translateY(16px); opacity:.4 } 65% { transform:translateY(-5px) } 100% { transform:translateY(0); opacity:1 } }
+    @keyframes slide { from { transform:translateX(24px); opacity:.35 } to { transform:translateX(0); opacity:1 } }
+    @keyframes rotate { from { transform:rotate(-8deg) scale(.92); opacity:.35 } to { transform:rotate(0) scale(1); opacity:1 } }
+    @keyframes blur { from { filter:blur(12px); opacity:.35 } to { filter:blur(0); opacity:1 } }
+    @keyframes swing { 0% { transform:rotate(10deg); opacity:.4 } 45% { transform:rotate(-5deg) } 75% { transform:rotate(2deg) } 100% { transform:rotate(0); opacity:1 } }
+    @keyframes zoom-out { from { transform:scale(1.14); opacity:.35 } to { transform:scale(1); opacity:1 } }
+    @keyframes wipe { from { clip-path:inset(0 100% 0 0); opacity:.5 } to { clip-path:inset(0); opacity:1 } }
+    @keyframes slide-up { from { transform:translateY(24px); opacity:.25 } to { transform:translateY(0); opacity:1 } }
+    @keyframes slide-down { from { transform:translateY(-24px); opacity:.25 } to { transform:translateY(0); opacity:1 } }
+    @keyframes zoom-in { from { transform:scale(.65); opacity:.2 } to { transform:scale(1); opacity:1 } }
+    @keyframes pop { 0% { transform:scale(.7); opacity:.25 } 70% { transform:scale(1.04) } 100% { transform:scale(1); opacity:1 } }
+    @keyframes shake { 0% { transform:translateX(0); opacity:.5 } 25% { transform:translateX(-12px) } 50% { transform:translateX(8px) } 75% { transform:translateX(-4px) } 100% { transform:translateX(0); opacity:1 } }
+    @keyframes skew { from { transform:skewX(12deg) scale(.92); opacity:.25 } to { transform:skewX(0) scale(1); opacity:1 } }
+    @keyframes curtain { from { clip-path:inset(0 50%); opacity:.3 } to { clip-path:inset(0); opacity:1 } }
+    @keyframes flash { 0% { opacity:.15; filter:brightness(2.5) } 55% { opacity:.75; filter:brightness(1.5) } 100% { opacity:1; filter:brightness(1) } }
+    :focus-visible { outline: 3px solid #fbbf24; outline-offset: 3px; }
+    @media (max-width: 650px) {
+      body { padding: max(14px, env(safe-area-inset-top)) 12px max(20px, env(safe-area-inset-bottom)); }
+      .page-header { margin-bottom: 16px; }
+      .toolbar { justify-content: stretch; gap: 10px; padding: 13px; }
+      .field { flex: 1 1 42%; justify-content: space-between; }
+      .field select { max-width: 58%; }
+      #carousel { aspect-ratio: 4 / 3; border-radius: 13px; }
+      .main-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .main-controls > .button { width: 100%; }
+      .search-form { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; }
+      .search-form label { grid-column: 1 / -1; text-align: left; }
+      .search-form input { width: 100%; }
+      .audio-panel { gap: 10px; padding: 13px; }
+      #audio { width: 100%; }
+    }
+    @media (max-width: 380px) {
+      .field { flex-basis: 100%; }
+      .field select { max-width: 65%; }
+      .button { padding: 9px 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; transition-duration:.01ms !important; }
+    }
+  </style>
 </head>
 <body>
-<h1>Photo Slideshow with Music</h1>
+  <main>
+    <header class="page-header">
+      <h1>Photo Slideshow with Music</h1>
+      <p class="subtitle">Choose your photos, browse with the buttons, arrow keys, or a swipe.</p>
+    </header>
 
-<!-- Extension selection -->
-<div id="extensionContainer">
-  <label for="extensionSelect">Choose image extension:</label>
-  <select id="extensionSelect" name="extension">
-  <option value=".jpg">.jpg</option>
-  <option value=".jpeg">.jpeg</option>
-  <option value=".png" selected>.png</option>
-</select>
-</div>
+    <section class="toolbar" aria-label="Slideshow settings">
+      <label class="button secondary" for="photoPicker">＋ Choose photos</label>
+      <input id="photoPicker" type="file" accept="image/*" multiple />
+      <div class="field">
+        <label for="extensionSelect">Numbered image type</label>
+        <select id="extensionSelect" aria-label="Numbered image file type">
+          <option value=".jpg">.jpg</option><option value=".jpeg">.jpeg</option><option value=".png" selected>.png</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="animationSelect">Transition</label>
+        <select id="animationSelect">
+          <option value="none">None</option><option value="fade">Fade</option><option value="zoom">Zoom</option>
+          <option value="flip">Flip</option><option value="bounce">Bounce</option><option value="slide">Slide</option>
+          <option value="slide-up">Slide up</option><option value="slide-down">Slide down</option>
+          <option value="rotate">Rotate</option><option value="blur">Blur</option><option value="swing">Swing</option>
+          <option value="zoom-in">Zoom in</option><option value="zoom-out">Zoom out</option><option value="pop">Pop</option>
+          <option value="shake">Shake</option><option value="skew">Skew</option><option value="curtain">Curtain</option>
+          <option value="flash">Flash</option><option value="wipe">Wipe</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="colorSelect">Theme</label>
+        <select id="colorSelect">
+          <option value="dark" selected>Dark</option><option value="light">Light</option><option value="blue">Blue</option>
+          <option value="pink">Pink</option><option value="green">Green</option><option value="purple">Purple</option>
+          <option value="orange">Orange</option><option value="teal">Teal</option><option value="red">Red</option>
+          <option value="yellow">Yellow</option><option value="indigo">Indigo</option><option value="sunset">Sunset</option>
+          <option value="mint">Mint</option><option value="slate">Slate</option>
+        </select>
+      </div>
+    </section>
 
-<!-- Carousel container -->
-<div id="carousel">
-  <div class="slides" id="slides-container">
-    <!-- Images will be inserted dynamically -->
-  </div>
-</div>
+    <section id="carousel" aria-label="Photo slideshow" aria-roledescription="carousel" tabindex="0">
+      <img id="slideImage" alt="" draggable="false" hidden />
+      <div id="imageMessage" role="status">
+        <strong id="messageTitle">No photo loaded</strong>
+        <span id="errorFilename">Choose photos above, or drop image files onto the slideshow or list. Numbered mode also supports image1.png beside this HTML file.</span>
+        <span id="messageHelp">For numbered images, make sure the selected file type matches their extension.</span>
+      </div>
+      <div class="slide-dots" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+      <output id="slideCounter" class="slide-badge" aria-live="polite">0 / 0</output>
+    </section>
 
-<!-- Controls: Back, Next, Search, Download MP3, Exit -->
-<div id="controls">
-  <button class="button" id="prev">Back</button>
-  <button class="button" id="next">Next</button>
-  <button class="button" id="search">Search</button>
-  <a href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/dirty4.mp3" download>
-    <button class="button">Download MP3</button>
-  </a>
-  <a href="../../your%20favorite.html">
-    <button class="button">Exit</button>
-  </a>
-</div>
+    <section class="photo-list-panel" aria-labelledby="photoListTitle">
+      <div class="photo-list-heading">
+        <h2 id="photoListTitle">Slideshow list</h2>
+        <span id="photoListCount" aria-live="polite">No photos selected</span>
+        <button class="button secondary list-start" id="addListPhotos" type="button">＋ Add photos</button>
+        <button class="button secondary list-start" id="listPlayPause" type="button" aria-pressed="false" disabled>▶ Start list</button>
+      </div>
+      <p class="photo-list-empty" id="photoListEmpty">Choose photos to see them here.</p>
+      <ol id="photoList" aria-label="Selected slideshow photos" hidden></ol>
+    </section>
 
-<!-- Audio player -->
-<audio id="audio" controls autoplay loop style="margin-top:20px; width:80%;">
-  <source src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/dirty4.mp3" type="audio/mpeg" />
-  Your browser does not support the audio element.
-</audio>
+    <nav class="main-controls" aria-label="Slideshow controls">
+      <button class="button secondary" id="prev" type="button" aria-label="Previous image">← Back</button>
+      <button class="button secondary" id="next" type="button" aria-label="Next image">Next →</button>
+      <button class="button" id="playPause" type="button" aria-pressed="false" disabled>▶ Start slideshow</button>
+      <form class="search-form" id="searchForm">
+        <label for="slideNumber">Go to image</label>
+        <input id="slideNumber" type="number" min="1" max="5000" value="1" inputmode="numeric" aria-label="Image number" />
+        <button class="button secondary" type="submit">Go</button>
+      </form>
+      <a class="button secondary" href="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/dirty4.mp3" download>Download MP3</a>
+      <a class="button secondary" href="../../your%20favorite.html">Exit</a>
+    </nav>
 
-<script>
-  const extensionSelect = document.getElementById('extensionSelect');
-  const slidesContainer = document.getElementById('slides-container');
+    <section class="audio-panel" aria-label="Sound controls">
+      <button class="button secondary" id="muteAudio" type="button" aria-pressed="false">Mute</button>
+      <label for="volume">Volume</label>
+      <input id="volume" type="range" min="0" max="100" value="70" />
+      <output id="volumeValue" for="volume">70%</output>
+    </section>
+    <audio id="audio" controls loop preload="none">
+      <source src="https://file.garden/Zyu3f9V1JUxg3Fw-/webiste%20%20onilne%20(Github)/Photo%20Slideshow%20with%20Music/dirty4.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+    <p class="hint">Tip: use ← and → when the slideshow is focused. On Android, swipe across the photo. Choose photos to load images from your device.</p>
+  </main>
 
-  let images = [];
-  let currentIndex = 0;
+  <script>
+    (() => {
+      'use strict';
+      const TOTAL_IMAGES = 5000;
+      const $ = id => document.getElementById(id);
+      const extensionSelect = $('extensionSelect');
+      const animationSelect = $('animationSelect');
+      const colorSelect = $('colorSelect');
+      const carousel = $('carousel');
+      const slideImage = $('slideImage');
+      const slideCounter = $('slideCounter');
+      const imageMessage = $('imageMessage');
+      const messageTitle = $('messageTitle');
+      const errorFilename = $('errorFilename');
+      const messageHelp = $('messageHelp');
+      const slideNumber = $('slideNumber');
+      const playPause = $('playPause');
+      const listPlayPause = $('listPlayPause');
+      const audio = $('audio');
+      const volume = $('volume');
+      const volumeValue = $('volumeValue');
+      const muteAudio = $('muteAudio');
+      const photoPicker = $('photoPicker');
+      const addListPhotos = $('addListPhotos');
+      const photoList = $('photoList');
+      const photoListCount = $('photoListCount');
+      const photoListEmpty = $('photoListEmpty');
+      const dots = [...document.querySelectorAll('.slide-dots span')];
+      const themes = ['light', 'dark', 'blue', 'pink', 'green', 'purple', 'orange', 'teal', 'red', 'yellow', 'indigo', 'sunset', 'mint', 'slate'];
+      let selectedPhotos = [];
+      let currentIndex = 0;
+      let timer = null;
+      let loadToken = 0;
+      let pointerStart = null;
 
-  // Function to generate images based on selected extension
-  function generateImages() {
-    const selectedExt = extensionSelect.value;
-    const imagesCount = 5000; // or set your desired number
-    const newImages = [];
-    for (let i = 1; i <= imagesCount; i++) {
-      newImages.push(`image${i}${selectedExt}`);
-    }
-    return newImages;
-  }
+      audio.volume = Number(volume.value) / 100;
+      const totalSlides = () => selectedPhotos.length || TOTAL_IMAGES;
+      const filenameFor = index => `image${index + 1}${extensionSelect.value}`;
 
-  // Populate images into the carousel
-  function populateImages() {
-    // Clear existing images
-    slidesContainer.innerHTML = '';
-    // Generate new image list
-    images = generateImages();
+      function syncAudioControls() {
+        muteAudio.textContent = audio.muted ? 'Unmute' : 'Mute';
+        muteAudio.setAttribute('aria-pressed', String(audio.muted));
+        volume.value = String(Math.round(audio.volume * 100));
+        volumeValue.textContent = `${volume.value}%`;
+      }
+      volume.addEventListener('input', () => {
+        audio.volume = Number(volume.value) / 100;
+        if (Number(volume.value) > 0 && audio.muted) audio.muted = false;
+        syncAudioControls();
+      });
+      muteAudio.addEventListener('click', () => { audio.muted = !audio.muted; syncAudioControls(); });
+      audio.addEventListener('volumechange', syncAudioControls);
 
-    images.forEach(src => {
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = 'Carousel Image';
-      img.loading = 'lazy';
-      // Optional: add animation class if needed
-      // img.className = 'perspectiveRightRetourn';
-      slidesContainer.appendChild(img);
-    });
-    currentIndex = 0;
-    updateSlide();
-  }
+      function setMessage(title, detail, help) {
+        messageTitle.textContent = title;
+        errorFilename.textContent = detail;
+        messageHelp.textContent = help;
+        imageMessage.hidden = false;
+      }
 
-  // Update slide position
-  function updateSlide() {
-    const offset = -currentIndex * 100; // percentage
-    slidesContainer.style.transform = `translateX(${offset}%)`;
-  }
+      function renderPhotoList() {
+        const fragment = document.createDocumentFragment();
+        selectedPhotos.forEach((photo, index) => {
+          const item = document.createElement('li');
+          const button = document.createElement('button');
+          const number = document.createElement('span');
+          const name = document.createElement('span');
+          button.type = 'button';
+          button.className = 'photo-list-item';
+          button.dataset.index = String(index);
+          number.className = 'photo-list-number';
+          number.textContent = `${index + 1}.`;
+          name.className = 'photo-list-name';
+          name.textContent = photo.name;
+          button.append(number, name);
+          item.append(button);
+          fragment.append(item);
+        });
+        photoList.replaceChildren(fragment);
+        photoList.hidden = selectedPhotos.length === 0;
+        photoListEmpty.hidden = selectedPhotos.length > 0;
+        photoListCount.textContent = selectedPhotos.length
+          ? `${selectedPhotos.length} photo${selectedPhotos.length === 1 ? '' : 's'}`
+          : 'No photos selected';
+      }
 
-  // Event listener for extension change
-  extensionSelect.addEventListener('change', () => {
-    populateImages();
-  });
+      function updateControls() {
+        const total = totalSlides();
+        slideCounter.textContent = `${currentIndex + 1} / ${total}`;
+        slideNumber.max = String(total);
+        slideNumber.value = String(currentIndex + 1);
+        playPause.disabled = total < 2;
+        listPlayPause.disabled = selectedPhotos.length < 2;
+        dots.forEach((dot, index) => dot.classList.toggle('active', index === currentIndex % dots.length));
+        photoList.querySelectorAll('.photo-list-item').forEach((button, index) => {
+          const active = index === currentIndex;
+          button.setAttribute('aria-current', String(active));
+          if (active) button.setAttribute('aria-label', `Show photo ${index + 1}: ${selectedPhotos[index].name}, current photo`);
+          else button.setAttribute('aria-label', `Show photo ${index + 1}: ${selectedPhotos[index].name}`);
+        });
+      }
 
-  // Initialize slideshow
-populateImages();
+      function showSlide(index, animate = true) {
+        const total = totalSlides();
+        if (!total) return;
+        currentIndex = ((index % total) + total) % total;
+        const token = ++loadToken;
+        const source = selectedPhotos.length
+          ? selectedPhotos[currentIndex].url
+          : filenameFor(currentIndex);
+        slideImage.hidden = true;
+        imageMessage.hidden = true;
+        slideImage.className = '';
+        slideImage.alt = selectedPhotos.length
+          ? `Photo ${currentIndex + 1} of ${total}: ${selectedPhotos[currentIndex].name}`
+          : `Image ${currentIndex + 1} of ${total}`;
+        updateControls();
 
- // Manual controls
-document.getElementById('next').onclick = () => {
-  currentIndex = (currentIndex + 1) % images.length;
-  updateSlide();
-};
+        slideImage.onload = () => {
+          if (token !== loadToken) return;
+          slideImage.hidden = false;
+          if (animate && animationSelect.value !== 'none') {
+            slideImage.className = `effect-${animationSelect.value}`;
+          }
+        };
+        slideImage.onerror = () => {
+          if (token !== loadToken) return;
+          slideImage.hidden = true;
+          if (selectedPhotos.length) {
+            setMessage('This photo could not be opened', selectedPhotos[currentIndex].name, 'Try choosing another image file.');
+          } else {
+            setMessage('Image file not found', source, `Place ${source} beside this HTML file, choose existing photos above, or select the correct image type.`);
+          }
+        };
+        slideImage.src = source;
+      }
 
-document.getElementById('prev').onclick = () => {
-  currentIndex = (currentIndex - 1 + images.length) % images.length;
-  updateSlide();
-};
+      function stopAutoplay() {
+        clearInterval(timer);
+        timer = null;
+        playPause.textContent = '▶ Start slideshow';
+        playPause.setAttribute('aria-pressed', 'false');
+        listPlayPause.textContent = '▶ Start list';
+        listPlayPause.setAttribute('aria-pressed', 'false');
+      }
+      function setAutoplay(enabled) {
+        clearInterval(timer);
+        timer = null;
+        playPause.textContent = enabled ? '❚❚ Pause slideshow' : '▶ Start slideshow';
+        playPause.setAttribute('aria-pressed', String(enabled));
+        listPlayPause.textContent = enabled ? '❚❚ Pause list' : '▶ Start list';
+        listPlayPause.setAttribute('aria-pressed', String(enabled));
+        if (enabled && totalSlides() > 1) timer = setInterval(() => showSlide(currentIndex + 1), 4000);
+      }
 
-// Search button functionality
-document.getElementById('search').onclick = () => {
-  const input = prompt(`Enter a number between 1 and ${images.length}:`);
-  const num = parseInt(input, 10);
-  if (!isNaN(num) && num >= 1 && num <= images.length) {
-    currentIndex = num - 1;
-    updateSlide();
-  } else {
-    alert('Invalid number. Please enter a number within the specified range.');
-  }
-};
+      function loadPhotos(files) {
+        const photos = [...files]
+          .filter(file => file.type.startsWith('image/') || /\.(avif|bmp|gif|jpe?g|png|svg|webp)$/i.test(file.name))
+          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+        if (!photos.length) return;
+        selectedPhotos.forEach(photo => URL.revokeObjectURL(photo.url));
+        selectedPhotos = photos.map(file => ({ name: file.name, url: URL.createObjectURL(file) }));
+        renderPhotoList();
+        stopAutoplay();
+        currentIndex = 0;
+        setMessage('Loading photos', `${selectedPhotos.length} photo${selectedPhotos.length === 1 ? '' : 's'} selected`, '');
+        showSlide(0, false);
+      }
 
-// Optional: Add swipe gesture support for mobile
-let startX = 0;
-let isSwiping = false;
+      photoPicker.addEventListener('change', () => loadPhotos(photoPicker.files));
+      addListPhotos.addEventListener('click', () => photoPicker.click());
 
-const carouselElem = document.getElementById('carousel');
+      function enablePhotoDrop(zone) {
+        let dragDepth = 0;
+        zone.addEventListener('dragenter', event => {
+          event.preventDefault();
+          dragDepth++;
+          zone.classList.add('drop-active');
+        });
+        zone.addEventListener('dragover', event => {
+          event.preventDefault();
+          if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+        });
+        zone.addEventListener('dragleave', event => {
+          event.preventDefault();
+          dragDepth = Math.max(0, dragDepth - 1);
+          if (dragDepth === 0) zone.classList.remove('drop-active');
+        });
+        zone.addEventListener('drop', event => {
+          event.preventDefault();
+          dragDepth = 0;
+          zone.classList.remove('drop-active');
+          if (event.dataTransfer) loadPhotos(event.dataTransfer.files);
+        });
+      }
+      enablePhotoDrop(carousel);
+      enablePhotoDrop(photoList.parentElement);
 
-carouselElem.addEventListener('touchstart', (e) => {
-  startX = e.touches[0].clientX;
-  isSwiping = true;
-});
+      listPlayPause.addEventListener('click', () => setAutoplay(listPlayPause.getAttribute('aria-pressed') !== 'true'));
+      photoList.addEventListener('click', event => {
+        const button = event.target.closest('.photo-list-item');
+        if (!button || !photoList.contains(button)) return;
+        showSlide(Number(button.dataset.index));
+      });
+      extensionSelect.addEventListener('change', () => {
+        if (!selectedPhotos.length) showSlide(currentIndex, false);
+      });
+      animationSelect.addEventListener('change', () => showSlide(currentIndex));
+      colorSelect.addEventListener('change', () => {
+        document.body.classList.remove(...themes.map(theme => `theme-${theme}`));
+        if (colorSelect.value !== 'dark') document.body.classList.add(`theme-${colorSelect.value}`);
+      });
 
-carouselElem.addEventListener('touchmove', (e) => {
-  if (!isSwiping) return;
-  const deltaX = e.touches[0].clientX - startX;
-  // Optional: add visual feedback or threshold
-});
+      $('prev').addEventListener('click', () => showSlide(currentIndex - 1));
+      $('next').addEventListener('click', () => showSlide(currentIndex + 1));
+      playPause.addEventListener('click', () => setAutoplay(playPause.getAttribute('aria-pressed') !== 'true'));
+      $('searchForm').addEventListener('submit', event => {
+        event.preventDefault();
+        const number = Number(slideNumber.value);
+        if (Number.isInteger(number) && number >= 1 && number <= totalSlides()) {
+          slideNumber.setCustomValidity('');
+          showSlide(number - 1);
+        } else {
+          slideNumber.setCustomValidity(`Enter a number from 1 to ${totalSlides()}.`);
+          slideNumber.reportValidity();
+        }
+      });
+      slideNumber.addEventListener('input', () => slideNumber.setCustomValidity(''));
 
-carouselElem.addEventListener('touchend', (e) => {
-  if (!isSwiping) return;
-  const endX = e.changedTouches[0].clientX;
-  const deltaX = endX - startX;
-  if (deltaX > 50) {
-    // Swipe right -> previous
-    currentIndex = (currentIndex - 1 + images.length) % images.length;
-    updateSlide();
-  } else if (deltaX < -50) {
-    // Swipe left -> next
-    currentIndex = (currentIndex + 1) % images.length;
-    updateSlide();
-  }
-  isSwiping = false;
-});
-</script>
+      carousel.addEventListener('pointerdown', event => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        pointerStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        if (carousel.setPointerCapture) carousel.setPointerCapture(event.pointerId);
+      });
+      carousel.addEventListener('pointerup', event => {
+        if (!pointerStart || pointerStart.id !== event.pointerId) return;
+        const dx = event.clientX - pointerStart.x;
+        const dy = event.clientY - pointerStart.y;
+        pointerStart = null;
+        if (Math.abs(dx) >= Math.max(45, carousel.clientWidth * .12) && Math.abs(dx) > Math.abs(dy)) {
+          showSlide(currentIndex + (dx < 0 ? 1 : -1));
+        }
+      });
+      carousel.addEventListener('pointercancel', () => { pointerStart = null; });
+      carousel.addEventListener('lostpointercapture', () => { pointerStart = null; });
+      carousel.addEventListener('keydown', event => {
+        if (event.target !== carousel) return;
+        if (event.key === 'ArrowRight') { event.preventDefault(); showSlide(currentIndex + 1); }
+        if (event.key === 'ArrowLeft') { event.preventDefault(); showSlide(currentIndex - 1); }
+        if (event.key === 'Home') { event.preventDefault(); showSlide(0); }
+        if (event.key === 'End') { event.preventDefault(); showSlide(totalSlides() - 1); }
+      });
+
+      window.addEventListener('beforeunload', () => selectedPhotos.forEach(photo => URL.revokeObjectURL(photo.url)));
+      syncAudioControls();
+      updateControls();
+      showSlide(0, false);
+    })();
+  </script>
 </body>
 </html>

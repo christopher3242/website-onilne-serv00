@@ -1,103 +1,353 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101522" />
     <title>Digital Clock</title>
     <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #101522;
+        color: #f6f7fb;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #424141; /* Gray background */
-        color: white;
-        font-family: 'Arial', sans-serif;
-        font-size: 48px;
+        --surface: rgba(24, 32, 49, 0.88);
+        --surface-border: rgba(255, 255, 255, 0.1);
+        --muted: #9da9bd;
+        --accent: #8c7bff;
+        --accent-soft: rgba(140, 123, 255, 0.16);
+        min-height: 100vh;
+        min-height: 100dvh;
         margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        overflow-x: hidden;
+        background:
+          radial-gradient(ellipse at 16% 18%, rgba(73, 91, 181, 0.2), transparent 38%),
+          radial-gradient(ellipse at 86% 82%, rgba(53, 173, 167, 0.12), transparent 35%),
+          #101522;
+        transition: background-color 0.25s, color 0.25s;
       }
 
-      h1 {
-        color: #ffffff;
-        margin-bottom: 20px;
+      body.light-theme {
+        color-scheme: light;
+        color: #182033;
+        --surface: rgba(255, 255, 255, 0.9);
+        --surface-border: rgba(30, 41, 59, 0.12);
+        --muted: #596780;
+        --accent: #5947d2;
+        --accent-soft: rgba(89, 71, 210, 0.09);
+        background:
+          radial-gradient(ellipse at 12% 12%, rgba(167, 180, 255, 0.28), transparent 38%),
+          radial-gradient(ellipse at 88% 88%, rgba(112, 218, 199, 0.22), transparent 36%),
+          linear-gradient(135deg, #f8faff, #edf2fb);
       }
 
-      #clock {
-        border: 2px solid #ffffff;
-        padding: 20px;
-        border-radius: 10px;
-        background-color: rgba(39, 163, 116, 0.8); /* Slightly transparent for contrast */
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        margin-bottom: 20px;
-        font-size: 48px;
+      body.light-theme .clock-card {
+        box-shadow: 0 28px 80px rgba(49, 65, 105, 0.14);
+      }
+
+      body.light-theme .time-panel {
+        background: linear-gradient(135deg, rgba(98, 82, 218, 0.1), rgba(104, 183, 199, 0.09));
+      }
+
+      body.light-theme .controls .primary {
+        background: var(--accent);
+        color: #fff;
       }
 
       button {
-        font-size: 20px;
-        padding: 10px 20px;
-        margin: 5px;
+        min-height: 48px;
+        padding: 0 18px;
+        border: 1px solid var(--surface-border);
+        border-radius: 14px;
+        background: var(--surface);
+        color: inherit;
+        font: inherit;
+        font-size: 0.94rem;
+        font-weight: 650;
         cursor: pointer;
-        border: none;
-        border-radius: 5px;
-        background-color: #5dc0e7; /* Sky blue color */
-        color: #282c34;
-        transition: background-color 0.3s;
+        touch-action: manipulation;
+        transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
       }
 
       button:hover {
-        background-color: #3f95af;
+        transform: translateY(-2px);
+        border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      button:focus-visible,
+      select:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+
+      select {
+        min-height: 48px;
+        padding: 0 38px 0 16px;
+        border: 1px solid var(--surface-border);
+        border-radius: 14px;
+        background: var(--surface);
+        color: inherit;
+        font: inherit;
+        font-size: 0.94rem;
+        font-weight: 650;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+
+      .clock-card {
+        width: min(100%, 760px);
+        padding: clamp(26px, 6vw, 58px);
+        border: 1px solid var(--surface-border);
+        border-radius: 30px;
+        background: var(--surface);
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.24);
+        backdrop-filter: blur(20px);
+        text-align: center;
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font-size: 0.76rem;
+        font-weight: 750;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 6vw, 3.2rem);
+        letter-spacing: -0.06em;
+      }
+
+      .date {
+        margin: 12px 0 34px;
+        color: var(--muted);
+        font-size: clamp(0.95rem, 2.7vw, 1.12rem);
+      }
+
+      .time-panel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(8px, 2vw, 18px);
+        min-height: clamp(112px, 22vw, 178px);
+        margin-bottom: 30px;
+        padding: 20px 14px;
+        border: 1px solid var(--surface-border);
+        border-radius: 22px;
+        background: var(--accent-soft);
+      }
+
+      #clock {
+        font-size: clamp(3.1rem, 12.5vw, 7.4rem);
+        font-weight: 720;
+        letter-spacing: -0.075em;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+
+      #period {
+        align-self: center;
+        color: var(--accent);
+        font-size: clamp(0.9rem, 3vw, 1.3rem);
+        font-weight: 750;
+        letter-spacing: 0.08em;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .controls .primary {
+        border-color: transparent;
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .hint {
+        margin: 24px 0 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 16px;
+        }
+
+        .clock-card {
+          padding: 30px 18px;
+          border-radius: 24px;
+        }
+
+        .date {
+          margin-bottom: 26px;
+        }
+
+        .time-panel {
+          min-height: 112px;
+          margin-bottom: 22px;
+          border-radius: 18px;
+        }
+
+        .controls {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+
+        .controls button,
+        .controls select {
+          min-height: 52px;
+          padding: 0 10px;
+          font-size: 0.86rem;
+        }
+
+        .hint {
+          margin-top: 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>Digital Clock</h1>
-    <div id="clock">00:00:00</div>
-    <button onclick="toggleFormat()">Toggle 12/24 Hours</button>
-    <button onclick="toggleAmPm()">Toggle AM/PM</button>
-    <a moz-do-not-send="true" href="../../your%20favorite.html">
-      <button onclick="exitClock()">Exit</button>
-    </a>
-    <!-- Exit Button -->
+    <main class="clock-card">
+      <p class="eyebrow">Your local time</p>
+      <h1>Digital Clock</h1>
+      <p class="date" id="date"></p>
+
+      <section class="time-panel" aria-label="Current time">
+        <time id="clock" aria-label="Current time">00:00:00</time>
+        <span id="period" aria-hidden="true"></span>
+      </section>
+
+      <div class="controls" aria-label="Clock controls">
+        <button class="primary" id="formatButton" type="button" aria-pressed="false">Switch to 12-hour</button>
+        <button id="themeButton" type="button" aria-pressed="false">Light theme</button>
+        <label class="visually-hidden" for="accentColor">Accent color</label>
+        <select id="accentColor" aria-label="Accent color">
+          <option value="#6252da">Purple</option>
+          <option value="#2563eb">Blue</option>
+          <option value="#0f766e">Teal</option>
+          <option value="#be123c">Rose</option>
+          <option value="#c2410c">Orange</option>
+          <option value="#4d7c0f">Green</option>
+        </select>
+        <button id="fullscreenButton" type="button">Enter fullscreen</button>
+      </div>
+      <p class="hint">Showing the time on this device</p>
+    </main>
+
     <script>
-      let is24HourFormat = true; // Default format
-      let showAmPm = false; // AM/PM display toggle
+      const clock = document.getElementById('clock');
+      const dateDisplay = document.getElementById('date');
+      const periodDisplay = document.getElementById('period');
+      const formatButton = document.getElementById('formatButton');
+      const themeButton = document.getElementById('themeButton');
+      const accentColor = document.getElementById('accentColor');
+      const fullscreenButton = document.getElementById('fullscreenButton');
+      let is24HourFormat = true;
 
       function updateClock() {
         const now = new Date();
-        let hours = now.getHours();
+        const hour = now.getHours();
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = is24HourFormat ? hour : (hour % 12 || 12);
+        const hours = is24HourFormat ? String(displayHour).padStart(2, '0') : String(displayHour);
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
 
-        if (!is24HourFormat) {
-          // Convert hours to 12-hour format
-          const amPm = hours >= 12 ? 'PM' : 'AM';
-          hours = hours % 12 || 12; // Convert to 12-hour format
-          document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds} ${showAmPm ? amPm : ''}`;
-        } else {
-          // Display in 24-hour format
-          document.getElementById('clock').textContent = `${String(hours).padStart(2, '0')}:${minutes}:${seconds}`;
+        clock.textContent = `${hours}:${minutes}:${seconds}`;
+        clock.setAttribute('datetime', now.toISOString());
+        clock.setAttribute('aria-label', `${hours}:${minutes}:${seconds}${is24HourFormat ? '' : ` ${period}`}`);
+        periodDisplay.textContent = is24HourFormat ? '' : period;
+        dateDisplay.textContent = new Intl.DateTimeFormat(undefined, {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        }).format(now);
+      }
+
+      formatButton.addEventListener('click', () => {
+        is24HourFormat = !is24HourFormat;
+        formatButton.textContent = is24HourFormat ? 'Switch to 12-hour' : 'Switch to 24-hour';
+        formatButton.setAttribute('aria-pressed', String(!is24HourFormat));
+        updateClock();
+      });
+
+      themeButton.addEventListener('click', () => {
+        const isLight = document.body.classList.toggle('light-theme');
+        themeButton.textContent = isLight ? 'Dark theme' : 'Light theme';
+        themeButton.setAttribute('aria-pressed', String(isLight));
+        document.querySelector('meta[name="theme-color"]').content = isLight ? '#f1f4fa' : '#101522';
+      });
+
+      accentColor.addEventListener('change', () => {
+        const color = accentColor.value;
+        document.body.style.setProperty('--accent', color);
+        document.body.style.setProperty('--accent-soft', `${color}29`);
+      });
+
+      fullscreenButton.addEventListener('click', async () => {
+        try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+          } else if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+          }
+        } catch {
+          // Fullscreen can be unavailable or blocked by the browser.
         }
-      }
+      });
 
-      function toggleFormat() {
-        is24HourFormat = !is24HourFormat; // Toggle the format
-        updateClock(); // Update the display immediately
-      }
+      document.addEventListener('fullscreenchange', () => {
+        fullscreenButton.textContent = document.fullscreenElement ? 'Exit fullscreen' : 'Enter fullscreen';
+      });
 
-      function toggleAmPm() {
-        showAmPm = !showAmPm; // Toggle AM/PM
-        updateClock(); // Update the display immediately
-      }
-
-      function exitClock() {
-        window.close(); // Attempt to close the window
-        // Removed the alert notification
-      }
-
+      updateClock();
       setInterval(updateClock, 1000);
-      updateClock(); // Initial call to display clock immediately
     </script>
   </body>
 </html>

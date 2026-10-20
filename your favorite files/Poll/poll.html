@@ -1,253 +1,529 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Poll with Reset and Exit</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
-<style>
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
-    font-family: 'Roboto', sans-serif;
-  }
-  .poll-container {
-    background: #fff;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    max-width: 500px;
-    width: 100%;
-  }
-  h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 25px;
-    font-size: 2rem;
-  }
-  .option {
-    margin-bottom: 20px;
-  }
-  label {
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
-  input[type="radio"] {
-    margin-right: 15px;
-    accent-color: #4CAF50;
-  }
-  .count {
-    margin-left: 10px;
-    font-weight: bold;
-    font-size: 1rem;
-    color: #555;
-  }
-  .bar-container {
-    background-color: #e0e0e0;
-    height: 25px;
-    border-radius: 12.5px;
-    overflow: hidden;
-    margin-top: 8px;
-  }
-  .bar {
-    height: 100%;
-    width: 0%;
-    background-color: #4CAF50;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    color: #fff;
-    padding-right: 10px;
-    font-size: 0.9rem;
-    border-radius: 12.5px 0 0 12.5px;
-    transition: width 0.5s ease, background-color 0.3s;
-  }
-  .buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
-    flex-wrap: wrap;
-  }
-  button {
-    flex: 1 1 45%;
-    padding: 12px 20px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin: 5px;
-    transition: background 0.3s, transform 0.2s;
-  }
-  #voteBtn {
-    background-color: #4CAF50;
-    color: #fff;
-  }
-  #voteBtn:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
-  }
-  #clearBtn {
-    background-color: #2196F3;
-    color: #fff;
-  }
-  #clearBtn:hover {
-    background-color: #1976D2;
-    transform: scale(1.05);
-  }
-  #results {
-    margin-top: 30px;
-    padding: 15px;
-    background: rgba(255,255,255,0.8);
-    border-radius: 10px;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-  }
-  .exit-link {
-    display: inline-block;
-    margin-top: 20px;
-    text-decoration: none;
-    font-weight: bold;
-    color: #fff;
-    background-color: #555;
-    padding: 10px 15px;
-    border-radius: 8px;
-    transition: background-color 0.3s;
-  }
-  .exit-link:hover {
-    background-color: #333;
-  }
-  @media(max-width: 600px) {
-    .buttons {
-      flex-direction: column;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6ff">
+  <title>Poll Studio</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #20243a;
+      --muted: #70758c;
+      --line: #e6e8f1;
+      --paper: #fff;
+      --canvas: #f5f6ff;
+      --brand: #5548e8;
+      --brand-dark: #4338ca;
+      --danger: #b42318;
+      --shadow: 0 14px 38px rgb(39 43 82 / 8%);
     }
-    button {
-      flex: 1 1 100%;
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 32px 20px 44px;
+      background: radial-gradient(ellipse at 50% -20%, #e9e8ff 0, transparent 48%), var(--canvas);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-  }
-</style>
+    button, input { font: inherit; }
+    button { touch-action: manipulation; }
+    button:focus-visible, input:focus-visible { outline: 3px solid #a5a0ff; outline-offset: 2px; }
+    .app { width: min(1180px, 100%); margin: auto; }
+    .hero { margin: 8px 0 28px; text-align: center; }
+    .eyebrow { margin: 0 0 10px; color: var(--brand); font-size: .77rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(2.1rem, 5vw, 3.7rem); letter-spacing: -.055em; line-height: 1.05; }
+    .hero p:last-child { margin: 13px 0 0; color: var(--muted); font-size: 1.04rem; }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+    .stat { display: flex; align-items: center; gap: 13px; padding: 17px 20px; border: 1px solid var(--line); border-radius: 16px; background: rgb(255 255 255 / 88%); box-shadow: 0 5px 18px rgb(39 43 82 / 4%); }
+    .stat-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 13px; background: #efedff; color: var(--brand); font-size: 1.2rem; }
+    .stat strong { display: block; font-size: 1.28rem; line-height: 1.2; }
+    .stat span:last-child { color: var(--muted); font-size: .82rem; }
+
+    .workspace { display: grid; grid-template-columns: minmax(290px, .78fr) minmax(0, 1.5fr); align-items: start; gap: 20px; }
+    .panel, .poll-card { border: 1px solid var(--line); border-radius: 20px; background: var(--paper); box-shadow: var(--shadow); }
+    .panel { padding: 24px; }
+    .creator { position: sticky; top: 16px; }
+    .section-heading { margin-bottom: 20px; }
+    h2 { margin: 0; font-size: 1.3rem; letter-spacing: -.025em; }
+    .section-heading p { margin: 6px 0 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+    .field-label, .options-title { display: block; margin: 18px 0 8px; font-size: .9rem; font-weight: 750; }
+    .text-input { width: 100%; min-height: 48px; padding: 11px 13px; border: 1px solid #d8dbe7; border-radius: 11px; background: #fff; color: var(--ink); font-size: 16px; }
+    .text-input::placeholder { color: #a0a4b4; }
+    .option-inputs { display: grid; gap: 9px; }
+    .option-row { display: flex; gap: 8px; }
+    .option-row .text-input { min-width: 0; }
+    .button { min-height: 46px; padding: 10px 15px; border: 0; border-radius: 11px; font-weight: 750; cursor: pointer; transition: transform .15s ease, background .15s ease; }
+    .button:hover:not(:disabled) { transform: translateY(-1px); }
+    .button:disabled { cursor: not-allowed; opacity: .55; }
+    .primary { background: var(--brand); color: white; }
+    .primary:hover:not(:disabled) { background: var(--brand-dark); }
+    .add-option { width: 100%; margin-top: 10px; background: #f0efff; color: var(--brand-dark); }
+    .create-button { width: 100%; margin-top: 16px; }
+    .remove-option { width: 46px; min-width: 46px; padding: 0; background: #fff0ef; color: var(--danger); font-size: 1.35rem; }
+    .hint { margin: 9px 0 0; color: var(--muted); font-size: .78rem; }
+    .message { min-height: 1.35em; margin: 10px 0 0; color: var(--muted); font-size: .88rem; }
+    .message.error { color: var(--danger); }
+.message.success { color: #087443; }
+.message.loading { color: #2873c8; }
+
+    .list-panel { min-width: 0; padding: 22px; }
+    .list-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+    .list-title p { margin: 5px 0 0; color: var(--muted); font-size: .88rem; }
+    .search-wrap { position: relative; width: min(260px, 45%); }
+    .search-icon { position: absolute; top: 50%; left: 12px; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    .search-input { min-height: 44px; padding-left: 36px; font-size: 16px; }
+    .poll-list { display: grid; gap: 13px; }
+    .poll-card { padding: 20px; box-shadow: 0 5px 18px rgb(39 43 82 / 4%); }
+    .poll-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .poll-heading h3 { margin: 0; overflow-wrap: anywhere; font-size: 1.08rem; line-height: 1.45; }
+    .total-votes { flex: 0 0 auto; padding: 5px 9px; border-radius: 99px; background: #f4f4fa; color: var(--muted); font-size: .78rem; white-space: nowrap; }
+    .poll-form { margin: 0; }
+    .poll-option { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 8px 10px; padding: 8px; border: 1px solid transparent; border-radius: 11px; cursor: pointer; transition: background .15s ease, border-color .15s ease; }
+    .poll-option:has(input:checked) { border-color: #4caf50; background: #f0faf1; }
+    .poll-option input { width: 19px; height: 19px; margin: 0; accent-color: #4caf50; }
+    .option-name { overflow-wrap: anywhere; font-size: .93rem; font-weight: 650; }
+    .option-result { color: var(--muted); font-size: .8rem; white-space: nowrap; }
+    .bar-track { grid-column: 2 / 4; height: 25px; overflow: hidden; border-radius: 12.5px; background: #e0e0e0; }
+    .bar { height: 100%; border-radius: 12.5px 0 0 12.5px; background: #4caf50; transition: width .5s ease; }
+    .color-key { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .color-key-title { flex-basis: 100%; margin: 0; color: var(--muted); font-size: .8rem; font-weight: 700; }
+    .color-key-item { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: .78rem; }
+    .color-swatch { width: 12px; height: 12px; border-radius: 4px; background: var(--swatch); }
+    .poll-actions { display: flex; gap: 9px; margin-top: 13px; }
+    .vote-button { flex: 1; min-height: 44px; }
+    .delete-button { min-height: 44px; background: #f3f4f7; color: #555b6c; }
+    .empty { padding: 30px 18px; border: 1px dashed #cbd0e0; border-radius: 15px; color: var(--muted); text-align: center; line-height: 1.5; }
+    .empty strong { display: block; margin-bottom: 5px; color: var(--ink); }
+    .footer-note { margin: 20px 0 0; color: var(--muted); font-size: .8rem; text-align: center; }
+    .exit-wrap { text-align: center; }
+    .exit-link { display: inline-block; margin-top: 20px; padding: 10px 15px; border-radius: 8px; background: #555; color: #fff; font-weight: 700; text-decoration: none; transition: background-color .3s; }
+    .exit-link:hover { background: #333; }
+    .theme-toggle { margin-top: 16px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); color: var(--ink); font-weight: 700; cursor: pointer; }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --ink: #f1f2fb;
+      --muted: #a5abc1;
+      --line: #34394d;
+      --paper: #202437;
+      --canvas: #151827;
+      --brand: #9b93ff;
+      --brand-dark: #b4aeff;
+      --danger: #ff938c;
+      --shadow: 0 14px 38px rgb(0 0 0 / 20%);
+    }
+    [data-theme="dark"] body { background: radial-gradient(ellipse at 50% -20%, #302d54 0, transparent 48%), var(--canvas); }
+    [data-theme="dark"] .stat { background: rgb(32 36 55 / 90%); }
+    [data-theme="dark"] .stat-icon { background: #302d54; }
+    [data-theme="dark"] .text-input { border-color: #454b62; background: #191d2d; color: var(--ink); }
+    [data-theme="dark"] .text-input::placeholder { color: #858ba2; }
+    [data-theme="dark"] .add-option { background: #302d54; color: #c3beff; }
+    [data-theme="dark"] .remove-option { background: #432b34; color: #ffaaa4; }
+    [data-theme="dark"] .message.success { color: #70d5a4; }
+    [data-theme="dark"] .total-votes { background: #303448; }
+    [data-theme="dark"] .poll-option:has(input:checked) { border-color: #4caf50; background: #233a2b; }
+    [data-theme="dark"] .bar-track { background: #3a3f53; }
+    [data-theme="dark"] .color-key { border-color: var(--line); }
+    [data-theme="dark"] .delete-button { background: #303448; color: #d0d3e0; }
+    [data-theme="dark"] .empty { border-color: #454b62; }
+
+    @media (max-width: 800px) {
+      body { padding: 25px 16px 36px; }
+      .workspace { grid-template-columns: 1fr; }
+      .creator { position: static; }
+      .panel { padding: 21px; }
+    }
+    @media (max-width: 540px) {
+      body { padding: 19px 12px 28px; }
+      .hero { margin: 4px 0 20px; }
+      .hero p:last-child { max-width: 34ch; margin-inline: auto; font-size: .94rem; }
+      .stats { gap: 8px; margin-bottom: 13px; }
+      .stat { display: block; padding: 12px 10px; border-radius: 13px; text-align: center; }
+      .stat-icon { width: 34px; height: 34px; margin: 0 auto 6px; border-radius: 10px; font-size: 1rem; }
+      .stat strong { font-size: 1.05rem; }
+      .stat span:last-child { font-size: .7rem; }
+      .panel, .list-panel { padding: 17px; border-radius: 16px; }
+      .list-toolbar { align-items: stretch; flex-direction: column; gap: 12px; }
+      .search-wrap { width: 100%; }
+      .poll-card { padding: 16px; border-radius: 15px; }
+      .poll-heading { gap: 7px; }
+      .total-votes { padding: 5px 7px; font-size: .72rem; }
+      .poll-actions { flex-direction: column; }
+      .delete-button { width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
 </head>
 <body>
+  <main class="app">
+    <header class="hero">
+      <p class="eyebrow">Simple decisions, together</p>
+      <h1>Poll Studio</h1>
+      <p>Create a poll, share your device, and watch the results update.</p>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Switch to dark mode</button>
+    </header>
 
-<div class="poll-container">
-  <h1>Favorite Color Poll</h1>
-  <form id="pollForm">
-    <div class="option">
-      <label>
-        <input type="radio" name="color" value="Red" required> Red
-        <span class="count" id="count-Red">0 votes</span>
-      </label>
-      <div class="bar-container">
-        <div class="bar" id="bar-Red">0%</div>
-      </div>
+    <section class="stats" aria-label="Poll summary">
+      <div class="stat"><span class="stat-icon" aria-hidden="true">▤</span><div><strong id="pollCount">0</strong><span>Polls created</span></div></div>
+      <div class="stat"><span class="stat-icon" aria-hidden="true">✓</span><div><strong id="voteCount">0</strong><span>Total votes</span></div></div>
+      <div class="stat"><span class="stat-icon" aria-hidden="true">◉</span><div><strong id="choiceCount">0</strong><span>Choices available</span></div></div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel creator" aria-labelledby="createTitle">
+        <div class="section-heading">
+          <h2 id="createTitle">Create a poll</h2>
+          <p>Write a question and add at least two answer choices.</p>
+        </div>
+        <form id="createForm">
+          <label class="field-label" for="question">Poll question</label>
+          <input class="text-input" id="question" type="text" maxlength="120" placeholder="e.g. Where should we go for lunch?" required>
+
+          <span class="options-title">Answer choices</span>
+          <div class="option-inputs" id="optionInputs"></div>
+          <p class="hint">Add up to 10 unique choices.</p>
+          <button class="button add-option" id="addOptionBtn" type="button">＋ Add answer choice</button>
+          <button class="button primary create-button" type="submit">Create poll</button>
+          <p class="message" id="createMessage" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="panel list-panel" aria-labelledby="pollListTitle">
+        <div class="list-toolbar">
+          <div class="list-title"><h2 id="pollListTitle">Your polls</h2><p id="listDescription">Vote and follow the live results.</p></div>
+          <label class="search-wrap">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input class="text-input search-input" id="searchInput" type="search" placeholder="Search polls" aria-label="Search polls">
+          </label>
+        </div>
+        <div class="poll-list" id="pollList" aria-live="polite"></div>
+        <p class="message" id="pollMessage" role="status" aria-live="polite"></p>
+        <div class="color-key" aria-label="Progress bar color key">
+          <p class="color-key-title">Progress bar colors by answer choice</p>
+          <span class="color-key-item"><span class="color-swatch" style="--swatch:#4caf50" aria-hidden="true"></span>Choice 1</span>
+          <span class="color-key-item"><span class="color-swatch" style="--swatch:#2873c8" aria-hidden="true"></span>Choice 2</span>
+          <span class="color-key-item"><span class="color-swatch" style="--swatch:#d26418" aria-hidden="true"></span>Choice 3</span>
+          <span class="color-key-item"><span class="color-swatch" style="--swatch:#c23869" aria-hidden="true"></span>Choice 4</span>
+          <span class="color-key-item"><span class="color-swatch" style="--swatch:#8660b5" aria-hidden="true"></span>Choice 5</span>
+          <span class="color-key-item"><span class="color-swatch" style="--swatch:#008b74" aria-hidden="true"></span>Choice 6</span>
+          <span class="color-key-item"><span class="color-swatch" style="--swatch:#648b17" aria-hidden="true"></span>Choice 7</span>
+          <span class="color-key-item"><span class="color-swatch" style="--swatch:#c04435" aria-hidden="true"></span>Choice 8</span>
+          <span class="color-key-item"><span class="color-swatch" style="--swatch:#16849a" aria-hidden="true"></span>Choice 9</span>
+          <span class="color-key-item"><span class="color-swatch" style="--swatch:#8d5b37" aria-hidden="true"></span>Choice 10</span>
+        </div>
+      </section>
     </div>
-    <div class="option">
-      <label>
-        <input type="radio" name="color" value="Blue"> Blue
-        <span class="count" id="count-Blue">0 votes</span>
-      </label>
-      <div class="bar-container">
-        <div class="bar" id="bar-Blue">0%</div>
-      </div>
-    </div>
-    <div class="option">
-      <label>
-        <input type="radio" name="color" value="Green"> Green
-        <span class="count" id="count-Green">0 votes</span>
-      </label>
-      <div class="bar-container">
-        <div class="bar" id="bar-Green">0%</div>
-      </div>
-    </div>
-    <div class="option">
-      <label>
-        <input type="radio" name="color" value="Yellow"> Yellow
-        <span class="count" id="count-Yellow">0 votes</span>
-      </label>
-      <div class="bar-container">
-        <div class="bar" id="bar-Yellow">0%</div>
-      </div>
-    </div>
-    <div class="buttons">
-      <button type="submit" id="voteBtn">Vote</button>
-      <button type="button" id="clearBtn">Clear Votes</button>
-    </div>
-  </form>
-  <div id="results"></div>
-  <a href="../../your%20favorite.html" class="exit-link">Exit </a>
-</div>
+    <p class="footer-note">Your polls and votes are saved in this browser on this device.</p>
+    <div class="exit-wrap"><a href="../../your%20favorite.html" class="exit-link">Exit</a></div>
+  </main>
 
-<script>
-  const form = document.getElementById('pollForm');
-  const resultDiv = document.getElementById('results');
+  <script>
+    const STORAGE_KEY = "multi-poll-maker-v1";
+    const MIN_OPTIONS = 2;
+    const MAX_OPTIONS = 10;
+    const BAR_COLORS = ["#4caf50", "#2873c8", "#d26418", "#c23869", "#8660b5", "#008b74", "#648b17", "#c04435", "#16849a", "#8d5b37"];
 
-  // Initialize votes object
-  const votes = {
-    Red: 0,
-    Blue: 0,
-    Green: 0,
-    Yellow: 0
-  };
+    const createForm = document.getElementById("createForm");
+    const questionInput = document.getElementById("question");
+    const optionInputs = document.getElementById("optionInputs");
+    const addOptionBtn = document.getElementById("addOptionBtn");
+    const createMessage = document.getElementById("createMessage");
+    const pollList = document.getElementById("pollList");
+    const pollMessage = document.getElementById("pollMessage");
+    const searchInput = document.getElementById("searchInput");
+    const pollCount = document.getElementById("pollCount");
+    const voteCount = document.getElementById("voteCount");
+    const choiceCount = document.getElementById("choiceCount");
+    const listDescription = document.getElementById("listDescription");
+    const themeToggle = document.getElementById("themeToggle");
+    const THEME_KEY = "poll-studio-theme";
 
-  function updateBars() {
-    const totalVotes = Object.values(votes).reduce((a, b) => a + b, 0) || 1;
-    for (const color in votes) {
-      const percent = ((votes[color] / totalVotes) * 100).toFixed(1);
-      const bar = document.getElementById(`bar-${color}`);
-      bar.style.width = percent + '%';
-      bar.textContent = percent + '%';
+    function applyTheme(theme) {
+      const isDark = theme === "dark";
+      document.documentElement.dataset.theme = isDark ? "dark" : "light";
+      themeToggle.setAttribute("aria-pressed", String(isDark));
+      themeToggle.textContent = isDark ? "Switch to light mode" : "Switch to dark mode";
     }
-  }
 
-  function updateCounts() {
-    for (const color in votes) {
-      document.getElementById(`count-${color}`).textContent = `${votes[color]} vote${votes[color] !== 1 ? 's' : ''}`;
+    try {
+      applyTheme(localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light");
+    } catch {
+      applyTheme("light");
     }
-  }
 
-  function displayResults() {
-    const totalVotes = Object.values(votes).reduce((a, b) => a + b);
-    let html = '<h3>Results:</h3><ul style="list-style:none; padding:0;">';
-    for (const color in votes) {
-      const percent = totalVotes ? ((votes[color] / totalVotes) * 100).toFixed(1) : '0.0';
-      html += `<li style="margin-bottom:8px;">${color}: ${votes[color]} votes (${percent}%)</li>`;
+    themeToggle.addEventListener("click", () => {
+      const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      applyTheme(nextTheme);
+      try {
+        localStorage.setItem(THEME_KEY, nextTheme);
+      } catch {
+        // The selected theme remains active for this page even if storage is unavailable.
+      }
+    });
+
+    function loadPolls() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (!Array.isArray(saved)) return [];
+
+        const usedIds = new Set();
+        return saved.reduce((validPolls, poll) => {
+          if (!poll || typeof poll.id !== "string" || !poll.id || usedIds.has(poll.id) ||
+              typeof poll.question !== "string" || !Array.isArray(poll.options)) return validPolls;
+
+          const options = [];
+          const seenChoices = new Set();
+          for (const option of poll.options) {
+            if (!option || typeof option.text !== "string") continue;
+            const text = option.text.trim().slice(0, 60);
+            const key = text.toLocaleLowerCase();
+            if (!text || seenChoices.has(key)) continue;
+            seenChoices.add(key);
+            options.push({
+              text,
+              votes: Number.isSafeInteger(option.votes) && option.votes >= 0 ? option.votes : 0
+            });
+            if (options.length === MAX_OPTIONS) break;
+          }
+
+          const question = poll.question.trim().slice(0, 120);
+          if (!question || options.length < MIN_OPTIONS) return validPolls;
+          usedIds.add(poll.id);
+          validPolls.push({ id: poll.id, question, options });
+          return validPolls;
+        }, []);
+      } catch {
+        return [];
+      }
     }
-    resultDiv.innerHTML = html;
-  }
 
-  document.getElementById('voteBtn').addEventListener('click', e => {
-    e.preventDefault();
-    const selected = document.querySelector('input[name="color"]:checked');
-    if (selected) {
-      votes[selected.value]++;
-      updateCounts();
-      updateBars();
-      displayResults();
+    let polls = loadPolls();
+
+    function savePolls() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(polls));
+        return true;
+      } catch {
+        return false;
+      }
     }
-  });
 
-  // Vote on Enter
-  form.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      document.getElementById('voteBtn').click();
+    function showMessage(text, type = "") {
+      createMessage.textContent = text;
+      createMessage.className = `message ${type}`;
     }
-  });
 
-  // Clear votes
-  document.getElementById('clearBtn').addEventListener('click', () => {
-    for (let color in votes) votes[color] = 0;
-    updateCounts();
-    updateBars();
-    resultDiv.innerHTML = '';
-    document.querySelectorAll('input[name="color"]').forEach(input => input.checked = false);
-  });
+    function addOptionInput() {
+      if (optionInputs.children.length >= MAX_OPTIONS) return;
+      const row = document.createElement("div");
+      row.className = "option-row";
 
-</script>
+      const input = document.createElement("input");
+      input.className = "text-input";
+      input.type = "text";
+      input.maxLength = 60;
+      input.required = true;
+      input.placeholder = `Answer choice ${optionInputs.children.length + 1}`;
+      input.setAttribute("aria-label", `Answer choice ${optionInputs.children.length + 1}`);
 
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "button remove-option";
+      remove.textContent = "×";
+      remove.setAttribute("aria-label", "Remove this answer choice");
+      remove.addEventListener("click", () => {
+        if (optionInputs.children.length <= MIN_OPTIONS) {
+          showMessage("A poll needs at least two answer choices.", "error");
+          return;
+        }
+        row.remove();
+        updateOptionControls();
+      });
+
+      row.append(input, remove);
+      optionInputs.appendChild(row);
+      updateOptionControls();
+    }
+
+    function updateOptionControls() {
+      [...optionInputs.querySelectorAll("input")].forEach((input, index) => {
+        input.placeholder = `Answer choice ${index + 1}`;
+        input.setAttribute("aria-label", `Answer choice ${index + 1}`);
+      });
+      addOptionBtn.disabled = optionInputs.children.length >= MAX_OPTIONS;
+      addOptionBtn.textContent = addOptionBtn.disabled ? `Maximum ${MAX_OPTIONS} choices reached` : "＋ Add answer choice";
+    }
+
+    function updateStats() {
+      pollCount.textContent = polls.length;
+      voteCount.textContent = polls.reduce((sum, poll) => sum + poll.options.reduce((total, option) => total + option.votes, 0), 0).toLocaleString();
+      choiceCount.textContent = polls.reduce((sum, poll) => sum + poll.options.length, 0).toLocaleString();
+    }
+
+    function renderPolls() {
+      pollList.replaceChildren();
+      updateStats();
+      const term = searchInput.value.trim().toLocaleLowerCase();
+      const visiblePolls = polls.filter(poll => poll.question.toLocaleLowerCase().includes(term));
+      listDescription.textContent = polls.length ? "Vote and follow the live results." : "Your created polls will appear here.";
+
+      if (!visiblePolls.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        const heading = document.createElement("strong");
+        heading.textContent = polls.length ? "No matching polls" : "No polls yet";
+        const detail = document.createElement("span");
+        detail.textContent = polls.length ? "Try a different search." : "Create your first poll using the form.";
+        empty.append(heading, detail);
+        pollList.appendChild(empty);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      visiblePolls.forEach(poll => fragment.appendChild(makePollCard(poll)));
+      pollList.appendChild(fragment);
+    }
+
+    function makePollCard(poll) {
+      const card = document.createElement("article");
+      card.className = "poll-card";
+      const total = poll.options.reduce((sum, option) => sum + option.votes, 0);
+      const heading = document.createElement("div");
+      heading.className = "poll-heading";
+      const title = document.createElement("h3");
+      title.textContent = poll.question;
+      const totalLabel = document.createElement("span");
+      totalLabel.className = "total-votes";
+      totalLabel.textContent = `${total.toLocaleString()} ${total === 1 ? "vote" : "votes"}`;
+      heading.append(title, totalLabel);
+
+      const form = document.createElement("form");
+      form.className = "poll-form";
+      poll.options.forEach((option, index) => {
+        const percent = total ? option.votes / total * 100 : 0;
+        const label = document.createElement("label");
+        label.className = "poll-option";
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = `poll-${poll.id}`;
+        radio.value = index;
+        radio.required = true;
+        const name = document.createElement("span");
+        name.className = "option-name";
+        name.textContent = option.text;
+        const result = document.createElement("span");
+        result.className = "option-result";
+        result.textContent = `${percent.toFixed(1)}% · ${option.votes.toLocaleString()} ${option.votes === 1 ? "vote" : "votes"}`;
+        const track = document.createElement("span");
+        track.className = "bar-track";
+        track.setAttribute("role", "progressbar");
+        track.setAttribute("aria-label", `${option.text}: ${percent.toFixed(1)} percent`);
+        track.setAttribute("aria-valuemin", "0");
+        track.setAttribute("aria-valuemax", "100");
+        track.setAttribute("aria-valuenow", String(Math.round(percent)));
+        const bar = document.createElement("span");
+        bar.className = "bar";
+        bar.style.width = `${percent}%`;
+        bar.style.backgroundColor = BAR_COLORS[index % BAR_COLORS.length];
+        track.appendChild(bar);
+        label.append(radio, name, result, track);
+        form.appendChild(label);
+      });
+
+      const actions = document.createElement("div");
+      actions.className = "poll-actions";
+      const voteButton = document.createElement("button");
+      voteButton.type = "submit";
+      voteButton.className = "button primary vote-button";
+      voteButton.textContent = "Submit vote";
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.className = "button delete-button";
+      deleteButton.textContent = "Delete poll";
+      const status = document.createElement("p");
+      status.className = "message";
+      status.setAttribute("role", "status");
+      status.setAttribute("aria-live", "polite");
+      actions.append(voteButton, deleteButton);
+      form.append(actions, status);
+      card.append(heading, form);
+
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+        const selected = form.querySelector('input[type="radio"]:checked');
+        if (!selected) return;
+        const selectedOption = poll.options[Number(selected.value)];
+        if (!selectedOption || selectedOption.votes >= Number.MAX_SAFE_INTEGER) {
+          showMessage("This choice has reached the maximum vote count.", "error");
+          return;
+        }
+        selectedOption.votes++;
+        const saved = savePolls();
+        renderPolls();
+        pollMessage.textContent = saved ? "Vote recorded and results updated." : "Vote counted for now, but browser storage is unavailable.";
+        pollMessage.className = `message ${saved ? "success" : "error"}`;
+      });
+
+      deleteButton.addEventListener("click", () => {
+        if (!confirm(`Delete “${poll.question}” and all its votes?`)) return;
+        polls = polls.filter(item => item.id !== poll.id);
+        const saved = savePolls();
+        renderPolls();
+        pollMessage.textContent = saved ? "Poll deleted." : "Poll deleted for now, but the change could not be saved in this browser.";
+        pollMessage.className = `message ${saved ? "success" : "error"}`;
+      });
+      return card;
+    }
+
+    addOptionBtn.addEventListener("click", addOptionInput);
+    searchInput.addEventListener("input", renderPolls);
+
+    createForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const question = questionInput.value.trim();
+      const rawOptions = [...optionInputs.querySelectorAll("input")].map(input => input.value.trim());
+      if (!question) {
+        showMessage("Enter a poll question.", "error");
+        questionInput.focus();
+        return;
+      }
+      if (rawOptions.some(option => !option)) {
+        showMessage("Fill in every answer choice, or remove the empty one.", "error");
+        optionInputs.querySelector("input:placeholder-shown")?.focus();
+        return;
+      }
+      if (rawOptions.length < MIN_OPTIONS) {
+        showMessage("Add at least two answer choices.", "error");
+        return;
+      }
+      if (new Set(rawOptions.map(text => text.toLocaleLowerCase())).size !== rawOptions.length) {
+        showMessage("Answer choices must be different.", "error");
+        return;
+      }
+
+      polls.unshift({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        question,
+        options: rawOptions.map(text => ({ text, votes: 0 }))
+      });
+      const saved = savePolls();
+      renderPolls();
+      createForm.reset();
+      optionInputs.replaceChildren();
+      addOptionInput();
+      addOptionInput();
+      showMessage(saved ? "Poll created and saved on this device." : "Poll created, but browser storage is unavailable.", saved ? "success" : "error");
+    });
+
+    addOptionInput();
+    addOptionInput();
+    renderPolls();
+  </script>
 </body>
 </html>

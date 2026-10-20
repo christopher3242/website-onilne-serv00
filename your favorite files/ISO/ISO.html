@@ -1,155 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>ISO</title>
-    <style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  color: #333;
-  /* Blue gradient background */
-  background: linear-gradient(135deg, #6cc7ff, #00aeff);
-  position: relative;
-}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10233f">
+  <title>ISO Library</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, Arial, sans-serif;
+      color: #172033;
+      background: #eef3f9;
+      font-synthesis: none;
+    }
 
-/* Exit Button styling */
-.exit-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: #fa3b4f; /* Bootstrap red */
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s, transform 0.2s;
-  z-index: 1000;
-  text-decoration: none;
-}
+    * { box-sizing: border-box; }
 
-.exit-btn:hover {
-  background-color: #c82333;
-  transform: scale(1.05);
-}
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(145deg, #e9f3ff 0%, #f6f8fc 55%, #e9f3ff 100%);
+    }
 
-/* Container styling */
-.container {
-  max-width: 700px;
-  margin: 0 auto;
-  background-color: #fff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.1);
-  margin-top: 60px; /* space for fixed button */
-}
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px max(20px, calc((100% - 1080px) / 2));
+      color: #fff;
+      background: #10233f;
+    }
 
-/* Header styling */
-h1 {
-  text-align: center;
-  color: #000; /* Black for contrast */
-  margin-bottom: 20px;
-}
+    .brand {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 750;
+      letter-spacing: .04em;
+    }
 
-/* Table styling */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
+    .exit-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 9px 16px;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 650;
+      text-decoration: none;
+      transition: background-color .2s, transform .2s;
+    }
 
-td {
-  padding: 10px;
-  vertical-align: top;
-  border: 1px solid #ddd;
-  word-wrap: break-word;
-}
+    .exit-btn:hover { background: rgba(255,255,255,.13); }
+    .exit-btn:active { transform: translateY(1px); }
 
-/* Spinning image styling */
-.spin {
-  display: inline-block;
-  width: 150px;
-  height: 150px;
-}
+    main {
+      width: min(100% - 32px, 1080px);
+      margin: 48px auto;
+    }
 
-.spin img {
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  object-fit: cover;
-  animation: spin 4s linear infinite;
-}
+    .intro { margin-bottom: 28px; }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+    .intro h1 {
+      margin: 0 0 8px;
+      color: #10233f;
+      font-size: clamp(2rem, 5vw, 3rem);
+      letter-spacing: -.04em;
+    }
 
-/* Footer styling */
-.footer {
-  margin-top: 30px;
-  text-align: right;
-  font-style: italic;
-  font-size: 1em;
-  color: #000; /* Black for contrast on light background */
-}
+    .intro p {
+      max-width: 620px;
+      margin: 0;
+      color: #5a6880;
+      line-height: 1.6;
+    }
 
-/* Responsive adjustments */
-@media(max-width: 768px){
-  .container {
-    padding: 10px 20px;
-  }
-  .spin {
-    width: 120px;
-    height: 120px;
-  }
-  /* Make images in links responsive */
-  a img {
-    max-width: 100%;
-    height: auto;
-  }
-}
-</style>
-  </head>
-  <body>
-    <!-- Fixed Exit Button --> <a href="../../your%20favorite.html"
-      class="exit-btn">Exit</a>
-    <div class="container">
-      <h1>ISO</h1>
-      <table width="730" height="190" cellspacing="2" cellpadding="2"
-        border="1">
-        <tbody>
-          <tr>
-            <td valign="top" align="center">
-              <div class="spin"> <img src="Disc1.png" alt="DVD"
-                  width="150" height="150"> </div>
-            </td>
-            <td valign="top"> <strong>Name :</strong> Lomaio vibes<br>
-              <br>
-              Download Link:<br>
-              <br>
-              <div style="text-align:center;"><img
-src="data:image/png;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWw6c3BhY2U9InByZXNlcnZlIiB3aWR0aD0iMTEwOC4wMDI4IiBoZWlnaHQ9IjM2MS4zOTk5OSIgdmlld0JveD0iMCAwIDExMDguMDAyOCAzNjEuMzk5OTgiPgogIDxwYXRoIGZpbGw9IiNkOTI3MmUiIGQ9Ik0xODAuNyAwQzgwLjkgMCAwIDgwLjkgMCAxODAuN2MwIDk5LjggODAuOSAxODAuNyAxODAuNyAxODAuNyA5OS44IDAgMTgwLjctODAuOSAxODAuNy0xODAuN0MzNjEuNCA4MC45IDI4MC41IDAgMTgwLjcgMFptOTMuOCAyNDQuNmMwIDMuMS0yLjUgNS42LTUuNiA1LjZoLTIzLjZjLTMuMSAwLTUuNi0yLjUtNS42LTUuNnYtNzIuN2MwLS42LS43LS45LTEuMi0uNWwtNTAgNTBjLTQuMyA0LjMtMTEuNCA0LjMtMTUuNyAwbC01MC01MGMtLjQtLjQtMS4yLS4xLTEuMi41djcyLjdjMCAzLjEtMi41IDUuNi01LjYgNS42SDkyLjRjLTMuMSAwLTUuNi0yLjUtNS42LTUuNlYxMTYuOGMwLTMuMSAyLjUtNS42IDUuNi01LjZoMTYuMmMyLjkgMCA1LjggMS4yIDcuOSAzLjNsNjIuMiA2Mi4yYzEuMSAxLjEgMi44IDEuMSAzLjkgMGw2Mi4yLTYyLjJjMi4xLTIuMSA0LjktMy4zIDcuOS0zLjNoMTYuMmMzLjEgMCA1LjYgMi41IDUuNiA1LjZ2MTI3Ljh6Ii8+CiAgPHBhdGggZmlsbD0iIzJjMmIyYiIgZD0iTTc4MiAxMzkuN3YtMTkuNWMwLTMuMS0yLjUtNS42LTUuNi01LjZoLTEwN2MtMy4xIDAtNS42IDIuNS01LjYgNS42djEyNy45YzAgMy4xIDIuNSA1LjYgNS42IDUuNmgxMDdjMy4xIDAgNS42LTIuNSA1LjYtNS42di0xOS40YzAtMy4xLTIuNS01LjYtNS42LTUuNmgtNzYuNWMtLjggMC0xLjQtLjYtMS40LTEuNHYtMjIuMmMwLS44LjYtMS40IDEuNC0xLjRoNzYuNWMzLjEgMCA1LjYtMi41IDUuNi01LjZ2LTE2LjdjMC0zLjEtMi41LTUuNi01LjYtNS42aC03Ni41Yy0uOCAwLTEuNC0uNi0xLjQtMS40di0yMi4yYzAtLjguNi0xLjQgMS40LTEuNGg3Ni41YzMuMi4xIDUuNi0yLjQgNS42LTUuNXptMjk3LjUgMTE0aDI0LjNjMy4xIDAgNS4xLTMuMiAzLjgtNmwtNjEuNS0xMjYuOGMtMS45LTMuOC01LjctNi4zLTEwLTYuM2gtMTMuOWMtNC4zIDAtOC4xIDIuNC0xMCA2LjNsLTYxLjUgMTI2LjhjLTEuMyAyLjguNyA2IDMuOCA2aDI0LjNjMy4yIDAgNi4xLTEuOCA3LjUtNC43bDExLjgtMjQuM2MuNS0xIDEuNC0xLjYgMi41LTEuNmg1Ny4yYzEuMSAwIDIgLjYgMi41IDEuNmwxMS44IDI0LjNjMS4zIDIuOSA0LjIgNC43IDcuNCA0Ljd6bS02Ny43LTU3LjYgMTYtMzNjLjUtMSAyLTEgMi41IDBsMTYgMzNjLjQuOS0uMiAyLTEuMyAyaC0zMmMtLjkgMC0xLjYtMS4xLTEuMi0yem0tNDA1LjUtNzguMi02Mi4yIDYyLjJjLTEuMSAxLjEtMi44IDEuMS0zLjkgMGwtNjIuMy02Mi4yYy0yLjEtMi4xLTQuOS0zLjMtNy45LTMuM2gtMTYuMmMtMy4xIDAtNS42IDIuNS01LjYgNS42djEyNy45YzAgMy4xIDIuNSA1LjYgNS42IDUuNmgyMy42YzMuMSAwIDUuNi0yLjUgNS42LTUuNnYtNzIuN2MwLS42LjctLjkgMS4yLS41bDUwIDUwYzQuMyA0LjMgMTEuNCA0LjMgMTUuNyAwbDUwLTUwYy40LS40IDEuMi0uMSAxLjIuNXY3Mi43YzAgMy4xIDIuNSA1LjYgNS42IDUuNmgyMy42YzMuMSAwIDUuNi0yLjUgNS42LTUuNlYxMjAuMmMwLTMuMS0yLjUtNS42LTUuNi01LjZoLTE2LjJjLTIuOS4xLTUuNyAxLjItNy44IDMuM3pNOTM3IDE3MS43aC01NC45Yy0zLjEgMC01LjYgMi41LTUuNiA1LjZ2MTMuOWMwIDMuMSAyLjUgNS42IDUuNiA1LjZoMzEuNWMxIDAgMS42IDEgMS4zIDEuOS02IDE1LjktMjEuNiAyNy4yLTM5LjggMjYuNi0yMS4yLS43LTM4LjYtMTcuOC0zOS42LTM5LTEuMS0yMy41IDE3LjctNDIuOSA0MS00Mi45IDkuNSAwIDE4LjMgMy4zIDI1LjMgOC43IDIuMiAxLjcgNS40IDEuNiA3LjQtLjRsMTQuOC0xNC44YzIuMy0yLjMgMi4xLTYuMS0uNC04LjItMTIuOS0xMC45LTI5LjYtMTcuNC00Ny44LTE3LjMtNDAuMS4zLTcyLjcgMzMuNS03Mi4zIDczLjcuNCA0MCAzMi45IDcyLjMgNzMgNzIuMyA0MC4zIDAgNzMtMzIuNyA3My03M3YtLjFjMC03LjEtNS42LTEyLjYtMTIuNS0xMi42eiIvPgo8L3N2Zz4="
-                  alt=""><a
-href="https://www.mediafire.com/file/sskrm7p4awh6go7/Lomaio+vibes.iso/file"><img
-                    src="MediaFire_logo.png" alt="" width="223"
-                    height="60" border="0"></a>&nbsp;&nbsp;<a
-href="https://mega.nz/file/lPMTSQ5Z#V6uZSo-w4kc5suTTN_iJNKXOVEZACFL_kATi4b6k1uA"><img
-                    src="mega_logo.png" alt="" width="175" height="57"
-                    border="0"></a><a
-                  href="https://mixdrop.top/f/q1v7ndxgfx8wkj3"> </a><a
-                  href="https://pixeldrain.com/u/VqkYZRiU"> </a> </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="footer"><u><b><font color="#000000">( Dvd, cd and More
-              etc) !!! </font></b></u></div>
-    </div>
-  </body>
+    .search-panel {
+      margin-bottom: 20px;
+      padding: 18px;
+      border: 1px solid #dce5f0;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(16,35,63,.05);
+    }
+
+    .search-panel label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: .9rem;
+      font-weight: 700;
+    }
+
+    .search-wrap { position: relative; }
+
+    .search-wrap::before {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      content: "⌕";
+      color: #718098;
+      font-size: 1.5rem;
+      line-height: 1;
+      transform: translateY(-55%);
+      pointer-events: none;
+    }
+
+    #search {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px 12px 43px;
+      border: 1px solid #cbd6e4;
+      border-radius: 9px;
+      color: #172033;
+      background: #fff;
+      font: inherit;
+    }
+
+    #search:focus {
+      outline: 3px solid rgba(36,116,219,.2);
+      border-color: #2474db;
+    }
+
+    .result-count {
+      margin: 12px 2px 0;
+      color: #64728a;
+      font-size: .88rem;
+    }
+
+    .catalog {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+      gap: 18px;
+    }
+
+    .iso-card {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 24px;
+      align-items: center;
+      padding: 24px;
+      border: 1px solid #dce5f0;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 12px 32px rgba(16,35,63,.08);
+    }
+
+    .cover {
+      display: grid;
+      width: 150px;
+      aspect-ratio: 1;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #d9edff, #a8d3ff);
+    }
+
+    .cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      animation: spin 18s linear infinite;
+    }
+
+    .card-content { min-width: 0; }
+
+    .card-content h2 {
+      margin: 0 0 8px;
+      color: #10233f;
+      font-size: 1.5rem;
+      line-height: 1.25;
+    }
+
+    .card-content p {
+      margin: 0 0 18px;
+      color: #65728a;
+      line-height: 1.5;
+    }
+
+    .download-label {
+      margin: 0 0 10px;
+      font-size: .82rem;
+      font-weight: 750;
+      letter-spacing: .08em;
+      color: #4d5c73;
+      text-transform: uppercase;
+    }
+
+    .download-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .download-link {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 14px;
+      border: 1px solid #cbd6e4;
+      border-radius: 9px;
+      color: #10233f;
+      background: #f8fbff;
+      font-weight: 700;
+      text-decoration: none;
+      transition: border-color .2s, background-color .2s, transform .2s;
+    }
+
+    .download-link:hover {
+      border-color: #2474db;
+      background: #eef6ff;
+      transform: translateY(-1px);
+    }
+
+    .download-link img {
+      display: block;
+      width: auto;
+      max-width: 145px;
+      max-height: 34px;
+      object-fit: contain;
+    }
+
+    .empty-state {
+      padding: 28px 20px;
+      border: 1px dashed #b8c7da;
+      border-radius: 14px;
+      color: #586780;
+      background: rgba(255,255,255,.7);
+      text-align: center;
+    }
+
+    .footer {
+      margin: 28px 0 0;
+      color: #68768d;
+      font-size: .9rem;
+      text-align: center;
+    }
+
+    [hidden] { display: none !important; }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .topbar { padding: 12px 16px; }
+      main { width: min(100% - 24px, 1080px); margin: 28px auto; }
+      .search-panel { padding: 14px; }
+      .iso-card {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 18px;
+      }
+      .cover { width: min(100%, 170px); margin: 0 auto; }
+      .card-content h2 { font-size: 1.35rem; }
+      .download-links { display: grid; grid-template-columns: 1fr; }
+      .download-link { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <p class="brand">ISO LIBRARY</p>
+    <a class="exit-btn" href="../../your%20favorite.html">Exit</a>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <h1 id="page-title">ISO collection</h1>
+      <p>Browse the available disc images and choose a download source. Use the search box to find a title.</p>
+    </section>
+
+    <section class="search-panel" aria-label="Search ISO collection">
+      <label for="search">Search the list</label>
+      <div class="search-wrap">
+        <input id="search" type="search" placeholder="Search by name or keyword…" autocomplete="off">
+      </div>
+      <p id="result-count" class="result-count" aria-live="polite">1 item</p>
+    </section>
+
+    <section id="catalog" class="catalog" aria-label="ISO downloads">
+      <article class="iso-card" data-search="lomaio vibes iso dvd cd">
+        <div class="cover">
+          <img src="Disc1.png" alt="Disc illustration" width="150" height="150">
+        </div>
+        <div class="card-content">
+          <h2>Lomaio vibes</h2>
+          <p>ISO disc image</p>
+          <h3 class="download-label">Download from</h3>
+          <div class="download-links">
+            <a class="download-link" href="https://www.mediafire.com/file/sskrm7p4awh6go7/Lomaio+vibes.iso/file" target="_blank" rel="noopener noreferrer" aria-label="Download Lomaio vibes from MediaFire">
+              <img src="MediaFire_logo.png" alt="MediaFire" width="223" height="60">
+            </a>
+            <a class="download-link" href="https://mega.nz/file/lPMTSQ5Z#V6uZSo-w4kc5suTTN_iJNKXOVEZACFL_kATi4b6k1uA" target="_blank" rel="noopener noreferrer" aria-label="Download Lomaio vibes from MEGA">
+              <img src="mega_logo.png" alt="MEGA" width="175" height="57">
+            </a>
+          </div>
+        </div>
+      </article>
+      <p id="empty-state" class="empty-state" hidden>No matching ISO found. Try a different search.</p>
+    </section>
+
+    <footer class="footer">DVD, CD and more</footer>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById('search');
+    const cards = Array.from(document.querySelectorAll('.iso-card'));
+    const resultCount = document.getElementById('result-count');
+    const emptyState = document.getElementById('empty-state');
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const matches = card.dataset.search.includes(query);
+        card.hidden = !matches;
+        if (matches) visibleCount += 1;
+      });
+
+      resultCount.textContent = `${visibleCount} ${visibleCount === 1 ? 'item' : 'items'}`;
+      emptyState.hidden = visibleCount !== 0;
+    });
+  </script>
+</body>
 </html>
