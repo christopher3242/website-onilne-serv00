@@ -68,7 +68,8 @@
         color: #fff;
       }
 
-      button {
+      button,
+      .exit-btn {
         min-height: 48px;
         padding: 0 18px;
         border: 1px solid var(--surface-border);
@@ -83,16 +84,27 @@
         transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
       }
 
-      button:hover {
+      .exit-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button:hover,
+      .exit-btn:hover {
         transform: translateY(-2px);
         border-color: color-mix(in srgb, var(--accent) 55%, transparent);
       }
 
-      button:active {
+      button:active,
+      .exit-btn:active {
         transform: translateY(0);
       }
 
       button:focus-visible,
+      .exit-btn:focus-visible,
       select:focus-visible {
         outline: 3px solid var(--accent);
         outline-offset: 3px;
@@ -232,7 +244,8 @@
         }
 
         .controls button,
-        .controls select {
+        .controls select,
+        .controls .exit-btn {
           min-height: 52px;
           padding: 0 10px;
           font-size: 0.86rem;
@@ -275,6 +288,7 @@
           <option value="#4d7c0f">Green</option>
         </select>
         <button id="fullscreenButton" type="button">Enter fullscreen</button>
+        <a class="exit-btn" href="../../your%20favorite.html">Exit</a>
       </div>
       <p class="hint">Showing the time on this device</p>
     </main>
