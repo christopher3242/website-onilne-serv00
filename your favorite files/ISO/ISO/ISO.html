@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10233f">
+  <title>ISO Library</title>
+
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, Arial, sans-serif;
+      color: #172033;
+      background: #eef3f9;
+      font-synthesis: none;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(145deg, #e9f3ff 0%, #f6f8fc 55%, #e9f3ff 100%);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px max(20px, calc((100% - 1080px) / 2));
+      color: #fff;
+      background: #10233f;
+    }
+
+    .brand {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 750;
+      letter-spacing: .04em;
+    }
+
+    .exit-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 9px 16px;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 650;
+      text-decoration: none;
+      transition: background-color .2s, transform .2s;
+    }
+
+    .exit-btn:hover { background: rgba(255,255,255,.13); }
+    .exit-btn:active { transform: translateY(1px); }
+
+    main {
+      width: min(100% - 32px, 1080px);
+      margin: 48px auto;
+    }
+
+    .intro { margin-bottom: 28px; }
+
+    .intro h1 {
+      margin: 0 0 8px;
+      color: #10233f;
+      font-size: clamp(2rem, 5vw, 3rem);
+      letter-spacing: -.04em;
+    }
+
+    .intro p {
+      max-width: 620px;
+      margin: 0;
+      color: #5a6880;
+      line-height: 1.6;
+    }
+
+    .search-panel {
+      margin-bottom: 20px;
+      padding: 18px;
+      border: 1px solid #dce5f0;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(16,35,63,.05);
+    }
+
+    .search-panel label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: .9rem;
+      font-weight: 700;
+    }
+
+    .search-wrap { position: relative; }
+
+    .search-wrap::before {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      content: "⌕";
+      color: #718098;
+      font-size: 1.5rem;
+      line-height: 1;
+      transform: translateY(-55%);
+      pointer-events: none;
+    }
+
+    #search {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px 12px 43px;
+      border: 1px solid #cbd6e4;
+      border-radius: 9px;
+      color: #172033;
+      background: #fff;
+      font: inherit;
+    }
+
+    #search:focus {
+      outline: 3px solid rgba(36,116,219,.2);
+      border-color: #2474db;
+    }
+
+    .result-count {
+      margin: 12px 2px 0;
+      color: #64728a;
+      font-size: .88rem;
+    }
+
+    .catalog {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+      gap: 18px;
+    }
+
+    .iso-card {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 24px;
+      align-items: center;
+      padding: 24px;
+      border: 1px solid #dce5f0;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 12px 32px rgba(16,35,63,.08);
+    }
+
+    .cover {
+      display: grid;
+      width: 150px;
+      aspect-ratio: 1;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #d9edff, #a8d3ff);
+    }
+
+    .cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      animation: spin 18s linear infinite;
+    }
+
+    .cover img.is-static { animation: none; }
+
+    .disc-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .disc-controls select,
+    .disc-controls button {
+      min-height: 40px;
+      padding: 8px 11px;
+      border: 1px solid #cbd6e4;
+      border-radius: 8px;
+      color: #10233f;
+      background: #fff;
+      font: inherit;
+    }
+
+    .disc-controls select:focus,
+    .disc-controls button:focus-visible {
+      outline: 3px solid rgba(36,116,219,.2);
+      border-color: #2474db;
+    }
+
+    .release-date {
+      margin: 0 0 14px !important;
+      color: #4d5c73 !important;
+      font-size: .92rem;
+    }
+
+    .card-content { min-width: 0; }
+
+    .card-content h2 {
+      margin: 0 0 8px;
+      color: #10233f;
+      font-size: 1.5rem;
+      line-height: 1.25;
+    }
+
+    .card-content p {
+      margin: 0 0 18px;
+      color: #65728a;
+      line-height: 1.5;
+    }
+
+    .download-label {
+      margin: 0 0 10px;
+      font-size: .82rem;
+      font-weight: 750;
+      letter-spacing: .08em;
+      color: #4d5c73;
+      text-transform: uppercase;
+    }
+
+    .download-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .download-link {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 14px;
+      border: 1px solid #cbd6e4;
+      border-radius: 9px;
+      color: #10233f;
+      background: #f8fbff;
+      font-weight: 700;
+      text-decoration: none;
+      transition: border-color .2s, background-color .2s, transform .2s;
+    }
+
+    .download-link:hover {
+      border-color: #2474db;
+      background: #eef6ff;
+      transform: translateY(-1px);
+    }
+
+    .download-link img {
+      display: block;
+      width: auto;
+      max-width: 145px;
+      max-height: 34px;
+      object-fit: contain;
+    }
+
+    .empty-state {
+      padding: 28px 20px;
+      border: 1px dashed #b8c7da;
+      border-radius: 14px;
+      color: #586780;
+      background: rgba(255,255,255,.7);
+      text-align: center;
+    }
+
+    .footer {
+      margin: 28px 0 0;
+      color: #68768d;
+      font-size: .9rem;
+      text-align: center;
+    }
+
+    [hidden] { display: none !important; }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .topbar { padding: 12px 16px; }
+      main { width: min(100% - 24px, 1080px); margin: 28px auto; }
+      .search-panel { padding: 14px; }
+
+      .iso-card {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 18px;
+      }
+
+      .cover { width: min(100%, 170px); margin: 0 auto; }
+      .card-content h2 { font-size: 1.35rem; }
+      .download-links { display: grid; grid-template-columns: 1fr; }
+      .download-link { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <p class="brand">ISO LIBRARY</p>
+    <a class="exit-btn" href="../../your%20favorite.html">Exit</a>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <h1 id="page-title">ISO collection</h1>
+      <p>Browse the available disc images and choose a download source. Use the search box to find a title.</p>
+    </section>
+
+    <section class="search-panel" aria-label="Search ISO collection">
+      <label for="search">Search the list</label>
+      <div class="search-wrap">
+        <input
+          id="search"
+          type="search"
+          placeholder="Search by name or keyword…"
+          autocomplete="off"
+        >
+      </div>
+      <p id="result-count" class="result-count" aria-live="polite">3 items</p>
+    </section>
+
+    <section id="catalog" class="catalog" aria-label="ISO downloads">
+      <article class="iso-card" data-search="1008400 disc 1 lomaio vibes iso dvd cd">
+        <div class="cover">
+          <img
+            class="disc-image"
+            src="Disc1.png"
+            alt="Disc illustration"
+            width="150"
+            height="150"
+          >
+        </div>
+
+        <div class="card-content">
+          <h2>Lomaio vibes</h2>
+          <p>#1008400 · Disc 1</p>
+          <p><strong>Film rating:</strong> PG</p>
+          <p class="release-date"><strong>Release date:</strong> 30.08.2026</p>
+
+          <div class="disc-controls" aria-label="Disc display options">
+            <label for="image-format-1">Image file</label>
+            <select id="image-format-1" data-control="format">
+              <option value="Disc1.png" selected>Disc1.png</option>
+              <option value="Disc1.gif">Disc1.gif</option>
+            </select>
+
+            <label for="spin-mode-1">Disc animation</label>
+            <select id="spin-mode-1" data-control="spin">
+              <option value="spin" selected>Spin</option>
+              <option value="static">No spin</option>
+            </select>
+          </div>
+
+          <h3 class="download-label">Download from</h3>
+          <div class="download-links">
+            <a
+              class="download-link"
+              href="https://www.mediafire.com/file/sskrm7p4awh6go7/Lomaio+vibes.iso/file"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Download Lomaio vibes from MediaFire"
+            >
+              <img src="MediaFire_logo.png" alt="MediaFire" width="223" height="60">
+            </a>
+            <a
+              class="download-link"
+              href="https://mega.nz/file/lPMTSQ5Z#V6uZSo-w4kc5suTTN_iJNKXOVEZACFL_kATi4b6k1uA"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Download Lomaio vibes from MEGA"
+            >
+              <img src="mega_logo.png" alt="MEGA" width="175" height="57">
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <article class="iso-card" data-search="103001 disc 1 fimland colea iso dvd cd">
+        <div class="cover">
+          <img
+            class="disc-image"
+            src="Disc2.png"
+            alt="Disc illustration"
+            width="150"
+            height="150"
+          >
+        </div>
+
+        <div class="card-content">
+          <h2>Fimland colea</h2>
+          <p>#103001 · Disc 1</p>
+          <p><strong>Film rating:</strong> PG</p>
+          <p class="release-date"><strong>Release date:</strong> 24.10.2026</p>
+
+          <div class="disc-controls" aria-label="Disc display options">
+            <label for="image-format-2">Image file</label>
+            <select id="image-format-2" data-control="format">
+              <option value="Disc2.png" selected>Disc2.png</option>
+              <option value="Disc2.gif">Disc2.gif</option>
+            </select>
+
+            <label for="spin-mode-2">Disc animation</label>
+            <select id="spin-mode-2" data-control="spin">
+              <option value="spin" selected>Spin</option>
+              <option value="static">No spin</option>
+            </select>
+          </div>
+
+          <h3 class="download-label">Download from</h3>
+          <div class="download-links">
+            <a
+              class="download-link"
+              href="https://www.mediafire.com/file/fzglbptj2wmxiui/Fimland_colea.iso/file?action=check"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Download Fimland colea from MediaFire"
+            >
+              <img src="MediaFire_logo.png" alt="MediaFire" width="223" height="60">
+            </a>
+            <a
+              class="download-link"
+              href="https://mega.nz/file/gS1BBKQS#OxRzfOpRWpXT9ZiA4wCOGXrlYXBHoj7_kqmo_h1o5Do"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Download Fimland colea from MEGA"
+            >
+              <img src="mega_logo.png" alt="MEGA" width="175" height="57">
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <article class="iso-card" data-search="coming soon upcoming new iso png gif images animations">
+        <div class="cover" aria-hidden="true">
+          <span>Coming<br>soon</span>
+        </div>
+        <div class="card-content">
+          <h2>Coming soon</h2>
+          <p>More formats will be added to the collection:</p>
+          <ul>
+            <li>.png images</li>
+            <li>.gif animations</li>
+          </ul>
+        </div>
+      </article>
+
+      <p id="empty-state" class="empty-state" hidden>
+        No matching ISO found. Try a different search.
+      </p>
+    </section>
+
+    <footer class="footer">DVD, CD and more</footer>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById('search');
+    const cards = Array.from(document.querySelectorAll('.iso-card'));
+    const resultCount = document.getElementById('result-count');
+    const emptyState = document.getElementById('empty-state');
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const matches = card.dataset.search.toLowerCase().includes(query);
+        card.hidden = !matches;
+
+        if (matches) visibleCount++;
+      });
+
+      resultCount.textContent =
+        `${visibleCount} ${visibleCount === 1 ? 'item' : 'items'}`;
+      emptyState.hidden = visibleCount !== 0;
+    });
+
+    document.querySelectorAll('.iso-card').forEach((card) => {
+      const image = card.querySelector('.disc-image');
+      if (!image) return;
+
+      const formatSelect = card.querySelector('[data-control="format"]');
+      const spinSelect = card.querySelector('[data-control="spin"]');
+
+      formatSelect.addEventListener('change', () => {
+        image.src = formatSelect.value;
+      });
+
+      spinSelect.addEventListener('change', () => {
+        image.classList.toggle('is-static', spinSelect.value === 'static');
+      });
+    });
+  </script>
+</body>
+</html>
